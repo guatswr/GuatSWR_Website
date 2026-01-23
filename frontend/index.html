@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>桂航绯想天 | 车万同好会</title>
+    <style>
+      /* 极致精简背景，防止加载前闪烁 */
+      body { margin: 0; background-color: #ffffff; }
+
+      html.dark body { background-color: #0b1220; }
+
+      #pre-loading-screen {
+        position: fixed;
+        inset: 0;
+        z-index: 10000;
+        background-color: white;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        transition: opacity 0.4s ease;
+      }
+
+      html.dark #pre-loading-screen {
+        background-color: #0b1220;
+        color: #e5e7eb;
+      }
+
+      .loader-unit {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        /* 保持轻微的悬浮动效 */
+        animation: floating 3s ease-in-out infinite;
+      }
+
+      /* 1. 经典太极球动画结构 */
+      .taiji-spinner {
+        position: relative;
+        width: 80px;
+        height: 80px;
+        margin-bottom: 24px;
+      }
+
+      .spinner-ring {
+        position: absolute;
+        inset: 0;
+        border: 4px solid #f3f4f6;
+        border-radius: 50%;
+      }
+
+      html.dark .spinner-ring {
+        border-color: #1f2937;
+      }
+
+      .spinner-active {
+        position: absolute;
+        inset: 0;
+        border: 4px solid #dc2626;
+        border-radius: 50%;
+        border-top-color: transparent;
+        animation: spin 1s linear infinite;
+      }
+
+      .taiji-icon {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 36px;
+        color: #dc2626;
+      }
+
+      html.dark .taiji-icon {
+        color: #f87171;
+      }
+
+      /* 2. 往复式文字动画 - 实现点号循环 (3 -> 2 -> 1 -> 0 -> 1 -> 2) */
+      .loading-text-svg {
+        width: 280px;
+        height: 40px;
+      }
+
+      .text-item {
+        font-family: serif, "Noto Serif SC", "Microsoft YaHei";
+        font-weight: bold;
+        font-size: 20px;
+        fill: #374151;
+        text-anchor: middle;
+        dominant-baseline: middle;
+      }
+
+      /* 点号动画逻辑：周期 2.4s，分 6 个阶段，每个阶段 0.4s */
+      .dot-1 { animation: ping-pong-dot-1 2.4s step-end infinite; }
+      .dot-2 { animation: ping-pong-dot-2 2.4s step-end infinite; }
+      .dot-3 { animation: ping-pong-dot-3 2.4s step-end infinite; }
+
+      @keyframes spin {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+
+      @keyframes floating {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-8px); }
+      }
+
+      /* 动画序列说明 (6个阶段):
+         0-16.6%:   ··· (D1, D2, D3 均可见)
+         16.6-33.3%: ··  (D1, D2 可见, D3 隐藏)
+         33.3-50%:   ·   (D1 可见, D2, D3 隐藏)
+         50-66.6%:       (全部隐藏)
+         66.6-83.3%: ·   (D1 可见)
+         83.3-100%:  ··  (D1, D2 可见)
+      */
+
+      /* 第一个点 (左) */
+      @keyframes ping-pong-dot-1 {
+        0% { visibility: visible; }
+        50% { visibility: hidden; }
+        66.6% { visibility: visible; }
+      }
+
+      /* 第二个点 (中) */
+      @keyframes ping-pong-dot-2 {
+        0% { visibility: visible; }
+        33.3% { visibility: hidden; }
+        83.3% { visibility: visible; }
+      }
+
+      /* 第三个点 (右) */
+      @keyframes ping-pong-dot-3 {
+        0% { visibility: visible; }
+        16.6% { visibility: hidden; }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 原生加载层：在 Vue 挂载前即显示 -->
+    <div id="pre-loading-screen">
+      <div class="loader-unit">
+        <!-- 太极旋转球 -->
+        <div class="taiji-spinner">
+          <div class="spinner-ring"></div>
+          <div class="spinner-active"></div>
+          <div class="taiji-icon">☯</div>
+        </div>
+
+        <!-- 文字动画：实现“少女祈祷中”及其点号往复循环 -->
+        <svg class="loading-text-svg" viewBox="0 0 280 40">
+          <text x="50%" y="50%" class="text-item">
+            少女祈祷中<tspan class="dot-1" fill="inherit">·</tspan><tspan class="dot-2" fill="inherit">·</tspan><tspan class="dot-3" fill="inherit">·</tspan>
+          </text>
+        </svg>
+      </div>
+    </div>
+
+    <div id="app"></div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

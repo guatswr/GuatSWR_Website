@@ -1,0 +1,201 @@
+const fs = require('fs');
+const path = require('path');
+const { DATA_DIR } = require('../models/db');
+
+const DATA_DIR_RESOLVED = path.resolve(DATA_DIR);
+
+const ensureDir = async (dir) => {
+  await fs.promises.mkdir(dir, { recursive: true });
+};
+
+const toUploadsUrl = (absPath) => {
+  const rel = path.relative(DATA_DIR, absPath).split(path.sep).join('/');
+  return `/uploads/${rel}`;
+};
+
+const resolveUploadsPath = (url) => {
+  if (!url || typeof url !== 'string') return null;
+  if (!url.startsWith('/uploads/')) return null;
+  const rel = url.replace(/^\/uploads\//, '');
+  const abs = path.resolve(DATA_DIR, rel);
+  if (!abs.startsWith(DATA_DIR_RESOLVED)) return null;
+  return abs;
+};
+
+const isStagingUrl = (url) => typeof url === 'string' && url.startsWith('/uploads/upload/');
+
+const moveFileSafe = async (src, dest) => {
+  try {
+    await fs.promises.rename(src, dest);
+  } catch (err) {
+    if (err.code === 'EXDEV') {
+      await fs.promises.copyFile(src, dest);
+      await fs.promises.unlink(src);
+    } else {
+      throw err;
+    }
+  }
+};
+
+const uniqueDestPath = (targetDir, filename) => {
+  const ext = path.extname(filename);
+  const base = path.basename(filename, ext);
+  let candidate = path.join(targetDir, filename);
+  if (!fs.existsSync(candidate)) return candidate;
+  const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+  candidate = path.join(targetDir, `${base}-${suffix}${ext}`);
+  return candidate;
+};
+
+const moveStagedFile = async (url, targetDir) => {
+  if (!isStagingUrl(url)) return url;
+  const srcPath = resolveUploadsPath(url);
+  if (!srcPath) return url;
+  if (!fs.existsSync(srcPath)) return url;
+
+  await ensureDir(targetDir);
+  const filename = path.basename(srcPath);
+  const isThumb = filename.endsWith('-thumb.webp');
+  const base = isThumb ? filename.replace(/-thumb\.webp$/i, '') : path.parse(filename).name;
+
+  const findOriginalInStaging = () => {
+    const exts = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg'];
+    for (const ext of exts) {
+      const p = path.join(path.dirname(srcPath), `${base}${ext}`);
+      if (fs.existsSync(p)) return p;
+    }
+    return null;
+  };
+
+  let destPath = null;
+  if (isThumb) {
+    const origSrc = findOriginalInStaging();
+    if (origSrc) {
+      const origDest = uniqueDestPath(targetDir, path.basename(origSrc));
+      await moveFileSafe(origSrc, origDest);
+      destPath = origDest;
+      const thumbDest = path.join(targetDir, `${path.parse(origDest).name}-thumb.webp`);
+      await moveFileSafe(srcPath, thumbDest);
+      return toUploadsUrl(thumbDest);
+    }
+  }
+
+  destPath = uniqueDestPath(targetDir, filename);
+  await moveFileSafe(srcPath, destPath);
+
+  const thumbSrc = path.join(path.dirname(srcPath), `${base}-thumb.webp`);
+  if (fs.existsSync(thumbSrc)) {
+    const destBase = path.parse(destPath).name;
+    const thumbDest = path.join(targetDir, `${destBase}-thumb.webp`);
+    await moveFileSafe(thumbSrc, thumbDest);
+  }
+
+  return toUploadsUrl(destPath);
+};
+
+const moveStagedFiles = async (urls, targetDir) => {
+  if (!Array.isArray(urls)) return urls;
+  const results = [];
+  for (const url of urls) {
+    results.push(await moveStagedFile(url, targetDir));
+  }
+  return results;
+};
+
+const getHistoryDir = (dateStr) => {
+  let year = 'unknown';
+  let month = 'unknown';
+  let day = 'unknown';
+  if (dateStr) {
+    const match = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+    if (match) {
+      year = match[1];
+      month = match[2];
+      day = match[3];
+    } else {
+      const parsed = new Date(dateStr);
+      if (!Number.isNaN(parsed.getTime())) {
+        year = String(parsed.getFullYear());
+        month = String(parsed.getMonth() + 1).padStart(2, '0');
+        day = String(parsed.getDate()).padStart(2, '0');
+      }
+    }
+  }
+  return path.join(DATA_DIR, 'img', 'History', year, month, day);
+};
+
+const deletePathSafe = async (absPath) => {
+  if (!absPath) return;
+  if (!absPath.startsWith(DATA_DIR_RESOLVED)) return;
+  if (!fs.existsSync(absPath)) return;
+  const stat = await fs.promises.lstat(absPath);
+  if (stat.isDirectory()) {
+    await fs.promises.rm(absPath, { recursive: true, force: true });
+  } else {
+    await fs.promises.unlink(absPath).catch(() => {});
+  }
+};
+
+const deleteByUrl = async (url) => {
+  const abs = resolveUploadsPath(url);
+  if (!abs) return;
+  await deletePathSafe(abs);
+  const base = path.parse(abs).name;
+  const thumb = path.join(path.dirname(abs), `${base}-thumb.webp`);
+  await deletePathSafe(thumb);
+};
+
+const cleanupStaging = async (ttlMs) => {
+  const stagingDir = path.join(DATA_DIR, 'upload');
+  if (!fs.existsSync(stagingDir)) return;
+  const files = await fs.promises.readdir(stagingDir);
+  const now = Date.now();
+  await Promise.all(files.map(async (name) => {
+    const abs = path.join(stagingDir, name);
+    try {
+      const stat = await fs.promises.stat(abs);
+      if (now - stat.mtimeMs > ttlMs) {
+        await deletePathSafe(abs);
+      }
+    } catch {
+      // ignore
+    }
+  }));
+};
+
+const moveStagedUrlsInText = async (text, targetDir) => {
+  if (!text || typeof text !== 'string') return text;
+  const urls = text.match(/\/uploads\/upload\/[^\s)"']+/g) || [];
+  if (urls.length === 0) return text;
+  let updated = text;
+  for (const url of urls) {
+    const newUrl = await moveStagedFile(url, targetDir);
+    if (newUrl && newUrl !== url) {
+      updated = updated.split(url).join(newUrl);
+    }
+  }
+  return updated;
+};
+
+const getConfigDir = (key) => {
+  const map = {
+    home_bg: path.join(DATA_DIR, 'img', 'bg', 'home'),
+    join_bg: path.join(DATA_DIR, 'img', 'bg', 'join'),
+    badge_image: path.join(DATA_DIR, 'img', 'assets', 'badge'),
+    mascot_image: path.join(DATA_DIR, 'img', 'assets', 'mascot'),
+    qq_qr_image: path.join(DATA_DIR, 'img', 'Join_QR')
+  };
+  return map[key] || path.join(DATA_DIR, 'img', 'assets', 'misc');
+};
+
+module.exports = {
+  moveStagedFile,
+  moveStagedFiles,
+  moveStagedUrlsInText,
+  getHistoryDir,
+  getConfigDir,
+  isStagingUrl,
+  deleteByUrl,
+  cleanupStaging,
+  deletePathSafe
+};

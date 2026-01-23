@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  min-height: 100%;
+}
+
+html.dark body {
+  background-color: #0b1220;
+  color: #e5e7eb;
+}
+
+html.dark .bg-white { background-color: #0f172a !important; }
+html.dark .bg-gray-50 { background-color: #0b1220 !important; }
+html.dark .bg-gray-100 { background-color: #111827 !important; }
+html.dark .bg-gray-200 { background-color: #1f2937 !important; }
+html.dark .bg-gray-800 { background-color: #0b1220 !important; }
+
+html.dark .text-gray-900 { color: #f9fafb !important; }
+html.dark .text-gray-800 { color: #f3f4f6 !important; }
+html.dark .text-gray-700 { color: #e5e7eb !important; }
+html.dark .text-gray-600 { color: #d1d5db !important; }
+html.dark .text-gray-500 { color: #9ca3af !important; }
+
+html.dark .border-gray-100 { border-color: #334155 !important; }
+html.dark .border-gray-200 { border-color: #334155 !important; }
+html.dark .border-gray-300 { border-color: #475569 !important; }
+html.dark .border-gray-700 { border-color: #1f2937 !important; }
+
+html.dark .md-editor {
+  background-color: transparent !important;
+}
+
+html.dark .md-editor-content {
+  background-color: transparent !important;
+}
+
+html.dark .md-editor-preview-wrapper,
+html.dark .md-editor-preview {
+  background-color: transparent !important;
+}
+
+html.dark .md-editor-preview-wrapper .md-editor-preview {
+  background-color: transparent !important;
+}
+
+html:not(.dark) .md-editor-preview-wrapper,
+html:not(.dark) .md-editor-preview {
+  background-color: transparent !important;
+}
+
+html:not(.dark) .md-editor-preview-wrapper .md-editor-preview {
+  background-color: transparent !important;
+}
+
+html.dark .md-editor-preview {
+  color: #e5e7eb !important;
+}
+
+html.dark .md-editor-preview h1,
+html.dark .md-editor-preview h2,
+html.dark .md-editor-preview h3,
+html.dark .md-editor-preview h4,
+html.dark .md-editor-preview h5,
+html.dark .md-editor-preview h6 {
+  color: #f3f4f6 !important;
+}
+
+html.dark .md-editor-preview p,
+html.dark .md-editor-preview li,
+html.dark .md-editor-preview td,
+html.dark .md-editor-preview th,
+html.dark .md-editor-preview blockquote,
+html.dark .md-editor-preview span {
+  color: #e5e7eb !important;
+}
+
+html.dark .md-editor-preview a {
+  color: #93c5fd !important;
+}
+
+html.dark .md-editor-preview hr {
+  border-color: #334155 !important;
+}
+
+html.dark .md-editor-preview code {
+  color: #e2e8f0 !important;
+  background-color: #0b1220 !important;
+}
+
+body.activity-detail-bg {
+  background: transparent !important;
+}
+
+body.activity-detail-bg #app,
+body.activity-detail-bg #app > div,
+body.activity-detail-bg main {
+  background: transparent !important;
+}
+
+/* 自定义一些过渡动画 */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}

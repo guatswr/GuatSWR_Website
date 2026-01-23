@@ -1,0 +1,14 @@
+services:
+  guiair-backend:
+    build: .
+    container_name: guatswr_web
+    restart: always
+    ports:
+      - "8080:3000"
+    volumes:
+      - ./:/app
+      - /app/node_modules
+      - ./data:/app/data
+      - ./uploads:/app/uploads
+    env_file:
+      - .env
