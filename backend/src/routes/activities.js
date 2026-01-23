@@ -5,6 +5,7 @@ const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middl
 const { validate, normalizeImages } = require('../utils');
 const { activitySchema } = require('../controllers/schemas');
 const { moveStagedFile, moveStagedFiles, moveStagedUrlsInText } = require('../utils/storage');
+const { notifyActivityPublished } = require('../utils/bot');
 
 const router = express.Router();
 
@@ -86,6 +87,14 @@ router.post('/', authenticateToken, (req, res) => {
           [movedCover, JSON.stringify(movedImages), movedContent, activityId], (updateErr) => {
             if (updateErr) return res.status(500).json({ error: updateErr.message });
             addLog(req.user.username, 'CREATE_ACTIVITY', `发布活动: ${title}`);
+            notifyActivityPublished({
+              id: activityId,
+              title,
+              tag,
+              date,
+              description: description || '',
+              cover_image: movedCover || ''
+            }, req.user).catch(() => {});
             res.json({ id: activityId, message: "发布成功" });
           });
       })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));

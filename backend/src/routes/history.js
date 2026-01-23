@@ -4,6 +4,7 @@ const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middl
 const { validate } = require('../utils');
 const { historySchema } = require('../controllers/schemas');
 const { moveStagedFile, getHistoryDir } = require('../utils/storage');
+const { notifyHistoryUpdated } = require('../utils/bot');
 
 const router = express.Router();
 
@@ -26,6 +27,14 @@ router.post('/', authenticateToken, (req, res) => {
       [date, title, description, movedImage, sort_order || 0], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         addLog(req.user.username, 'CREATE_HISTORY', `添加群史: ${title}`);
+        notifyHistoryUpdated({
+          id: this.lastID,
+          date,
+          title,
+          description: description || '',
+          image: movedImage || '',
+          sort_order: sort_order || 0
+        }, req.user, 'create').catch(() => {});
         res.json({ id: this.lastID });
       });
   })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));
@@ -42,6 +51,14 @@ router.put('/:id', authenticateToken, (req, res) => {
       [date, title, description, movedImage, sort_order, req.params.id], (err) => {
         if (err) return res.status(500).json({ error: err.message });
         addLog(req.user.username, 'UPDATE_HISTORY', `更新群史: ${title}`);
+        notifyHistoryUpdated({
+          id: Number(req.params.id),
+          date,
+          title,
+          description: description || '',
+          image: movedImage || '',
+          sort_order: sort_order || 0
+        }, req.user, 'update').catch(() => {});
         res.json({ message: "更新成功" });
       });
   })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));

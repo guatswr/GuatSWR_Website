@@ -5,6 +5,7 @@ const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middl
 const { validate } = require('../utils');
 const { memberSchema } = require('../controllers/schemas');
 const { moveStagedFile } = require('../utils/storage');
+const { notifyMemberAdded } = require('../utils/bot');
 
 const router = express.Router();
 
@@ -26,6 +27,13 @@ router.post('/', authenticateToken, (req, res) => {
     db.run("INSERT INTO members (name, role, bio, avatar, school, sort_order) VALUES (?, ?, ?, ?, ?, ?)", [name, role, bio, movedAvatar, school || '', sort_order || 0], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       addLog(req.user.username, 'CREATE_MEMBER', `添加成员: ${name}`);
+      notifyMemberAdded({
+        id: this.lastID,
+        name,
+        role,
+        school: school || '',
+        avatar: movedAvatar || ''
+      }, req.user).catch(() => {});
       res.json({ id: this.lastID });
     });
   })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));
