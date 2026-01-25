@@ -49,12 +49,12 @@ onMounted(() => {
     <div class="max-w-6xl mx-auto px-4 py-14">
       <div class="text-center mb-10">
         <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-purple-100 dark:bg-slate-800 text-purple-700 dark:text-purple-200 text-xs font-bold border border-purple-200 dark:border-slate-700">
-          幻想乡 · 外界通讯
+          绯想天 · 外界通讯
         </div>
         <h1 class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 font-serif mt-4">
-          🌸 幻想乡社交结界
+          桂航绯想天社交结界
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-3">Touhou Social Links & Community Gateway</p>
+        <p class="text-gray-500 dark:text-gray-400 mt-3">GuatSwr Community Gateway</p>
       </div>
 
       <div v-if="loading" class="text-center py-16 text-gray-400 dark:text-gray-300">

@@ -18,6 +18,53 @@ const currentImage = ref('')
 
 // 编辑器 ID
 const id = 'preview-only'
+const siteTitle = '桂航绯想天 | 车万同好会'
+const defaultDescription = '桂航绯想天，车万同好会交流社区，提供群活动、成员、历史与社交链接等信息。'
+
+const setMetaTag = (selector, attrs) => {
+  let el = document.head.querySelector(selector)
+  if (!el) {
+    el = document.createElement('meta')
+    document.head.appendChild(el)
+  }
+  Object.entries(attrs).forEach(([key, value]) => {
+    el.setAttribute(key, value)
+  })
+}
+
+const setCanonicalLink = (href) => {
+  let link = document.head.querySelector('link[rel="canonical"]')
+  if (!link) {
+    link = document.createElement('link')
+    link.setAttribute('rel', 'canonical')
+    document.head.appendChild(link)
+  }
+  link.setAttribute('href', href)
+}
+
+const updateSeoFromActivity = (data) => {
+  if (!data?.title) return
+  const title = `${data.title} | 桂航绯想天`
+  const description = data.description || defaultDescription
+  const url = new URL(route.fullPath, window.location.origin).toString()
+  const image = data.cover_image ? new URL(data.cover_image, window.location.origin).toString() : null
+
+  document.title = title
+  setMetaTag('meta[name="description"]', { name: 'description', content: description })
+  setMetaTag('meta[property="og:title"]', { property: 'og:title', content: title })
+  setMetaTag('meta[property="og:description"]', { property: 'og:description', content: description })
+  setMetaTag('meta[property="og:url"]', { property: 'og:url', content: url })
+  setMetaTag('meta[property="og:site_name"]', { property: 'og:site_name', content: siteTitle })
+  setMetaTag('meta[property="og:type"]', { property: 'og:type', content: 'article' })
+  setMetaTag('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary' })
+  setMetaTag('meta[name="twitter:title"]', { name: 'twitter:title', content: title })
+  setMetaTag('meta[name="twitter:description"]', { name: 'twitter:description', content: description })
+  if (image) {
+    setMetaTag('meta[property="og:image"]', { property: 'og:image', content: image })
+    setMetaTag('meta[name="twitter:image"]', { name: 'twitter:image', content: image })
+  }
+  setCanonicalLink(url)
+}
 
 // 移除 index.html 中的原生预加载层
 const removePreLoader = () => {
@@ -36,6 +83,7 @@ const fetchDetail = async () => {
   try {
     const res = await axios.get(`/api/activities/${route.params.id}`)
     activity.value = res.data
+    updateSeoFromActivity(activity.value)
   } catch (error) {
     console.error('获取活动详情失败:', error)
     ElMessage.error('活动不存在或已删除')

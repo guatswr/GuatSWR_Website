@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 
-const { initDb, PUBLIC_DIR } = require('./models/db');
+const { initDb, PUBLIC_DIR, db } = require('./models/db');
 const { cleanupStaging } = require('./utils/storage');
 const { authLimiter, globalLimiter } = require('./middlewares/limiter');
 const { banGuard } = require('./middlewares/ban');
@@ -29,6 +29,7 @@ const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
+const SITE_URL = (process.env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', true);
 app.disable('x-powered-by');
@@ -63,6 +64,77 @@ setInterval(() => {
 }, 60 * 60 * 1000);
 
 app.get('/api/version', (req, res) => res.json({ version: '4.0', status: 'online' }));
+
+app.get('/sitemap.xml', (req, res) => {
+  const resolvedSiteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`)
+    .replace(/\/+$/, '');
+  const staticUrls = [
+    { loc: '/', changefreq: 'daily', priority: 1.0 },
+    { loc: '/activities', changefreq: 'daily', priority: 0.8 },
+    { loc: '/members', changefreq: 'weekly', priority: 0.6 },
+    { loc: '/history', changefreq: 'weekly', priority: 0.6 },
+    { loc: '/social', changefreq: 'monthly', priority: 0.4 },
+    { loc: '/join', changefreq: 'monthly', priority: 0.5 },
+    { loc: '/logs', changefreq: 'weekly', priority: 0.4 }
+  ];
+
+  const escapeXml = (value) => String(value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&apos;');
+
+  const toLastmod = (value) => {
+    if (!value) return null;
+    if (/^\d{4}-\d{2}-\d{2}/.test(value)) return value.slice(0, 10);
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return null;
+    return date.toISOString().slice(0, 10);
+  };
+
+  const buildUrlItem = (item) => {
+    const loc = `${resolvedSiteUrl}${item.loc}`;
+    const lastmod = toLastmod(item.lastmod);
+    return [
+      '  <url>',
+      `    <loc>${escapeXml(loc)}</loc>`,
+      lastmod ? `    <lastmod>${lastmod}</lastmod>` : null,
+      item.changefreq ? `    <changefreq>${item.changefreq}</changefreq>` : null,
+      item.priority !== undefined ? `    <priority>${item.priority}</priority>` : null,
+      '  </url>'
+    ].filter(Boolean).join('\n');
+  };
+
+  const sql = `
+    SELECT id, date, created_at
+    FROM activities
+    WHERE (status = 'published' OR status IS NULL) AND deleted_at IS NULL
+    ORDER BY date DESC
+  `;
+
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).send('Server Error');
+
+    const activityUrls = rows.map((row) => ({
+      loc: `/activity/${row.id}`,
+      lastmod: row.date || row.created_at,
+      changefreq: 'weekly',
+      priority: 0.7
+    }));
+
+    const allUrls = [...staticUrls, ...activityUrls];
+    const body = allUrls.map(buildUrlItem).join('\n');
+    const xml = `<?xml version="1.0" encoding="UTF-8"?>\n` +
+      `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${body}\n</urlset>\n`;
+
+    res.setHeader('Content-Type', 'application/xml; charset=utf-8');
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+    res.send(xml);
+  });
+});
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/admin', adminRoutes);
