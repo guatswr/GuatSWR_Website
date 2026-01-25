@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { db, addLog, DATA_DIR } = require('../models/db');
+const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middlewares/auth');
 const { validate, normalizeImages } = require('../utils');
 const { activitySchema } = require('../controllers/schemas');
@@ -78,7 +78,7 @@ router.post('/', authenticateToken, (req, res) => {
     function(err) {
       if (err) return res.status(500).json({ error: err.message });
       const activityId = this.lastID;
-      const activityDir = path.join(DATA_DIR, 'img', 'activity', String(activityId));
+      const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(activityId));
       (async () => {
         const movedCover = await moveStagedFile(cover_image, activityDir);
         const movedImages = await moveStagedFiles(normalizedImages, activityDir);
@@ -107,7 +107,7 @@ router.put('/:id', authenticateToken, (req, res) => {
   const { title, tag, date, description, content, cover_image, images } = validated.data;
   const normalizedImages = normalizeImages(images);
 
-  const activityDir = path.join(DATA_DIR, 'img', 'activity', String(req.params.id));
+  const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(req.params.id));
   (async () => {
     const movedCover = await moveStagedFile(cover_image, activityDir);
     const movedImages = await moveStagedFiles(normalizedImages, activityDir);

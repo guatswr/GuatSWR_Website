@@ -5,7 +5,7 @@ const { upload } = require('../middlewares/upload');
 const sharp = require('sharp');
 const { uploadLimiter } = require('../middlewares/limiter');
 const { authenticateToken } = require('../middlewares/auth');
-const { addLog, DATA_DIR, ICON_SVG_DIR } = require('../models/db');
+const { addLog, IMG_ROOT_DIR, ICON_SVG_DIR } = require('../models/db');
 const { moveStagedFile } = require('../utils/storage');
 
 const router = express.Router();
@@ -70,7 +70,7 @@ router.post('/', authenticateToken, uploadLimiter, upload.single('file'), async 
   if (category === 'icon_svg') {
     url = await moveStagedFile(url, ICON_SVG_DIR);
   } else if (activityId) {
-    const activityDir = path.join(DATA_DIR, 'img', 'activity', String(activityId));
+    const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(activityId));
     url = await moveStagedFile(url, activityDir);
     if (thumbUrl) {
       thumbUrl = url.replace(/(\.[a-z0-9]+)$/i, '-thumb.webp');

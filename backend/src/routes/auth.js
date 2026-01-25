@@ -3,7 +3,7 @@ const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const path = require('path');
-const { db, addLog, DATA_DIR } = require('../models/db');
+const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { validate } = require('../utils');
 const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
 const { loginLimiter } = require('../middlewares/limiter');
@@ -92,9 +92,13 @@ router.post('/login', loginLimiter, (req, res) => {
           }
         }
         db.run('DELETE FROM login_attempts WHERE ip = ?', [clientIp], () => {});
-        const token = jwt.sign({ id: user.id, username: user.username, role: user.role }, SECRET_KEY, { expiresIn: '24h' });
-        addLog(user.username, 'LOGIN', `登录成功 (IP: ${clientIp})`);
-        res.json({ token, username: user.username, role: user.role, avatar: user.avatar, id: user.id });
+        db.get("SELECT value FROM site_config WHERE key = 'token_version'", [], (versionErr, versionRow) => {
+          const version = Number(versionRow?.value || 0);
+          const tokenVersion = Number.isNaN(version) ? 0 : version;
+          const token = jwt.sign({ id: user.id, username: user.username, role: user.role, token_version: tokenVersion }, SECRET_KEY, { expiresIn: '24h' });
+          addLog(user.username, 'LOGIN', `登录成功 (IP: ${clientIp})`);
+          res.json({ token, username: user.username, role: user.role, avatar: user.avatar, id: user.id });
+        });
       } else {
         return loginFailed();
       }
@@ -108,7 +112,7 @@ router.put('/profile', authenticateToken, (req, res) => {
   const { password, avatar, twofa_password, twofa_enabled } = validated.data;
   const userId = req.user.id;
 
-  const userDir = path.join(DATA_DIR, 'img', 'user');
+  const userDir = path.join(IMG_ROOT_DIR, 'user');
   const updateProfile = async (newAvatar) => {
     const sets = [];
     const params = [];

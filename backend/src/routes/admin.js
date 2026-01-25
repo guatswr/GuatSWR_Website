@@ -1,7 +1,7 @@
 const express = require('express');
 const path = require('path');
 const bcrypt = require('bcryptjs');
-const { db, logDb, addLog, DATA_DIR } = require('../models/db');
+const { db, logDb, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
 const { validate, normalizeImages } = require('../utils');
 const { deleteByUrl, deletePathSafe } = require('../utils/storage');
@@ -50,6 +50,18 @@ router.put('/users/:id/twofa/reset', authenticateToken, requireSuperAdmin, (req,
       if (updateErr) return res.status(500).json({ error: updateErr.message });
       addLog(req.user.username, 'RESET_2FA', `重置二步密码: ${targetName}`);
       res.json({ message: "二步密码已重置" });
+    });
+  });
+});
+
+router.post('/token-version/refresh', authenticateToken, requireSuperAdmin, (req, res) => {
+  db.get("SELECT value FROM site_config WHERE key = 'token_version'", [], (err, row) => {
+    const current = Number(row?.value || 0);
+    const next = Number.isNaN(current) ? 1 : current + 1;
+    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES ('token_version', ?)", [String(next)], (updateErr) => {
+      if (updateErr) return res.status(500).json({ error: updateErr.message });
+      addLog(req.user.username, 'REFRESH_TOKEN_VERSION', `强制刷新登录: version=${next}`);
+      res.json({ message: '已强制刷新登录状态', version: next });
     });
   });
 });
@@ -110,7 +122,7 @@ router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, (req, re
       for (const img of imgs) await deleteByUrl(img);
       const contentUrls = collectUploadsFromText(act.content);
       for (const url of contentUrls) await deleteByUrl(url);
-      const activityDir = path.join(DATA_DIR, 'img', 'activity', String(act.id));
+      const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(act.id));
       await deletePathSafe(activityDir);
     }
 

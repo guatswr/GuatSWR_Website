@@ -4,7 +4,7 @@ const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
 
-const { initDb, DATA_DIR } = require('./models/db');
+const { initDb, PUBLIC_DIR } = require('./models/db');
 const { cleanupStaging } = require('./utils/storage');
 const { authLimiter } = require('./middlewares/limiter');
 
@@ -49,7 +49,7 @@ app.use(cors({
 }));
 app.use(express.json({ limit: MAX_BODY_SIZE }));
 app.use(express.urlencoded({ extended: true, limit: MAX_BODY_SIZE }));
-app.use('/uploads', express.static(DATA_DIR));
+app.use('/uploads', express.static(PUBLIC_DIR));
 
 initDb();
 

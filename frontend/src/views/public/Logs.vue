@@ -58,7 +58,7 @@ onMounted(() => {
     <div class="max-w-6xl mx-auto px-4">
       <div class="text-center mb-8">
         <h1 class="text-3xl font-bold text-gray-800 font-serif">📜 近期日志</h1>
-        <p class="text-sm text-gray-500 mt-1">Gensokyo Logbook</p>
+        <p class="text-sm text-gray-500 mt-1">所有的内容都是由同好们一点一滴积累而成</p>
       </div>
 
       <div class="bg-white rounded-xl p-6 shadow-sm border border-gray-100 mb-6">

@@ -4,11 +4,13 @@ const fs = require('fs');
 const bcrypt = require('bcryptjs');
 
 const DATA_DIR = path.join(__dirname, '..', '..', 'data');
-const UPLOADS_DIR = path.join(DATA_DIR, 'upload');
-const IMG_ROOT_DIR = path.join(DATA_DIR, 'img');
+const PUBLIC_DIR = path.join(DATA_DIR, 'public');
+const UPLOADS_DIR = path.join(PUBLIC_DIR, 'upload');
+const IMG_ROOT_DIR = path.join(PUBLIC_DIR, 'img');
 const HISTORY_ROOT_DIR = path.join(IMG_ROOT_DIR, 'History');
-const ICON_SVG_DIR = path.join(DATA_DIR, 'icon_svg');
+const ICON_SVG_DIR = path.join(PUBLIC_DIR, 'icon_svg');
 if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
+if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
 if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
 if (!fs.existsSync(IMG_ROOT_DIR)) fs.mkdirSync(IMG_ROOT_DIR, { recursive: true });
 if (!fs.existsSync(HISTORY_ROOT_DIR)) fs.mkdirSync(HISTORY_ROOT_DIR, { recursive: true });
@@ -181,4 +183,4 @@ const initDb = () => {
   });
 };
 
-module.exports = { db, logDb, addLog, initDb, DATA_DIR, UPLOADS_DIR, IMG_ROOT_DIR, HISTORY_ROOT_DIR, ICON_SVG_DIR };
+module.exports = { db, logDb, addLog, initDb, DATA_DIR, PUBLIC_DIR, UPLOADS_DIR, IMG_ROOT_DIR, HISTORY_ROOT_DIR, ICON_SVG_DIR };

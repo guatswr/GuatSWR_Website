@@ -1,6 +1,6 @@
 const express = require('express');
 const path = require('path');
-const { db, addLog, DATA_DIR } = require('../models/db');
+const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middlewares/auth');
 const { validate } = require('../utils');
 const { memberSchema } = require('../controllers/schemas');
@@ -21,7 +21,7 @@ router.post('/', authenticateToken, (req, res) => {
   const validated = validate(memberSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
   const { name, role, bio, avatar, school, sort_order } = validated.data;
-  const userDir = path.join(DATA_DIR, 'img', 'user');
+  const userDir = path.join(IMG_ROOT_DIR, 'user');
   (async () => {
     const movedAvatar = await moveStagedFile(avatar, userDir);
     db.run("INSERT INTO members (name, role, bio, avatar, school, sort_order) VALUES (?, ?, ?, ?, ?, ?)", [name, role, bio, movedAvatar, school || '', sort_order || 0], function(err) {
@@ -43,7 +43,7 @@ router.put('/:id', authenticateToken, (req, res) => {
   const validated = validate(memberSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
   const { name, role, bio, avatar, school, sort_order } = validated.data;
-  const userDir = path.join(DATA_DIR, 'img', 'user');
+  const userDir = path.join(IMG_ROOT_DIR, 'user');
   (async () => {
     const movedAvatar = await moveStagedFile(avatar, userDir);
     db.run("UPDATE members SET name=?, role=?, bio=?, avatar=?, school=?, sort_order=? WHERE id=?", [name, role, bio, movedAvatar, school || '', sort_order || 0, req.params.id], function(err) {

@@ -1,15 +1,15 @@
 const fs = require('fs');
 const path = require('path');
-const { DATA_DIR } = require('../models/db');
+const { PUBLIC_DIR, IMG_ROOT_DIR } = require('../models/db');
 
-const DATA_DIR_RESOLVED = path.resolve(DATA_DIR);
+const PUBLIC_DIR_RESOLVED = path.resolve(PUBLIC_DIR);
 
 const ensureDir = async (dir) => {
   await fs.promises.mkdir(dir, { recursive: true });
 };
 
 const toUploadsUrl = (absPath) => {
-  const rel = path.relative(DATA_DIR, absPath).split(path.sep).join('/');
+  const rel = path.relative(PUBLIC_DIR, absPath).split(path.sep).join('/');
   return `/uploads/${rel}`;
 };
 
@@ -17,8 +17,8 @@ const resolveUploadsPath = (url) => {
   if (!url || typeof url !== 'string') return null;
   if (!url.startsWith('/uploads/')) return null;
   const rel = url.replace(/^\/uploads\//, '');
-  const abs = path.resolve(DATA_DIR, rel);
-  if (!abs.startsWith(DATA_DIR_RESOLVED)) return null;
+  const abs = path.resolve(PUBLIC_DIR, rel);
+  if (!abs.startsWith(PUBLIC_DIR_RESOLVED)) return null;
   return abs;
 };
 
@@ -121,12 +121,12 @@ const getHistoryDir = (dateStr) => {
       }
     }
   }
-  return path.join(DATA_DIR, 'img', 'History', year, month, day);
+  return path.join(IMG_ROOT_DIR, 'History', year, month, day);
 };
 
 const deletePathSafe = async (absPath) => {
   if (!absPath) return;
-  if (!absPath.startsWith(DATA_DIR_RESOLVED)) return;
+  if (!absPath.startsWith(PUBLIC_DIR_RESOLVED)) return;
   if (!fs.existsSync(absPath)) return;
   const stat = await fs.promises.lstat(absPath);
   if (stat.isDirectory()) {
@@ -146,7 +146,7 @@ const deleteByUrl = async (url) => {
 };
 
 const cleanupStaging = async (ttlMs) => {
-  const stagingDir = path.join(DATA_DIR, 'upload');
+  const stagingDir = path.join(PUBLIC_DIR, 'upload');
   if (!fs.existsSync(stagingDir)) return;
   const files = await fs.promises.readdir(stagingDir);
   const now = Date.now();
@@ -179,13 +179,13 @@ const moveStagedUrlsInText = async (text, targetDir) => {
 
 const getConfigDir = (key) => {
   const map = {
-    home_bg: path.join(DATA_DIR, 'img', 'bg', 'home'),
-    join_bg: path.join(DATA_DIR, 'img', 'bg', 'join'),
-    badge_image: path.join(DATA_DIR, 'img', 'assets', 'badge'),
-    mascot_image: path.join(DATA_DIR, 'img', 'assets', 'mascot'),
-    qq_qr_image: path.join(DATA_DIR, 'img', 'Join_QR')
+    home_bg: path.join(IMG_ROOT_DIR, 'bg', 'home'),
+    join_bg: path.join(IMG_ROOT_DIR, 'bg', 'join'),
+    badge_image: path.join(IMG_ROOT_DIR, 'assets', 'badge'),
+    mascot_image: path.join(IMG_ROOT_DIR, 'assets', 'mascot'),
+    qq_qr_image: path.join(IMG_ROOT_DIR, 'Join_QR')
   };
-  return map[key] || path.join(DATA_DIR, 'img', 'assets', 'misc');
+  return map[key] || path.join(IMG_ROOT_DIR, 'assets', 'misc');
 };
 
 module.exports = {

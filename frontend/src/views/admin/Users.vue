@@ -61,6 +61,16 @@ const resetTwofa = async (id) => {
     if (e !== 'cancel') ElMessage.error('重置失败')
   }
 }
+
+const forceRefreshSessions = async () => {
+  try {
+    await ElMessageBox.confirm('将强制所有管理员重新登录，是否继续？', '强制刷新登录', { type: 'warning' })
+    await axios.post('/api/admin/token-version/refresh')
+    ElMessage.success('已强制刷新登录状态')
+  } catch (e) {
+    if (e !== 'cancel') ElMessage.error('操作失败')
+  }
+}
 </script>
 
 <template>
@@ -71,6 +81,13 @@ const resetTwofa = async (id) => {
         <input v-model="adminForm.username" class="w-full border p-2 rounded" placeholder="账号">
         <input v-model="adminForm.password" class="w-full border p-2 rounded" placeholder="密码">
         <button @click="addAdmin" class="w-full bg-gray-800 text-white py-2 rounded">添加</button>
+      </div>
+      <div class="mt-6 pt-4 border-t border-gray-100">
+        <h3 class="text-sm font-bold mb-2">🔒 登录控制</h3>
+        <button @click="forceRefreshSessions" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 transition">
+          强制刷新所有管理员登录
+        </button>
+        <p class="text-xs text-gray-500 mt-2">执行后所有管理员需重新登录。</p>
       </div>
     </div>
     <div class="bg-white p-6 rounded-xl shadow-sm">
