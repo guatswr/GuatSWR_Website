@@ -31,3 +31,6 @@ frontend/.vite/
 # Runtime uploads/assets (generated or user content)
 backend/uploads/
 backend/data/
+
+# Backups
+backups/

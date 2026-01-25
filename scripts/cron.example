@@ -1,0 +1,5 @@
+# 每天 02:30 备份数据库
+30 2 * * * /bin/bash /home/your_user/guatswr_web/scripts/db_backup.sh
+
+# 每天 03:00 备份上传文件
+0 3 * * * /bin/bash /home/your_user/guatswr_web/scripts/uploads_backup.sh
