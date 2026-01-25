@@ -1,0 +1,1409 @@
+openapi: 3.0.3
+info:
+  title: Guatswr Web API
+  version: 4.0
+  description: 核心模块 API 文档（auth、activities、members、history、config、upload、logs、bot）。
+servers:
+  - url: /
+security:
+  - bearerAuth: []
+paths:
+  /api/version:
+    get:
+      summary: 获取服务版本
+      tags: [system]
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  version:
+                    type: string
+                  status:
+                    type: string
+  /api/auth/login:
+    post:
+      summary: 登录
+      tags: [auth]
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AuthLoginRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthLoginResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+  /api/auth/me:
+    get:
+      summary: 获取当前用户
+      tags: [auth]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMe'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/auth/profile:
+    put:
+      summary: 更新个人资料
+      tags: [auth]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProfileUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/auth/register:
+    post:
+      summary: 创建管理员
+      tags: [auth]
+      description: 仅 super_admin 可用。
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/activities:
+    get:
+      summary: 活动列表
+      tags: [activities]
+      security: []
+      parameters:
+        - in: query
+          name: all
+          schema:
+            type: string
+            enum: ['0','1']
+          description: 1 表示包含草稿/管理员可见内容（需要登录）
+        - in: query
+          name: includeDeleted
+          schema:
+            type: string
+            enum: ['0','1']
+          description: 1 表示包含已删除（仅 super_admin）
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ActivityListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    post:
+      summary: 发布活动
+      tags: [activities]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                  message:
+                    type: string
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/activities/draft:
+    post:
+      summary: 创建草稿
+      tags: [activities]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/activities/{id}:
+    get:
+      summary: 活动详情
+      tags: [activities]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    put:
+      summary: 更新活动
+      tags: [activities]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ActivityInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      summary: 软删除活动
+      tags: [activities]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/activities/{id}/restore:
+    post:
+      summary: 恢复活动
+      tags: [activities]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/members:
+    get:
+      summary: 成员列表
+      tags: [members]
+      security: []
+      parameters:
+        - in: query
+          name: includeDeleted
+          schema:
+            type: string
+            enum: ['0','1']
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Member'
+    post:
+      summary: 添加成员
+      tags: [members]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/members/{id}:
+    put:
+      summary: 更新成员
+      tags: [members]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      summary: 软删除成员
+      tags: [members]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/members/{id}/restore:
+    post:
+      summary: 恢复成员
+      tags: [members]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/history:
+    get:
+      summary: 群史列表
+      tags: [history]
+      security: []
+      parameters:
+        - in: query
+          name: includeDeleted
+          schema:
+            type: string
+            enum: ['0','1']
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/HistoryItem'
+    post:
+      summary: 添加群史
+      tags: [history]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoryInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: integer
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/history/{id}:
+    put:
+      summary: 更新群史
+      tags: [history]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HistoryInput'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    delete:
+      summary: 软删除群史
+      tags: [history]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/history/{id}/restore:
+    post:
+      summary: 恢复群史
+      tags: [history]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/config:
+    get:
+      summary: 获取站点配置
+      tags: [config]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ConfigMap'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: 更新站点配置
+      tags: [config]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ConfigUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/upload:
+    post:
+      summary: 上传文件
+      tags: [upload]
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+      parameters:
+        - in: query
+          name: activityId
+          schema:
+            type: integer
+        - in: query
+          name: category
+          schema:
+            type: string
+            description: 传 icon_svg 可直接存放到 icon 目录
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+  /api/logs:
+    get:
+      summary: 审计日志列表
+      tags: [logs]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: username
+          schema:
+            type: string
+        - in: query
+          name: action
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogListResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/logs/stats:
+    get:
+      summary: 编辑统计
+      tags: [logs]
+      parameters:
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LogStatsResponse'
+  /api/bot/notify/activity:
+    post:
+      summary: 发送活动通知
+      tags: [bot]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BotActivityNotify'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+  /api/bot/notify/history:
+    post:
+      summary: 发送群史通知
+      tags: [bot]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BotHistoryNotify'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+  /api/bot/notify/member:
+    post:
+      summary: 发送成员通知
+      tags: [bot]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BotMemberNotify'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '502':
+          $ref: '#/components/responses/BadGateway'
+  /api/admin/users:
+    get:
+      summary: 管理员列表
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AdminUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/users/{id}:
+    delete:
+      summary: 删除管理员
+      tags: [admin]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminDeleteUserResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/users/{id}/password:
+    put:
+      summary: 重置管理员密码
+      tags: [admin]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminResetPasswordRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/users/{id}/twofa/reset:
+    put:
+      summary: 重置管理员二步密码
+      tags: [admin]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/token-version/refresh:
+    post:
+      summary: 强制刷新登录状态
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenVersionRefreshResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/logs:
+    get:
+      summary: 管理端审计日志列表
+      tags: [admin]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+        - in: query
+          name: limit
+          schema:
+            type: integer
+        - in: query
+          name: username
+          schema:
+            type: string
+        - in: query
+          name: action
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminLogListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+  /api/admin/logs/{id}:
+    delete:
+      summary: 删除审计日志
+      tags: [admin]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/recycle-bin/purge:
+    post:
+      summary: 清空回收站并清理图片
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RecycleBinPurgeResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/bans:
+    get:
+      summary: 获取封禁列表
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BanListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: 添加封禁
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BanCreateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BanCreateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/bans/{ip}:
+    delete:
+      summary: 解除封禁
+      tags: [admin]
+      parameters:
+        - in: path
+          name: ip
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BanDeleteResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  parameters:
+    IdParam:
+      in: path
+      name: id
+      required: true
+      schema:
+        type: integer
+  responses:
+    BadRequest:
+      description: 参数错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Unauthorized:
+      description: 未授权
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    Forbidden:
+      description: 无权限
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    NotFound:
+      description: 资源不存在
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    TooManyRequests:
+      description: 请求过多
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    PayloadTooLarge:
+      description: 上传内容过大
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    ServerError:
+      description: 服务器错误
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+    BadGateway:
+      description: 上游服务异常
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ErrorResponse'
+  schemas:
+    ErrorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+      required: [message]
+    MessageResponse:
+      type: object
+      properties:
+        message:
+          type: string
+    AuthLoginRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+        twofa:
+          type: string
+          nullable: true
+    AuthLoginResponse:
+      type: object
+      properties:
+        token:
+          type: string
+        username:
+          type: string
+        role:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        id:
+          type: integer
+    UserMe:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        twofa_enabled:
+          type: integer
+    ProfileUpdateRequest:
+      type: object
+      properties:
+        password:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        twofa_password:
+          type: string
+          nullable: true
+        twofa_enabled:
+          type: boolean
+          nullable: true
+    RegisterRequest:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+    Activity:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        tag:
+          type: string
+        date:
+          type: string
+        description:
+          type: string
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        cover_image:
+          type: string
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+        created_by:
+          type: string
+          nullable: true
+        updated_by:
+          type: string
+          nullable: true
+        status:
+          type: string
+          nullable: true
+        deleted_at:
+          type: string
+          nullable: true
+        deleted_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+    ActivityInput:
+      type: object
+      required: [title, tag, date, description, content, cover_image, images]
+      properties:
+        title:
+          type: string
+        tag:
+          type: string
+        date:
+          type: string
+        description:
+          type: string
+          nullable: true
+        content:
+          type: string
+          nullable: true
+        cover_image:
+          type: string
+          nullable: true
+        images:
+          type: array
+          items:
+            type: string
+    ActivityListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Activity'
+    Member:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        school:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+        deleted_at:
+          type: string
+          nullable: true
+        deleted_by:
+          type: integer
+          nullable: true
+    MemberInput:
+      type: object
+      required: [name, role, bio, avatar]
+      properties:
+        name:
+          type: string
+        role:
+          type: string
+        bio:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+        school:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+          nullable: true
+    HistoryItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        image:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+        deleted_at:
+          type: string
+          nullable: true
+        deleted_by:
+          type: integer
+          nullable: true
+    HistoryInput:
+      type: object
+      required: [date, title, description, image]
+      properties:
+        date:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        image:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+          nullable: true
+    ConfigMap:
+      type: object
+      additionalProperties:
+        type: string
+    ConfigUpdateRequest:
+      type: object
+      required: [key, value]
+      properties:
+        key:
+          type: string
+        value:
+          type: string
+    UploadResponse:
+      type: object
+      properties:
+        url:
+          type: string
+        thumbUrl:
+          type: string
+          nullable: true
+    LogItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        action:
+          type: string
+        detail:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        user_id:
+          type: integer
+          nullable: true
+        user_avatar:
+          type: string
+          nullable: true
+    LogListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogItem'
+    LogStatsItem:
+      type: object
+      properties:
+        username:
+          type: string
+        count:
+          type: integer
+        user_id:
+          type: integer
+          nullable: true
+        user_avatar:
+          type: string
+          nullable: true
+    LogStatsResponse:
+      type: object
+      properties:
+        stats:
+          type: array
+          items:
+            $ref: '#/components/schemas/LogStatsItem'
+    BotActivityNotify:
+      type: object
+      required: [id, title, tag, date]
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        tag:
+          type: string
+        date:
+          type: string
+        description:
+          type: string
+          nullable: true
+        cover_image:
+          type: string
+          nullable: true
+    BotHistoryNotify:
+      type: object
+      required: [id, date, title]
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
+          nullable: true
+        image:
+          type: string
+          nullable: true
+        sort_order:
+          type: integer
+          nullable: true
+        action:
+          type: string
+          enum: [create, update, delete]
+    BotMemberNotify:
+      type: object
+      required: [id, name, role]
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        role:
+          type: string
+        school:
+          type: string
+          nullable: true
+        avatar:
+          type: string
+          nullable: true
+    AdminUser:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        role:
+          type: string
+        avatar:
+          type: string
+          nullable: true
+        twofa_enabled:
+          type: integer
+    AdminDeleteUserResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        target:
+          type: string
+    AdminResetPasswordRequest:
+      type: object
+      required: [password]
+      properties:
+        password:
+          type: string
+    TokenVersionRefreshResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        version:
+          type: integer
+    AdminLogListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        logs:
+          type: array
+          items:
+            $ref: '#/components/schemas/AdminLogItem'
+    AdminLogItem:
+      type: object
+      properties:
+        id:
+          type: integer
+        username:
+          type: string
+        action:
+          type: string
+        detail:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+    RecycleBinPurgeResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        result:
+          type: object
+          properties:
+            activities:
+              type: integer
+            members:
+              type: integer
+            history:
+              type: integer
+    BanItem:
+      type: object
+      properties:
+        ip:
+          type: string
+        reason:
+          type: string
+          nullable: true
+        created_by:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        expires_at:
+          type: string
+          nullable: true
+    BanListResponse:
+      type: object
+      properties:
+        bans:
+          type: array
+          items:
+            $ref: '#/components/schemas/BanItem'
+    BanCreateRequest:
+      type: object
+      required: [ip]
+      properties:
+        ip:
+          type: string
+        reason:
+          type: string
+          nullable: true
+        minutes:
+          type: integer
+          nullable: true
+    BanCreateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        ip:
+          type: string
+    BanDeleteResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        ip:
+          type: string

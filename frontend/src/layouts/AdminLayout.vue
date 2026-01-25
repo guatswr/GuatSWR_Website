@@ -18,7 +18,8 @@ const menus = [
   { path: '/admin/home-links', label: '🔗 首页外链' },
   { path: '/admin/config', label: '⚙️ 全局设置' },
   { path: '/admin/profile', label: '👤 个人设置' },
-  { path: '/admin/users', label: '🔑 账号权限', super: true }
+  { path: '/admin/users', label: '🔑 账号权限', super: true },
+  { path: '/api/docs', label: '📚 API 文档', external: true }
 ]
 
 const handleLogout = async () => {
@@ -57,16 +58,27 @@ const handleLogout = async () => {
 
     <main class="max-w-7xl mx-auto px-4 py-8">
       <div class="flex flex-wrap gap-2 mb-8 border-b border-gray-200 bg-white p-2 rounded-lg shadow-sm">
-        <router-link
-          v-for="item in menus"
-          :key="item.path"
-          v-show="!item.super || isSuperAdmin"
-          :to="item.path"
-          class="px-4 py-2 rounded-md font-medium transition capitalize"
-          :class="route.path === item.path ? 'bg-gray-800 text-white shadow' : 'text-gray-600 hover:bg-gray-100'"
-        >
-          {{ item.label }}
-        </router-link>
+        <template v-for="item in menus" :key="item.path">
+          <router-link
+            v-if="!item.external"
+            v-show="!item.super || isSuperAdmin"
+            :to="item.path"
+            class="px-4 py-2 rounded-md font-medium transition capitalize"
+            :class="route.path === item.path ? 'bg-gray-800 text-white shadow' : 'text-gray-600 hover:bg-gray-100'"
+          >
+            {{ item.label }}
+          </router-link>
+          <a
+            v-else
+            v-show="!item.super || isSuperAdmin"
+            :href="item.path"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="px-4 py-2 rounded-md font-medium transition capitalize text-gray-600 hover:bg-gray-100"
+          >
+            {{ item.label }}
+          </a>
+        </template>
       </div>
 
       <router-view />

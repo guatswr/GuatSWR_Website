@@ -38,6 +38,28 @@ cp ../.env.example ./.env
 docker compose up -d --build
 ```
 
+### APT 国内镜像配置（Docker 构建）
+后端镜像构建默认使用国内 APT 镜像（阿里云，HTTP 以避免证书缺失导致的 TLS 报错）。如需切换，可通过构建参数覆盖：
+
+```
+cd backend
+docker build --build-arg APT_MIRROR=http://mirrors.tuna.tsinghua.edu.cn/debian \
+  --build-arg APT_SECURITY_MIRROR=http://mirrors.tuna.tsinghua.edu.cn/debian-security \
+  -t guatswr_web_backend .
+```
+
+也可在 docker-compose.yml 的 build 中添加：
+
+```
+services:
+  guiair-backend:
+    build:
+      context: .
+      args:
+        APT_MIRROR: http://mirrors.tuna.tsinghua.edu.cn/debian
+        APT_SECURITY_MIRROR: http://mirrors.tuna.tsinghua.edu.cn/debian-security
+```
+
 端口映射：宿主机 8080 → 容器 3000（见 backend/docker-compose.yml）。
 
 ## 反向代理（Nginx 示例）
@@ -81,3 +103,4 @@ server {
 
 ## 健康检查
 - 后端健康检查：/api/version
+

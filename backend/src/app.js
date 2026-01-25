@@ -3,6 +3,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const path = require('path');
+const fs = require('fs');
+const yaml = require('js-yaml');
+const swaggerUi = require('swagger-ui-express');
 
 const { initDb, PUBLIC_DIR, db } = require('./models/db');
 const { cleanupStaging } = require('./utils/storage');
@@ -39,7 +42,6 @@ if (!process.env.JWT_SECRET) {
   process.exit(1);
 }
 
-app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 app.use(banGuard);
 app.use(globalLimiter);
 app.use(cors({
@@ -54,6 +56,18 @@ app.use(cors({
 app.use(express.json({ limit: MAX_BODY_SIZE }));
 app.use(express.urlencoded({ extended: true, limit: MAX_BODY_SIZE }));
 app.use('/uploads', express.static(PUBLIC_DIR));
+
+const openapiPath = path.join(__dirname, '..', 'docs', 'openapi.yaml');
+if (fs.existsSync(openapiPath)) {
+  const openapiDoc = yaml.load(fs.readFileSync(openapiPath, 'utf8'));
+  app.get('/api/docs/openapi.yaml', (req, res) => {
+    res.setHeader('Content-Type', 'text/yaml; charset=utf-8');
+    res.send(fs.readFileSync(openapiPath, 'utf8'));
+  });
+  app.use('/api/docs', swaggerUi.serve, swaggerUi.setup(openapiDoc, { explorer: true }));
+}
+
+app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 initDb();
 

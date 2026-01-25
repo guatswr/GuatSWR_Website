@@ -1,13 +1,13 @@
 const express = require('express');
 const { db, addLog } = require('../models/db');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
 const { validate } = require('../utils');
 const { configSchema } = require('../controllers/schemas');
 const { moveStagedFile, getConfigDir, isStagingUrl } = require('../utils/storage');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get('/', authenticateToken, requireSuperAdmin, (req, res) => {
   db.all("SELECT * FROM site_config", [], (err, rows) => {
     const config = {};
     if (rows) rows.forEach(r => config[r.key] = r.value);
@@ -15,7 +15,7 @@ router.get('/', (req, res) => {
   });
 });
 
-router.post('/', authenticateToken, (req, res) => {
+router.post('/', authenticateToken, requireSuperAdmin, (req, res) => {
   const validated = validate(configSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
   const { key, value } = validated.data;
