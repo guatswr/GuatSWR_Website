@@ -1,11 +1,13 @@
 const express = require('express');
 const path = require('path');
+const net = require('net');
 const bcrypt = require('bcryptjs');
 const { db, logDb, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
 const { validate, normalizeImages } = require('../utils');
 const { deleteByUrl, deletePathSafe } = require('../utils/storage');
 const { resetPasswordSchema } = require('../controllers/schemas');
+const { banIp, unbanIp, cleanupExpired } = require('../middlewares/ban');
 
 const router = express.Router();
 
@@ -147,6 +149,36 @@ router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, (req, re
     addLog(req.user.username, 'PURGE_RECYCLE_BIN', `清空回收站并清理图片: activities=${result.activities}, members=${result.members}, history=${result.history}`);
     res.json({ message: '已清空回收站', result });
   })().catch((err) => res.status(500).json({ error: err.message }));
+});
+
+router.get('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
+  cleanupExpired(() => {
+    db.all('SELECT * FROM banned_ips ORDER BY created_at DESC', [], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({ bans: rows || [] });
+    });
+  });
+});
+
+router.post('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
+  const ip = String(req.body?.ip || '').trim();
+  const reason = String(req.body?.reason || '').trim();
+  const minutes = Number(req.body?.minutes || 0);
+  if (!net.isIP(ip)) return res.status(400).json({ message: 'IP 格式不正确' });
+  const expiresAt = minutes > 0 ? Date.now() + minutes * 60 * 1000 : null;
+  banIp(ip, reason, req.user.username, expiresAt, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: '已封禁', ip });
+  });
+});
+
+router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, (req, res) => {
+  const ip = String(req.params.ip || '').trim();
+  if (!net.isIP(ip)) return res.status(400).json({ message: 'IP 格式不正确' });
+  unbanIp(ip, req.user.username, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ message: '已解封', ip });
+  });
 });
 
 module.exports = router;

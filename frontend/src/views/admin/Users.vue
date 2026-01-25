@@ -5,6 +5,8 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 
 const users = ref([])
 const adminForm = ref({ username: '', password: '' })
+const bans = ref([])
+const banForm = ref({ ip: '', reason: '', minutes: 60 })
 
 const fetchUsers = async () => {
   try {
@@ -15,7 +17,19 @@ const fetchUsers = async () => {
   }
 }
 
-onMounted(() => fetchUsers())
+const fetchBans = async () => {
+  try {
+    const res = await axios.get('/api/admin/bans')
+    bans.value = res.data?.bans || []
+  } catch (e) {
+    ElMessage.error('加载封禁列表失败')
+  }
+}
+
+onMounted(() => {
+  fetchUsers()
+  fetchBans()
+})
 
 const addAdmin = async () => {
   if (!adminForm.value.username) return ElMessage.warning('请输入账号')
@@ -71,6 +85,30 @@ const forceRefreshSessions = async () => {
     if (e !== 'cancel') ElMessage.error('操作失败')
   }
 }
+
+const addBan = async () => {
+  if (!banForm.value.ip) return ElMessage.warning('请输入 IP')
+  try {
+    await ElMessageBox.confirm('确认封禁该 IP？', '封禁确认', { type: 'warning' })
+    await axios.post('/api/admin/bans', banForm.value)
+    ElMessage.success('已封禁')
+    banForm.value = { ip: '', reason: '', minutes: 60 }
+    fetchBans()
+  } catch (e) {
+    if (e !== 'cancel') ElMessage.error(e.response?.data?.message || '封禁失败')
+  }
+}
+
+const removeBan = async (ip) => {
+  try {
+    await ElMessageBox.confirm('确认解封该 IP？', '解封确认', { type: 'warning' })
+    await axios.delete(`/api/admin/bans/${encodeURIComponent(ip)}`)
+    ElMessage.success('已解封')
+    fetchBans()
+  } catch (e) {
+    if (e !== 'cancel') ElMessage.error('解封失败')
+  }
+}
 </script>
 
 <template>
@@ -107,6 +145,28 @@ const forceRefreshSessions = async () => {
             <button @click="deleteUser(user.id)" class="text-xs text-red-600">删除</button>
           </div>
         </div>
+      </div>
+    </div>
+    <div class="bg-white p-6 rounded-xl shadow-sm lg:col-span-2">
+      <h2 class="text-lg font-bold mb-4">🚫 IP 封禁管理</h2>
+      <div class="grid md:grid-cols-4 gap-3 mb-4">
+        <input v-model="banForm.ip" class="border p-2 rounded" placeholder="IP 地址">
+        <input v-model="banForm.reason" class="border p-2 rounded" placeholder="封禁原因 (可选)">
+        <input v-model.number="banForm.minutes" type="number" min="0" class="border p-2 rounded" placeholder="封禁分钟 (0=永久)">
+        <button @click="addBan" class="bg-red-600 text-white py-2 rounded">封禁</button>
+      </div>
+      <div class="space-y-2">
+        <div v-for="ban in bans" :key="ban.ip" class="flex flex-wrap items-center justify-between gap-2 p-3 border rounded bg-gray-50">
+          <div class="flex flex-wrap items-center gap-3 text-sm">
+            <span class="font-bold">{{ ban.ip }}</span>
+            <span v-if="ban.reason" class="text-gray-600">{{ ban.reason }}</span>
+            <span class="text-xs text-gray-500">操作人：{{ ban.created_by || 'ATRI' }}</span>
+            <span class="text-xs text-gray-500" v-if="ban.expires_at">到期：{{ new Date(ban.expires_at).toLocaleString() }}</span>
+            <span class="text-xs text-gray-500" v-else>永久</span>
+          </div>
+          <button @click="removeBan(ban.ip)" class="text-xs text-green-600">解封</button>
+        </div>
+        <div v-if="bans.length === 0" class="text-sm text-gray-500">暂无封禁记录</div>
       </div>
     </div>
   </div>

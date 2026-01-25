@@ -6,7 +6,8 @@ const path = require('path');
 
 const { initDb, PUBLIC_DIR } = require('./models/db');
 const { cleanupStaging } = require('./utils/storage');
-const { authLimiter } = require('./middlewares/limiter');
+const { authLimiter, globalLimiter } = require('./middlewares/limiter');
+const { banGuard } = require('./middlewares/ban');
 
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
@@ -38,6 +39,8 @@ if (!process.env.JWT_SECRET) {
 }
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
+app.use(banGuard);
+app.use(globalLimiter);
 app.use(cors({
   origin: (origin, callback) => {
     if (!origin) return callback(null, true);

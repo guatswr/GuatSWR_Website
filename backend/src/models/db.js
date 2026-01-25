@@ -148,6 +148,15 @@ const initDb = () => {
       updated_at INTEGER NOT NULL DEFAULT 0
     )`);
 
+    db.run(`CREATE TABLE IF NOT EXISTS banned_ips (
+      ip TEXT PRIMARY KEY,
+      reason TEXT,
+      created_at INTEGER,
+      expires_at INTEGER,
+      created_by TEXT
+    )`);
+    db.run('CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)');
+
     // 索引优化
     db.run('CREATE INDEX IF NOT EXISTS idx_activities_date ON activities(date)');
     db.run('CREATE INDEX IF NOT EXISTS idx_activities_created_at ON activities(created_at)');
