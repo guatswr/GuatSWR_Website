@@ -30,12 +30,17 @@ axios.interceptors.request.use((config) => {
 			config.headers.Authorization = `Bearer ${token}`
 		}
 	}
+	window.dispatchEvent(new CustomEvent('route-progress:request-start'))
 	return config
 })
 
 axios.interceptors.response.use(
-	(response) => response,
+	(response) => {
+		window.dispatchEvent(new CustomEvent('route-progress:request-end'))
+		return response
+	},
 	(error) => {
+		window.dispatchEvent(new CustomEvent('route-progress:request-end'))
 		if (error?.response?.status === 401) {
 			userStore.clearAuth()
 			if (router.currentRoute.value.path !== '/login') {

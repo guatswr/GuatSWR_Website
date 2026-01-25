@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
+import { ref, onMounted, onUnmounted, computed, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
 import { getThemeMode, getResolvedTheme, setThemeMode } from './utils/theme'
 
@@ -10,6 +10,12 @@ const router = useRouter()
 const themeMode = ref(getThemeMode())
 const resolvedTheme = ref(getResolvedTheme())
 const isDark = computed(() => resolvedTheme.value === 'dark')
+const isRouteLoading = ref(false)
+const routeProgress = ref(0)
+const progressTotal = ref(0)
+const progressDone = ref(0)
+const hasRealProgress = ref(false)
+const isProgressDebug = ref(false)
 
 const navLinks = [
   { name: '首页', path: '/' },
@@ -35,6 +41,190 @@ const setFooterHeightVar = () => {
 
 let footerObserver = null
 let themeSyncTimer = null
+let progressTimer = null
+let finishTimer = null
+let idleFinishTimer = null
+let hardFinishTimer = null
+let imageObserver = null
+let imageObserverStopTimer = null
+let pendingResources = 0
+let removeBeforeHook = null
+let removeAfterHook = null
+let removeErrorHook = null
+
+const easeOutFast = (t) => 1 - Math.pow(1 - t, 3)
+
+const debugLog = (...args) => {
+  if (!isProgressDebug.value) return
+  console.debug('[route-progress]', ...args)
+}
+
+const updateProgressFromReal = () => {
+  if (!hasRealProgress.value || progressTotal.value === 0) return
+  const ratio = Math.min(1, progressDone.value / progressTotal.value)
+  const eased = easeOutFast(ratio)
+  const target = Math.round(12 + eased * 82)
+  if (target > routeProgress.value) {
+    routeProgress.value = target
+  }
+  if (ratio >= 1) {
+    finishRouteProgress()
+  }
+}
+
+const handleResourceStart = () => {
+  if (!isRouteLoading.value) return
+  pendingResources += 1
+  progressTotal.value += 1
+  hasRealProgress.value = true
+  debugLog('resource start', { pending: pendingResources, total: progressTotal.value, done: progressDone.value })
+  updateProgressFromReal()
+}
+
+const handleResourceDone = () => {
+  if (!isRouteLoading.value) return
+  if (pendingResources > 0) pendingResources -= 1
+  progressDone.value += 1
+  debugLog('resource done', { pending: pendingResources, total: progressTotal.value, done: progressDone.value })
+  updateProgressFromReal()
+  if (pendingResources === 0) {
+    if (idleFinishTimer) clearTimeout(idleFinishTimer)
+    idleFinishTimer = setTimeout(() => {
+      finishRouteProgress()
+    }, 200)
+  }
+}
+
+const trackImagesInView = () => {
+  const main = document.querySelector('main')
+  if (!main) return
+  const imgs = Array.from(main.querySelectorAll('img'))
+  if (imgs.length) debugLog('scan images', { count: imgs.length })
+  imgs.forEach((img) => {
+    if (img.dataset.progressTracked === '1') return
+    img.dataset.progressTracked = '1'
+    if (img.complete) {
+      if (img.naturalWidth > 0) return
+      return
+    }
+    handleResourceStart()
+    let finished = false
+    let timeoutId = null
+    const done = () => {
+      if (finished) return
+      finished = true
+      if (timeoutId) {
+        clearTimeout(timeoutId)
+        timeoutId = null
+      }
+      img.removeEventListener('load', done)
+      img.removeEventListener('error', done)
+      handleResourceDone()
+    }
+    img.addEventListener('load', done, { once: true })
+    img.addEventListener('error', done, { once: true })
+    timeoutId = setTimeout(done, 6000)
+  })
+}
+
+const startRouteProgress = () => {
+  if (finishTimer) {
+    clearTimeout(finishTimer)
+    finishTimer = null
+  }
+  if (idleFinishTimer) {
+    clearTimeout(idleFinishTimer)
+    idleFinishTimer = null
+  }
+  if (hardFinishTimer) {
+    clearTimeout(hardFinishTimer)
+    hardFinishTimer = null
+  }
+  if (progressTimer) {
+    clearInterval(progressTimer)
+  }
+  isRouteLoading.value = true
+  routeProgress.value = 8
+  progressTotal.value = 0
+  progressDone.value = 0
+  hasRealProgress.value = false
+  pendingResources = 0
+  debugLog('start route progress')
+  hardFinishTimer = setTimeout(() => {
+    finishRouteProgress()
+  }, 8000)
+  progressTimer = setInterval(() => {
+    if (hasRealProgress.value) return
+    if (routeProgress.value < 60) {
+      const next = routeProgress.value + Math.max(1, (60 - routeProgress.value) / 8)
+      routeProgress.value = Math.min(60, Math.round(next))
+    }
+  }, 180)
+}
+
+const finishRouteProgress = () => {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+  if (idleFinishTimer) {
+    clearTimeout(idleFinishTimer)
+    idleFinishTimer = null
+  }
+  if (hardFinishTimer) {
+    clearTimeout(hardFinishTimer)
+    hardFinishTimer = null
+  }
+  if (imageObserver) {
+    imageObserver.disconnect()
+    imageObserver = null
+  }
+  if (imageObserverStopTimer) {
+    clearTimeout(imageObserverStopTimer)
+    imageObserverStopTimer = null
+  }
+  debugLog('finish route progress', { total: progressTotal.value, done: progressDone.value })
+  routeProgress.value = 100
+  if (finishTimer) {
+    clearTimeout(finishTimer)
+  }
+  finishTimer = setTimeout(() => {
+    isRouteLoading.value = false
+    routeProgress.value = 0
+  }, 280)
+}
+
+removeBeforeHook = router.beforeEach(() => {
+  startRouteProgress()
+  return true
+})
+
+removeAfterHook = router.afterEach(async () => {
+  await nextTick()
+  trackImagesInView()
+  const main = document.querySelector('main')
+  if (main) {
+    if (imageObserver) imageObserver.disconnect()
+    imageObserver = new MutationObserver(() => trackImagesInView())
+    imageObserver.observe(main, { childList: true, subtree: true })
+    if (imageObserverStopTimer) clearTimeout(imageObserverStopTimer)
+    imageObserverStopTimer = setTimeout(() => {
+      if (imageObserver) {
+        imageObserver.disconnect()
+        imageObserver = null
+      }
+    }, 1500)
+  }
+  idleFinishTimer = setTimeout(() => {
+    if (!hasRealProgress.value || progressTotal.value === 0) {
+      finishRouteProgress()
+    }
+  }, 300)
+})
+
+removeErrorHook = router.onError(() => {
+  finishRouteProgress()
+})
 
 /**
  * 移除 index.html 中的原生预加载层 (仅在首次进入网站时触发)
@@ -68,7 +258,17 @@ const handleStorage = (event) => {
   }
 }
 
+const handleRequestStart = () => handleResourceStart()
+const handleRequestEnd = () => handleResourceDone()
+
 onMounted(() => {
+  isProgressDebug.value = localStorage.getItem('route-progress-debug') === '1'
+  window.__setRouteProgressDebug = (value) => {
+    const next = value === undefined ? !isProgressDebug.value : Boolean(value)
+    isProgressDebug.value = next
+    localStorage.setItem('route-progress-debug', next ? '1' : '0')
+    console.debug('[route-progress] debug', next ? 'enabled' : 'disabled')
+  }
   window.addEventListener('scroll', handleScroll)
   setFooterHeightVar()
   if (window.ResizeObserver && footerRef.value) {
@@ -82,6 +282,8 @@ onMounted(() => {
 
   refreshThemeState()
   window.addEventListener('storage', handleStorage)
+  window.addEventListener('route-progress:request-start', handleRequestStart)
+  window.addEventListener('route-progress:request-end', handleRequestEnd)
   themeSyncTimer = setInterval(() => {
     if (themeMode.value === 'auto') {
       refreshThemeState()
@@ -97,15 +299,61 @@ onUnmounted(() => {
     footerObserver = null
   }
   window.removeEventListener('storage', handleStorage)
+  window.removeEventListener('route-progress:request-start', handleRequestStart)
+  window.removeEventListener('route-progress:request-end', handleRequestEnd)
   if (themeSyncTimer) {
     clearInterval(themeSyncTimer)
     themeSyncTimer = null
+  }
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+  if (idleFinishTimer) {
+    clearTimeout(idleFinishTimer)
+    idleFinishTimer = null
+  }
+  if (hardFinishTimer) {
+    clearTimeout(hardFinishTimer)
+    hardFinishTimer = null
+  }
+  if (imageObserver) {
+    imageObserver.disconnect()
+    imageObserver = null
+  }
+  if (imageObserverStopTimer) {
+    clearTimeout(imageObserverStopTimer)
+    imageObserverStopTimer = null
+  }
+  if (finishTimer) {
+    clearTimeout(finishTimer)
+    finishTimer = null
+  }
+  if (removeBeforeHook) {
+    removeBeforeHook()
+    removeBeforeHook = null
+  }
+  if (removeAfterHook) {
+    removeAfterHook()
+    removeAfterHook = null
+  }
+  if (removeErrorHook) {
+    removeErrorHook()
+    removeErrorHook = null
   }
 })
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col font-sans bg-white text-gray-900 dark:bg-slate-950 dark:text-gray-100 transition-colors">
+
+    <!-- 页面切换进度条（类似 GitHub） -->
+    <div class="route-progress" aria-hidden="true">
+      <div
+        class="route-progress__bar"
+        :style="{ width: `${routeProgress}%`, opacity: isRouteLoading ? 1 : 0 }"
+      ></div>
+    </div>
     
     <!-- 全局加载层已移除，改为由各页面组件自行控制局部加载状态 -->
 
@@ -243,5 +491,28 @@ onUnmounted(() => {
 }
 .fade-enter-from, .fade-leave-to {
   opacity: 0;
+}
+
+.route-progress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  z-index: 70;
+  pointer-events: none;
+}
+
+.route-progress__bar {
+  height: 100%;
+  width: 0;
+  background: linear-gradient(90deg, #e0f2fe 0%, #7dd3fc 55%, #38bdf8 100%);
+  box-shadow: 0 0 6px rgba(56, 189, 248, 0.35);
+  transition: width 0.2s ease, opacity 0.25s ease;
+}
+
+:global(.dark) :deep(.route-progress__bar) {
+  background: linear-gradient(90deg, #0b2a3c 0%, #1e3a8a 45%, #38bdf8 100%);
+  box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
 }
 </style>
