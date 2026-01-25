@@ -73,8 +73,8 @@ const fetchConfig = async () => {
 // 获取活动
 const fetchActivities = async () => {
   try {
-    const res = await axios.get('/api/activities')
-    activities.value = res.data.slice(0, 3)
+    const res = await axios.get('/api/activities', { params: { page: 1, limit: 3 } })
+    activities.value = res.data?.items || []
   } catch (error) {
     console.error("加载活动失败", error)
     activities.value = [] 

@@ -14,19 +14,35 @@ router.get('/', optionalAuth, (req, res) => {
   const includeDeleted = req.query.includeDeleted === '1';
   if (includeAll && !req.user) return res.status(401).json({ message: '未登录' });
 
-  let sql = '';
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limitRaw = parseInt(req.query.limit, 10) || 20;
+  const limit = Math.min(100, Math.max(1, limitRaw));
+  const offset = (page - 1) * limit;
+
+  let where = '';
   if (includeAll) {
     if (includeDeleted && req.user?.role === 'super_admin') {
-      sql = "SELECT * FROM activities ORDER BY date DESC";
+      where = '1=1';
     } else {
-      sql = "SELECT * FROM activities WHERE deleted_at IS NULL ORDER BY date DESC";
+      where = 'deleted_at IS NULL';
     }
   } else {
-    sql = "SELECT * FROM activities WHERE (status = 'published' OR status IS NULL) AND deleted_at IS NULL ORDER BY date DESC";
+    where = "(status = 'published' OR status IS NULL) AND deleted_at IS NULL";
   }
-  db.all(sql, [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows.map(r => ({ ...r, images: normalizeImages(r.images) })));
+
+  const sqlBase = `FROM activities WHERE ${where}`;
+  db.get(`SELECT COUNT(*) as count ${sqlBase}`, [], (countErr, countRow) => {
+    if (countErr) return res.status(500).json({ error: countErr.message });
+    const total = countRow?.count || 0;
+    db.all(`SELECT * ${sqlBase} ORDER BY date DESC LIMIT ? OFFSET ?`, [limit, offset], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      res.json({
+        total,
+        page,
+        limit,
+        items: rows.map(r => ({ ...r, images: normalizeImages(r.images) }))
+      });
+    });
   });
 });
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router' // 引入 router
 import { getThumbUrl } from '../../utils/image'
@@ -7,11 +7,17 @@ import { getThumbUrl } from '../../utils/image'
 const router = useRouter()
 const activities = ref([])
 const loading = ref(true)
+const page = ref(1)
+const limit = ref(12)
+const total = ref(0)
 
 const fetchActivities = async () => {
   try {
-    const res = await axios.get('/api/activities')
-    activities.value = res.data
+    const res = await axios.get('/api/activities', {
+      params: { page: page.value, limit: limit.value }
+    })
+    activities.value = res.data?.items || []
+    total.value = res.data?.total || 0
   } catch (error) {
     console.error("加载失败", error)
   } finally {
@@ -25,6 +31,44 @@ onMounted(() => {
 
 const goDetail = (id) => {
   router.push(`/activity/${id}`)
+}
+
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
+const canPrev = computed(() => page.value > 1)
+const canNext = computed(() => page.value < totalPages.value)
+
+const pageItems = computed(() => {
+  const totalP = totalPages.value
+  if (totalP <= 1) return [1]
+
+  const current = page.value
+  const items = [1]
+
+  let start = Math.max(2, current - 1)
+  let end = Math.min(totalP - 1, current + 1)
+
+  if (current <= 3) {
+    start = 2
+    end = Math.min(totalP - 1, 4)
+  } else if (current >= totalP - 2) {
+    start = Math.max(2, totalP - 3)
+    end = totalP - 1
+  }
+
+  if (start > 2) items.push('...')
+  for (let i = start; i <= end; i += 1) items.push(i)
+  if (end < totalP - 1) items.push('...')
+
+  items.push(totalP)
+  return items
+})
+
+const changePage = async (nextPage) => {
+  if (nextPage < 1 || nextPage > totalPages.value) return
+  page.value = nextPage
+  loading.value = true
+  await fetchActivities()
+  window.scrollTo({ top: 0, behavior: 'smooth' })
 }
 </script>
 
@@ -95,6 +139,35 @@ const goDetail = (id) => {
               <span class="transform group-hover/btn:translate-x-1 transition">→</span>
             </button>
           </div>
+        </div>
+      </div>
+
+      <div v-if="total > 0" class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4 border-t border-gray-100 dark:border-slate-800">
+        <div class="text-xs text-gray-500 dark:text-gray-400">
+          共 {{ total }} 条 · 第 {{ page }}/{{ totalPages }} 页
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <button
+            class="px-3 py-1 text-sm rounded border text-gray-600 dark:text-gray-200 border-gray-200 dark:border-slate-700 disabled:opacity-50"
+            :disabled="!canPrev"
+            @click="changePage(page - 1)"
+          >上一页</button>
+
+          <template v-for="(item, idx) in pageItems" :key="`${item}-${idx}`">
+            <span v-if="item === '...'" class="px-2 text-gray-400">···</span>
+            <button
+              v-else
+              class="px-3 py-1 text-sm rounded border border-gray-200 dark:border-slate-700"
+              :class="item === page ? 'bg-red-600 text-white border-red-600' : 'text-gray-600 dark:text-gray-200'"
+              @click="changePage(item)"
+            >{{ item }}</button>
+          </template>
+
+          <button
+            class="px-3 py-1 text-sm rounded border text-gray-600 dark:text-gray-200 border-gray-200 dark:border-slate-700 disabled:opacity-50"
+            :disabled="!canNext"
+            @click="changePage(page + 1)"
+          >下一页</button>
         </div>
       </div>
     </div>

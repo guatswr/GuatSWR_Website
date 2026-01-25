@@ -11,15 +11,20 @@ const activities = ref([])
 const isEditing = ref(false)
 const actForm = reactive({ id: null, title: '', tag: '', date: '', description: '', content: '', cover_image: '', images: [] })
 const showDeleted = ref(false)
+const page = ref(1)
+const limit = ref(50)
+const total = ref(0)
 const userStore = useUserStore()
 const isSuperAdmin = computed(() => userStore.isSuperAdmin)
+const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
 
 const fetchActivities = async () => {
   try {
-    let url = '/api/activities?all=1'
+    let url = `/api/activities?all=1&page=${page.value}&limit=${limit.value}`
     if (showDeleted.value && isSuperAdmin.value) url += '&includeDeleted=1'
     const res = await axios.get(url)
-    activities.value = res.data
+    activities.value = res.data?.items || []
+    total.value = res.data?.total || 0
   } catch (e) {
     ElMessage.error('加载活动失败')
   }
@@ -30,6 +35,7 @@ onMounted(() => {
 })
 
 watch(showDeleted, () => {
+  page.value = 1
   fetchActivities()
 })
 
@@ -115,6 +121,12 @@ const restoreActivity = async (id) => {
     if (e !== 'cancel') ElMessage.error('恢复失败')
   }
 }
+
+const changePage = async (nextPage) => {
+  if (nextPage < 1 || nextPage > totalPages.value) return
+  page.value = nextPage
+  await fetchActivities()
+}
 </script>
 
 <template>
@@ -191,6 +203,13 @@ const restoreActivity = async (id) => {
               <button v-if="act.deleted_at && isSuperAdmin" @click="restoreActivity(act.id)" class="text-xs px-2 py-1 bg-green-100 text-green-600 rounded">恢复</button>
             </div>
           </div>
+        </div>
+      </div>
+      <div v-if="total > 0" class="mt-4 pt-3 border-t border-gray-100 flex items-center justify-between text-xs text-gray-500">
+        <span>共 {{ total }} 条 · 第 {{ page }}/{{ totalPages }} 页</span>
+        <div class="flex gap-2">
+          <button class="px-2 py-1 rounded border" :disabled="page <= 1" @click="changePage(page - 1)">上一页</button>
+          <button class="px-2 py-1 rounded border" :disabled="page >= totalPages" @click="changePage(page + 1)">下一页</button>
         </div>
       </div>
     </div>
