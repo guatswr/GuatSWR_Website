@@ -53,4 +53,12 @@ const requireSuperAdmin = (req, res, next) => {
   }
 };
 
-module.exports = { authenticateToken, requireSuperAdmin, optionalAuth };
+const requireAdmin = (req, res, next) => {
+  if (req.user && (req.user.role === 'super_admin' || req.user.role === 'admin')) {
+    next();
+  } else {
+    res.status(403).json({ message: '权限不足' });
+  }
+};
+
+module.exports = { authenticateToken, requireSuperAdmin, requireAdmin, optionalAuth };

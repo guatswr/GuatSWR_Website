@@ -1,21 +1,41 @@
 const express = require('express');
 const { db, addLog } = require('../models/db');
-const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
+const { authenticateToken, requireAdmin, optionalAuth } = require('../middlewares/auth');
 const { validate } = require('../utils');
 const { configSchema } = require('../controllers/schemas');
 const { moveStagedFile, getConfigDir, isStagingUrl } = require('../utils/storage');
 
 const router = express.Router();
 
-router.get('/', authenticateToken, requireSuperAdmin, (req, res) => {
+router.get('/', optionalAuth, (req, res) => {
   db.all("SELECT * FROM site_config", [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
     const config = {};
     if (rows) rows.forEach(r => config[r.key] = r.value);
-    res.json(config);
+
+    if (req.user && (req.user.role === 'super_admin' || req.user.role === 'admin')) {
+      return res.json(config);
+    }
+
+    const publicKeys = [
+      'home_bg',
+      'join_bg',
+      'banner_text',
+      'badge_image',
+      'mascot_image',
+      'qq_qr_image',
+      'home_links'
+    ];
+
+    const publicConfig = {};
+    publicKeys.forEach((key) => {
+      if (key in config) publicConfig[key] = config[key];
+    });
+    res.json(publicConfig);
   });
 });
 
-router.post('/', authenticateToken, requireSuperAdmin, (req, res) => {
+router.post('/', authenticateToken, requireAdmin, (req, res) => {
   const validated = validate(configSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
   const { key, value } = validated.data;
