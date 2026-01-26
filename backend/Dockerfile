@@ -13,7 +13,7 @@ COPY package*.json ./
 RUN sed -i "s|http://deb.debian.org/debian|${APT_MIRROR}|g" /etc/apt/sources.list \
 	&& sed -i "s|http://security.debian.org/debian-security|${APT_SECURITY_MIRROR}|g" /etc/apt/sources.list \
 	&& apt-get update -o Acquire::Retries=3 -o Acquire::http::Timeout=30 -o Acquire::https::Timeout=30 \
-	&& apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+	&& apt-get install -y --no-install-recommends python3 make g++ ca-certificates sqlite3 \
 	&& rm -rf /var/lib/apt/lists/*
 RUN npm config set registry https://registry.npmmirror.com \
 	&& npm config set fetch-retries 5 \

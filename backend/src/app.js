@@ -9,6 +9,7 @@ const swaggerUi = require('swagger-ui-express');
 
 const { initDb, PUBLIC_DIR, db } = require('./models/db');
 const { cleanupStaging } = require('./utils/storage');
+const { startBackupScheduler } = require('./utils/backupScheduler');
 const { authLimiter, globalLimiter } = require('./middlewares/limiter');
 const { banGuard } = require('./middlewares/ban');
 
@@ -70,6 +71,7 @@ if (fs.existsSync(openapiPath)) {
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
 initDb();
+startBackupScheduler();
 
 // 定期清理暂存区 (默认保留 48 小时)
 const STAGING_TTL_MS = Number(process.env.STAGING_TTL_MS || 48 * 60 * 60 * 1000);

@@ -1,11 +1,14 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const net = require('net');
 const bcrypt = require('bcryptjs');
 const { db, logDb, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
 const { validate, normalizeImages } = require('../utils');
 const { deleteByUrl, deletePathSafe } = require('../utils/storage');
+const { listBackups, resolveBackupPath, ensureBackupDirs } = require('../utils/backup');
+const { runAutoBackup } = require('../utils/backupScheduler');
 const { resetPasswordSchema } = require('../controllers/schemas');
 const { banIp, unbanIp, cleanupExpired } = require('../middlewares/ban');
 
@@ -179,6 +182,73 @@ router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, (req, res) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: '已解封', ip });
   });
+});
+
+router.get('/backups/settings', authenticateToken, requireSuperAdmin, (req, res) => {
+  db.all("SELECT key, value FROM site_config WHERE key IN ('backup_enabled','backup_time','backup_last_run','backup_last_error')", [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    const map = {};
+    (rows || []).forEach((r) => { map[r.key] = r.value; });
+    res.json({
+      enabled: String(map.backup_enabled || '0') === '1',
+      time: map.backup_time || '02:30',
+      lastRun: map.backup_last_run || '',
+      lastError: map.backup_last_error || ''
+    });
+  });
+});
+
+router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res) => {
+  const enabled = !!req.body?.enabled;
+  const time = String(req.body?.time || '').trim();
+  if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
+    return res.status(400).json({ message: '时间格式需为 HH:mm' });
+  }
+  const finalTime = time || '02:30';
+  db.serialize(() => {
+    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES ('backup_enabled', ?)", [enabled ? '1' : '0']);
+    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES ('backup_time', ?)", [finalTime], (err) => {
+      if (err) return res.status(500).json({ error: err.message });
+      addLog(req.user.username, 'UPDATE_BACKUP_SETTINGS', `自动备份: ${enabled ? '开启' : '关闭'} ${finalTime}`);
+      res.json({ message: '已保存', enabled, time: finalTime });
+    });
+  });
+});
+
+router.get('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
+  try {
+    ensureBackupDirs();
+    const dbList = listBackups('db');
+    const uploadsList = listBackups('uploads');
+    res.json({ db: dbList, uploads: uploadsList });
+  } catch (err) {
+    res.status(500).json({ message: '加载备份列表失败', error: err.message });
+  }
+});
+
+router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res) => {
+  const { type, file } = req.query || {};
+  const resolved = resolveBackupPath(type, file);
+  if (!resolved) return res.status(404).json({ message: '备份文件不存在' });
+  addLog(req.user.username, 'DOWNLOAD_BACKUP', `下载备份: ${resolved.type}/${resolved.fileName}`);
+  res.download(resolved.filePath, resolved.fileName);
+});
+
+router.delete('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
+  const { type, file } = req.query || {};
+  const resolved = resolveBackupPath(type, file);
+  if (!resolved) return res.status(404).json({ message: '备份文件不存在' });
+  fs.unlink(resolved.filePath, (err) => {
+    if (err) return res.status(500).json({ error: err.message });
+    addLog(req.user.username, 'DELETE_BACKUP', `删除备份: ${resolved.type}/${resolved.fileName}`);
+    res.json({ message: '已删除' });
+  });
+});
+
+router.post('/backups/run', authenticateToken, requireSuperAdmin, (req, res) => {
+  runAutoBackup('manual')
+    .then(() => res.json({ message: '备份完成' }))
+    .catch((err) => res.status(500).json({ message: '备份失败', error: err.message }));
 });
 
 module.exports = router;

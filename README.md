@@ -86,6 +86,47 @@ server {
 - 恢复脚本：scripts/restore.sh
 - 定时任务模板：scripts/cron.example
 
+### WAL 模式说明
+本项目 SQLite 启用 WAL 模式：最新写入会先进入 -wal 文件，主库文件会在 checkpoint 时合并更新。
+因此请勿仅依赖无后缀的 .db 时间判断“是否最新”，备份应使用脚本（会生成一致快照）。
+一般不建议删除无后缀主库文件；-wal/-shm 可在服务停止时清理，运行中不应手动删除。
+
+### 手动恢复流程（推荐）
+1) 停止后端服务（避免写入）
+2) （可选）校验备份完整性：
+
+```
+sha256sum -c /path/to/db_YYYYmmdd_HHMMSS.sha256
+sha256sum -c /path/to/uploads_YYYYmmdd_HHMMSS.sha256
+```
+
+3) （可选）备份当前数据，便于回滚：
+
+```
+cp backend/data/guatswr_web_main.db /tmp/guatswr_web_main.db.bak
+cp backend/data/guatswr_web_logs.db /tmp/guatswr_web_logs.db.bak
+tar -czf /tmp/public.bak.tar.gz -C backend/data public
+```
+
+4) 执行恢复脚本（将“数据库备份包”和“上传备份包”作为两个参数）：
+
+```
+# 例：备份文件位于 /backups 目录
+./scripts/restore.sh /backups/db_20260126_023000.tar.gz /backups/uploads_20260126_030000.tar.gz
+```
+
+5) （如有需要）修复权限（容器/宿主机不一致时）：
+
+```
+chown -R <运行用户>:<运行用户> backend/data
+```
+
+6) 启动后端服务，检查日志与数据是否一致
+
+说明：
+- 数据库备份为单个 tar.gz，包含 main.db 与 logs.db。
+- 上传备份为 public 目录全量（含 img、icon_svg、upload 等）。
+
 ## 数据备份与防篡改策略
 1) 备份策略
 - DB：每日备份一次，保留 30 天

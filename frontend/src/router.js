@@ -18,6 +18,7 @@ const AdminHomeLinks = () => import('./views/admin/HomeLinks.vue')
 const AdminLogs = () => import('./views/admin/Logs.vue')
 const AdminProfile = () => import('./views/admin/Profile.vue')
 const AdminUsers = () => import('./views/admin/Users.vue')
+const AdminBackups = () => import('./views/admin/Backups.vue')
 
 const routes = [
   { 
@@ -123,6 +124,17 @@ const routes = [
       { path: 'home-links', name: 'AdminHomeLinks', component: AdminHomeLinks },
       { path: 'config', name: 'AdminConfig', component: AdminConfig },
       { path: 'profile', name: 'AdminProfile', component: AdminProfile },
+      {
+        path: 'backups',
+        name: 'AdminBackups',
+        component: AdminBackups,
+        beforeEnter: (to, from, next) => {
+          const store = useUserStore()
+          if (!store.isLoggedIn) store.initFromStorage()
+          if (store.isSuperAdmin) next()
+          else next('/admin/activities')
+        }
+      },
       { 
         path: 'users', 
         name: 'AdminUsers', 

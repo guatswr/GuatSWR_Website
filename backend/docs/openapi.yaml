@@ -644,6 +644,7 @@ paths:
   /api/admin/users:
     get:
       summary: 管理员列表
+      description: 仅 super_admin 可用。
       tags: [admin]
       responses:
         '200':
@@ -661,6 +662,7 @@ paths:
   /api/admin/users/{id}:
     delete:
       summary: 删除管理员
+      description: 仅 super_admin 可用。
       tags: [admin]
       parameters:
         - $ref: '#/components/parameters/IdParam'
@@ -680,6 +682,7 @@ paths:
   /api/admin/users/{id}/password:
     put:
       summary: 重置管理员密码
+      description: 仅 super_admin 可用。
       tags: [admin]
       parameters:
         - $ref: '#/components/parameters/IdParam'
@@ -705,6 +708,7 @@ paths:
   /api/admin/users/{id}/twofa/reset:
     put:
       summary: 重置管理员二步密码
+      description: 仅 super_admin 可用。
       tags: [admin]
       parameters:
         - $ref: '#/components/parameters/IdParam'
@@ -722,6 +726,7 @@ paths:
   /api/admin/token-version/refresh:
     post:
       summary: 强制刷新登录状态
+      description: 仅 super_admin 可用。
       tags: [admin]
       responses:
         '200':
@@ -737,6 +742,7 @@ paths:
   /api/admin/logs:
     get:
       summary: 管理端审计日志列表
+      description: admin 可用。
       tags: [admin]
       parameters:
         - in: query
@@ -767,6 +773,7 @@ paths:
   /api/admin/logs/{id}:
     delete:
       summary: 删除审计日志
+      description: 仅 super_admin 可用。
       tags: [admin]
       parameters:
         - $ref: '#/components/parameters/IdParam'
@@ -784,6 +791,7 @@ paths:
   /api/admin/recycle-bin/purge:
     post:
       summary: 清空回收站并清理图片
+      description: 仅 super_admin 可用。
       tags: [admin]
       responses:
         '200':
@@ -799,6 +807,7 @@ paths:
   /api/admin/bans:
     get:
       summary: 获取封禁列表
+      description: 仅 super_admin 可用。
       tags: [admin]
       responses:
         '200':
@@ -813,6 +822,7 @@ paths:
           $ref: '#/components/responses/Forbidden'
     post:
       summary: 添加封禁
+      description: 仅 super_admin 可用。
       tags: [admin]
       requestBody:
         required: true
@@ -836,6 +846,7 @@ paths:
   /api/admin/bans/{ip}:
     delete:
       summary: 解除封禁
+      description: 仅 super_admin 可用。
       tags: [admin]
       parameters:
         - in: path
@@ -852,6 +863,137 @@ paths:
                 $ref: '#/components/schemas/BanDeleteResponse'
         '400':
           $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/backups/settings:
+    get:
+      summary: 获取自动备份设置
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupSettingsResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    post:
+      summary: 更新自动备份设置
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BackupSettingsUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupSettingsResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+  /api/admin/backups:
+    get:
+      summary: 获取备份列表
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BackupListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+    delete:
+      summary: 删除备份文件
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [db, uploads]
+        - in: query
+          name: file
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/admin/backups/download:
+    get:
+      summary: 下载备份文件
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      parameters:
+        - in: query
+          name: type
+          required: true
+          schema:
+            type: string
+            enum: [db, uploads]
+        - in: query
+          name: file
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+  /api/admin/backups/run:
+    post:
+      summary: 立即执行备份
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
         '401':
           $ref: '#/components/responses/Unauthorized'
         '403':
@@ -1171,6 +1313,52 @@ components:
           type: string
         value:
           type: string
+    BackupSettingsResponse:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        time:
+          type: string
+          example: '02:30'
+        lastRun:
+          type: string
+          nullable: true
+        lastError:
+          type: string
+          nullable: true
+    BackupSettingsUpdateRequest:
+      type: object
+      required: [enabled, time]
+      properties:
+        enabled:
+          type: boolean
+        time:
+          type: string
+          example: '02:30'
+    BackupItem:
+      type: object
+      properties:
+        name:
+          type: string
+        type:
+          type: string
+          enum: [db, uploads]
+        size:
+          type: integer
+        mtime:
+          type: integer
+    BackupListResponse:
+      type: object
+      properties:
+        db:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupItem'
+        uploads:
+          type: array
+          items:
+            $ref: '#/components/schemas/BackupItem'
     UploadResponse:
       type: object
       properties:

@@ -16,24 +16,12 @@ if (!fs.existsSync(IMG_ROOT_DIR)) fs.mkdirSync(IMG_ROOT_DIR, { recursive: true }
 if (!fs.existsSync(HISTORY_ROOT_DIR)) fs.mkdirSync(HISTORY_ROOT_DIR, { recursive: true });
 if (!fs.existsSync(ICON_SVG_DIR)) fs.mkdirSync(ICON_SVG_DIR, { recursive: true });
 
-const legacyDbPath = path.join(DATA_DIR, 'guiair.db');
-const legacyLogDbPath = path.join(DATA_DIR, 'logs.db');
 const resolveDbPath = (envValue, fallbackFile) => {
   if (!envValue) return path.join(DATA_DIR, fallbackFile);
   return path.isAbsolute(envValue) ? envValue : path.join(DATA_DIR, envValue);
 };
 const dbPath = resolveDbPath(process.env.DB_PATH, 'guatswr_web_main.db');
 const logDbPath = resolveDbPath(process.env.LOG_DB_PATH, 'guatswr_web_logs.db');
-
-const migrateDbFile = (fromPath, toPath) => {
-  if (fs.existsSync(toPath)) return;
-  if (!fs.existsSync(fromPath)) return;
-  fs.copyFileSync(fromPath, toPath);
-  console.log(`[DB] 已迁移数据库文件: ${path.basename(fromPath)} -> ${path.basename(toPath)}`);
-};
-
-migrateDbFile(legacyDbPath, dbPath);
-migrateDbFile(legacyLogDbPath, logDbPath);
 
 const db = new sqlite3.Database(dbPath, (err) => {
   if (err) console.error('业务数据库错误:', err.message);

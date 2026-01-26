@@ -17,6 +17,7 @@ const menus = [
   { path: '/admin/logs', label: '🔍 系统日志' },
   { path: '/admin/home-links', label: '🔗 首页外链' },
   { path: '/admin/config', label: '⚙️ 全局设置' },
+  { path: '/admin/backups', label: '🗄️ 备份管理', super: true },
   { path: '/admin/profile', label: '👤 个人设置' },
   { path: '/admin/users', label: '🔑 账号权限', super: true },
   { path: '/api/docs', label: '📚 API 文档', external: true }
