@@ -1,20 +1,57 @@
 const express = require('express');
 const path = require('path');
+const fs = require('fs');
 const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middlewares/auth');
 const { validate } = require('../utils');
 const { memberSchema } = require('../controllers/schemas');
-const { moveStagedFile } = require('../utils/storage');
+const { moveStagedFile, resolveUploadsPath, toUploadsUrl } = require('../utils/storage');
 const { notifyMemberAdded } = require('../utils/bot');
 
 const router = express.Router();
 
+const buildThumbUrl = (url) => {
+  if (!url || typeof url !== 'string') return url;
+  if (url.includes('-thumb.webp')) return url;
+  let origin = '';
+  let pathname = url;
+  try {
+    if (/^https?:\/\//i.test(url)) {
+      const parsed = new URL(url);
+      origin = parsed.origin;
+      pathname = parsed.pathname || '';
+    }
+  } catch {
+    // ignore parse errors
+  }
+  if (!pathname.startsWith('/uploads/')) return url;
+  const abs = resolveUploadsPath(pathname);
+  if (!abs) return url;
+  const base = path.parse(abs).name;
+  const thumbAbs = path.join(path.dirname(abs), `${base}-thumb.webp`);
+  if (!fs.existsSync(thumbAbs)) return url;
+  const thumbUrl = toUploadsUrl(thumbAbs);
+  return origin ? `${origin}${thumbUrl}` : thumbUrl;
+};
+
 router.get('/', optionalAuth, (req, res) => {
   const includeDeleted = req.query.includeDeleted === '1';
+  const preferOriginal = req.query.original === '1';
   const sql = includeDeleted && req.user?.role === 'super_admin'
     ? "SELECT * FROM members ORDER BY sort_order ASC, id ASC"
     : "SELECT * FROM members WHERE deleted_at IS NULL ORDER BY sort_order ASC, id ASC";
-  db.all(sql, [], (err, rows) => res.json(rows || []));
+  db.all(sql, [], (err, rows) => {
+    const list = (rows || []).map((row) => ({
+      ...row,
+      avatar_thumb: buildThumbUrl(row.avatar),
+      avatar_original: row.avatar
+    }));
+    if (preferOriginal) return res.json(list);
+    return res.json(list.map((row) => ({
+      ...row,
+      avatar: row.avatar_thumb || row.avatar
+    })));
+  });
 });
 
 router.post('/', authenticateToken, (req, res) => {

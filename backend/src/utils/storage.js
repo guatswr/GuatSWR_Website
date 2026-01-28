@@ -197,5 +197,7 @@ module.exports = {
   isStagingUrl,
   deleteByUrl,
   cleanupStaging,
-  deletePathSafe
+  deletePathSafe,
+  resolveUploadsPath,
+  toUploadsUrl
 };
