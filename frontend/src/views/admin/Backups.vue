@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../stores/user'
@@ -129,6 +129,15 @@ onMounted(() => {
     fetchBackups()
   }
 })
+
+onUnmounted(() => {
+  dbBackups.value = []
+  uploadsBackups.value = []
+  loading.value = false
+  download.active = false
+  download.percent = 0
+  download.name = ''
+})
 </script>
 
 <template>
@@ -166,7 +175,19 @@ onMounted(() => {
         <h2 class="font-bold text-lg">📦 数据库备份</h2>
         <button @click="fetchBackups" class="text-sm text-blue-600 hover:text-blue-800">刷新</button>
       </div>
-      <div class="overflow-x-auto">
+      <div class="md:hidden space-y-3">
+        <div v-for="item in dbBackups" :key="item.name" class="border rounded-lg p-3 bg-gray-50">
+          <div class="text-xs text-gray-500 font-mono break-all">{{ item.name }}</div>
+          <div class="mt-2 text-sm text-gray-700">大小：{{ formatSize(item.size) }}</div>
+          <div class="text-xs text-gray-500">时间：{{ formatTime(item.mtime) }}</div>
+          <div class="mt-3 flex gap-3 text-xs">
+            <button @click="downloadBackup(item)" class="text-blue-600" :disabled="download.active">下载</button>
+            <button @click="deleteBackup(item)" class="text-red-500">删除</button>
+          </div>
+        </div>
+        <div v-if="dbBackups.length === 0" class="text-gray-500 text-sm">暂无备份</div>
+      </div>
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-sm text-left">
           <thead class="bg-gray-50 text-gray-700">
             <tr>
@@ -199,7 +220,19 @@ onMounted(() => {
         <h2 class="font-bold text-lg">🧳 上传文件备份</h2>
         <button @click="fetchBackups" class="text-sm text-purple-600 hover:text-purple-800">刷新</button>
       </div>
-      <div class="overflow-x-auto">
+      <div class="md:hidden space-y-3">
+        <div v-for="item in uploadsBackups" :key="item.name" class="border rounded-lg p-3 bg-gray-50">
+          <div class="text-xs text-gray-500 font-mono break-all">{{ item.name }}</div>
+          <div class="mt-2 text-sm text-gray-700">大小：{{ formatSize(item.size) }}</div>
+          <div class="text-xs text-gray-500">时间：{{ formatTime(item.mtime) }}</div>
+          <div class="mt-3 flex gap-3 text-xs">
+            <button @click="downloadBackup(item)" class="text-blue-600" :disabled="download.active">下载</button>
+            <button @click="deleteBackup(item)" class="text-red-500">删除</button>
+          </div>
+        </div>
+        <div v-if="uploadsBackups.length === 0" class="text-gray-500 text-sm">暂无备份</div>
+      </div>
+      <div class="hidden md:block overflow-x-auto">
         <table class="w-full text-sm text-left">
           <thead class="bg-gray-50 text-gray-700">
             <tr>

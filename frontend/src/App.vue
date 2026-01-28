@@ -53,6 +53,8 @@ const setCanonicalLink = (href) => {
   link.setAttribute('href', href)
 }
 
+const isProgressDisabled = (route) => Boolean(route?.meta?.disableRouteProgress)
+
 const updateSeoHead = (route) => {
   const meta = getMergedRouteMeta(route)
   const title = meta.title ? `${meta.title} | 桂航绯想天` : siteTitle
@@ -215,6 +217,39 @@ const startRouteProgress = () => {
   }, 180)
 }
 
+const cancelRouteProgress = () => {
+  if (progressTimer) {
+    clearInterval(progressTimer)
+    progressTimer = null
+  }
+  if (idleFinishTimer) {
+    clearTimeout(idleFinishTimer)
+    idleFinishTimer = null
+  }
+  if (hardFinishTimer) {
+    clearTimeout(hardFinishTimer)
+    hardFinishTimer = null
+  }
+  if (imageObserver) {
+    imageObserver.disconnect()
+    imageObserver = null
+  }
+  if (imageObserverStopTimer) {
+    clearTimeout(imageObserverStopTimer)
+    imageObserverStopTimer = null
+  }
+  if (finishTimer) {
+    clearTimeout(finishTimer)
+    finishTimer = null
+  }
+  isRouteLoading.value = false
+  routeProgress.value = 0
+  progressTotal.value = 0
+  progressDone.value = 0
+  hasRealProgress.value = false
+  pendingResources = 0
+}
+
 const finishRouteProgress = () => {
   if (progressTimer) {
     clearInterval(progressTimer)
@@ -247,12 +282,20 @@ const finishRouteProgress = () => {
   }, 280)
 }
 
-removeBeforeHook = router.beforeEach(() => {
+removeBeforeHook = router.beforeEach((to) => {
+  if (isProgressDisabled(to)) {
+    cancelRouteProgress()
+    return true
+  }
   startRouteProgress()
   return true
 })
 
-removeAfterHook = router.afterEach(async () => {
+removeAfterHook = router.afterEach(async (to) => {
+  if (isProgressDisabled(to)) {
+    cancelRouteProgress()
+    return
+  }
   await nextTick()
   trackImagesInView()
   const main = document.querySelector('main')

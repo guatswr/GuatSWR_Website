@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage, getThumbUrl } from '../../utils/image'
@@ -32,6 +32,16 @@ const fetchActivities = async () => {
 
 onMounted(() => {
   fetchActivities()
+})
+
+onUnmounted(() => {
+  activities.value = []
+  total.value = 0
+  page.value = 1
+  limit.value = 50
+  showDeleted.value = false
+  isEditing.value = false
+  Object.assign(actForm, { id: null, title: '', tag: '', date: '', description: '', content: '', cover_image: '', images: [] })
 })
 
 watch(showDeleted, () => {

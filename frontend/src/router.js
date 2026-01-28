@@ -107,7 +107,8 @@ const routes = [
     path: '/admin',
     component: AdminLayout,
     meta: {
-      robots: 'noindex, nofollow'
+      robots: 'noindex, nofollow',
+      disableRouteProgress: true
     },
     redirect: '/admin/activities',
     beforeEnter: (to, from, next) => {

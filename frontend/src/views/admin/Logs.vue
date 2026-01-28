@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, watch, computed } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, watch, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { useUserStore } from '../../stores/user'
@@ -38,6 +38,16 @@ const fetchLogs = async () => {
 onMounted(() => fetchLogs())
 watch([logPage, logLimit], () => fetchLogs())
 
+onUnmounted(() => {
+  logs.value = []
+  logTotal.value = 0
+  logPage.value = 1
+  logLimit.value = 20
+  logFilter.username = ''
+  logFilter.action = ''
+  selectedLogIds.value.clear()
+})
+
 const toggleLogSelect = (id) => { if (selectedLogIds.value.has(id)) selectedLogIds.value.delete(id); else selectedLogIds.value.add(id) }
 const toggleAllLogs = () => { if (selectedLogIds.value.size === logs.value.length) selectedLogIds.value.clear(); else logs.value.forEach(l => selectedLogIds.value.add(l.id)) }
 
@@ -72,14 +82,35 @@ const deleteLog = async (id) => {
   <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-gray-500">
     <div class="flex flex-wrap items-center justify-between mb-4 gap-2">
       <h2 class="font-bold text-lg">🔍 系统日志</h2>
-      <div class="flex gap-2 text-sm">
-        <input v-model="logFilter.username" placeholder="操作人" class="border p-1 rounded w-24">
-        <select v-model="logFilter.action" class="border p-1 rounded w-32 bg-white"><option value="">全部动作</option><option v-for="act in logActions" :key="act" :value="act">{{act}}</option></select>
-        <button @click="logPage=1;fetchLogs()" class="bg-blue-500 text-white px-3 rounded">查询</button>
-        <button v-if="isSuperAdmin && selectedLogIds.size > 0" @click="batchDeleteLogs" class="bg-red-500 text-white px-3 rounded">删除选中 ({{selectedLogIds.size}})</button>
+      <div class="flex flex-wrap gap-2 text-sm w-full md:w-auto">
+        <input v-model="logFilter.username" placeholder="操作人" class="border p-1 rounded w-full sm:w-24">
+        <select v-model="logFilter.action" class="border p-1 rounded w-full sm:w-32 bg-white">
+          <option value="">全部动作</option>
+          <option v-for="act in logActions" :key="act" :value="act">{{act}}</option>
+        </select>
+        <button @click="logPage=1;fetchLogs()" class="bg-blue-500 text-white px-3 py-1 rounded w-full sm:w-auto">查询</button>
+        <button v-if="isSuperAdmin && selectedLogIds.size > 0" @click="batchDeleteLogs" class="bg-red-500 text-white px-3 py-1 rounded w-full sm:w-auto">删除选中 ({{selectedLogIds.size}})</button>
       </div>
     </div>
-    <div class="overflow-x-auto min-h-[400px]">
+    <div class="md:hidden space-y-3">
+      <div v-for="log in logs" :key="log.id" class="border rounded-lg p-3 bg-gray-50">
+        <div class="flex items-start justify-between gap-2">
+          <div class="text-xs text-gray-500 font-mono">{{ new Date(log.created_at).toLocaleString() }}</div>
+          <div v-if="isSuperAdmin" class="shrink-0">
+            <input type="checkbox" :checked="selectedLogIds.has(log.id)" @change="toggleLogSelect(log.id)">
+          </div>
+        </div>
+        <div class="mt-2 text-sm font-bold text-gray-800">{{ log.username }}</div>
+        <div class="mt-1">
+          <span class="inline-block bg-gray-100 px-2 py-0.5 rounded text-xs border">{{ log.action }}</span>
+        </div>
+        <div class="mt-2 text-xs text-gray-600 break-words">{{ log.details || '-' }}</div>
+        <div v-if="isSuperAdmin" class="mt-3 flex items-center justify-between">
+          <button @click="deleteLog(log.id)" class="text-red-500 text-xs">删除</button>
+        </div>
+      </div>
+    </div>
+    <div class="hidden md:block overflow-x-auto min-h-[400px]">
       <table class="w-full text-sm text-left">
         <thead class="bg-gray-50 text-gray-700"><tr><th class="p-2 w-10 text-center" v-if="isSuperAdmin"><input type="checkbox" :checked="selectedLogIds.size===logs.length && logs.length>0" @change="toggleAllLogs"></th><th class="p-2">时间</th><th class="p-2">操作人</th><th class="p-2">动作</th><th class="p-2">详情</th><th class="p-2 text-right" v-if="isSuperAdmin">操作</th></tr></thead>
         <tbody>

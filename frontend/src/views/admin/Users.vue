@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 
@@ -29,6 +29,13 @@ const fetchBans = async () => {
 onMounted(() => {
   fetchUsers()
   fetchBans()
+})
+
+onUnmounted(() => {
+  users.value = []
+  bans.value = []
+  adminForm.value = { username: '', password: '' }
+  banForm.value = { ip: '', reason: '', minutes: 60 }
 })
 
 const addAdmin = async () => {

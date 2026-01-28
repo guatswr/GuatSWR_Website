@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch, nextTick } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, watch, nextTick } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage, getThumbUrl } from '../../utils/image'
@@ -26,6 +26,13 @@ const fetchHistory = async () => {
 
 onMounted(() => {
   fetchHistory()
+})
+
+onUnmounted(() => {
+  historyList.value = []
+  showDeleted.value = false
+  isEditingHistory.value = false
+  Object.assign(histForm, { id: null, date: '', title: '', description: '', image: '', sort_order: 0 })
 })
 
 watch(showDeleted, () => {

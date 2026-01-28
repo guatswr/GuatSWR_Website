@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted, computed } from 'vue'
+import { reactive, onMounted, onUnmounted, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage } from '../../utils/image'
@@ -20,6 +20,10 @@ const fetchConfig = async () => {
 
 onMounted(() => {
   fetchConfig()
+})
+
+onUnmounted(() => {
+  Object.assign(configForm, { home_bg: '', join_bg: '', banner_text: '', badge_image: '', mascot_image: '', qq_qr_image: '' })
 })
 
 const uploadFile = async (file) => {

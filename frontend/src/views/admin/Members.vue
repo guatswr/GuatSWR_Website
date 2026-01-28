@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, onUnmounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage, getThumbUrl } from '../../utils/image'
@@ -38,6 +38,13 @@ const fetchMembers = async () => {
 
 onMounted(() => {
   fetchMembers()
+})
+
+onUnmounted(() => {
+  members.value = []
+  showDeleted.value = false
+  isEditingMember.value = false
+  Object.assign(memForm, { id: null, name: '', role: '', bio: '', avatar: '', school: '', sort_order: 0 })
 })
 
 watch(showDeleted, () => {

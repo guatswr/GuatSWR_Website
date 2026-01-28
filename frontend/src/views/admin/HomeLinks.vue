@@ -1,5 +1,5 @@
 <script setup>
-import { reactive, onMounted } from 'vue'
+import { reactive, onMounted, onUnmounted } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
@@ -59,6 +59,10 @@ const fetchConfig = async () => {
 
 onMounted(() => {
   fetchConfig()
+})
+
+onUnmounted(() => {
+  form.links = []
 })
 
 const addLink = () => {
