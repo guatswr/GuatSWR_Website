@@ -3,6 +3,7 @@ import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { useRouter } from 'vue-router' // 引入 router
 import { getThumbUrl } from '../../utils/image'
+import ProgressiveImage from '../../components/ProgressiveImage.vue'
 
 const router = useRouter()
 const activities = ref([])
@@ -95,12 +96,13 @@ const changePage = async (nextPage) => {
            @click="goDetail(activity.id)"> <!-- 点击整个卡片跳转 -->
         
         <div class="md:w-2/5 h-48 md:h-full relative overflow-hidden shrink-0">
-          <img
-            :src="getThumbUrl(activity.cover_image)"
-            @error="(e) => (e.target.src = activity.cover_image)"
+          <ProgressiveImage
+            :src="activity.cover_image"
+            :thumb="getThumbUrl(activity.cover_image)"
             alt="Cover"
-            class="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-          >
+            wrapperClass="w-full h-full"
+            imgClass="w-full h-full object-cover transition duration-700 group-hover:scale-110"
+          />
           <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
         </div>
 

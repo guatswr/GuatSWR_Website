@@ -2,6 +2,7 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { getThumbUrl } from '../../utils/image'
+import ProgressiveImage from '../../components/ProgressiveImage.vue'
 
 const members = ref([])
 const loading = ref(true)
@@ -77,12 +78,13 @@ onMounted(() => {
           <!-- 头像 -->
             <div class="relative w-24 h-24 mx-auto mb-4">
               <div class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner overflow-hidden">
-                <img
-                  :src="member.avatar_thumb || getThumbUrl(member.avatar)"
-                  @error="(e) => (e.target.src = member.avatar)"
+                <ProgressiveImage
+                  :src="member.avatar"
+                  :thumb="member.avatar_thumb || getThumbUrl(member.avatar)"
                   alt="Avatar"
-                  class="w-full h-full object-cover rounded-full block transform group-hover:scale-110 transition duration-500"
-                >
+                  wrapperClass="w-full h-full"
+                  imgClass="w-full h-full object-cover rounded-full block transform group-hover:scale-110 transition duration-500"
+                />
               </div>
             
             <!-- 学校标签 (悬浮在头像右下方) -->

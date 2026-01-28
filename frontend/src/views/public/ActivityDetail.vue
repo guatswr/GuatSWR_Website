@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import { MdPreview } from 'md-editor-v3'
 import { getThumbUrl } from '../../utils/image'
+import ProgressiveImage from '../../components/ProgressiveImage.vue'
 import { ElMessage } from 'element-plus'
 import 'md-editor-v3/lib/preview.css'
 
@@ -134,10 +135,13 @@ onUnmounted(() => {
 
     <!-- [动态背景] -->
     <div v-if="activity" class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-      <div 
-        class="absolute inset-0 bg-cover bg-center blur-2xl scale-110 opacity-70 transition-all duration-1000"
-        :style="{ backgroundImage: `url('${activity.cover_image}')` }"
-      ></div>
+      <ProgressiveImage
+        :src="activity.cover_image"
+        :thumb="getThumbUrl(activity.cover_image)"
+        alt="Background"
+        wrapperClass="absolute inset-0"
+        imgClass="w-full h-full object-cover blur-2xl scale-110 opacity-70 transition-all duration-1000"
+      />
       <div class="absolute inset-0 bg-white/10 dark:bg-black/30 backdrop-brightness-95 dark:backdrop-brightness-75"></div>
     </div>
 
@@ -147,7 +151,13 @@ onUnmounted(() => {
         
         <!-- 封面 -->
         <div class="h-[300px] md:h-[550px] w-full relative group overflow-hidden">
-          <img :src="activity.cover_image" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" alt="Cover">
+          <ProgressiveImage
+            :src="activity.cover_image"
+            :thumb="getThumbUrl(activity.cover_image)"
+            alt="Cover"
+            wrapperClass="w-full h-full"
+            imgClass="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          />
           <div class="absolute inset-0 bg-black/40"></div>
           
           <div class="absolute inset-0 flex items-end p-6 md:p-12">
@@ -180,7 +190,14 @@ onUnmounted(() => {
           
           <div class="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-gray-200/60 dark:border-slate-700/70">
             <div class="flex items-center gap-3">
-              <img v-if="activity.created_by_avatar" :src="activity.created_by_avatar" class="w-10 h-10 rounded-full border border-gray-200 dark:border-slate-700 object-cover shadow-sm" alt="Avatar">
+              <ProgressiveImage
+                v-if="activity.created_by_avatar"
+                :src="activity.created_by_avatar"
+                :thumb="getThumbUrl(activity.created_by_avatar)"
+                alt="Avatar"
+                wrapperClass="w-10 h-10"
+                imgClass="w-10 h-10 rounded-full border border-gray-200 dark:border-slate-700 object-cover shadow-sm"
+              />
               <div v-else class="w-10 h-10 rounded-full bg-blue-100 dark:bg-slate-800 text-blue-500 dark:text-blue-200 flex items-center justify-center font-bold shadow-sm text-sm">
                 {{ (activity.created_by || 'A').charAt(0).toUpperCase() }}
               </div>
@@ -191,7 +208,14 @@ onUnmounted(() => {
             </div>
 
             <div v-if="activity.updated_by" class="flex items-center gap-3 pl-6 border-l border-gray-200/60 dark:border-slate-700/70">
-              <img v-if="activity.updated_by_avatar" :src="activity.updated_by_avatar" class="w-10 h-10 rounded-full border border-gray-200 dark:border-slate-700 object-cover shadow-sm" alt="Avatar">
+              <ProgressiveImage
+                v-if="activity.updated_by_avatar"
+                :src="activity.updated_by_avatar"
+                :thumb="getThumbUrl(activity.updated_by_avatar)"
+                alt="Avatar"
+                wrapperClass="w-10 h-10"
+                imgClass="w-10 h-10 rounded-full border border-gray-200 dark:border-slate-700 object-cover shadow-sm"
+              />
               <div v-else class="w-10 h-10 rounded-full bg-orange-100 dark:bg-slate-800 text-orange-500 dark:text-orange-200 flex items-center justify-center font-bold shadow-sm text-sm">
                 {{ activity.updated_by.charAt(0).toUpperCase() }}
               </div>
@@ -225,12 +249,13 @@ onUnmounted(() => {
                 <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10 flex items-center justify-center">
                   <span class="text-white opacity-0 group-hover:opacity-100 transition text-sm bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20">🔍 点击查看大图</span>
                 </div>
-                <img
-                  :src="getThumbUrl(img)"
-                  @error="(e) => (e.target.src = img)"
-                  class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700"
+                <ProgressiveImage
+                  :src="img"
+                  :thumb="getThumbUrl(img)"
                   alt="Gallery image"
-                >
+                  wrapperClass="w-full h-full"
+                  imgClass="w-full h-full object-cover transform group-hover:scale-105 transition duration-700"
+                />
               </div>
             </div>
           </div>

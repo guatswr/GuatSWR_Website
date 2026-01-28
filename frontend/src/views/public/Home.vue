@@ -3,6 +3,7 @@ import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { getThumbUrl } from '../../utils/image'
 import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
+import ProgressiveImage from '../../components/ProgressiveImage.vue'
 import axios from 'axios'
 
 const router = useRouter()
@@ -165,9 +166,19 @@ onUnmounted(() => {
       <div class="relative min-h-[calc(100svh-4rem)] flex items-center justify-center overflow-hidden">
         
         <!-- 背景 -->
-           <div class="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105 blur-sm" 
-             :style="bgStyle">
-        </div>
+        <ProgressiveImage
+          v-if="bgImage"
+          :src="bgImage"
+          :thumb="getThumbUrl(bgImage)"
+          alt="Background"
+          wrapperClass="absolute inset-0"
+          imgClass="w-full h-full object-cover transition-all duration-1000 scale-105 blur-sm"
+        />
+        <div
+          v-else
+          class="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105 blur-sm"
+          :style="bgStyle"
+        ></div>
         
         <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-gray-900/20 to-red-900/30 mix-blend-multiply"></div>
         <div class="absolute inset-0 bg-black/20"></div>
@@ -179,7 +190,14 @@ onUnmounted(() => {
         <!-- 内容区域 -->
         <div class="relative z-10 text-center px-4 max-w-5xl mx-auto pt-10 flex flex-col items-center">
             <div class="mb-8 w-24 h-24 md:w-32 md:h-32 rounded-full border-[6px] border-white/90 shadow-[0_0_30px_rgba(255,255,255,0.4)] overflow-hidden transform -rotate-12 bg-white dark:bg-slate-900 z-10 transition duration-500 hover:scale-110 hover:rotate-0 flex items-center justify-center text-gray-400">
-              <img v-if="badgeImage" :src="badgeImage" alt="Badge" class="w-full h-full object-cover">
+              <ProgressiveImage
+                v-if="badgeImage"
+                :src="badgeImage"
+                :thumb="getThumbUrl(badgeImage)"
+                alt="Badge"
+                wrapperClass="w-full h-full"
+                imgClass="w-full h-full object-cover"
+              />
               <span v-else class="text-xs">未配置</span>
           </div>
 
@@ -243,9 +261,14 @@ onUnmounted(() => {
                   <!-- 右侧：看板娘区域 -->
                   <div class="md:w-2/5 flex items-center justify-center relative">
                       <div class="relative w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transition duration-500 group">
-                           <img v-if="mascotImage" :src="mascotImage" 
-                             alt="Mascot" 
-                             class="w-full h-full object-cover" />
+                           <ProgressiveImage
+                             v-if="mascotImage"
+                             :src="mascotImage"
+                             :thumb="getThumbUrl(mascotImage)"
+                             alt="Mascot"
+                             wrapperClass="w-full h-full"
+                             imgClass="w-full h-full object-cover"
+                           />
                            <div v-else class="w-full h-full flex items-center justify-center text-gray-300">未配置</div>
                           
                           <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent flex flex-col justify-end p-6">
@@ -280,12 +303,13 @@ onUnmounted(() => {
                  @click="$router.push(`/activity/${activity.id}`)"
             >
               <div class="h-46 overflow-hidden">
-                <img
-                  :src="getThumbUrl(activity.cover_image)"
-                  @error="(e) => (e.target.src = activity.cover_image)"
+                <ProgressiveImage
+                  :src="activity.cover_image"
+                  :thumb="getThumbUrl(activity.cover_image)"
                   alt="Event"
-                  class="w-full h-full object-cover transition duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
-                >
+                  wrapperClass="w-full h-full"
+                  imgClass="w-full h-full object-cover transition duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
+                />
               </div>
               
               <div class="p-3 flex flex-col flex-1">

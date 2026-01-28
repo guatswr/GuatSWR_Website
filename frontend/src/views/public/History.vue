@@ -2,6 +2,7 @@
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { getThumbUrl } from '../../utils/image'
+import ProgressiveImage from '../../components/ProgressiveImage.vue'
 
 // 所有历史数据
 const allHistoryEvents = ref([])
@@ -110,14 +111,14 @@ onMounted(() => {
               
               <!-- 图片优化：使用 h-auto 和 max-h 限制，显示完整内容 -->
               <div v-if="event.image" class="mb-4 overflow-hidden rounded-lg bg-gray-50 dark:bg-slate-800 border border-gray-100 dark:border-slate-700">
-                <img 
-                  :src="getThumbUrl(event.image)" 
-                  alt="History Image" 
-                  loading="lazy"
-                  @error="(e) => (e.target.src = event.image)"
-                  @click="openLightbox(event.image)"
-                  class="w-full h-auto max-h-[400px] object-contain mx-auto cursor-zoom-in hover:opacity-90 transition"
-                >
+                  <ProgressiveImage
+                    :src="event.image"
+                    :thumb="getThumbUrl(event.image)"
+                    alt="History Image"
+                    wrapperClass="w-full"
+                    imgClass="w-full h-auto max-h-[400px] object-contain mx-auto cursor-zoom-in hover:opacity-90 transition"
+                    @click="openLightbox(event.image)"
+                  />
               </div>
 
               <p class="text-gray-600 dark:text-gray-300 leading-relaxed text-sm whitespace-pre-line">
