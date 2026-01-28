@@ -20,8 +20,9 @@ export const compressImage = (file, options = {}) => new Promise((resolve, rejec
 
 export const getThumbUrl = (url) => {
   if (!url || typeof url !== 'string') return url
-  if (!url.includes('/uploads/')) return url
   if (url.includes('-thumb.webp')) return url
+  const hasThumbDir = url.includes('/uploads/') || url.includes('/img/user/') || url.includes('/public/img/user/')
+  if (!hasThumbDir) return url
   const clean = url.split('?')[0]
   const lastSlash = clean.lastIndexOf('/')
   if (lastSlash === -1) return url

@@ -1,5 +1,6 @@
-# 使用 Node.js 18 作为基础镜像
-FROM node:18-bullseye-slim
+# 使用 Node.js 18 作为基础镜像（可通过构建参数指定镜像源前缀）
+ARG IMAGE_REGISTRY=
+FROM ${IMAGE_REGISTRY}node:18-bullseye-slim
 
 # 设置工作目录
 WORKDIR /app

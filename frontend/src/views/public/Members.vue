@@ -1,6 +1,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
+import { getThumbUrl } from '../../utils/image'
 
 const members = ref([])
 const loading = ref(true)
@@ -74,10 +75,15 @@ onMounted(() => {
              class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-lg transition transform hover:-translate-y-2 border border-blue-50 dark:border-slate-800 relative group">
           
           <!-- 头像 -->
-          <div class="relative w-24 h-24 mx-auto mb-4">
+            <div class="relative w-24 h-24 mx-auto mb-4">
             <div class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner">
-              <div class="w-full h-full rounded-full bg-white dark:bg-slate-900 p-1 overflow-hidden">
-                <img :src="member.avatar" alt="Avatar" class="w-full h-full object-cover transform group-hover:scale-110 transition duration-500">
+              <div class="w-full h-full rounded-full bg-white dark:bg-slate-900 overflow-hidden">
+                <img
+                  :src="getThumbUrl(member.avatar)"
+                  @error="(e) => (e.target.src = member.avatar)"
+                  alt="Avatar"
+                  class="w-full h-full object-cover rounded-full block transform group-hover:scale-110 transition duration-500"
+                >
               </div>
             </div>
             

@@ -1,4 +1,4 @@
-FROM node:20-alpine AS builder
+FROM docker.1panel.live/library/node:20-alpine AS builder
 
 WORKDIR /app
 COPY package*.json ./
@@ -6,7 +6,7 @@ RUN npm ci
 COPY . .
 RUN npm run build
 
-FROM nginx:1.25-alpine
+FROM docker.1panel.live/library/nginx:1.25-alpine
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
 COPY --from=builder /app/dist /usr/share/nginx/html
 EXPOSE 80
