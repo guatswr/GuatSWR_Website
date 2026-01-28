@@ -1,5 +1,5 @@
 <script setup>
-import { ref, reactive, onMounted, computed, watch } from 'vue'
+import { ref, reactive, onMounted, computed, watch, nextTick } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage, getThumbUrl } from '../../utils/image'
@@ -11,6 +11,7 @@ const histForm = reactive({ id: null, date: '', title: '', description: '', imag
 const showDeleted = ref(false)
 const userStore = useUserStore()
 const isSuperAdmin = computed(() => userStore.isSuperAdmin)
+const descRef = ref(null)
 
 const fetchHistory = async () => {
   try {
@@ -100,6 +101,34 @@ const moveHistory = async (item, dir) => {
     ElMessage.error('排序失败')
   }
 }
+
+const wrapSelection = async (prefix, suffix = prefix) => {
+  const el = descRef.value
+  if (!el) return
+  const start = el.selectionStart || 0
+  const end = el.selectionEnd || 0
+  const selected = histForm.description.slice(start, end)
+  histForm.description = `${histForm.description.slice(0, start)}${prefix}${selected}${suffix}${histForm.description.slice(end)}`
+  await nextTick()
+  const cursor = start + prefix.length + selected.length + suffix.length
+  el.focus()
+  el.setSelectionRange(cursor, cursor)
+}
+
+const applyAlign = async (align) => {
+  const el = descRef.value
+  if (!el) return
+  const start = el.selectionStart || 0
+  const end = el.selectionEnd || 0
+  if (start === end) {
+    histForm.description = `<div style="text-align:${align}">${histForm.description}</div>`
+  } else {
+    const selected = histForm.description.slice(start, end)
+    histForm.description = `${histForm.description.slice(0, start)}<div style="text-align:${align}">${selected}</div>${histForm.description.slice(end)}`
+  }
+  await nextTick()
+  el.focus()
+}
 </script>
 
 <template>
@@ -115,7 +144,15 @@ const moveHistory = async (item, dir) => {
           <img v-if="histForm.image" :src="histForm.image" class="w-16 h-10 object-cover rounded bg-gray-200">
           <input @change="handleHistImageUpload" type="file" accept="image/*" class="text-sm">
         </div>
-        <textarea v-model="histForm.description" rows="4" class="w-full border rounded px-3 py-2" placeholder="描述"></textarea>
+        <div class="flex flex-wrap gap-2 items-center">
+          <span class="text-xs text-gray-500">正文格式：</span>
+          <button type="button" @click="wrapSelection('<strong>', '</strong>')" class="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50">加粗</button>
+          <button type="button" @click="wrapSelection('<em>', '</em>')" class="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50">斜体</button>
+          <button type="button" @click="applyAlign('left')" class="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50">左对齐</button>
+          <button type="button" @click="applyAlign('center')" class="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50">居中</button>
+          <button type="button" @click="applyAlign('right')" class="text-xs px-2 py-1 rounded border bg-white hover:bg-gray-50">右对齐</button>
+        </div>
+        <textarea ref="descRef" v-model="histForm.description" rows="6" class="w-full border rounded px-3 py-2" placeholder="描述（支持基础 HTML 格式）"></textarea>
         <input v-model.number="histForm.sort_order" type="number" class="w-20 border rounded px-2 py-1" placeholder="排序">
         <button @click="submitHistory" class="w-full bg-yellow-600 text-white py-2 rounded shadow-md">提交</button>
         <button v-if="isEditingHistory" @click="resetHistForm" class="w-full text-xs text-gray-500 mt-1">取消</button>
@@ -137,7 +174,7 @@ const moveHistory = async (item, dir) => {
           </div>
           <div class="flex-grow min-w-0">
             <div class="flex justify-between"><h3 class="font-bold">{{ item.title }}</h3><span class="text-xs bg-white px-2 py-1 rounded border">{{ item.date }}</span></div>
-            <p class="text-xs text-gray-600 mt-1 line-clamp-2">{{ item.description }}</p>
+            <div class="text-xs text-gray-600 mt-1 line-clamp-2" v-html="item.description"></div>
             <div class="mt-2 flex gap-3">
               <button v-if="!item.deleted_at" @click="editHistory(item)" class="text-xs text-blue-600 font-bold">编辑</button>
               <button v-if="!item.deleted_at" @click="deleteHistory(item.id)" class="text-xs text-red-600 font-bold">删除</button>
