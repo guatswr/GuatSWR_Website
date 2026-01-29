@@ -3,8 +3,8 @@ import { onMounted } from 'vue'
 // 修改为相对路径并添加 .js 后缀，确保 Docker 构建能精确找到文件
 import { useSeo } from './composables/useSeo.js'
 import { useTheme } from './composables/useTheme.js'
-import TheNavbar from './layouts/TheNavbar.vue'
-import TheFooter from './layouts/TheFooter.vue'
+import TheNavbar from './layouts/Navbar.vue'
+import TheFooter from './layouts/Footer.vue'
 import RouteProgressBar from './components/RouteProgressBar.vue'
 
 // 1. 初始化 SEO 逻辑 (自动监听路由)
