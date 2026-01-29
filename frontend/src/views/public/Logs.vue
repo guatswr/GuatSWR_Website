@@ -100,7 +100,7 @@ onMounted(() => {
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
         </div>
-        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 font-serif mb-3 tracking-tight">公开日志档案</h1>
+        <h1 class="text-3xl md:text-4xl font-bold text-gray-800 font-serif mb-3 tracking-tight">日志档案</h1>
         <p class="text-gray-500 max-w-lg mx-auto leading-relaxed">
           这里记录了桂航绯想天的每一次变迁。所有的内容都是由同好们一点一滴积累而成，见证着这个小小同好会的成长。
         </p>

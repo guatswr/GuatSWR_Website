@@ -202,7 +202,7 @@ const getSchoolColor = (n) => {
                 <input v-model="memForm.role" class="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-100 outline-none" placeholder="e.g. 芋泥头">
              </div>
              <div class="col-span-1">
-                <label class="text-xs text-gray-500 block mb-1">排序值（仅方便标记，实际排序按名字首字母）</label>
+                <label class="text-xs text-gray-500 block mb-1">排序值</label>
                 <input v-model.number="memForm.sort_order" type="number" class="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-100 outline-none text-center" placeholder="0">
              </div>
         </div>
@@ -242,7 +242,7 @@ const getSchoolColor = (n) => {
     <!-- 右侧列表 (占 8 列) -->
     <div class="lg:col-span-8">
         <div class="flex justify-between items-center mb-4 px-1">
-            <h2 class="font-bold text-gray-700">成员列表 ({{ members.length }})</h2>
+            <h2 class="font-bold text-gray-700">成员列表（仅方便标记，最终排序按名字首字母） ({{ members.length }})</h2>
             <button v-if="isSuperAdmin" @click="showDeleted = !showDeleted" class="text-xs px-3 py-1.5 rounded-lg bg-white border hover:bg-gray-50 transition shadow-sm">
                 {{ showDeleted ? '👁️ 隐藏已删除' : '🚫 显示已删除' }}
             </button>
