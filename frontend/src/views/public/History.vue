@@ -154,7 +154,7 @@ onBeforeUnmount(() => {
       <!-- 页面标题 -->
       <div class="text-center mb-16">
         <h1 class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 font-serif mb-4 flex justify-center items-center gap-3">
-          <span class="text-red-500">📜</span> 绯想天群史
+          绯想天群史
         </h1>
         <p class="text-gray-500 dark:text-gray-400 italic max-w-2xl mx-auto">
           记录我们一路走来的点点滴滴。从最初的几人小群，到如今的幻想乡大家庭。
