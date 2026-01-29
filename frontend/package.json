@@ -13,6 +13,7 @@
     "element-plus": "^2.13.1",
     "md-editor-v3": "^4.11.0",
     "pinia": "^2.3.1",
+    "pinyin-pro": "^3.28.0",
     "vue": "^3.3.0",
     "vue-router": "^4.2.0"
   },

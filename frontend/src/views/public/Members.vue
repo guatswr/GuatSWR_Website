@@ -1,8 +1,9 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { getThumbUrl } from '../../utils/image'
 import ProgressiveImage from '../../components/ProgressiveImage.vue'
+import { pinyin } from 'pinyin-pro'
 
 const members = ref([])
 const loading = ref(true)
@@ -44,6 +45,44 @@ const fetchMembers = async () => {
 onMounted(() => {
   fetchMembers()
 })
+
+const getFirstChar = (name) => {
+  if (!name) return ''
+  const trimmed = String(name).trim()
+  return trimmed ? trimmed[0] : ''
+}
+
+const getSortKey = (name) => {
+  const firstChar = getFirstChar(name)
+  if (!firstChar) {
+    return { category: 2, key: '' }
+  }
+
+  if (/^[A-Za-z]$/.test(firstChar)) {
+    return { category: 0, key: String(name).toLowerCase() }
+  }
+
+  if (/^[\u4e00-\u9fff]$/.test(firstChar)) {
+    const py = pinyin(firstChar, { toneType: 'none' })
+    const initial = py ? py[0].toLowerCase() : 'z'
+    return { category: 1, key: initial }
+  }
+
+  return { category: 2, key: String(name) }
+}
+
+const sortedMembers = computed(() => {
+  return [...members.value].sort((a, b) => {
+    const aKey = getSortKey(a?.name)
+    const bKey = getSortKey(b?.name)
+
+    if (aKey.category !== bKey.category) {
+      return aKey.category - bKey.category
+    }
+
+    return aKey.key.localeCompare(bKey.key, 'en', { sensitivity: 'base' })
+  })
+})
 </script>
 
 <template>
@@ -57,9 +96,9 @@ onMounted(() => {
     <div class="max-w-7xl mx-auto relative z-10">
       <div class="text-center mb-16">
         <h1 class="text-4xl font-bold text-sky-600 dark:text-sky-400 font-serif mb-4 flex justify-center items-center gap-2">
-          <span class="text-2xl">❄️</span> 绯想天住民名录 <span class="text-2xl">❄️</span>
+          绯想天住民名录
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 font-serif italic">Club Member List</p>
+        <p class="text-gray-500 dark:text-gray-400 font-serif italic">按首字母排序</p>
       </div>
 
       <div v-if="loading" class="text-center py-20">
@@ -72,7 +111,7 @@ onMounted(() => {
       </div>
 
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div v-for="member in members" :key="member.id" 
+        <div v-for="member in sortedMembers" :key="member.id" 
              class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-lg transition transform hover:-translate-y-2 border border-blue-50 dark:border-slate-800 relative group">
           
           <!-- 头像 -->
