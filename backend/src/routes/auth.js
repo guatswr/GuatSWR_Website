@@ -113,7 +113,15 @@ router.put('/profile', authenticateToken, (req, res) => {
   const userId = req.user.id;
 
   const userDir = path.join(IMG_ROOT_DIR, 'user');
-  const updateProfile = async (newAvatar) => {
+  const getCurrentTwofaEnabled = () => new Promise((resolve, reject) => {
+    db.get('SELECT twofa_enabled FROM users WHERE id = ?', [userId], (err, row) => {
+      if (err) return reject(err);
+      if (!row) return reject(new Error('用户不存在'));
+      resolve(!!row.twofa_enabled);
+    });
+  });
+
+  const updateProfile = async (newAvatar, currentTwofaEnabled) => {
     const sets = [];
     const params = [];
 
@@ -127,21 +135,25 @@ router.put('/profile', authenticateToken, (req, res) => {
     params.push(newAvatar || null);
 
     let twofaLog = '';
+    const shouldEnableTwofa = twofa_enabled === true || !!twofa_password;
     if (twofa_enabled === false) {
       sets.push('twofa_enabled = ?');
       params.push(0);
       sets.push('twofa_secret = ?');
       params.push(null);
       twofaLog = '关闭二步密码';
-    } else if (twofa_enabled === true || twofa_password) {
+    } else if (shouldEnableTwofa) {
       if (!twofa_password) {
-        return res.status(400).json({ message: '请填写二步密码' });
+        if (!currentTwofaEnabled) {
+          return res.status(400).json({ message: '请填写二步密码' });
+        }
+      } else {
+        sets.push('twofa_enabled = ?');
+        params.push(1);
+        sets.push('twofa_secret = ?');
+        params.push(encryptTwofa(twofa_password));
+        twofaLog = currentTwofaEnabled ? '更新二步密码' : '设置二步密码';
       }
-      sets.push('twofa_enabled = ?');
-      params.push(1);
-      sets.push('twofa_secret = ?');
-      params.push(encryptTwofa(twofa_password));
-      twofaLog = '设置二步密码';
     }
 
     const sql = `UPDATE users SET ${sets.join(', ')} WHERE id = ?`;
@@ -155,8 +167,9 @@ router.put('/profile', authenticateToken, (req, res) => {
   };
 
   (async () => {
+    const currentTwofaEnabled = await getCurrentTwofaEnabled();
     const movedAvatar = await moveStagedFile(avatar, userDir);
-    await updateProfile(movedAvatar);
+    await updateProfile(movedAvatar, currentTwofaEnabled);
   })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));
 });
 

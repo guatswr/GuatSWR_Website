@@ -13,6 +13,7 @@ const saveLoading = ref(false)
 const isUploadingAvatar = ref(false)
 const showPassword = ref(false)
 const showTwoFaPassword = ref(false)
+const initialTwofaEnabled = ref(false)
 
 const profileForm = reactive({
   avatar: userStore.avatar || '',
@@ -27,6 +28,7 @@ const fetchProfile = async () => {
     const res = await axios.get('/api/auth/me')
     // 同步后端最新状态
     profileForm.twofa_enabled = !!res.data?.twofa_enabled
+    initialTwofaEnabled.value = profileForm.twofa_enabled
     if (res.data?.avatar) {
         profileForm.avatar = res.data.avatar
         // 同时更新 store 保持一致
@@ -67,18 +69,30 @@ const handleProfileAvatarUpload = async (e) => {
 }
 
 const updateProfile = async () => {
-  // 简单校验
-  if (profileForm.twofa_enabled && !profileForm.twofa_password && !userStore.twofa_enabled) {
-      // 如果是新开启 2FA，通常需要设置密码（这里视后端逻辑而定，仅作弱校验提示）
-      // ElMessage.warning('开启二步验证建议设置密码')
+  const trimmedPassword = profileForm.password.trim()
+  const trimmedTwofaPassword = profileForm.twofa_password.trim()
+  const isTwofaToggled = profileForm.twofa_enabled !== initialTwofaEnabled.value
+
+  // 如果是新开启 2FA，提示必须设置二步密码
+  if (profileForm.twofa_enabled && isTwofaToggled && !trimmedTwofaPassword) {
+    ElMessage.warning('开启二步验证需要设置二步密码')
+    return
   }
+
+  const payload = {
+    avatar: profileForm.avatar
+  }
+
+  if (trimmedPassword) payload.password = trimmedPassword
+  if (trimmedTwofaPassword) payload.twofa_password = trimmedTwofaPassword
+  if (isTwofaToggled) payload.twofa_enabled = profileForm.twofa_enabled
 
   try {
     // 个人资料修改频率低，保留确认框防止误触
     // await ElMessageBox.confirm('确认保存当前修改的资料？', '保存确认', { type: 'warning' })
     
     saveLoading.value = true
-    await axios.put('/api/auth/profile', profileForm)
+    await axios.put('/api/auth/profile', payload)
     
     // 更新成功后重置密码框
     userStore.setAvatar(profileForm.avatar)

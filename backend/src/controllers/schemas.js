@@ -14,9 +14,9 @@ const registerSchema = z.object({
 });
 
 const profileSchema = z.object({
-  password: z.string().min(6, '密码至少 6 位').max(100).optional(),
+  password: z.preprocess((v) => (v === '' ? undefined : v), z.string().min(6, '密码至少 6 位').max(100).optional()),
   avatar: z.string().max(500).optional(),
-  twofa_password: z.string().min(4, '二步密码至少 4 位').max(50).optional().nullable(),
+  twofa_password: z.preprocess((v) => (v === '' ? undefined : v), z.string().min(4, '二步密码至少 4 位').max(50).optional().nullable()),
   twofa_enabled: z.boolean().optional()
 });
 
