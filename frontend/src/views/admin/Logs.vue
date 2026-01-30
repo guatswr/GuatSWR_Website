@@ -77,7 +77,16 @@ watch(logPage, () => {
 // --- 业务逻辑 ---
 
 const formatTime = (timeStr) => {
-    return new Date(timeStr).toLocaleString('zh-CN', { hour12: false })
+  if (!timeStr) return '-'
+  const date = new Date(timeStr)
+  return date.toLocaleString('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  })
 }
 
 const toggleLogSelect = (id) => { 

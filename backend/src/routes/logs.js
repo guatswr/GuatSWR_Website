@@ -34,7 +34,13 @@ router.get('/', (req, res) => {
   logDb.get(`SELECT COUNT(*) as count ${sqlBase}`, params, (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
     const total = row.count;
-    logDb.all(`SELECT * ${sqlBase} ORDER BY created_at DESC LIMIT ? OFFSET ?`, [...params, limit, offset], (err, rows) => {
+    logDb.all(
+      `SELECT id, username, action, details,
+        strftime('%Y-%m-%dT%H:%M:%S+08:00', created_at, '+8 hours') as created_at
+       ${sqlBase}
+       ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...params, limit, offset],
+      (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
       attachUserMeta(rows || [], (merged) => res.json({ total, logs: merged }));
     });
