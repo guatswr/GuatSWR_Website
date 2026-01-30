@@ -1,58 +1,91 @@
 <script setup>
-import { ref, onMounted, computed, watch } from 'vue' // 引入 watch
+import { ref, onMounted, computed, watch } from 'vue'
 import axios from 'axios'
 import { getThumbUrl } from '../../utils/image'
 import ProgressiveImage from '../../components/ProgressiveImage.vue'
+import ParliamentChart from '../../components/ParliamentChart.vue' 
 import { pinyin } from 'pinyin-pro'
 
 const members = ref([])
 const loading = ref(true)
 const errorMsg = ref('')
 
-// [新增] 筛选状态
+//筛选状态
 const selectedSchool = ref('')
 const schoolStats = ref([])
+const currentDate = ref('')
 
-// 学校颜色映射配置
+// 学校代表色配置
 const schoolOptions = [
-  { value: '桂航', color: '#0047BA', label: '桂航' },
-  { value: '桂电', color: '#0050A1', label: '桂电' },
-  { value: '师大', color: '#722E87', label: '师大' },
-  { value: '桂师', color: '#E60012', label: '桂师' },
-  { value: '桂信', color: '#F39C12', label: '桂信' },
-  { value: '桂理', color: '#006400', label: '桂理' },
-  { value: '桂旅', color: '#20B2AA', label: '桂旅' },
+  { value: '桂航', color: '#2B65EC', label: '桂航' },
+  { value: '桂电', color: '#002060', label: '桂电' },
+  { value: '师大', color: '#722E87', label: '师大' }, // 紫色
+  { value: '桂师', color: '#E60012', label: '桂师' }, // 正红
+  { value: '桂信', color: '#F39C12', label: '桂信' }, // 橙色
   { value: '漓院', color: '#00BFFF', label: '漓院' },
-  { value: '桂医', color: '#2E8B57', label: '桂医' },
-  { value: '联外', color: '#800000', label: '联外' }
+  { value: '桂理', color: '#607D8B', label: '桂理' }, // 深绿
+  { value: '桂旅', color: '#20B2AA', label: '桂旅' }, // 浅海绿
+  { value: '桂医', color: '#2E8B57', label: '桂医' }, // 海洋绿
+  { value: '联外', color: '#800000', label: '联外' },  // 栗色
+  { value: 'bot', color: '#424242', label: 'bot' }    // 深灰
 ]
 
-// 获取学校颜色辅助函数
+// 辅助：获取颜色
 const getSchoolColor = (schoolName) => {
   const school = schoolOptions.find(s => s.value === schoolName)
   return school ? school.color : '#9ca3af' // 默认灰色
 }
 
-// [新增] 计算筛选标签页 (合并颜色配置和统计数据)
+// 核心逻辑：确保数据完全按照 schoolOptions 的顺序排列，以实现色块聚合
+const parliamentData = computed(() => {
+  if (!schoolStats.value.length) return []
+
+  // 1. 创建映射
+  const statsMap = {}
+  schoolStats.value.forEach(s => {
+    statsMap[s.school] = s.count
+  })
+
+  // 2. 按配置顺序生成
+  const chartData = schoolOptions.map(opt => {
+    return {
+      label: opt.label,
+      value: statsMap[opt.value] || 0,
+      color: opt.color
+    }
+  }).filter(item => item.value > 0)
+
+  // 3. 处理配置表中没有的学校 (归类为灰色其他)
+  const knownSchools = schoolOptions.map(s => s.value)
+  const otherStats = schoolStats.value.filter(s => !knownSchools.includes(s.school) && s.school)
+  
+  otherStats.forEach(s => {
+    chartData.push({
+      label: s.school,
+      value: s.count,
+      color: '#9ca3af' // 灰色
+    })
+  })
+
+  return chartData
+})
+
+// 计算筛选标签页
 const filterTabs = computed(() => {
-  // 1. 建立统计映射 { '桂航': 10, ... }
   const statsMap = {}
   schoolStats.value.forEach(item => {
     statsMap[item.school] = item.count
   })
   
-  // 2. 计算总人数 (所有学校人数之和)
   const totalCount = schoolStats.value.reduce((sum, item) => sum + item.count, 0)
   
-  // 3. 构建 "全部" 选项
   const allTab = { 
     label: '全部', 
     value: '', 
     count: totalCount, 
-    color: '#38bdf8' // sky-400
+    color: '#38bdf8' 
   }
   
-  // 4. 构建各学校选项 (仅显示有定义的学校)
   const schoolTabs = schoolOptions.map(opt => ({
     ...opt,
     count: statsMap[opt.value] || 0
@@ -61,7 +94,6 @@ const filterTabs = computed(() => {
   return [allTab, ...schoolTabs]
 })
 
-// [新增] 获取学校统计
 const fetchSchoolStats = async () => {
   try {
     const res = await axios.get('/api/members/stats/schools')
@@ -71,34 +103,40 @@ const fetchSchoolStats = async () => {
   }
 }
 
-// [修改] 获取成员列表 (支持筛选)
 const fetchMembers = async () => {
-  loading.value = true // 切换筛选时显示加载状态
+  loading.value = true
   try {
     const params = {}
-    if (selectedSchool.value) params.school = selectedSchool.value // 附加筛选参数
+    if (selectedSchool.value) params.school = selectedSchool.value
     
     const res = await axios.get('/api/members', { params })
     members.value = res.data
   } catch (error) {
     console.error("加载失败", error)
-    errorMsg.value = '后端连接异常，请联系管理员Taropoi'
+    errorMsg.value = '后端连接异常，请联系管理员'
     members.value = []
   } finally {
     loading.value = false
   }
 }
 
-// [新增] 监听筛选变化
 watch(selectedSchool, () => {
   fetchMembers()
 })
 
 onMounted(() => {
+  // [新增] 动态获取当前日期，格式 YYYY-MM-DD
+  const now = new Date()
+  const year = now.getFullYear()
+  const month = String(now.getMonth() + 1).padStart(2, '0')
+  const day = String(now.getDate()).padStart(2, '0')
+  currentDate.value = `${year}-${month}-${day}`
+
   fetchMembers()
-  fetchSchoolStats() // [新增] 初始化统计
+  fetchSchoolStats()
 })
 
+// 排序逻辑...
 const getFirstChar = (name) => {
   if (!name) return ''
   const trimmed = String(name).trim()
@@ -107,20 +145,13 @@ const getFirstChar = (name) => {
 
 const getSortKey = (name) => {
   const firstChar = getFirstChar(name)
-  if (!firstChar) {
-    return { category: 2, key: '' }
-  }
-
-  if (/^[A-Za-z]$/.test(firstChar)) {
-    return { category: 0, key: String(name).toLowerCase() }
-  }
-
+  if (!firstChar) return { category: 2, key: '' }
+  if (/^[A-Za-z]$/.test(firstChar)) return { category: 0, key: String(name).toLowerCase() }
   if (/^[\u4e00-\u9fff]$/.test(firstChar)) {
     const py = pinyin(firstChar, { toneType: 'none' })
     const initial = py ? py[0].toLowerCase() : 'z'
     return { category: 1, key: initial }
   }
-
   return { category: 2, key: String(name) }
 }
 
@@ -128,11 +159,7 @@ const sortedMembers = computed(() => {
   return [...members.value].sort((a, b) => {
     const aKey = getSortKey(a?.name)
     const bKey = getSortKey(b?.name)
-
-    if (aKey.category !== bKey.category) {
-      return aKey.category - bKey.category
-    }
-
+    if (aKey.category !== bKey.category) return aKey.category - bKey.category
     return aKey.key.localeCompare(bKey.key, 'en', { sensitivity: 'base' })
   })
 })
@@ -140,21 +167,47 @@ const sortedMembers = computed(() => {
 
 <template>
   <div class="min-h-screen bg-[#f0f9ff] dark:bg-slate-950 py-12 px-4 relative overflow-hidden font-sans">
-    <!-- 冰雪背景装饰 - 呼应琪露诺 -->
+    <!-- 背景装饰 -->
     <div class="absolute top-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"></div>
     <div class="absolute bottom-0 left-0 w-96 h-96 bg-red-200/20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"></div>
-    <!-- 9水印 -->
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[20rem] font-bold text-white opacity-40 select-none pointer-events-none font-serif">⑨</div>
 
     <div class="max-w-7xl mx-auto relative z-10">
-      <div class="text-center mb-10">
+      <div class="text-center mb-8">
         <h1 class="text-4xl font-bold text-sky-600 dark:text-sky-400 font-serif mb-4 flex justify-center items-center gap-2">
           绯想天住民名录
         </h1>
-        <p class="text-gray-500 dark:text-gray-400 font-serif italic">按首字母排序</p>
+
+        <!--  温馨提示栏 -->
+        <div class="flex flex-wrap justify-center gap-3 mb-4">
+          <!-- 提示1: 小号 -->
+          <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-full border border-blue-100 dark:border-slate-800 shadow-sm transition hover:scale-105 cursor-default select-none">
+            <div class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.5)]"></div>
+            <span>小号不列入统计</span>
+          </div>
+          <!-- 提示2: 排序 -->
+          <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-full border border-blue-100 dark:border-slate-800 shadow-sm transition hover:scale-105 cursor-default select-none">
+            <div class="w-1.5 h-1.5 rounded-full bg-pink-400 shadow-[0_0_5px_rgba(244,114,182,0.5)]"></div>
+            <span>按首字母排序</span>
+          </div>
+          <!-- 提示3: 管理员 -->
+          <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-full border border-blue-100 dark:border-slate-800 shadow-sm transition hover:scale-105 cursor-default select-none">
+            <div class="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-[0_0_5px_rgba(14,165,233,0.5)]"></div>
+            <span>如需修改信息请联系管理员</span>
+          </div>
+        </div>
       </div>
 
-      <!-- [新增] 学校筛选栏 -->
+      <!-- 席位分布图 (传递当前日期) -->
+      <div class="mb-12" v-if="parliamentData.length > 0">
+        <ParliamentChart 
+          :data="parliamentData" 
+          title="桂航绯想天" 
+          :subTitle="currentDate" 
+        />
+      </div>
+
+      <!-- 筛选栏 (样式优化匹配图片) -->
       <div class="mb-12 flex flex-wrap justify-center gap-3 px-2">
         <button 
           v-for="tab in filterTabs" 
@@ -169,7 +222,7 @@ const sortedMembers = computed(() => {
           :style="{ 
             backgroundColor: selectedSchool === tab.value ? tab.color : '',
             borderColor: selectedSchool === tab.value ? tab.color : 'transparent',
-            '--tw-ring-color': tab.color // 用于 ring 的动态颜色
+            '--tw-ring-color': tab.color
           }"
         >
           <span>{{ tab.label }}</span>
@@ -191,7 +244,6 @@ const sortedMembers = computed(() => {
         <p class="font-bold">{{ errorMsg }}</p>
       </div>
 
-      <!-- 空状态展示 (如果筛选后没有数据) -->
       <div v-else-if="sortedMembers.length === 0" class="text-center py-20 text-gray-400 dark:text-gray-500">
         <p class="text-lg">该区域暂未发现住民出没...</p>
       </div>
@@ -200,7 +252,6 @@ const sortedMembers = computed(() => {
         <div v-for="member in sortedMembers" :key="member.id" 
              class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-lg transition transform hover:-translate-y-2 border border-blue-50 dark:border-slate-800 relative group">
           
-          <!-- 头像 -->
           <div class="relative w-24 h-24 mx-auto mb-4">
             <div class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner overflow-hidden">
               <ProgressiveImage
@@ -212,7 +263,6 @@ const sortedMembers = computed(() => {
               />
             </div>
             
-            <!-- 学校标签 (悬浮在头像右下方) -->
             <div v-if="member.school" 
                  class="absolute -bottom-1 -right-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md border-2 border-white transform rotate-[-5deg] group-hover:rotate-0 transition duration-300"
                  :style="{ backgroundColor: getSchoolColor(member.school) }">
@@ -220,10 +270,8 @@ const sortedMembers = computed(() => {
             </div>
           </div>
 
-          <!-- 信息 -->
           <div class="text-center">
             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1 font-serif">{{ member.name }}</h3>
-            <!-- 能力/身份标签 -->
             <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-slate-800 text-blue-600 dark:text-blue-200 text-xs rounded-full font-bold mb-4 border border-blue-200 dark:border-slate-700">
               {{ member.role }}
             </span>
@@ -232,8 +280,6 @@ const sortedMembers = computed(() => {
               "{{ member.bio }}"
             </p>
           </div>
-
-          <!-- 悬停时的边框高亮 -->
           <div class="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-blue-300 transition pointer-events-none"></div>
         </div>
       </div>

@@ -22,17 +22,19 @@ const isUploadingAvatar = ref(false)
 
 const memForm = reactive({ id: null, name: '', role: '', bio: '', avatar: '', school: '', sort_order: 0 })
 
+// 学校代表色配置
 const schoolOptions = [
-  { label: '桂航', value: '桂航', color: '#0047BA' },
-  { label: '桂电', value: '桂电', color: '#0050A1' },
-  { label: '师大', value: '师大', color: '#722E87' },
-  { label: '桂师', value: '桂师', color: '#E60012' },
-  { label: '桂信', value: '桂信', color: '#F39C12' },
-  { label: '桂理', value: '桂理', color: '#006400' },
-  { label: '桂旅', value: '桂旅', color: '#20B2AA' },
-  { label: '漓院', value: '漓院', color: '#00BFFF' },
-  { label: '桂医', value: '桂医', color: '#2E8B57' },
-  { label: '联外', value: '联外', color: '#800000' }
+  { value: '桂航', color: '#2B65EC', label: '桂航' },
+  { value: '桂电', color: '#002060', label: '桂电' },
+  { value: '师大', color: '#722E87', label: '师大' }, // 紫色
+  { value: '桂师', color: '#E60012', label: '桂师' }, // 正红
+  { value: '桂信', color: '#F39C12', label: '桂信' }, // 橙色
+  { value: '漓院', color: '#00BFFF', label: '漓院' },
+  { value: '桂理', color: '#607D8B', label: '桂理' }, // 深绿
+  { value: '桂旅', color: '#20B2AA', label: '桂旅' }, // 浅海绿
+  { value: '桂医', color: '#2E8B57', label: '桂医' }, // 海洋绿
+  { value: '联外', color: '#800000', label: '联外' },  // 栗色
+  { value: 'bot', color: '#424242', label: 'bot' }    // 深灰
 ]
 
 const fetchMembers = async () => {
