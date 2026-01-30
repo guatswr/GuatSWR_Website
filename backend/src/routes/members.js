@@ -34,13 +34,56 @@ const buildThumbUrl = (url) => {
   return origin ? `${origin}${thumbUrl}` : thumbUrl;
 };
 
+// [新增功能] 获取按学校分组的成员数量统计
+// 路由放在 /:id 之前，避免被 /:id 误匹配
+router.get('/stats/schools', (req, res) => {
+  // 仅统计未删除的成员
+  const sql = `
+    SELECT school, COUNT(*) as count 
+    FROM members 
+    WHERE deleted_at IS NULL 
+    GROUP BY school 
+    ORDER BY count DESC, school ASC
+  `;
+  db.all(sql, [], (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message });
+    // 将空字符串学校名称转换为 "其他" 或保持原样，视需求而定，这里保持原样
+    res.json(rows);
+  });
+});
+
+// [修改功能] 获取成员列表 (支持 ?school=... 筛选)
 router.get('/', optionalAuth, (req, res) => {
   const includeDeleted = req.query.includeDeleted === '1';
   const preferOriginal = req.query.original === '1';
-  const sql = includeDeleted && req.user?.role === 'super_admin'
-    ? "SELECT * FROM members ORDER BY sort_order ASC, id ASC"
-    : "SELECT * FROM members WHERE deleted_at IS NULL ORDER BY sort_order ASC, id ASC";
-  db.all(sql, [], (err, rows) => {
+  const filterSchool = req.query.school; // 获取学校筛选参数
+
+  let query = "SELECT * FROM members";
+  const params = [];
+  const conditions = [];
+
+  // 1. 构建筛选条件
+  // 逻辑：如果是超级管理员且请求包含删除数据，则不加 deleted_at 限制；否则只显示未删除的
+  if (!(includeDeleted && req.user?.role === 'super_admin')) {
+    conditions.push("deleted_at IS NULL");
+  }
+
+  // 逻辑：如果存在学校参数，加入筛选
+  if (filterSchool) {
+    conditions.push("school = ?");
+    params.push(filterSchool);
+  }
+
+  // 2. 组装 SQL
+  if (conditions.length > 0) {
+    query += " WHERE " + conditions.join(" AND ");
+  }
+
+  query += " ORDER BY sort_order ASC, id ASC";
+
+  db.all(query, params, (err, rows) => {
+    if (err) return res.status(500).json({ error: err.message }); // 增加简单的错误处理
+
     const list = (rows || []).map((row) => ({
       ...row,
       avatar_thumb: buildThumbUrl(row.avatar),

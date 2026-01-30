@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue' // 引入 watch
 import axios from 'axios'
 import { getThumbUrl } from '../../utils/image'
 import ProgressiveImage from '../../components/ProgressiveImage.vue'
@@ -8,6 +8,10 @@ import { pinyin } from 'pinyin-pro'
 const members = ref([])
 const loading = ref(true)
 const errorMsg = ref('')
+
+// [新增] 筛选状态
+const selectedSchool = ref('')
+const schoolStats = ref([])
 
 // 学校颜色映射配置
 const schoolOptions = [
@@ -29,9 +33,52 @@ const getSchoolColor = (schoolName) => {
   return school ? school.color : '#9ca3af' // 默认灰色
 }
 
-const fetchMembers = async () => {
+// [新增] 计算筛选标签页 (合并颜色配置和统计数据)
+const filterTabs = computed(() => {
+  // 1. 建立统计映射 { '桂航': 10, ... }
+  const statsMap = {}
+  schoolStats.value.forEach(item => {
+    statsMap[item.school] = item.count
+  })
+  
+  // 2. 计算总人数 (所有学校人数之和)
+  const totalCount = schoolStats.value.reduce((sum, item) => sum + item.count, 0)
+  
+  // 3. 构建 "全部" 选项
+  const allTab = { 
+    label: '全部', 
+    value: '', 
+    count: totalCount, 
+    color: '#38bdf8' // sky-400
+  }
+  
+  // 4. 构建各学校选项 (仅显示有定义的学校)
+  const schoolTabs = schoolOptions.map(opt => ({
+    ...opt,
+    count: statsMap[opt.value] || 0
+  }))
+
+  return [allTab, ...schoolTabs]
+})
+
+// [新增] 获取学校统计
+const fetchSchoolStats = async () => {
   try {
-    const res = await axios.get('/api/members')
+    const res = await axios.get('/api/members/stats/schools')
+    schoolStats.value = res.data || []
+  } catch (e) {
+    console.error('加载统计失败', e)
+  }
+}
+
+// [修改] 获取成员列表 (支持筛选)
+const fetchMembers = async () => {
+  loading.value = true // 切换筛选时显示加载状态
+  try {
+    const params = {}
+    if (selectedSchool.value) params.school = selectedSchool.value // 附加筛选参数
+    
+    const res = await axios.get('/api/members', { params })
     members.value = res.data
   } catch (error) {
     console.error("加载失败", error)
@@ -42,8 +89,14 @@ const fetchMembers = async () => {
   }
 }
 
+// [新增] 监听筛选变化
+watch(selectedSchool, () => {
+  fetchMembers()
+})
+
 onMounted(() => {
   fetchMembers()
+  fetchSchoolStats() // [新增] 初始化统计
 })
 
 const getFirstChar = (name) => {
@@ -94,11 +147,39 @@ const sortedMembers = computed(() => {
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[20rem] font-bold text-white opacity-40 select-none pointer-events-none font-serif">⑨</div>
 
     <div class="max-w-7xl mx-auto relative z-10">
-      <div class="text-center mb-16">
+      <div class="text-center mb-10">
         <h1 class="text-4xl font-bold text-sky-600 dark:text-sky-400 font-serif mb-4 flex justify-center items-center gap-2">
           绯想天住民名录
         </h1>
         <p class="text-gray-500 dark:text-gray-400 font-serif italic">按首字母排序</p>
+      </div>
+
+      <!-- [新增] 学校筛选栏 -->
+      <div class="mb-12 flex flex-wrap justify-center gap-3 px-2">
+        <button 
+          v-for="tab in filterTabs" 
+          :key="tab.value"
+          @click="selectedSchool = tab.value"
+          class="relative px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shadow-sm hover:-translate-y-0.5"
+          :class="[
+            selectedSchool === tab.value 
+              ? 'text-white shadow-md ring-2 ring-offset-2 ring-offset-[#f0f9ff] dark:ring-offset-slate-950' 
+              : 'bg-white/60 dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-slate-800'
+          ]"
+          :style="{ 
+            backgroundColor: selectedSchool === tab.value ? tab.color : '',
+            borderColor: selectedSchool === tab.value ? tab.color : 'transparent',
+            '--tw-ring-color': tab.color // 用于 ring 的动态颜色
+          }"
+        >
+          <span>{{ tab.label }}</span>
+          <span 
+            class="px-1.5 py-0.5 rounded-full text-[10px] min-w-[1.2rem] flex items-center justify-center transition-colors"
+            :class="selectedSchool === tab.value ? 'bg-white/20 text-white' : 'bg-gray-200/50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400'"
+          >
+            {{ tab.count }}
+          </span>
+        </button>
       </div>
 
       <div v-if="loading" class="text-center py-20">
@@ -110,21 +191,26 @@ const sortedMembers = computed(() => {
         <p class="font-bold">{{ errorMsg }}</p>
       </div>
 
+      <!-- 空状态展示 (如果筛选后没有数据) -->
+      <div v-else-if="sortedMembers.length === 0" class="text-center py-20 text-gray-400 dark:text-gray-500">
+        <p class="text-lg">该区域暂未发现住民出没...</p>
+      </div>
+
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         <div v-for="member in sortedMembers" :key="member.id" 
              class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-lg transition transform hover:-translate-y-2 border border-blue-50 dark:border-slate-800 relative group">
           
           <!-- 头像 -->
-            <div class="relative w-24 h-24 mx-auto mb-4">
-              <div class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner overflow-hidden">
-                <ProgressiveImage
-                  :src="member.avatar"
-                  :thumb="member.avatar_thumb || getThumbUrl(member.avatar)"
-                  alt="Avatar"
-                  wrapperClass="w-full h-full"
-                  imgClass="w-full h-full object-cover rounded-full block transform group-hover:scale-110 transition duration-500"
-                />
-              </div>
+          <div class="relative w-24 h-24 mx-auto mb-4">
+            <div class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner overflow-hidden">
+              <ProgressiveImage
+                :src="member.avatar"
+                :thumb="member.avatar_thumb || getThumbUrl(member.avatar)"
+                alt="Avatar"
+                wrapperClass="w-full h-full"
+                imgClass="w-full h-full object-cover rounded-full block transform group-hover:scale-110 transition duration-500"
+              />
+            </div>
             
             <!-- 学校标签 (悬浮在头像右下方) -->
             <div v-if="member.school" 
