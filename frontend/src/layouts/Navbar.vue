@@ -7,12 +7,32 @@ const router = useRouter()
 const isMenuOpen = ref(false)
 const isScrolled = ref(false)
 
+// 移动端子菜单展开状态
+const mobileSubmenuOpen = ref({})
+
 // 使用刚才创建的 Composable
 const { themeMode, isDark, toggleTheme } = useTheme()
 
+// 导航配置：支持层级结构
 const navLinks = [
   { name: '首页', path: '/' },
-  { name: '近期群活', path: '/activities' },
+  { 
+    name: '群内活动', // 父级菜单名称
+    path: '', // 父级通常不直接跳转
+    isDropdown: true,
+    children: [
+      { 
+        name: '记忆碎片', 
+        path: '/activities',
+        desc: '往期活动归档' 
+      },
+      { 
+        name: '异变进行时', 
+        path: '/current-incident',
+        desc: '当前正在进行' // 这个是下一步的任务
+      }
+    ]
+  },
   { name: '绯想天住民', path: '/members' },
   { name: '绯想天群史', path: '/history' },
   { name: '博丽大结界', path: '/social' },
@@ -20,6 +40,10 @@ const navLinks = [
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
+}
+
+const toggleMobileSubmenu = (menuName) => {
+  mobileSubmenuOpen.value[menuName] = !mobileSubmenuOpen.value[menuName]
 }
 
 const handleScroll = () => {
@@ -52,15 +76,51 @@ onUnmounted(() => {
         </div>
         
         <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center space-x-6 lg:space-x-8">
-          <router-link 
-            v-for="link in navLinks" 
-            :key="link.name" 
-            :to="link.path"
-            class="text-gray-600 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-300 transition-colors font-medium"
-          >
-            {{ link.name }}
-          </router-link>
+        <div class="hidden md:flex items-center space-x-2 lg:space-x-4">
+          <template v-for="link in navLinks" :key="link.name">
+            <!-- 普通链接 -->
+            <router-link 
+              v-if="!link.isDropdown"
+              :to="link.path"
+              class="px-3 py-2 text-gray-600 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-300 transition-colors font-medium rounded-md hover:bg-gray-50 dark:hover:bg-slate-800"
+            >
+              {{ link.name }}
+            </router-link>
+
+            <!-- 下拉菜单 (Hover 触发) -->
+            <div v-else class="relative group">
+              <button 
+                class="flex items-center gap-1 px-3 py-2 text-gray-600 group-hover:text-sky-500 dark:text-gray-200 dark:group-hover:text-sky-300 transition-colors font-medium rounded-md group-hover:bg-gray-50 dark:group-hover:bg-slate-800 outline-none"
+              >
+                {{ link.name }}
+                <!-- 小箭头图标 -->
+                <svg class="w-4 h-4 transition-transform group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              
+              <!-- 下拉内容面板 -->
+              <div class="absolute left-1/2 -translate-x-1/2 pt-2 w-48 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 ease-out">
+                <div class="bg-white dark:bg-slate-900 rounded-lg shadow-xl ring-1 ring-black/5 dark:ring-white/10 overflow-hidden">
+                  <div class="p-1">
+                    <router-link 
+                      v-for="child in link.children"
+                      :key="child.name"
+                      :to="child.path"
+                      class="flex flex-col px-4 py-3 hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors rounded-md group/item"
+                    >
+                      <span class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover/item:text-sky-600 dark:group-hover/item:text-sky-400">
+                        {{ child.name }}
+                      </span>
+                      <span v-if="child.desc" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
+                        {{ child.desc }}
+                      </span>
+                    </router-link>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
 
           <!-- 分隔线 (视觉优化) -->
           <div class="h-6 w-px bg-gray-200 dark:bg-slate-700 mx-2"></div>
@@ -104,7 +164,7 @@ onUnmounted(() => {
 
         <!-- Mobile Menu Icons -->
         <div class="md:hidden flex items-center gap-2">
-           <!-- 近期日志入口 (移动端 - 修复样式) -->
+           <!-- 近期日志入口 (移动端) -->
            <router-link 
              to="/logs" 
              class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 active:scale-95 dark:border-slate-700 dark:bg-slate-800/50 transition"
@@ -113,7 +173,7 @@ onUnmounted(() => {
              <span class="text-lg leading-none">📜</span>
            </router-link>
 
-          <!-- Theme Toggle (Mobile - 修复样式) -->
+          <!-- Theme Toggle (Mobile) -->
           <button
             type="button"
             class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-slate-700 dark:text-gray-200 dark:bg-slate-800/50 dark:hover:bg-slate-800 transition"
@@ -127,11 +187,11 @@ onUnmounted(() => {
             </svg>
           </button>
 
-          <!-- Login (Mobile - 修复样式) -->
+          <!-- Login (Mobile) -->
           <router-link to="/login" 
             class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-red-500 dark:border-slate-700 dark:text-red-400 dark:bg-slate-800/50 transition"
           >
-             <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13 3H17V5H19V7H17V19H19V21H5V19H7V7H5V5H7V3H12M9 7V19H15V7H9M11 9H13V12H11V9Z"/></svg>
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13 3H17V5H19V7H17V19H19V21H5V19H7V7H5V5H7V3H12M9 7V19H15V7H9M11 9H13V12H11V9Z"/></svg>
           </router-link>
 
           <!-- Hamburger -->
@@ -146,17 +206,53 @@ onUnmounted(() => {
     </div>
 
     <!-- Mobile Dropdown -->
-    <div v-if="isMenuOpen" class="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-100 dark:border-slate-800">
+    <div v-if="isMenuOpen" class="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-100 dark:border-slate-800 max-h-[80vh] overflow-y-auto">
       <div class="px-2 pt-2 pb-3 space-y-1">
-        <router-link 
-          v-for="link in navLinks" 
-          :key="link.name" 
-          :to="link.path"
-          class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-slate-800 rounded-md"
-          @click="isMenuOpen = false"
-        >
-          {{ link.name }}
-        </router-link>
+        <template v-for="link in navLinks" :key="link.name">
+          <!-- 移动端：普通链接 -->
+          <router-link 
+            v-if="!link.isDropdown"
+            :to="link.path"
+            class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-slate-800 rounded-md"
+            @click="isMenuOpen = false"
+          >
+            {{ link.name }}
+          </router-link>
+
+          <!-- 移动端：折叠菜单 -->
+          <div v-else>
+            <button 
+              @click="toggleMobileSubmenu(link.name)"
+              class="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-slate-800 rounded-md"
+            >
+              <span>{{ link.name }}</span>
+              <svg 
+                class="w-4 h-4 transition-transform duration-200" 
+                :class="mobileSubmenuOpen[link.name] ? 'rotate-180' : ''"
+                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              >
+                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            
+            <!-- 子菜单内容 -->
+            <div v-show="mobileSubmenuOpen[link.name]" class="pl-4 space-y-1 mt-1 border-l-2 border-gray-100 dark:border-slate-800 ml-3">
+              <router-link 
+                v-for="child in link.children"
+                :key="child.name"
+                :to="child.path"
+                class="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-sky-500 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-800/50 rounded-md"
+                @click="isMenuOpen = false"
+              >
+                {{ child.name }}
+                <span v-if="child.desc" class="block text-xs text-gray-400 font-normal mt-0.5">
+                  {{ child.desc }}
+                </span>
+              </router-link>
+            </div>
+          </div>
+        </template>
+        
         <router-link to="/login" 
           class="block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/30 rounded-md border-t border-gray-100 dark:border-slate-800 mt-2"
           @click="isMenuOpen = false"

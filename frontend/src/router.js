@@ -1,5 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from './stores/user'
+import { useUserStore } from './stores/user' // 修正路径：从 ../ 改为 ./
+
+// 修正路径：所有组件引入都从 ../ 改为 ./
 const Home = () => import('./views/public/Home.vue')
 const Activities = () => import('./views/public/Activities.vue')
 const ActivityDetail = () => import('./views/public/ActivityDetail.vue')
@@ -9,6 +11,8 @@ const SocialLink = () => import('./views/public/SocialLink.vue')
 const Join = () => import('./views/public/Join.vue')
 const Login = () => import('./views/public/Login.vue')
 const PublicLogs = () => import('./views/public/Logs.vue')
+
+// Admin Components
 const AdminLayout = () => import('./layouts/AdminLayout.vue')
 const AdminActivities = () => import('./views/admin/Activities.vue')
 const AdminMembers = () => import('./views/admin/Members.vue')
@@ -30,13 +34,24 @@ const routes = [
       description: '桂航绯想天首页，聚合最新群活动、公告与社群动态。'
     }
   },
+  // 原“近期群活”路由，现在对应“记忆碎片”
   { 
     path: '/activities', 
     name: 'Activities', 
     component: Activities,
     meta: {
-      title: '近期群活',
-      description: '查看近期群活动安排与详情。'
+      title: '记忆碎片', 
+      description: '查看往期群活动安排与详情。'
+    }
+  },
+  // 新增路由：异变进行时 (目前先指向 Activities 或一个占位组件)
+  {
+    path: '/current-incident',
+    name: 'CurrentIncident',
+    component: Activities, 
+    meta: {
+      title: '异变进行时',
+      description: '查看当前正在进行的活动。'
     }
   },
   { 
@@ -83,7 +98,7 @@ const routes = [
       title: '加入我们',
       description: '加入桂航绯想天同好会，了解入群方式与规则。'
     }
-  }, // 新增路由
+  },
   { 
     path: '/login', 
     name: 'Login', 
