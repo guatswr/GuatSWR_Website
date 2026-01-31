@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useUserStore } from './stores/user' // 修正路径：从 ../ 改为 ./
+import { useUserStore } from './stores/user'
 
-// 修正路径：所有组件引入都从 ../ 改为 ./
+// 基础组件
 const Home = () => import('./views/public/Home.vue')
 const Activities = () => import('./views/public/Activities.vue')
 const ActivityDetail = () => import('./views/public/ActivityDetail.vue')
@@ -11,6 +11,14 @@ const SocialLink = () => import('./views/public/SocialLink.vue')
 const Join = () => import('./views/public/Join.vue')
 const Login = () => import('./views/public/Login.vue')
 const PublicLogs = () => import('./views/public/Logs.vue')
+
+// --- 异变进行时模块 ---
+const EventsLayout = () => import('./layouts/EventsLayout.vue')
+const Bounty = () => import('./views/events/Bounty.vue')
+const Betting = () => import('./views/events/Betting.vue')
+const Stg = () => import('./views/events/Stg.vue')
+const Zetime = () => import('./views/events/Zetime.vue')
+const Party = () => import('./views/events/Party.vue')
 
 // Admin Components
 const AdminLayout = () => import('./layouts/AdminLayout.vue')
@@ -29,102 +37,103 @@ const routes = [
     path: '/', 
     name: 'Home', 
     component: Home,
-    meta: {
-      title: '首页',
-      description: '桂航绯想天首页，聚合最新群活动、公告与社群动态。'
-    }
+    meta: { title: '首页', description: '桂航绯想天首页' }
   },
-  // 原“近期群活”路由，现在对应“记忆碎片”
   { 
     path: '/activities', 
     name: 'Activities', 
     component: Activities,
-    meta: {
-      title: '记忆碎片', 
-      description: '查看往期群活动安排与详情。'
-    }
+    meta: { title: '记忆碎片', description: '往期活动归档' }
   },
-  // 新增路由：异变进行时 (目前先指向 Activities 或一个占位组件)
+  // --- 异变进行时路由 (路径已更新为 /events) ---
   {
-    path: '/current-incident',
-    name: 'CurrentIncident',
-    component: Activities, 
+    path: '/events', // <--- 修改处
+    component: EventsLayout,
     meta: {
       title: '异变进行时',
       description: '查看当前正在进行的活动。'
-    }
+    },
+    redirect: '/events/bounty', // <--- 修改处
+    children: [
+      {
+        path: 'bounty',
+        name: 'IncidentBounty',
+        component: Bounty,
+        meta: { title: '悬赏令' }
+      },
+      {
+        path: 'betting',
+        name: 'IncidentBetting',
+        component: Betting,
+        meta: { title: '对赌协议' }
+      },
+      {
+        path: 'stg',
+        name: 'IncidentStg',
+        component: Stg,
+        meta: { title: 'STG' }
+      },
+      {
+        path: 'zetime',
+        name: 'IncidentZetime',
+        component: Zetime,
+        meta: { title: '则赛' }
+      },
+      {
+        path: 'party',
+        name: 'IncidentParty',
+        component: Party,
+        meta: { title: '聚会' }
+      }
+    ]
   },
+  // -----------------------
   { 
     path: '/activity/:id', 
     name: 'ActivityDetail', 
     component: ActivityDetail,
-    meta: {
-      title: '群活动详情',
-      description: '查看群活动的详细内容、时间与相关信息。'
-    }
+    meta: { title: '群活动详情' }
   },
   { 
     path: '/members', 
     name: 'Members', 
     component: Members,
-    meta: {
-      title: '绯想天住民',
-      description: '了解社群成员与相关资料。'
-    }
+    meta: { title: '绯想天住民' }
   },
   { 
     path: '/history', 
     name: 'History', 
     component: History,
-    meta: {
-      title: '绯想天群史',
-      description: '回顾社群发展历程与重要节点。'
-    }
+    meta: { title: '绯想天群史' }
   },
   { 
     path: '/social', 
     name: 'SocialLink', 
     component: SocialLink,
-    meta: {
-      title: '博丽大结界',
-      description: '社群对外社交与友情链接信息。'
-    }
+    meta: { title: '博丽大结界' }
   },
   { 
     path: '/join', 
     name: 'Join', 
     component: Join,
-    meta: {
-      title: '加入我们',
-      description: '加入桂航绯想天同好会，了解入群方式与规则。'
-    }
+    meta: { title: '加入我们' }
   },
   { 
     path: '/login', 
     name: 'Login', 
     component: Login,
-    meta: {
-      title: '登录',
-      description: '管理员登录入口。',
-      robots: 'noindex, nofollow'
-    }
+    meta: { title: '登录', robots: 'noindex, nofollow' }
   },
   { 
     path: '/logs', 
     name: 'PublicLogs', 
     component: PublicLogs,
-    meta: {
-      title: '站点日志',
-      description: '公开的站点变更与日志信息。'
-    }
+    meta: { title: '站点日志' }
   },
   {
     path: '/admin',
     component: AdminLayout,
-    meta: {
-      robots: 'noindex, nofollow',
-      disableRouteProgress: true
-    },
+    meta: { robots: 'noindex, nofollow', disableRouteProgress: true },
     redirect: '/admin/activities',
     beforeEnter: (to, from, next) => {
       const store = useUserStore()
@@ -170,7 +179,8 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
   scrollBehavior(to, from, savedPosition) {
-    return savedPosition || { top: 0 }
+    if (savedPosition) return savedPosition
+    return { top: 0 }
   }
 })
 

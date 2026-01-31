@@ -28,8 +28,8 @@ const navLinks = [
       },
       { 
         name: '异变进行时', 
-        path: '/current-incident',
-        desc: '当前正在进行' // 这个是下一步的任务
+        path: '/events',
+        desc: '当前正在进行'
       }
     ]
   },
