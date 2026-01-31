@@ -20,8 +20,11 @@ const membersRoutes = require('./routes/members');
 const historyRoutes = require('./routes/history');
 const configRoutes = require('./routes/config');
 const uploadRoutes = require('./routes/upload');
+const uploadVisitorRoutes = require('./routes/upload_visitor');
 const logsRoutes = require('./routes/logs');
 const botRoutes = require('./routes/bot');
+// 引入新创建的 event 路由
+const eventRoutes = require('./routes/event');
 
 const app = express();
 
@@ -158,9 +161,12 @@ app.use('/api/activities', activitiesRoutes);
 app.use('/api/members', membersRoutes);
 app.use('/api/history', historyRoutes);
 app.use('/api/config', configRoutes);
+app.use('/api/upload/visitor', uploadVisitorRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/logs', logsRoutes);
 app.use('/api/bot', botRoutes);
+// 注册 /api/event
+app.use('/api/event', eventRoutes);
 
 app.use((req, res) => res.status(404).json({ message: 'Not Found' }));
 app.use((err, req, res, next) => {

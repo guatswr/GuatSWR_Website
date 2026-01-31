@@ -12,6 +12,7 @@ const isSuperAdmin = computed(() => userStore.isSuperAdmin)
 
 const menus = [
   { path: '/admin/activities', label: '📝 异变管理' },
+  { path: '/admin/events', label: '⚖️ 活动审核' },
   { path: '/admin/history', label: '📜 群史管理' },
   { path: '/admin/members', label: '👥 住民管理' },
   { path: '/admin/logs', label: '🔍 系统日志' },

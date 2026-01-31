@@ -14,6 +14,13 @@ const { banIp, unbanIp, cleanupExpired } = require('../middlewares/ban');
 
 const router = express.Router();
 
+// ==============================================================================
+// 1. 用户管理模块 (User Management)
+// ==============================================================================
+
+/**
+ * 获取所有管理员列表
+ */
 router.get('/users', authenticateToken, requireSuperAdmin, (req, res) => {
   db.all("SELECT id, username, role, avatar, twofa_enabled FROM users ORDER BY id ASC", [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -21,6 +28,9 @@ router.get('/users', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
+/**
+ * 删除管理员
+ */
 router.delete('/users/:id', authenticateToken, requireSuperAdmin, (req, res) => {
   if (parseInt(req.params.id) === req.user.id) return res.status(400).json({ message: "无法删除自己" });
   db.get("SELECT username FROM users WHERE id = ?", [req.params.id], (err, row) => {
@@ -33,6 +43,9 @@ router.delete('/users/:id', authenticateToken, requireSuperAdmin, (req, res) => 
   });
 });
 
+/**
+ * 强制重置管理员密码
+ */
 router.put('/users/:id/password', authenticateToken, requireSuperAdmin, (req, res) => {
   const validated = validate(resetPasswordSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
@@ -48,6 +61,9 @@ router.put('/users/:id/password', authenticateToken, requireSuperAdmin, (req, re
   });
 });
 
+/**
+ * 重置用户的二步验证 (2FA)
+ */
 router.put('/users/:id/twofa/reset', authenticateToken, requireSuperAdmin, (req, res) => {
   db.get("SELECT username FROM users WHERE id = ?", [req.params.id], (err, row) => {
     const targetName = row ? row.username : 'Unknown';
@@ -59,6 +75,13 @@ router.put('/users/:id/twofa/reset', authenticateToken, requireSuperAdmin, (req,
   });
 });
 
+// ==============================================================================
+// 2. 系统安全模块 (System Security)
+// ==============================================================================
+
+/**
+ * 强制刷新 Token 版本
+ */
 router.post('/token-version/refresh', authenticateToken, requireSuperAdmin, (req, res) => {
   db.get("SELECT value FROM site_config WHERE key = 'token_version'", [], (err, row) => {
     const current = Number(row?.value || 0);
@@ -71,6 +94,13 @@ router.post('/token-version/refresh', authenticateToken, requireSuperAdmin, (req
   });
 });
 
+// ==============================================================================
+// 3. 审计日志模块 (Audit Logs)
+// ==============================================================================
+
+/**
+ * 获取审计日志
+ */
 router.get('/logs', authenticateToken, (req, res) => {
   const page = parseInt(req.query.page) || 1;
   const limit = parseInt(req.query.limit) || 20;
@@ -99,6 +129,9 @@ router.get('/logs', authenticateToken, (req, res) => {
   });
 });
 
+/**
+ * 删除单条日志记录
+ */
 router.delete('/logs/:id', authenticateToken, requireSuperAdmin, (req, res) => {
   logDb.run("DELETE FROM audit_logs WHERE id = ?", [req.params.id], function(err) {
     if (err) return res.status(500).json({ error: err.message });
@@ -107,6 +140,13 @@ router.delete('/logs/:id', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
+// ==============================================================================
+// 4. 数据清理模块 (Data Maintenance)
+// ==============================================================================
+
+/**
+ * 清空回收站
+ */
 router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, (req, res) => {
   const result = { activities: 0, members: 0, history: 0 };
 
@@ -160,6 +200,13 @@ router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, (req, re
   })().catch((err) => res.status(500).json({ error: err.message }));
 });
 
+// ==============================================================================
+// 5. 封禁管理模块 (IP Ban Management)
+// ==============================================================================
+
+/**
+ * 获取被封禁的 IP 列表
+ */
 router.get('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
   cleanupExpired(() => {
     db.all('SELECT * FROM banned_ips ORDER BY created_at DESC', [], (err, rows) => {
@@ -169,6 +216,9 @@ router.get('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
+/**
+ * 手动添加 IP 封禁
+ */
 router.post('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
   const ip = String(req.body?.ip || '').trim();
   const reason = String(req.body?.reason || '').trim();
@@ -181,6 +231,9 @@ router.post('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
+/**
+ * 解除 IP 封禁
+ */
 router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, (req, res) => {
   const ip = String(req.params.ip || '').trim();
   if (!net.isIP(ip)) return res.status(400).json({ message: 'IP 格式不正确' });
@@ -190,6 +243,13 @@ router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
+// ==============================================================================
+// 6. 系统备份模块 (Backup Management)
+// ==============================================================================
+
+/**
+ * 获取备份设置
+ */
 router.get('/backups/settings', authenticateToken, requireSuperAdmin, (req, res) => {
   db.all("SELECT key, value FROM site_config WHERE key IN ('backup_enabled','backup_time','backup_last_run','backup_last_error')", [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
@@ -204,6 +264,9 @@ router.get('/backups/settings', authenticateToken, requireSuperAdmin, (req, res)
   });
 });
 
+/**
+ * 更新备份设置
+ */
 router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res) => {
   const enabled = !!req.body?.enabled;
   const time = String(req.body?.time || '').trim();
@@ -221,6 +284,9 @@ router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res
   });
 });
 
+/**
+ * 获取备份文件列表
+ */
 router.get('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
   try {
     ensureBackupDirs();
@@ -232,6 +298,9 @@ router.get('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
   }
 });
 
+/**
+ * 下载备份文件
+ */
 router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res) => {
   const { type, file } = req.query || {};
   const resolved = resolveBackupPath(type, file);
@@ -240,6 +309,9 @@ router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res)
   res.download(resolved.filePath, resolved.fileName);
 });
 
+/**
+ * 删除备份文件
+ */
 router.delete('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
   const { type, file } = req.query || {};
   const resolved = resolveBackupPath(type, file);
@@ -251,10 +323,94 @@ router.delete('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
+/**
+ * 手动触发备份
+ */
 router.post('/backups/run', authenticateToken, requireSuperAdmin, (req, res) => {
   runAutoBackup('manual')
     .then(() => res.json({ message: '备份完成' }))
     .catch((err) => res.status(500).json({ message: '备份失败', error: err.message }));
+});
+
+// ==============================================================================
+// 7. 事件审核与管理模块 (Event Management)
+// ==============================================================================
+
+/**
+ * 获取待审核的事件列表
+ */
+router.get('/events/pending', authenticateToken, (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = 20;
+  const offset = (page - 1) * limit;
+
+  db.get(`SELECT COUNT(*) as count FROM events WHERE status = 'pending'`, [], (err, countRow) => {
+    if (err) return res.status(500).json({ error: err.message });
+    
+    const sql = `SELECT * FROM events WHERE status = 'pending' ORDER BY created_at ASC LIMIT ? OFFSET ?`;
+    db.all(sql, [limit, offset], (err, rows) => {
+      if (err) return res.status(500).json({ error: err.message });
+      const items = rows.map(row => {
+        try { row.content = JSON.parse(row.content); } catch (e) { row.content = {}; }
+        return row;
+      });
+      res.json({ total: countRow.count, items });
+    });
+  });
+});
+
+/**
+ * 审核事件 (通过/驳回)
+ */
+router.post('/events/:id/review', authenticateToken, (req, res) => {
+  const { action } = req.body; 
+  const eventId = req.params.id;
+
+  if (!['approve', 'reject'].includes(action)) {
+    return res.status(400).json({ message: "Invalid action. Use 'approve' or 'reject'." });
+  }
+
+  const newStatus = action === 'approve' ? 'published' : 'rejected';
+
+  const sql = `UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
+  db.run(sql, [newStatus, eventId], function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ message: "Event not found" });
+
+    addLog(req.user.username, 'REVIEW_EVENT', `审核事件 EID: ${eventId} -> ${newStatus}`);
+    
+    res.json({ message: `操作成功，事件已${newStatus === 'published' ? '发布' : '驳回'}` });
+  });
+});
+
+/**
+ * 物理删除事件 (含关联文件)
+ * 警告: 此操作不可恢复，会同时删除数据库记录和存储的图片文件夹
+ */
+router.delete('/events/:id', authenticateToken, requireSuperAdmin, (req, res) => {
+  const eventId = req.params.id;
+  
+  db.run("DELETE FROM events WHERE id = ?", [eventId], async function(err) {
+    if (err) return res.status(500).json({ error: err.message });
+    if (this.changes === 0) return res.status(404).json({ message: "Event not found" });
+
+    // 删除数据库记录成功后，执行文件清理
+    try {
+      // 构造事件图片存储目录路径: backend/data/public/img/events/{eid}
+      const eventDir = path.join(IMG_ROOT_DIR, 'events', String(eventId));
+      
+      // 使用 deletePathSafe 安全递归删除目录
+      await deletePathSafe(eventDir);
+      
+      addLog(req.user.username, 'DELETE_EVENT', `物理删除事件 EID: ${eventId} (含文件)`);
+      res.json({ message: "删除成功，关联文件已清理" });
+    } catch (fileErr) {
+      // 文件删除失败不应影响接口返回成功（因为DB已经删了），但要记录错误
+      console.error(`Failed to delete event directory for EID ${eventId}:`, fileErr);
+      addLog(req.user.username, 'DELETE_EVENT_FILE_FAIL', `删除事件文件失败 EID: ${eventId}`);
+      res.json({ message: "数据库记录已删除，但部分文件可能残留" });
+    }
+  });
 });
 
 module.exports = router;

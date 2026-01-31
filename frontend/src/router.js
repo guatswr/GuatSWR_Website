@@ -31,6 +31,8 @@ const AdminLogs = () => import('./views/admin/Logs.vue')
 const AdminProfile = () => import('./views/admin/Profile.vue')
 const AdminUsers = () => import('./views/admin/Users.vue')
 const AdminBackups = () => import('./views/admin/Backups.vue')
+// 新增：事件审核管理页面
+const AdminEvents = () => import('./views/admin/Events.vue')
 
 const routes = [
   { 
@@ -170,6 +172,12 @@ const routes = [
           if (store.isSuperAdmin) next()
           else next('/admin/activities')
         }
+      },
+      // 新增：事件审核路由
+      { 
+        path: 'events', 
+        name: 'AdminEvents', 
+        component: AdminEvents 
       }
     ]
   }
