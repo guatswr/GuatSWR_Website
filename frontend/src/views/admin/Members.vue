@@ -20,7 +20,20 @@ const processingId = ref(null)
 // 头像上传状态
 const isUploadingAvatar = ref(false)
 
-const memForm = reactive({ id: null, name: '', role: '', bio: '', avatar: '', school: '', sort_order: 0 })
+const memForm = reactive({ id: null, name: '', role: '', bio: '', avatar: '', school: '', tags: [], sort_order: 0 })
+
+const tagsText = computed({
+  get() {
+    return Array.isArray(memForm.tags) ? memForm.tags.join('、') : ''
+  },
+  set(val) {
+    const next = String(val || '')
+      .split(/[,，、|/]/)
+      .map((t) => t.trim())
+      .filter(Boolean)
+    memForm.tags = Array.from(new Set(next))
+  }
+})
 
 // 学校代表色配置
 const schoolOptions = [
@@ -69,7 +82,7 @@ const uploadFile = async (file) => {
 
 const resetMemForm = () => {
   isEditingMember.value = false
-  Object.assign(memForm, { id: null, name: '', role: '', bio: '', avatar: '', school: '', sort_order: 0 })
+  Object.assign(memForm, { id: null, name: '', role: '', bio: '', avatar: '', school: '', tags: [], sort_order: 0 })
 }
 
 const handleAvatarUpload = async (e) => {
@@ -90,6 +103,7 @@ const handleAvatarUpload = async (e) => {
 const editMember = (m) => {
   isEditingMember.value = true
   Object.assign(memForm, JSON.parse(JSON.stringify(m)))
+  if (!Array.isArray(memForm.tags)) memForm.tags = []
   // 确保 sort_order 有值
   if (memForm.sort_order === undefined || memForm.sort_order === null) {
       memForm.sort_order = 0
@@ -208,6 +222,12 @@ const getSchoolColor = (n) => {
                 <input v-model.number="memForm.sort_order" type="number" class="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-100 outline-none text-center" placeholder="0">
              </div>
         </div>
+
+          <div>
+            <label class="text-xs text-gray-500 block mb-1">成分标签</label>
+            <input v-model="tagsText" class="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-100 outline-none" placeholder="如：STG高手、CS大手子、COS大手子">
+            <p class="text-[10px] text-gray-400 mt-1">多个标签用顿号/逗号/竖线分隔</p>
+          </div>
         
         <div>
             <label class="text-xs text-gray-500 block mb-1">简介</label>
@@ -288,7 +308,13 @@ const getSchoolColor = (n) => {
                 </div>
 
                 <div class="font-bold text-gray-800 text-sm truncate px-1">{{ mem.name }}</div>
-                <div class="text-xs text-gray-500 mb-3 truncate px-1">{{ mem.role || '成员' }}</div>
+                <div class="text-xs text-gray-500 mb-2 truncate px-1">{{ mem.role || '成员' }}</div>
+
+                <div v-if="mem.tags && mem.tags.length" class="flex flex-wrap justify-center gap-1.5 mb-3 px-1">
+                  <span v-for="tag in mem.tags" :key="tag" class="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-violet-100 text-violet-600 border border-violet-200">
+                    {{ tag }}
+                  </span>
+                </div>
 
                 <!-- 悬浮操作栏 -->
                 <div class="flex justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity bg-white/90 backdrop-blur-sm absolute bottom-2 left-2 right-2 py-1 rounded-lg shadow-sm border border-gray-100">

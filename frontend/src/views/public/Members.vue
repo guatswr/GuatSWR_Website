@@ -36,6 +36,11 @@ const getSchoolColor = (schoolName) => {
   return school ? school.color : '#9ca3af' // 默认灰色
 }
 
+const getMemberTags = (member) => {
+  if (!member || !Array.isArray(member.tags)) return []
+  return member.tags.map(t => String(t || '').trim()).filter(Boolean)
+}
+
 // 核心逻辑：确保数据完全按照 schoolOptions 的顺序排列，以实现色块聚合
 const parliamentData = computed(() => {
   if (!schoolStats.value.length) return []
@@ -272,9 +277,18 @@ const sortedMembers = computed(() => {
 
           <div class="text-center">
             <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1 font-serif">{{ member.name }}</h3>
-            <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-slate-800 text-blue-600 dark:text-blue-200 text-xs rounded-full font-bold mb-4 border border-blue-200 dark:border-slate-700">
+            <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-slate-800 text-blue-600 dark:text-blue-200 text-xs rounded-full font-bold mb-2 border border-blue-200 dark:border-slate-700">
               {{ member.role }}
             </span>
+            <div v-if="getMemberTags(member).length" class="flex flex-wrap justify-center gap-1.5 mb-4">
+              <span 
+                v-for="tag in getMemberTags(member)" 
+                :key="tag"
+                class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-violet-100 text-violet-600 border border-violet-200/70 dark:bg-violet-900/30 dark:text-violet-200 dark:border-violet-800/60"
+              >
+                {{ tag }}
+              </span>
+            </div>
             <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed italic border-t border-dashed border-gray-200 dark:border-slate-700 pt-4 relative">
               <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-900 px-2 text-gray-300 dark:text-gray-400 text-xs">Spell Card</span>
               "{{ member.bio }}"

@@ -10,6 +10,25 @@ const { notifyMemberAdded } = require('../utils/bot');
 
 const router = express.Router();
 
+const normalizeTags = (tags) => {
+  if (!Array.isArray(tags)) return [];
+  const cleaned = tags
+    .map((t) => String(t || '').trim())
+    .filter(Boolean);
+  return Array.from(new Set(cleaned));
+};
+
+const parseTags = (raw) => {
+  if (!raw) return [];
+  if (Array.isArray(raw)) return normalizeTags(raw);
+  if (typeof raw !== 'string') return [];
+  try {
+    return normalizeTags(JSON.parse(raw));
+  } catch {
+    return [];
+  }
+};
+
 const buildThumbUrl = (url) => {
   if (!url || typeof url !== 'string') return url;
   if (url.includes('-thumb.webp')) return url;
@@ -86,6 +105,7 @@ router.get('/', optionalAuth, (req, res) => {
 
     const list = (rows || []).map((row) => ({
       ...row,
+      tags: parseTags(row.tags),
       avatar_thumb: buildThumbUrl(row.avatar),
       avatar_original: row.avatar
     }));
@@ -100,11 +120,12 @@ router.get('/', optionalAuth, (req, res) => {
 router.post('/', authenticateToken, (req, res) => {
   const validated = validate(memberSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
-  const { name, role, bio, avatar, school, sort_order } = validated.data;
+  const { name, role, bio, avatar, school, sort_order, tags } = validated.data;
   const userDir = path.join(IMG_ROOT_DIR, 'user');
   (async () => {
     const movedAvatar = await moveStagedFile(avatar, userDir);
-    db.run("INSERT INTO members (name, role, bio, avatar, school, sort_order) VALUES (?, ?, ?, ?, ?, ?)", [name, role, bio, movedAvatar, school || '', sort_order || 0], function(err) {
+    const tagsText = JSON.stringify(normalizeTags(tags));
+    db.run("INSERT INTO members (name, role, bio, avatar, school, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)", [name, role, bio, movedAvatar, school || '', tagsText, sort_order || 0], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       addLog(req.user.username, 'CREATE_MEMBER', `添加成员: ${name}`);
       notifyMemberAdded({
@@ -122,11 +143,12 @@ router.post('/', authenticateToken, (req, res) => {
 router.put('/:id', authenticateToken, (req, res) => {
   const validated = validate(memberSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
-  const { name, role, bio, avatar, school, sort_order } = validated.data;
+  const { name, role, bio, avatar, school, sort_order, tags } = validated.data;
   const userDir = path.join(IMG_ROOT_DIR, 'user');
   (async () => {
     const movedAvatar = await moveStagedFile(avatar, userDir);
-    db.run("UPDATE members SET name=?, role=?, bio=?, avatar=?, school=?, sort_order=? WHERE id=?", [name, role, bio, movedAvatar, school || '', sort_order || 0, req.params.id], function(err) {
+    const tagsText = JSON.stringify(normalizeTags(tags));
+    db.run("UPDATE members SET name=?, role=?, bio=?, avatar=?, school=?, tags=?, sort_order=? WHERE id=?", [name, role, bio, movedAvatar, school || '', tagsText, sort_order || 0, req.params.id], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       addLog(req.user.username, 'UPDATE_MEMBER', `更新成员: ${name}`);
       res.json({ message: "成员更新成功" });

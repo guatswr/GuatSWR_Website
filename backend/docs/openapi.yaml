@@ -1465,6 +1465,10 @@ components:
         school:
           type: string
           nullable: true
+        tags:
+          type: array
+          items:
+            type: string
         sort_order:
           type: integer
         deleted_at:
@@ -1497,6 +1501,10 @@ components:
         school:
           type: string
           nullable: true
+        tags:
+          type: array
+          items:
+            type: string
         sort_order:
           type: integer
           nullable: true

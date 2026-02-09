@@ -40,6 +40,7 @@ const memberSchema = z.object({
   bio: z.string().max(2000).optional().nullable(),
   avatar: z.string().max(500).optional().nullable(),
   school: z.string().max(50).optional().nullable(),
+  tags: z.array(z.string().trim().max(30)).optional().default([]),
   sort_order: z.coerce.number().int().optional().default(0)
 });
 
