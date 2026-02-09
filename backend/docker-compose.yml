@@ -15,5 +15,7 @@ services:
       - /app/node_modules
       - ./data:/app/data
       - ./uploads:/app/uploads
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
     env_file:
       - .env
