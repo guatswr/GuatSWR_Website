@@ -2,7 +2,7 @@ openapi: 3.0.3
 info:
   title: Guatswr Web API
   version: 4.0
-  description: 核心模块 API 文档（auth、activities、members、history、config、upload、logs、bot）。
+  description: 核心模块 API 文档（auth、activities、members、history、event、config、upload、upload/visitor、logs、bot、admin）。
 servers:
   - url: /
 security:
@@ -268,6 +268,17 @@ paths:
           schema:
             type: string
             enum: ['0','1']
+        - in: query
+          name: original
+          schema:
+            type: string
+            enum: ['0','1']
+          description: 1 表示返回原图字段（avatar_original、avatar_thumb）
+        - in: query
+          name: school
+          schema:
+            type: string
+          description: 按学校筛选
       responses:
         '200':
           description: OK
@@ -300,6 +311,20 @@ paths:
           $ref: '#/components/responses/BadRequest'
         '401':
           $ref: '#/components/responses/Unauthorized'
+  /api/members/stats/schools:
+    get:
+      summary: 学校成员统计
+      tags: [members]
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/MemberSchoolStat'
   /api/members/{id}:
     put:
       summary: 更新成员
@@ -525,6 +550,137 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '413':
           $ref: '#/components/responses/PayloadTooLarge'
+  /api/upload/visitor:
+    post:
+      summary: 访客上传事件图片
+      tags: [upload]
+      security: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+                eid:
+                  type: string
+                  description: 事件ID（也可用 query 参数）
+      parameters:
+        - in: query
+          name: eid
+          schema:
+            type: string
+          description: 事件ID（也可用表单字段）
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UploadVisitorResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '413':
+          $ref: '#/components/responses/PayloadTooLarge'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/event/draft:
+    post:
+      summary: 创建事件草稿
+      tags: [event]
+      security: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventDraftResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/event:
+    get:
+      summary: 事件列表
+      tags: [event]
+      security: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - in: query
+          name: type
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventListResponse'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/event/{id}:
+    get:
+      summary: 事件详情
+      tags: [event]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+    put:
+      summary: 提交/更新事件
+      tags: [event]
+      security: []
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/EventUpdateRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/EventUpdateResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
   /api/logs:
     get:
       summary: 审计日志列表
@@ -998,6 +1154,76 @@ paths:
           $ref: '#/components/responses/Unauthorized'
         '403':
           $ref: '#/components/responses/Forbidden'
+  /api/admin/events/pending:
+    get:
+      summary: 待审核事件列表
+      tags: [admin]
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AdminEventPendingListResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/admin/events/{id}/review:
+    post:
+      summary: 审核事件
+      tags: [admin]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AdminEventReviewRequest'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+  /api/admin/events/{id}:
+    delete:
+      summary: 删除事件(含文件)
+      description: 仅 super_admin 可用。
+      tags: [admin]
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/MessageResponse'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
 components:
   securitySchemes:
     bearerAuth:
@@ -1230,6 +1456,12 @@ components:
         avatar:
           type: string
           nullable: true
+        avatar_thumb:
+          type: string
+          nullable: true
+        avatar_original:
+          type: string
+          nullable: true
         school:
           type: string
           nullable: true
@@ -1241,6 +1473,13 @@ components:
         deleted_by:
           type: integer
           nullable: true
+    MemberSchoolStat:
+      type: object
+      properties:
+        school:
+          type: string
+        count:
+          type: integer
     MemberInput:
       type: object
       required: [name, role, bio, avatar]
@@ -1301,6 +1540,76 @@ components:
         sort_order:
           type: integer
           nullable: true
+    Event:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+          nullable: true
+        content:
+          type: object
+        status:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        visitor_ip:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+        created_by_name:
+          type: string
+          nullable: true
+        created_by_avatar:
+          type: string
+          nullable: true
+    EventListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+    EventDraftResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        message:
+          type: string
+    EventUpdateRequest:
+      type: object
+      properties:
+        type:
+          type: string
+        title:
+          type: string
+        content:
+          type: object
+        submit:
+          type: boolean
+    EventUpdateResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        id:
+          type: integer
     ConfigMap:
       type: object
       additionalProperties:
@@ -1367,6 +1676,18 @@ components:
         thumbUrl:
           type: string
           nullable: true
+    UploadVisitorResponse:
+      type: object
+      properties:
+        message:
+          type: string
+        eid:
+          type: string
+        url:
+          type: string
+        thumbUrl:
+          type: string
+          nullable: true
     LogItem:
       type: object
       properties:
@@ -1388,6 +1709,22 @@ components:
         user_avatar:
           type: string
           nullable: true
+    AdminEventPendingListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/Event'
+    AdminEventReviewRequest:
+      type: object
+      required: [action]
+      properties:
+        action:
+          type: string
+          enum: [approve, reject]
     LogListResponse:
       type: object
       properties:
