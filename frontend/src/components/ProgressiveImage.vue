@@ -15,6 +15,8 @@ const wrapperRef = ref(null)
 const isInView = ref(false)
 const fullLoaded = ref(false)
 const hasError = ref(false)
+const retryCount = ref(0)
+const maxRetry = 3
 let observer = null
 
 const placeholderSrc = computed(() => props.thumb || '')
@@ -29,12 +31,30 @@ const displaySrc = computed(() => {
 
 const shouldBlur = computed(() => !fullLoaded.value && !!placeholderSrc.value)
 
-const startLoad = () => {
-  if (!props.src || fullLoaded.value || hasError.value) return
+const scheduleRetry = () => {
+  if (retryCount.value >= maxRetry) return
+  const delay = 1500 * (retryCount.value + 1)
+  retryCount.value += 1
+  setTimeout(() => {
+    if (!fullLoaded.value && props.src) {
+      hasError.value = false
+      startLoad(true)
+    }
+  }, delay)
+}
+
+const startLoad = (force = false) => {
+  if (!props.src || fullLoaded.value || (hasError.value && !force)) return
   const img = new Image()
   img.src = props.src
-  img.onload = () => { fullLoaded.value = true }
-  img.onerror = () => { hasError.value = true }
+  img.onload = () => {
+    fullLoaded.value = true
+    hasError.value = false
+  }
+  img.onerror = () => {
+    hasError.value = true
+    scheduleRetry()
+  }
 }
 
 const onIntersect = (entries) => {
@@ -67,6 +87,7 @@ onBeforeUnmount(() => {
 watch(() => props.src, () => {
   fullLoaded.value = false
   hasError.value = false
+  retryCount.value = 0
   if (isInView.value) startLoad()
 })
 </script>

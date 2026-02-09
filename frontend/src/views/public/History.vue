@@ -148,8 +148,17 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#f8fafc] dark:bg-slate-950 py-16 font-sans">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+  <div class="min-h-screen bg-[#f8fafc] dark:bg-slate-950 py-16 font-sans relative overflow-hidden history-bg">
+    <!-- 背景装饰层 -->
+    <div class="absolute inset-0 pointer-events-none">
+      <div class="absolute -top-24 -left-20 w-72 h-72 bg-red-200/50 dark:bg-red-500/20 rounded-full blur-3xl"></div>
+      <div class="absolute top-1/3 -right-24 w-96 h-96 bg-amber-200/40 dark:bg-amber-500/15 rounded-full blur-3xl"></div>
+      <div class="absolute bottom-0 left-1/3 w-80 h-80 bg-rose-200/40 dark:bg-rose-500/15 rounded-full blur-3xl"></div>
+      <div class="absolute top-20 left-1/2 w-2 h-2 rounded-full bg-red-300/60 dark:bg-red-400/40 shadow-[0_0_20px_rgba(239,68,68,0.5)]"></div>
+      <div class="absolute top-64 left-24 w-1.5 h-1.5 rounded-full bg-amber-300/70 dark:bg-amber-400/40 shadow-[0_0_16px_rgba(251,191,36,0.5)]"></div>
+      <div class="absolute bottom-40 right-32 w-2.5 h-2.5 rounded-full bg-rose-300/70 dark:bg-rose-400/40 shadow-[0_0_18px_rgba(251,113,133,0.5)]"></div>
+    </div>
+    <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <!-- 页面标题 -->
       <div class="text-center mb-16">
@@ -271,6 +280,37 @@ onBeforeUnmount(() => {
 </template>
 
 <style>
+.history-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    radial-gradient(circle at 20% 10%, rgba(239, 68, 68, 0.10), transparent 45%),
+    radial-gradient(circle at 80% 20%, rgba(251, 191, 36, 0.10), transparent 50%),
+    radial-gradient(circle at 30% 80%, rgba(244, 63, 94, 0.10), transparent 50%);
+  opacity: 0.8;
+}
+
+.history-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0.0) 40%),
+    radial-gradient(rgba(148, 163, 184, 0.25) 1px, transparent 1px);
+  background-size: auto, 18px 18px;
+  opacity: 0.35;
+}
+
+.dark .history-bg::after {
+  background-image:
+    linear-gradient(180deg, rgba(2, 6, 23, 0.7) 0%, rgba(2, 6, 23, 0) 40%),
+    radial-gradient(rgba(51, 65, 85, 0.35) 1px, transparent 1px);
+  opacity: 0.25;
+}
+
 @keyframes fadeIn {
   from { opacity: 0; transform: scale(0.95); }
   to { opacity: 1; transform: scale(1); }
