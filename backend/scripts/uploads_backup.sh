@@ -4,7 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PUBLIC_DIR="$ROOT_DIR/data/public"
 BACKUP_DIR="$ROOT_DIR/backups/uploads"
-DATE_TAG="$(date +%Y%m%d_%H%M%S)"
+DATE_TAG="${BACKUP_DATE_TAG:-$(date +%Y%m%d_%H%M%S)}"
 
 mkdir -p "$BACKUP_DIR"
 

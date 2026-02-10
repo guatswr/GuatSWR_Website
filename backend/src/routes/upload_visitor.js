@@ -144,4 +144,65 @@ router.post('/', uploadLimiter, upload.single('file'), async (req, res) => {
   }
 });
 
+// 访客头像上传 (报名头像)
+router.post('/avatar', uploadLimiter, upload.single('file'), async (req, res) => {
+  const cleanup = async () => {
+    if (req.file && fs.existsSync(req.file.path)) await fs.promises.unlink(req.file.path).catch(() => {});
+  };
+
+  if (!req.file) return res.status(400).json({ message: '文件上传失败' });
+
+  const eid = req.body.eid || req.query.eid;
+  if (!eid) {
+    await cleanup();
+    return res.status(400).json({ message: '缺少 Event ID' });
+  }
+
+  try {
+    const eventRow = await new Promise((resolve, reject) => {
+      db.get('SELECT id, status FROM events WHERE id = ?', [eid], (err, row) => {
+        if (err) return reject(err);
+        resolve(row || null);
+      });
+    });
+
+    if (!eventRow) {
+      await cleanup();
+      return res.status(404).json({ message: 'Event not found' });
+    }
+
+    if (!['published', 'ongoing', 'ended', 'settled'].includes(eventRow.status)) {
+      await cleanup();
+      return res.status(403).json({ message: '当前状态不允许上传头像' });
+    }
+
+    const ok = await validateUploadedFile(req.file);
+    if (!ok) {
+      await cleanup();
+      return res.status(400).json({ message: '不支持的文件内容' });
+    }
+
+    const avatarDir = path.join(EVENT_IMG_ROOT, String(eid), 'avatars');
+    if (!fs.existsSync(avatarDir)) {
+      await fs.promises.mkdir(avatarDir, { recursive: true });
+    }
+
+    const finalFileName = req.file.filename;
+    const finalFilePath = path.join(avatarDir, finalFileName);
+    await fs.promises.rename(req.file.path, finalFilePath);
+    await fs.promises.chmod(finalFilePath, 0o644);
+
+    const publicUrlBase = `/uploads/img/events/${eid}/avatars`;
+    res.json({
+      message: 'Upload success',
+      eid,
+      url: `${publicUrlBase}/${finalFileName}`
+    });
+  } catch (err) {
+    console.error('Visitor avatar upload error:', err);
+    await cleanup();
+    res.status(500).json({ message: '服务器内部错误' });
+  }
+});
+
 module.exports = router;

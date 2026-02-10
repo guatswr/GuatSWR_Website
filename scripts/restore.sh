@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-if [[ $# -lt 2 ]]; then
-  echo "Usage: $0 <db_backup.tar.gz|db_backup.db> <uploads_backup.tar.gz>" >&2
+if [[ $# -lt 1 ]]; then
+  echo "Usage: $0 <full_backup.tar.gz|db_backup.tar.gz|db_backup.db> [uploads_backup.tar.gz]" >&2
   exit 1
 fi
 
@@ -12,8 +12,24 @@ PUBLIC_DIR="$ROOT_DIR/backend/data/public"
 MAIN_DB_PATH="$DATA_DIR/guatswr_web_main.db"
 LOG_DB_PATH="$DATA_DIR/guatswr_web_logs.db"
 
-DB_BACKUP="$1"
-UPLOADS_BACKUP="$2"
+DB_BACKUP=""
+UPLOADS_BACKUP=""
+TMP_BUNDLE_DIR=""
+
+if [[ $# -eq 1 ]]; then
+  TMP_BUNDLE_DIR="$(mktemp -d "$DATA_DIR/restore_bundle_XXXX")"
+  tar -xzf "$1" -C "$TMP_BUNDLE_DIR"
+  DB_BACKUP="$(ls "$TMP_BUNDLE_DIR"/db_*.tar.gz 2>/dev/null | head -n 1 || true)"
+  UPLOADS_BACKUP="$(ls "$TMP_BUNDLE_DIR"/uploads_*.tar.gz 2>/dev/null | head -n 1 || true)"
+  if [[ -z "$DB_BACKUP" || -z "$UPLOADS_BACKUP" ]]; then
+    rm -rf "$TMP_BUNDLE_DIR"
+    echo "Invalid full backup: $1" >&2
+    exit 1
+  fi
+else
+  DB_BACKUP="$1"
+  UPLOADS_BACKUP="$2"
+fi
 
 mkdir -p "$DATA_DIR" "$PUBLIC_DIR"
 
@@ -50,5 +66,9 @@ rm -f "$MAIN_DB_PATH"-wal "$MAIN_DB_PATH"-shm "$LOG_DB_PATH"-wal "$LOG_DB_PATH"-
 # 恢复上传与资源文件（public 目录）
 rm -rf "$PUBLIC_DIR"/*
 tar -xzf "$UPLOADS_BACKUP" -C "$PUBLIC_DIR"
+
+if [[ -n "$TMP_BUNDLE_DIR" ]]; then
+  rm -rf "$TMP_BUNDLE_DIR"
+fi
 
 echo "Restore OK"

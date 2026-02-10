@@ -290,9 +290,8 @@ router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res
 router.get('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
   try {
     ensureBackupDirs();
-    const dbList = listBackups('db');
-    const uploadsList = listBackups('uploads');
-    res.json({ db: dbList, uploads: uploadsList });
+    const fullList = listBackups('full');
+    res.json({ full: fullList });
   } catch (err) {
     res.status(500).json({ message: '加载备份列表失败', error: err.message });
   }
@@ -303,6 +302,7 @@ router.get('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
  */
 router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res) => {
   const { type, file } = req.query || {};
+  if (type && type !== 'full') return res.status(400).json({ message: '仅支持完整备份下载' });
   const resolved = resolveBackupPath(type, file);
   if (!resolved) return res.status(404).json({ message: '备份文件不存在' });
   addLog(req.user.username, 'DOWNLOAD_BACKUP', `下载备份: ${resolved.type}/${resolved.fileName}`);
@@ -314,6 +314,7 @@ router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res)
  */
 router.delete('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
   const { type, file } = req.query || {};
+  if (type && type !== 'full') return res.status(400).json({ message: '仅支持完整备份删除' });
   const resolved = resolveBackupPath(type, file);
   if (!resolved) return res.status(404).json({ message: '备份文件不存在' });
   fs.unlink(resolved.filePath, (err) => {

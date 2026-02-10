@@ -12,7 +12,7 @@ if [[ "$LOG_DB_PATH" != /* ]]; then
   LOG_DB_PATH="$DATA_DIR/$LOG_DB_PATH"
 fi
 BACKUP_DIR="$ROOT_DIR/backups/db"
-DATE_TAG="$(date +%Y%m%d_%H%M%S)"
+DATE_TAG="${BACKUP_DATE_TAG:-$(date +%Y%m%d_%H%M%S)}"
 
 mkdir -p "$BACKUP_DIR"
 

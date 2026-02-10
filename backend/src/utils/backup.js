@@ -8,11 +8,16 @@ const findProjectRoot = () => {
     const scriptsDir = path.join(dir, 'scripts');
     const dbScript = path.join(scriptsDir, 'db_backup.sh');
     const uploadsScript = path.join(scriptsDir, 'uploads_backup.sh');
-    if (fs.existsSync(dbScript) && fs.existsSync(uploadsScript)) return dir;
+    const fullScript = path.join(scriptsDir, 'backup_all.sh');
+    if (fs.existsSync(dbScript) && fs.existsSync(uploadsScript) && fs.existsSync(fullScript)) return dir;
     dir = path.dirname(dir);
   }
   const cwdScripts = path.join(process.cwd(), 'scripts');
-  if (fs.existsSync(path.join(cwdScripts, 'db_backup.sh')) && fs.existsSync(path.join(cwdScripts, 'uploads_backup.sh'))) {
+  if (
+    fs.existsSync(path.join(cwdScripts, 'db_backup.sh'))
+    && fs.existsSync(path.join(cwdScripts, 'uploads_backup.sh'))
+    && fs.existsSync(path.join(cwdScripts, 'backup_all.sh'))
+  ) {
     return process.cwd();
   }
   return path.resolve(__dirname, '..', '..');
@@ -22,18 +27,31 @@ const ROOT_DIR = findProjectRoot();
 const BACKUP_ROOT = path.join(ROOT_DIR, 'backups');
 const DB_BACKUP_DIR = path.join(BACKUP_ROOT, 'db');
 const UPLOADS_BACKUP_DIR = path.join(BACKUP_ROOT, 'uploads');
+const FULL_BACKUP_DIR = path.join(BACKUP_ROOT, 'full');
 const DB_BACKUP_SCRIPT = path.join(ROOT_DIR, 'scripts', 'db_backup.sh');
 const UPLOADS_BACKUP_SCRIPT = path.join(ROOT_DIR, 'scripts', 'uploads_backup.sh');
+const FULL_BACKUP_SCRIPT = path.join(ROOT_DIR, 'scripts', 'backup_all.sh');
 
 const ensureBackupDirs = () => {
-  [BACKUP_ROOT, DB_BACKUP_DIR, UPLOADS_BACKUP_DIR].forEach((dir) => {
+  [BACKUP_ROOT, DB_BACKUP_DIR, UPLOADS_BACKUP_DIR, FULL_BACKUP_DIR].forEach((dir) => {
     if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
   });
 };
 
-const normalizeType = (type) => (type === 'uploads' ? 'uploads' : 'db');
+const normalizeType = (type) => {
+  const safeType = String(type || '').trim();
+  if (!safeType) return 'full';
+  if (safeType === 'uploads') return 'uploads';
+  if (safeType === 'full' || safeType === 'all') return 'full';
+  return 'db';
+};
 
-const getBackupDir = (type) => (normalizeType(type) === 'uploads' ? UPLOADS_BACKUP_DIR : DB_BACKUP_DIR);
+const getBackupDir = (type) => {
+  const targetType = normalizeType(type);
+  if (targetType === 'uploads') return UPLOADS_BACKUP_DIR;
+  if (targetType === 'full') return FULL_BACKUP_DIR;
+  return DB_BACKUP_DIR;
+};
 
 const listBackups = (type) => {
   ensureBackupDirs();
@@ -72,8 +90,10 @@ module.exports = {
   BACKUP_ROOT,
   DB_BACKUP_DIR,
   UPLOADS_BACKUP_DIR,
+  FULL_BACKUP_DIR,
   DB_BACKUP_SCRIPT,
   UPLOADS_BACKUP_SCRIPT,
+  FULL_BACKUP_SCRIPT,
   ensureBackupDirs,
   listBackups,
   resolveBackupPath

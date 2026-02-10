@@ -1,6 +1,13 @@
+<script setup>
+import EventBoard from '../../components/events/EventBoard.vue'
+</script>
+
 <template>
-  <div class="p-8 text-center text-gray-500 dark:text-gray-400">
-    <h2 class="text-2xl font-bold mb-2">则赛</h2>
-    <p>施工中... Coming Soon</p>
-  </div>
+  <EventBoard
+    type="match"
+    title="则赛"
+    subtitle="报名挑战制胜规则，战绩将进入桂航排行。"
+    allow-create-mode="none"
+    :enable-signup="true"
+  />
 </template>

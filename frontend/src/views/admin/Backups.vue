@@ -10,8 +10,7 @@ const isSuperAdmin = computed(() => userStore.isSuperAdmin)
 // Data
 const settings = reactive({ enabled: false, time: '02:30', lastRun: '', lastError: '' })
 // 初始化为空数组避免 undefined 报错
-const dbBackups = ref([])
-const uploadsBackups = ref([])
+const backups = ref([])
 
 // 页面级 Loading (用于全量刷新、手动备份等互斥操作)
 const pageLoading = ref(false)
@@ -57,8 +56,7 @@ const fetchSettings = async () => {
 const fetchBackups = async () => {
   try {
     const res = await axios.get('/api/admin/backups')
-    dbBackups.value = res.data?.db || []
-    uploadsBackups.value = res.data?.uploads || []
+    backups.value = res.data?.full || res.data?.backups || []
   } catch (e) {
     ElMessage.error('加载备份列表失败')
   }
@@ -66,7 +64,7 @@ const fetchBackups = async () => {
 
 const runBackup = async () => {
   try {
-    await ElMessageBox.confirm('确认立即执行一次数据库与上传文件备份？\n这可能需要几分钟时间，请勿关闭页面。', '手动备份', { 
+    await ElMessageBox.confirm('确认立即执行一次完整备份并打包下载文件？\n这可能需要几分钟时间，请勿关闭页面。', '手动备份', { 
       type: 'warning',
       confirmButtonText: '立即执行',
       cancelButtonText: '取消'
@@ -162,11 +160,7 @@ const deleteBackup = async (item) => {
     ElMessage.success('已删除')
     
     // 乐观更新：先从界面移除，无需等待列表接口刷新
-    if (item.type === 'db') {
-      dbBackups.value = dbBackups.value.filter(b => b.name !== item.name)
-    } else {
-      uploadsBackups.value = uploadsBackups.value.filter(b => b.name !== item.name)
-    }
+    backups.value = backups.value.filter(b => b.name !== item.name)
     
     // 后台静默同步
     fetchBackups()
@@ -253,10 +247,10 @@ onMounted(() => {
       </div>
     </div>
 
-    <!-- 数据库备份列表 -->
+    <!-- 备份列表 -->
     <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-blue-500">
       <div class="flex items-center justify-between mb-4">
-        <h2 class="font-bold text-lg flex items-center gap-2">📦 数据库备份 <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{{ dbBackups.length }}</span></h2>
+        <h2 class="font-bold text-lg flex items-center gap-2">📦 完整备份 <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{{ backups.length }}</span></h2>
         <button @click="fetchBackups" class="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1">
             刷新
         </button>
@@ -274,80 +268,31 @@ onMounted(() => {
             </tr>
           </thead>
           <tbody class="divide-y divide-gray-100">
-            <tr v-for="item in dbBackups" :key="item.name" class="hover:bg-gray-50 transition group">
+            <tr v-for="item in backups" :key="item.name" class="hover:bg-gray-50 transition group">
               <td class="p-3 font-mono text-xs text-gray-600">{{ item.name }}</td>
               <td class="p-3 text-gray-800">{{ formatSize(item.size) }}</td>
               <td class="p-3 text-gray-500 whitespace-nowrap">{{ formatTime(item.mtime) }}</td>
               <td class="p-3 text-right">
                 <div class="flex items-center justify-end gap-3">
                     <button 
-                        @click="downloadBackup({...item, type: 'db'})" 
-                        :disabled="download.active || isItemProcessing({...item, type: 'db'})"
+                        @click="downloadBackup({...item, type: 'full'})" 
+                        :disabled="download.active || isItemProcessing({...item, type: 'full'})"
                         class="text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
                     >
-                        {{ isItemProcessing({...item, type: 'db'}) && download.name === item.name ? '下载中' : '下载' }}
+                        {{ isItemProcessing({...item, type: 'full'}) && download.name === item.name ? '下载中' : '下载' }}
                     </button>
                     <button 
-                        @click="deleteBackup({...item, type: 'db'})" 
-                        :disabled="isItemProcessing({...item, type: 'db'})"
+                        @click="deleteBackup({...item, type: 'full'})" 
+                        :disabled="isItemProcessing({...item, type: 'full'})"
                         class="text-red-500 hover:text-red-700 disabled:opacity-30 disabled:cursor-not-allowed"
                     >
-                        {{ isItemProcessing({...item, type: 'db'}) && download.name !== item.name ? '...' : '删除' }}
+                        {{ isItemProcessing({...item, type: 'full'}) && download.name !== item.name ? '...' : '删除' }}
                     </button>
                 </div>
               </td>
             </tr>
-            <tr v-if="dbBackups.length === 0">
-              <td class="p-8 text-center text-gray-400" colspan="4">暂无数据库备份</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- 上传文件备份列表 -->
-    <div class="bg-white p-6 rounded-xl shadow-sm border-t-4 border-purple-500">
-      <div class="flex items-center justify-between mb-4">
-        <h2 class="font-bold text-lg flex items-center gap-2">🧳 附件备份 <span class="text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{{ uploadsBackups.length }}</span></h2>
-        <button @click="fetchBackups" class="text-sm text-purple-600 hover:text-purple-800">刷新</button>
-      </div>
-
-      <div class="overflow-x-auto">
-        <table class="w-full text-sm text-left">
-          <thead class="bg-gray-50 text-gray-700 uppercase text-xs">
-            <tr>
-              <th class="p-3 rounded-l-lg">文件名</th>
-              <th class="p-3 w-24">大小</th>
-              <th class="p-3 w-40">时间</th>
-              <th class="p-3 text-right w-32 rounded-r-lg">操作</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-gray-100">
-            <tr v-for="item in uploadsBackups" :key="item.name" class="hover:bg-gray-50 transition">
-              <td class="p-3 font-mono text-xs text-gray-600">{{ item.name }}</td>
-              <td class="p-3 text-gray-800">{{ formatSize(item.size) }}</td>
-              <td class="p-3 text-gray-500 whitespace-nowrap">{{ formatTime(item.mtime) }}</td>
-              <td class="p-3 text-right">
-                <div class="flex items-center justify-end gap-3">
-                    <button 
-                        @click="downloadBackup({...item, type: 'uploads'})" 
-                        :disabled="download.active || isItemProcessing({...item, type: 'uploads'})"
-                        class="text-blue-600 hover:text-blue-800 disabled:opacity-30 disabled:cursor-not-allowed font-medium"
-                    >
-                         {{ isItemProcessing({...item, type: 'uploads'}) && download.name === item.name ? '下载中' : '下载' }}
-                    </button>
-                    <button 
-                        @click="deleteBackup({...item, type: 'uploads'})" 
-                        :disabled="isItemProcessing({...item, type: 'uploads'})"
-                        class="text-red-500 hover:text-red-700 disabled:opacity-30 disabled:cursor-not-allowed"
-                    >
-                         {{ isItemProcessing({...item, type: 'uploads'}) && download.name !== item.name ? '...' : '删除' }}
-                    </button>
-                </div>
-              </td>
-            </tr>
-            <tr v-if="uploadsBackups.length === 0">
-              <td class="p-8 text-center text-gray-400" colspan="4">暂无附件备份</td>
+            <tr v-if="backups.length === 0">
+              <td class="p-8 text-center text-gray-400" colspan="4">暂无备份</td>
             </tr>
           </tbody>
         </table>

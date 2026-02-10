@@ -1,6 +1,6 @@
 const { execFile } = require('child_process');
 const { db, addLog } = require('../models/db');
-const { DB_BACKUP_SCRIPT, UPLOADS_BACKUP_SCRIPT } = require('./backup');
+const { FULL_BACKUP_SCRIPT } = require('./backup');
 
 const CHECK_INTERVAL_MS = 30 * 1000;
 let timer = null;
@@ -40,8 +40,7 @@ const getLocalDate = (date = new Date()) => {
 };
 
 const runAutoBackup = async (trigger = 'schedule') => {
-  await runScript(DB_BACKUP_SCRIPT);
-  await runScript(UPLOADS_BACKUP_SCRIPT);
+  await runScript(FULL_BACKUP_SCRIPT);
   const today = getLocalDate();
   await setSetting('backup_last_run', today);
   await setSetting('backup_last_error', '');

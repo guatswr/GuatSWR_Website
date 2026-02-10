@@ -1,6 +1,12 @@
+<script setup>
+import EventBoard from '../../components/events/EventBoard.vue'
+</script>
+
 <template>
-  <div class="p-8 text-center text-gray-500 dark:text-gray-400">
-    <h2 class="text-2xl font-bold mb-2">线下聚会</h2>
-    <p>施工中... Coming Soon</p>
-  </div>
+  <EventBoard
+    type="gathering"
+    title="线下聚会"
+    subtitle="定好时间与地点，组织线下小聚或大聚。"
+    allow-create-mode="none"
+  />
 </template>

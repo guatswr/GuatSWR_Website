@@ -1,8 +1,52 @@
 const express = require('express');
 const { db, addLog } = require('../models/db');
-const { authenticateToken, optionalAuth } = require('../middlewares/auth');
+const { authenticateToken, optionalAuth, requireAdmin } = require('../middlewares/auth');
+const { callBotHook } = require('../utils/botHooks');
 
 const router = express.Router();
+
+const PUBLIC_STATUSES = ['published', 'ongoing', 'ended', 'settled'];
+const SIGNUP_TYPES = ['match', 'stg'];
+const ADMIN_STATUSES = ['draft', 'pending', 'published', 'ongoing', 'ended', 'settled', 'rejected', 'deleted'];
+
+const dbGet = (sql, params = []) => new Promise((resolve, reject) => {
+  db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
+});
+const dbAll = (sql, params = []) => new Promise((resolve, reject) => {
+  db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows || [])));
+});
+const dbRun = (sql, params = []) => new Promise((resolve, reject) => {
+  db.run(sql, params, function(err) {
+    if (err) return reject(err);
+    resolve(this);
+  });
+});
+
+const parseContent = (row) => {
+  const next = { ...row };
+  try { next.content = JSON.parse(row.content || '{}'); } catch (e) { next.content = {}; }
+  return next;
+};
+
+const normalizeStatusList = (raw) => {
+  if (!raw) return ADMIN_STATUSES;
+  const tokens = String(raw).split(',').map((s) => s.trim()).filter(Boolean);
+  const filtered = tokens.filter((s) => ADMIN_STATUSES.includes(s));
+  return filtered.length > 0 ? filtered : ADMIN_STATUSES;
+};
+
+const isPublicStatus = (status) => PUBLIC_STATUSES.includes(status);
+const isSignupType = (type) => SIGNUP_TYPES.includes(type);
+const getActor = (req) => (req.user ? { id: req.user.id, username: req.user.username, role: req.user.role } : null);
+const toParticipantPublic = (row) => ({
+  id: row.id,
+  common_id: row.common_id,
+  qq: row.qq,
+  avatar: row.avatar,
+  pilot_source: row.pilot_source,
+  machine_sign: row.machine_sign,
+  created_at: row.created_at
+});
 
 // 初始化 events 表
 db.run(`
@@ -12,7 +56,7 @@ db.run(`
     title TEXT,
     content TEXT DEFAULT '{}',
     status TEXT DEFAULT 'draft',
-    created_by INTEGER, 
+    created_by INTEGER,
     visitor_ip TEXT,
     created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
@@ -21,6 +65,30 @@ db.run(`
   if (err) console.error('Failed to create events table:', err);
 });
 
+db.run(`
+  CREATE TABLE IF NOT EXISTS event_participants (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    event_id INTEGER NOT NULL,
+    user_id INTEGER,
+    visitor_ip TEXT,
+    common_id TEXT,
+    machine_sign TEXT,
+    pilot_source TEXT,
+    qq TEXT,
+    avatar TEXT,
+    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(event_id, user_id),
+    UNIQUE(event_id, visitor_ip),
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
+  )
+`, (err) => {
+  if (err) console.error('Failed to create event_participants table:', err);
+});
+db.run('CREATE INDEX IF NOT EXISTS idx_event_participants_event ON event_participants(event_id)');
+db.run('CREATE INDEX IF NOT EXISTS idx_event_participants_user ON event_participants(user_id)');
+db.run('CREATE INDEX IF NOT EXISTS idx_event_participants_ip ON event_participants(visitor_ip)');
+
 // ==========================================
 //  访客/公共接口
 // ==========================================
@@ -28,16 +96,16 @@ db.run(`
 // 1. 创建草稿 (获取 EID)
 router.post('/draft', optionalAuth, (req, res) => {
   const userId = req.user ? req.user.id : null;
-  const ip = req.ip; 
-  
+  const ip = req.ip;
+
   const sql = `INSERT INTO events (status, created_by, visitor_ip) VALUES ('draft', ?, ?)`;
-  
+
   db.run(sql, [userId, ip], function(err) {
     if (err) return res.status(500).json({ error: err.message });
     const newEventId = this.lastID;
-    res.json({ 
-      id: newEventId, 
-      message: "草稿创建成功" 
+    res.json({
+      id: newEventId,
+      message: '草稿创建成功'
     });
   });
 });
@@ -47,29 +115,29 @@ router.put('/:id', optionalAuth, (req, res) => {
   const { type, title, content, submit } = req.body;
   const eventId = req.params.id;
 
-  db.get("SELECT id, status FROM events WHERE id = ?", [eventId], (checkErr, row) => {
+  db.get('SELECT id, status FROM events WHERE id = ?', [eventId], (checkErr, row) => {
     if (checkErr) return res.status(500).json({ error: checkErr.message });
-    if (!row) return res.status(404).json({ message: "Event not found" });
+    if (!row) return res.status(404).json({ message: 'Event not found' });
 
     // 已发布状态下，普通访客不可修改
     if (row.status === 'published' && !req.user) {
-      return res.status(403).json({ message: "事件已发布，无法修改" });
+      return res.status(403).json({ message: '事件已发布，无法修改' });
     }
 
-    let updates = [];
-    let params = [];
+    const updates = [];
+    const params = [];
 
     if (type) { updates.push('type = ?'); params.push(type); }
     if (title) { updates.push('title = ?'); params.push(title); }
     if (content) { updates.push('content = ?'); params.push(JSON.stringify(content)); }
-    
+
     // 提交审核：draft -> pending
     if (submit === true) {
       updates.push('status = ?');
       params.push('pending');
     }
 
-    if (updates.length === 0) return res.status(400).json({ message: "No fields to update" });
+    if (updates.length === 0) return res.status(400).json({ message: 'No fields to update' });
 
     updates.push('updated_at = CURRENT_TIMESTAMP');
     params.push(eventId);
@@ -78,13 +146,13 @@ router.put('/:id', optionalAuth, (req, res) => {
 
     db.run(sql, params, function(err) {
       if (err) return res.status(500).json({ error: err.message });
-      
+
       const username = req.user ? req.user.username : 'Visitor';
       if (submit) {
         addLog(username, 'SUBMIT_EVENT', `提交事件审核 EID: ${eventId}`);
       }
-      
-      res.json({ message: "保存成功", id: eventId });
+
+      res.json({ message: '保存成功', id: eventId });
     });
   });
 });
@@ -94,10 +162,11 @@ router.get('/', optionalAuth, (req, res) => {
   const page = Math.max(1, parseInt(req.query.page, 10) || 1);
   const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
   const offset = (page - 1) * limit;
-  const type = req.query.type; 
+  const type = req.query.type;
 
-  let whereClause = "status = 'published'";
-  const params = [];
+  const statusParams = [...PUBLIC_STATUSES];
+  let whereClause = `status IN (${statusParams.map(() => '?').join(',')})`;
+  const params = [...statusParams];
 
   if (type) {
     whereClause += ' AND type = ?';
@@ -116,13 +185,10 @@ router.get('/', optionalAuth, (req, res) => {
       ORDER BY e.created_at DESC
       LIMIT ? OFFSET ?
     `;
-    
+
     db.all(sql, [...params, limit, offset], (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
-      const items = rows.map(row => {
-        try { row.content = JSON.parse(row.content); } catch (e) { row.content = {}; }
-        return row;
-      });
+      const items = rows.map(parseContent);
       res.json({ total, page, limit, items });
     });
   });
@@ -138,19 +204,332 @@ router.get('/:id', optionalAuth, (req, res) => {
   `;
   db.get(sql, [req.params.id], (err, row) => {
     if (err) return res.status(500).json({ error: err.message });
-    if (!row) return res.status(404).json({ message: "Not Found" });
+    if (!row) return res.status(404).json({ message: 'Not Found' });
 
     // 权限控制：只有管理员、作者本人可以看非发布状态的事件
     const isAdmin = req.user && (req.user.role === 'admin' || req.user.role === 'super_admin');
     const isOwner = req.user && req.user.id === row.created_by;
-    
-    if (row.status !== 'published' && !isAdmin && !isOwner) {
-      return res.status(403).json({ message: "事件审核中或未公开" });
+
+    if (!isPublicStatus(row.status) && !isAdmin && !isOwner) {
+      return res.status(403).json({ message: '事件审核中或未公开' });
     }
 
-    try { row.content = JSON.parse(row.content); } catch (e) { row.content = {}; }
-    res.json(row);
+    res.json(parseContent(row));
   });
+});
+
+// 5. 报名 (Match / STG)
+router.post('/:id/signup', optionalAuth, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+
+  try {
+    const event = await dbGet('SELECT id, type, status FROM events WHERE id = ?', [eventId]);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持报名' });
+    if (!['published', 'ongoing'].includes(event.status)) {
+      return res.status(403).json({ message: '当前状态不允许报名' });
+    }
+
+    const userId = req.user ? req.user.id : null;
+    const visitorIp = req.ip;
+    const commonId = String(req.body?.common_id || '').trim();
+    const machineSign = String(req.body?.machine_sign || '').trim();
+    const pilotSource = String(req.body?.pilot_source || '').trim();
+    const qq = String(req.body?.qq || '').trim();
+    const avatar = String(req.body?.avatar || '').trim();
+
+    if (!commonId || !qq) {
+      return res.status(400).json({ message: '请填写常用ID与QQ' });
+    }
+
+    if (!avatar) {
+      return res.status(400).json({ message: '请上传头像' });
+    }
+
+    const baseParams = [eventId, userId, visitorIp, commonId, machineSign, pilotSource, qq, avatar];
+    if (userId) {
+      await dbRun(`
+        INSERT INTO event_participants (event_id, user_id, visitor_ip, common_id, machine_sign, pilot_source, qq, avatar)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(event_id, user_id) DO UPDATE SET
+          common_id = excluded.common_id,
+          machine_sign = excluded.machine_sign,
+          pilot_source = excluded.pilot_source,
+          qq = excluded.qq,
+          avatar = excluded.avatar,
+          visitor_ip = excluded.visitor_ip,
+          updated_at = CURRENT_TIMESTAMP
+      `, baseParams);
+    } else {
+      await dbRun(`
+        INSERT INTO event_participants (event_id, user_id, visitor_ip, common_id, machine_sign, pilot_source, qq, avatar)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+        ON CONFLICT(event_id, visitor_ip) DO UPDATE SET
+          common_id = excluded.common_id,
+          machine_sign = excluded.machine_sign,
+          pilot_source = excluded.pilot_source,
+          qq = excluded.qq,
+          avatar = excluded.avatar,
+          updated_at = CURRENT_TIMESTAMP
+      `, baseParams);
+    }
+
+    callBotHook('event.signup', {
+      eventId,
+      type: event.type,
+      participant: { common_id: commonId, qq, avatar, pilot_source: pilotSource }
+    }, getActor(req)).catch(() => {});
+
+    res.json({ message: '报名成功', eventId });
+  } catch (err) {
+    res.status(500).json({ message: '报名失败', error: err.message });
+  }
+});
+
+// 6. 报名信息回显 (Match / STG)
+router.get('/:id/signup', optionalAuth, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  try {
+    const userId = req.user ? req.user.id : null;
+    const visitorIp = req.ip;
+    const row = userId
+      ? await dbGet('SELECT * FROM event_participants WHERE event_id = ? AND user_id = ?', [eventId, userId])
+      : await dbGet('SELECT * FROM event_participants WHERE event_id = ? AND visitor_ip = ?', [eventId, visitorIp]);
+    res.json({ data: row || null });
+  } catch (err) {
+    res.status(500).json({ message: '读取失败', error: err.message });
+  }
+});
+
+// 7. 删除报名信息
+router.delete('/:id/signup', optionalAuth, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  try {
+    const userId = req.user ? req.user.id : null;
+    const visitorIp = req.ip;
+    const result = userId
+      ? await dbRun('DELETE FROM event_participants WHERE event_id = ? AND user_id = ?', [eventId, userId])
+      : await dbRun('DELETE FROM event_participants WHERE event_id = ? AND visitor_ip = ?', [eventId, visitorIp]);
+
+    if ((result?.changes || 0) === 0) return res.status(404).json({ message: '报名记录不存在' });
+    res.json({ message: '已删除报名' });
+  } catch (err) {
+    res.status(500).json({ message: '删除失败', error: err.message });
+  }
+});
+
+// 8. 公开报名列表 (Match / STG)
+router.get('/:id/participants/public', optionalAuth, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  try {
+    const event = await dbGet('SELECT id, type, status FROM events WHERE id = ?', [eventId]);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持报名' });
+    if (!isPublicStatus(event.status)) return res.status(403).json({ message: '当前状态不允许查看名单' });
+    const rows = await dbAll(
+      'SELECT * FROM event_participants WHERE event_id = ? ORDER BY created_at ASC',
+      [eventId]
+    );
+    res.json({ items: rows.map(toParticipantPublic) });
+  } catch (err) {
+    res.status(500).json({ message: '加载失败', error: err.message });
+  }
+});
+
+// ==========================================
+//  管理员接口
+// ==========================================
+
+// 9. 管理员列表
+router.get('/admin/list', authenticateToken, requireAdmin, async (req, res) => {
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
+  const offset = (page - 1) * limit;
+  const type = String(req.query.type || '').trim();
+  const statuses = normalizeStatusList(req.query.status);
+
+  const whereParts = [];
+  const params = [];
+  if (statuses.length > 0) {
+    whereParts.push(`status IN (${statuses.map(() => '?').join(',')})`);
+    params.push(...statuses);
+  }
+  if (type) {
+    whereParts.push('type = ?');
+    params.push(type);
+  }
+  const whereClause = whereParts.length ? whereParts.join(' AND ') : '1=1';
+
+  try {
+    const countRow = await dbGet(`SELECT COUNT(*) as count FROM events WHERE ${whereClause}`, params);
+    const sql = `
+      SELECT e.*, u.username as created_by_name, u.avatar as created_by_avatar
+      FROM events e
+      LEFT JOIN users u ON e.created_by = u.id
+      WHERE ${whereClause}
+      ORDER BY e.created_at DESC
+      LIMIT ? OFFSET ?
+    `;
+    const rows = await dbAll(sql, [...params, limit, offset]);
+    res.json({ total: countRow?.count || 0, page, limit, items: rows.map(parseContent) });
+  } catch (err) {
+    res.status(500).json({ message: '加载失败', error: err.message });
+  }
+});
+
+// 10. 管理员创建活动
+router.post('/admin', authenticateToken, requireAdmin, async (req, res) => {
+  const { type, title, content, status } = req.body || {};
+  if (!type) return res.status(400).json({ message: '缺少活动类型' });
+
+  const finalStatus = ADMIN_STATUSES.includes(status) ? status : 'published';
+  try {
+    const result = await dbRun(
+      'INSERT INTO events (type, title, content, status, created_by, visitor_ip) VALUES (?, ?, ?, ?, ?, ?)',
+      [type, title || '', JSON.stringify(content || {}), finalStatus, req.user.id, req.ip]
+    );
+    addLog(req.user.username, 'CREATE_EVENT', `管理员发布活动 EID: ${result.lastID}`);
+    if (finalStatus === 'published') {
+      callBotHook('event.published', { eventId: result.lastID, type, title, content }, getActor(req)).catch(() => {});
+    }
+    res.json({ id: result.lastID, message: '创建成功' });
+  } catch (err) {
+    res.status(500).json({ message: '创建失败', error: err.message });
+  }
+});
+
+// 11. 审核通过
+router.post('/:id/approve', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+
+  try {
+    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['published', eventId]);
+    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
+    addLog(req.user.username, 'APPROVE_EVENT', `审核通过 EID: ${eventId}`);
+    callBotHook('event.approved', { eventId }, getActor(req)).catch(() => {});
+    res.json({ message: '已发布' });
+  } catch (err) {
+    res.status(500).json({ message: '操作失败', error: err.message });
+  }
+});
+
+// 12. 驳回
+router.post('/:id/reject', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  try {
+    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['rejected', eventId]);
+    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
+    addLog(req.user.username, 'REJECT_EVENT', `驳回事件 EID: ${eventId}`);
+    callBotHook('event.rejected', { eventId }, getActor(req)).catch(() => {});
+    res.json({ message: '已驳回' });
+  } catch (err) {
+    res.status(500).json({ message: '操作失败', error: err.message });
+  }
+});
+
+// 13. 更新状态 (进行中 / 已结束)
+router.post('/:id/status', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  const nextStatus = String(req.body?.status || '').trim();
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  if (!ADMIN_STATUSES.includes(nextStatus)) return res.status(400).json({ message: 'Invalid status' });
+
+  try {
+    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [nextStatus, eventId]);
+    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
+    addLog(req.user.username, 'UPDATE_EVENT_STATUS', `更新事件状态 EID: ${eventId} -> ${nextStatus}`);
+    callBotHook('event.status', { eventId, status: nextStatus }, getActor(req)).catch(() => {});
+    res.json({ message: '状态已更新' });
+  } catch (err) {
+    res.status(500).json({ message: '操作失败', error: err.message });
+  }
+});
+
+// 14. 软删除
+router.post('/:id/delete', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  try {
+    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['deleted', eventId]);
+    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
+    addLog(req.user.username, 'DELETE_EVENT', `软删除事件 EID: ${eventId}`);
+    callBotHook('event.deleted', { eventId }, getActor(req)).catch(() => {});
+    res.json({ message: '已删除' });
+  } catch (err) {
+    res.status(500).json({ message: '删除失败', error: err.message });
+  }
+});
+
+// 15. 结算/验收
+router.post('/:id/settle', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+
+  try {
+    const event = await dbGet('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    const content = parseContent(event).content;
+    const payload = req.body?.payload && typeof req.body.payload === 'object' ? req.body.payload : {};
+    const nextContent = { ...content, ...payload };
+    const nextStatus = String(req.body?.status || 'settled');
+
+    await dbRun(
+      'UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [JSON.stringify(nextContent), nextStatus, eventId]
+    );
+    addLog(req.user.username, 'SETTLE_EVENT', `结算事件 EID: ${eventId}`);
+    callBotHook('event.settled', { eventId, type: event.type, payload }, getActor(req)).catch(() => {});
+    res.json({ message: '已结算', id: eventId });
+  } catch (err) {
+    res.status(500).json({ message: '结算失败', error: err.message });
+  }
+});
+
+// 16. 录入比赛结果
+router.post('/:id/set_result', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  const results = req.body?.results;
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+  if (!Array.isArray(results)) return res.status(400).json({ message: 'results must be an array' });
+
+  try {
+    const event = await dbGet('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
+    if (!event) return res.status(404).json({ message: 'Event not found' });
+    if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持录入结果' });
+    const content = parseContent(event).content;
+    const nextContent = { ...content, results, results_updated_at: new Date().toISOString() };
+    await dbRun(
+      'UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+      [JSON.stringify(nextContent), 'ended', eventId]
+    );
+    addLog(req.user.username, 'SET_EVENT_RESULT', `录入比赛结果 EID: ${eventId}`);
+    callBotHook('event.result_set', { eventId, type: event.type, results }, getActor(req)).catch(() => {});
+    res.json({ message: '结果已保存', id: eventId });
+  } catch (err) {
+    res.status(500).json({ message: '录入失败', error: err.message });
+  }
+});
+
+// 17. 查看报名列表
+router.get('/:id/participants', authenticateToken, requireAdmin, async (req, res) => {
+  const eventId = Number(req.params.id || 0);
+  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
+
+  try {
+    const rows = await dbAll(
+      'SELECT * FROM event_participants WHERE event_id = ? ORDER BY created_at ASC',
+      [eventId]
+    );
+    res.json({ items: rows });
+  } catch (err) {
+    res.status(500).json({ message: '加载失败', error: err.message });
+  }
 });
 
 module.exports = router;
