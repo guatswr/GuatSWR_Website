@@ -280,7 +280,7 @@ const sortedMembers = computed(() => {
             <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-slate-800 text-blue-600 dark:text-blue-200 text-xs rounded-full font-bold mb-2 border border-blue-200 dark:border-slate-700">
               {{ member.role }}
             </span>
-            <div v-if="getMemberTags(member).length" class="flex flex-wrap justify-center gap-1.5 mb-4">
+            <div class="flex flex-wrap justify-center gap-1.5 mb-4 min-h-[18px]">
               <span 
                 v-for="tag in getMemberTags(member)" 
                 :key="tag"
