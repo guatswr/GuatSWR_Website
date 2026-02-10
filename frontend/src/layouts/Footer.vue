@@ -36,14 +36,25 @@ onUnmounted(() => {
         <div class="flex flex-col items-center gap-2 text-center">
           <p class="text-sm tracking-wide">© 2026 桂航绯想天同好会. All rights reserved.</p>
           <p class="text-xs text-gray-400 dark:text-gray-500">Designed by Taropoi</p>
-          <a
-            href="https://beian.miit.gov.cn/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="text-xs text-gray-400 dark:text-gray-500 hover:text-white dark:hover:text-gray-200 transition-colors"
-          >
-            晋ICP备2026001481号
-          </a>
+          <div class="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500">
+            <a
+              href="https://beian.miit.gov.cn/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-white dark:hover:text-gray-200 transition-colors"
+            >
+              晋ICP备2026001481号
+            </a>
+            <span class="text-gray-500/70 dark:text-gray-600">|</span>
+            <a
+              href="https://icp.gov.moe/?keyword=20263036"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-white dark:hover:text-gray-200 transition-colors"
+            >
+              萌ICP备20263036号
+            </a>
+          </div>
         </div>
       </div>
     </div>
