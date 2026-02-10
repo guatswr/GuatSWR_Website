@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage } from '../../utils/image'
@@ -14,6 +14,7 @@ const loading = ref(false)
 const settleDialogOpen = ref(false)
 const resultDialogOpen = ref(false)
 const publishDialogOpen = ref(false)
+const editDialogOpen = ref(false)
 const participantsDialogOpen = ref(false)
 const currentEvent = ref(null)
 const resultFileInput = ref(null)
@@ -22,6 +23,9 @@ const uploading = ref(false)
 const uploadPercent = ref(0)
 const participantsLoading = ref(false)
 const participantsItems = ref([])
+const typeFilter = ref('全部')
+
+const typeOptions = ['全部', '悬赏令', '对赌协议', 'STG', '则则', '线下聚会']
 
 const settleForm = ref({
   completion_id: '',
@@ -36,10 +40,16 @@ const resultRows = ref([
   { rank: 3, id: '', avatar: '' }
 ])
 
+const buildListParams = (status) => {
+  const params = { status, limit: 50 }
+  if (typeFilter.value !== '全部') params.type = typeFilter.value
+  return params
+}
+
 const fetchPending = async () => {
   loading.value = true
   try {
-    const res = await axios.get('/api/event/admin/list', { params: { status: 'pending', limit: 50 } })
+    const res = await axios.get('/api/event/admin/list', { params: buildListParams('pending') })
     pendingItems.value = res.data?.items || []
   } catch (error) {
     ElMessage.error(error.response?.data?.message || error.message)
@@ -52,7 +62,7 @@ const fetchAll = async () => {
   loading.value = true
   try {
     const res = await axios.get('/api/event/admin/list', {
-      params: { status: 'published,ongoing,ended,settled,pending', limit: 50 }
+      params: buildListParams('published,ongoing,ended,settled,pending')
     })
     allItems.value = res.data?.items || []
   } catch (error) {
@@ -66,6 +76,10 @@ const refresh = () => {
   if (activeTab.value === 'pending') return fetchPending()
   return fetchAll()
 }
+
+watch(typeFilter, () => {
+  refresh()
+})
 
 const approveEvent = async (event) => {
   try {
@@ -87,6 +101,11 @@ const rejectEvent = async (event) => {
   }
 }
 
+const openEditDialog = (event) => {
+  currentEvent.value = event
+  editDialogOpen.value = true
+}
+
 const openSettleDialog = (event) => {
   currentEvent.value = event
   settleForm.value = {
@@ -100,7 +119,7 @@ const openSettleDialog = (event) => {
 
 const submitSettle = async () => {
   if (!currentEvent.value) return
-  const payload = currentEvent.value.type === 'bounty'
+  const payload = currentEvent.value.type === '悬赏令'
     ? {
         completion: {
           id: settleForm.value.completion_id,
@@ -249,6 +268,12 @@ onMounted(() => {
       >
         活动管理
       </button>
+      <select
+        v-model="typeFilter"
+        class="px-3 py-2 rounded-full text-sm border border-slate-200 bg-white"
+      >
+        <option v-for="item in typeOptions" :key="item" :value="item">{{ item }}</option>
+      </select>
       <button
         class="ml-auto px-4 py-2 rounded-full text-sm bg-emerald-600 text-white"
         @click="publishDialogOpen = true"
@@ -279,27 +304,31 @@ onMounted(() => {
               @click="rejectEvent(event)"
             >驳回</button>
             <button
-              v-if="event.type === 'bounty' || event.type === 'bet'"
+              class="px-3 py-1.5 rounded-full text-xs bg-slate-800 text-white"
+              @click="openEditDialog(event)"
+            >编辑</button>
+            <button
+              v-if="event.type === '悬赏令' || event.type === '对赌协议'"
               class="px-3 py-1.5 rounded-full text-xs bg-amber-500 text-white"
               @click="openSettleDialog(event)"
             >结算</button>
             <button
-              v-if="event.type === 'match' || event.type === 'stg'"
+              v-if="event.type === '则则' || event.type === 'STG'"
               class="px-3 py-1.5 rounded-full text-xs bg-indigo-500 text-white"
               @click="openResultDialog(event)"
             >录入排名</button>
             <button
-              v-if="event.type === 'match' || event.type === 'stg'"
+              v-if="event.type === '则则' || event.type === 'STG'"
               class="px-3 py-1.5 rounded-full text-xs bg-emerald-700 text-white"
               @click="openParticipants(event)"
             >参赛名单</button>
             <button
-              v-if="event.type === 'match' || event.type === 'stg' || event.type === 'gathering'"
+              v-if="event.type === '则则' || event.type === 'STG' || event.type === '线下聚会'"
               class="px-3 py-1.5 rounded-full text-xs bg-slate-700 text-white"
               @click="updateStatus(event, 'ongoing')"
             >进行中</button>
             <button
-              v-if="event.type === 'match' || event.type === 'stg' || event.type === 'gathering'"
+              v-if="event.type === '则则' || event.type === 'STG' || event.type === '线下聚会'"
               class="px-3 py-1.5 rounded-full text-xs bg-slate-500 text-white"
               @click="updateStatus(event, 'ended')"
             >已结束</button>
@@ -318,7 +347,7 @@ onMounted(() => {
     </div>
 
     <el-dialog v-model="settleDialogOpen" title="结算" width="480px">
-      <div v-if="currentEvent?.type === 'bounty'" class="space-y-3">
+      <div v-if="currentEvent?.type === '悬赏令'" class="space-y-3">
         <el-input v-model="settleForm.completion_id" placeholder="完成人ID" />
         <el-input v-model="settleForm.completion_avatar" placeholder="完成人头像URL" />
         <el-input v-model="settleForm.completion_time" placeholder="完成时间" />
@@ -362,10 +391,21 @@ onMounted(() => {
 
     <el-dialog v-model="publishDialogOpen" title="发布活动" width="720px" destroy-on-close>
       <EventForm
-        :allowed-types="['bounty', 'bet', 'match', 'stg', 'gathering']"
+        :allowed-types="['悬赏令', '对赌协议', '则则', 'STG', '线下聚会']"
         :is-admin="true"
         submit-label="发布活动"
         @submitted="() => { publishDialogOpen = false; refresh() }"
+      />
+    </el-dialog>
+
+    <el-dialog v-model="editDialogOpen" title="编辑活动" width="720px" destroy-on-close>
+      <EventForm
+        :allowed-types="['悬赏令', '对赌协议', '则则', 'STG', '线下聚会']"
+        :is-admin="true"
+        submit-label="保存修改"
+        :event-id="currentEvent?.id"
+        :initial-data="currentEvent"
+        @submitted="() => { editDialogOpen = false; refresh() }"
       />
     </el-dialog>
 

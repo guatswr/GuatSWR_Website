@@ -6,7 +6,7 @@ const { callBotHook } = require('../utils/botHooks');
 const router = express.Router();
 
 const PUBLIC_STATUSES = ['published', 'ongoing', 'ended', 'settled'];
-const SIGNUP_TYPES = ['match', 'stg'];
+const SIGNUP_TYPES = ['STG', '则则'];
 const ADMIN_STATUSES = ['draft', 'pending', 'published', 'ongoing', 'ended', 'settled', 'rejected', 'deleted'];
 
 const dbGet = (sql, params = []) => new Promise((resolve, reject) => {
@@ -218,7 +218,7 @@ router.get('/:id', optionalAuth, (req, res) => {
   });
 });
 
-// 5. 报名 (Match / STG)
+// 5. 报名 (STG / 则则)
 router.post('/:id/signup', optionalAuth, async (req, res) => {
   const eventId = Number(req.params.id || 0);
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
@@ -287,7 +287,7 @@ router.post('/:id/signup', optionalAuth, async (req, res) => {
   }
 });
 
-// 6. 报名信息回显 (Match / STG)
+// 6. 报名信息回显 (STG / 则则)
 router.get('/:id/signup', optionalAuth, async (req, res) => {
   const eventId = Number(req.params.id || 0);
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
@@ -321,7 +321,7 @@ router.delete('/:id/signup', optionalAuth, async (req, res) => {
   }
 });
 
-// 8. 公开报名列表 (Match / STG)
+// 8. 公开报名列表 (STG / 则则)
 router.get('/:id/participants/public', optionalAuth, async (req, res) => {
   const eventId = Number(req.params.id || 0);
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });

@@ -37,10 +37,10 @@ const statusLabel = computed(() => {
     settled: '已验收',
     rejected: '已驳回'
   }
-  if (type.value === 'match' || type.value === 'stg') {
+  if (type.value === 'STG' || type.value === '则则') {
     if (status.value === 'published') return '报名中'
   }
-  if (type.value === 'gathering' && status.value === 'published') return '倒计时'
+  if (type.value === '线下聚会' && status.value === 'published') return '倒计时'
   return map[status.value] || status.value
 })
 
@@ -81,97 +81,149 @@ const topResults = computed(() => {
 
 <template>
   <article
-    class="relative overflow-hidden rounded-2xl border border-gray-200/80 dark:border-white/10 bg-white dark:bg-[#202225] shadow-sm w-full max-w-[420px] justify-self-center"
-    :class="clickable ? 'cursor-pointer hover:ring-2 hover:ring-emerald-300/40' : ''"
+    class="group relative overflow-hidden rounded-2xl border border-slate-200 bg-white transition-all duration-300 hover:shadow-lg hover:shadow-sky-100 hover:border-sky-200 hover:-translate-y-1 w-full max-w-[420px] justify-self-center dark:bg-slate-900/70 dark:border-slate-800 dark:hover:border-sky-700 dark:hover:shadow-sky-900/40"
+    :class="clickable ? 'cursor-pointer' : ''"
     @click="handleClick"
   >
-    <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_left,rgba(14,116,144,0.08),transparent_55%)]" />
-    <div class="relative p-6 space-y-4">
-      <header class="flex flex-wrap items-start justify-between gap-3">
-        <div>
-          <div class="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-300">
-            <span>{{ type }}</span>
-            <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-            <span>{{ statusLabel }}</span>
+    <!-- 背景装饰：冰晶纹理 -->
+    <div class="absolute -right-8 -top-8 w-24 h-24 bg-sky-50 rounded-full blur-2xl opacity-60 pointer-events-none group-hover:bg-sky-100 transition-colors dark:bg-sky-950/60 dark:group-hover:bg-sky-900/60" />
+    <div class="absolute -left-8 -bottom-8 w-32 h-32 bg-blue-50 rounded-full blur-3xl opacity-40 pointer-events-none dark:bg-blue-950/50" />
+    
+    <!-- 装饰性 ⑨ (替代原来的星星) -->
+    <!-- 调整了位置、透明度和大小，使其作为背景水印存在 -->
+     <div class="absolute -top-3 -right-2 text-sky-100 opacity-60 group-hover:opacity-100 group-hover:text-sky-200 transition-all duration-500 pointer-events-none transform rotate-12 select-none z-0 dark:text-sky-900 dark:opacity-30">
+       <span class="text-[90px] font-black font-serif leading-none">⑨</span>
+    </div>
+
+    <div class="relative p-5 space-y-4 z-10">
+      <header class="flex flex-col gap-3">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-2">
+            <span class="px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800">
+              {{ type }}
+            </span>
+            <span class="text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500">
+               <span class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600" />
+               {{ statusLabel }}
+            </span>
           </div>
-          <h3 class="text-xl font-semibold text-slate-900 dark:text-white mt-2">
-            {{ event.title || '未命名活动' }}
-          </h3>
+          <div v-if="countdown" class="flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60">
+             <span class="animate-pulse">剩余：</span> {{ countdown }}
+          </div>
         </div>
-        <div v-if="countdown" class="px-3 py-1 rounded-full text-xs font-semibold text-rose-600 bg-rose-50 dark:bg-rose-900/30 dark:text-rose-200">
-          {{ countdown }}
-        </div>
+        
+        <h3 class="text-lg font-bold text-slate-800 leading-snug break-words group-hover:text-sky-600 transition-colors dark:text-slate-100 dark:group-hover:text-sky-300">
+          {{ event.title || '未命名活动' }}
+        </h3>
       </header>
 
-      <div v-if="coverUrl" class="relative rounded-xl overflow-hidden border border-gray-100 dark:border-white/5">
-        <img :src="getThumbUrl(coverUrl)" alt="cover" class="w-full h-44 object-cover" />
+      <div v-if="coverUrl" class="relative rounded-xl overflow-hidden shadow-sm group-hover:shadow-md transition-shadow">
+        <div class="absolute inset-0 bg-sky-900/0 group-hover:bg-sky-900/5 transition-colors z-10" />
+        <img :src="getThumbUrl(coverUrl)" alt="cover" class="w-full h-40 object-cover transform group-hover:scale-105 transition-transform duration-700" />
       </div>
 
-      <div class="grid gap-3 text-sm text-slate-600 dark:text-slate-200">
-        <div v-if="deadlineText" class="flex items-center gap-2">
-          <span class="text-xs text-slate-400">时间</span>
-          <span>{{ deadlineText }}</span>
+      <div class="grid gap-2 text-sm text-slate-600 leading-relaxed dark:text-slate-300">
+        <div v-if="deadlineText" class="flex items-start gap-2">
+          <!-- 标签改为 琪露诺蓝(sky-500) + 加粗 -->
+          <span class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300">时间</span>
+          <span class="font-medium text-slate-700 dark:text-slate-200">{{ deadlineText }}</span>
         </div>
 
-        <template v-if="type === 'bounty'">
-          <div class="flex flex-wrap items-center gap-2">
-            <span class="text-xs text-slate-400">发起人</span>
-            <div class="flex items-center gap-2">
-              <img v-if="content.initiator?.avatar" :src="content.initiator.avatar" class="w-6 h-6 rounded-full object-cover" />
-              <span>{{ content.initiator?.id || '匿名' }}</span>
+        <!-- 悬赏令 -->
+        <template v-if="type === '悬赏令'">
+          <div class="flex items-center gap-2">
+            <span class="text-xs text-sky-500 font-bold shrink-0 dark:text-sky-300">发起</span>
+            <div class="flex items-center gap-1.5 bg-slate-50 px-2 py-0.5 rounded-full border border-slate-100 dark:bg-slate-800 dark:border-slate-700">
+              <img v-if="content.initiator?.avatar" :src="content.initiator.avatar" class="w-4 h-4 rounded-full object-cover" />
+              <span class="text-xs font-medium text-slate-700 dark:text-slate-200">{{ content.initiator?.id || '匿名' }}</span>
             </div>
           </div>
-          <div><span class="text-xs text-slate-400">挑战形式</span> {{ content.challenge || '未填写' }}</div>
-          <div><span class="text-xs text-slate-400">要求</span> {{ content.requirements || '未填写' }}</div>
-          <div class="font-semibold text-amber-600 dark:text-amber-300">奖励：{{ content.reward || '待定' }}</div>
-          <div v-if="content.completion?.id" class="flex items-center gap-2 text-emerald-600 dark:text-emerald-300">
-            <span>已验收</span>
-            <img v-if="content.completion?.avatar" :src="content.completion.avatar" class="w-5 h-5 rounded-full object-cover" />
-            <span>{{ content.completion.id }}</span>
+          <div class="flex gap-2">
+             <span class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300">挑战</span>
+             <span class="line-clamp-2">{{ content.challenge || '未填写' }}</span>
+          </div>
+          <div class="flex gap-2">
+             <span class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300">要求</span>
+             <span class="line-clamp-2">{{ content.requirements || '未填写' }}</span>
+          </div>
+           <div class="mt-1 flex items-center gap-2 bg-amber-50 px-3 py-2 rounded-lg border border-amber-100 border-dashed dark:bg-amber-950/30 dark:border-amber-900/50">
+             <span class="text-amber-500 text-xs font-bold dark:text-amber-300">REWARD</span>
+             <span class="font-bold text-amber-600 dark:text-amber-200">{{ content.reward || '待定' }}</span>
+          </div>
+           <div v-if="content.completion?.id" class="flex items-center gap-2 mt-1 text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-lg border border-emerald-100 dark:bg-emerald-950/30 dark:border-emerald-900/50 dark:text-emerald-200">
+            <span class="text-xs font-bold">✅ 已验收</span>
+            <div class="flex items-center gap-1">
+                <img v-if="content.completion?.avatar" :src="content.completion.avatar" class="w-4 h-4 rounded-full object-cover" />
+                <span class="text-xs font-medium">{{ content.completion.id }}</span>
+            </div>
           </div>
         </template>
 
-        <template v-else-if="type === 'bet'">
-          <div class="flex flex-col gap-2">
-            <div class="flex items-center gap-2">
-              <img v-if="content.a?.avatar" :src="content.a.avatar" class="w-6 h-6 rounded-full object-cover" />
-              <span>{{ content.a?.id || '发起者' }}</span>
-              <span class="text-xs text-slate-400">目标</span>
-              <span>{{ content.a?.goal || '未填写' }}</span>
-            </div>
-            <div v-if="content.b?.id" class="flex items-center gap-2">
-              <img v-if="content.b?.avatar" :src="content.b.avatar" class="w-6 h-6 rounded-full object-cover" />
-              <span>{{ content.b?.id }}</span>
-              <span class="text-xs text-slate-400">目标</span>
-              <span>{{ content.b?.goal || '未填写' }}</span>
-            </div>
+        <!-- 对赌协议 -->
+        <template v-else-if="type === '对赌协议'">
+            <div class="bg-slate-50 rounded-lg p-2 border border-slate-100 space-y-2 dark:bg-slate-800 dark:border-slate-700">
+              <div class="flex items-center justify-between text-xs">
+                 <div class="flex items-center gap-1">
+                    <img v-if="content.a?.avatar" :src="content.a.avatar" class="w-5 h-5 rounded-full ring-1 ring-slate-200 dark:ring-slate-700" />
+                  <span class="font-bold text-slate-700 dark:text-slate-200">{{ content.a?.id || 'A' }}</span>
+                 </div>
+                 <span class="text-sky-400 font-black italic text-sm">VS</span>
+                 <div class="flex items-center gap-1">
+                  <span class="font-bold text-slate-700 dark:text-slate-200">{{ content.b?.id || 'B' }}</span>
+                    <img v-if="content.b?.avatar" :src="content.b.avatar" class="w-5 h-5 rounded-full ring-1 ring-slate-200 dark:ring-slate-700" />
+                 </div>
+              </div>
+              <div class="text-xs text-slate-600 border-t border-slate-200 pt-2 mt-1 flex gap-1 dark:text-slate-300 dark:border-slate-700">
+                <span class="text-sky-500 font-bold shrink-0 dark:text-sky-300">目标:</span>
+                  <span>{{ content.a?.goal || '?' }} / {{ content.b?.goal || '?' }}</span>
+              </div>
+           </div>
+          <div class="flex gap-2">
+             <span class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300">惩罚</span>
+             <span class="text-rose-500 font-medium dark:text-rose-300">{{ content.penalty || '未填写' }}</span>
           </div>
-          <div><span class="text-xs text-slate-400">惩罚</span> {{ content.penalty || '未填写' }}</div>
-          <div v-if="content.result" class="font-semibold text-emerald-600 dark:text-emerald-300">结果：{{ content.result }}</div>
+           <div v-if="content.result" class="font-medium text-emerald-600 dark:text-emerald-300">结果：{{ content.result }}</div>
         </template>
 
-        <template v-else-if="type === 'match' || type === 'stg'">
-          <div>{{ content.copy || '暂无活动文案' }}</div>
-          <div><span class="text-xs text-slate-400">规则</span> {{ content.rules || '未填写' }}</div>
-          <div><span class="text-xs text-slate-400">奖品</span> {{ content.prizes || '未填写' }}</div>
-          <div v-if="topResults.length" class="flex items-center gap-2">
-            <span class="text-xs text-slate-400">前三名</span>
-            <div class="flex items-center gap-2">
-              <div v-for="row in topResults" :key="row.rank" class="flex items-center gap-2 bg-slate-50 dark:bg-white/5 px-2 py-1 rounded-full">
-                <img v-if="row.avatar" :src="row.avatar" class="w-5 h-5 rounded-full object-cover" />
-                <span>#{{ row.rank || '?' }} {{ row.id || row.player_id || '匿名' }}</span>
+        <!-- STG / 则则 -->
+        <template v-else-if="type === 'STG' || type === '则则'">
+           <div class="text-slate-600 line-clamp-3 text-xs leading-5 bg-slate-50 p-2 rounded border border-slate-100/50 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-300">
+             {{ content.copy || '暂无活动文案' }}
+          </div>
+          <div class="flex gap-2">
+             <span class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300">规则</span>
+             <span class="line-clamp-1">{{ content.rules || '未填写' }}</span>
+          </div>
+          <div class="flex gap-2">
+             <span class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300">奖品</span>
+             <span class="line-clamp-1 text-amber-600 font-medium dark:text-amber-200">{{ content.prizes || '未填写' }}</span>
+          </div>
+          <div v-if="topResults.length" class="mt-2 space-y-1">
+            <div class="text-[10px] text-sky-400 uppercase tracking-wider font-bold dark:text-sky-300">Top Rankers</div>
+            <div class="flex flex-wrap gap-1">
+              <div v-for="row in topResults" :key="row.rank" class="flex items-center gap-1 bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full border border-sky-100 text-xs dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800">
+                <span class="font-bold text-[10px] opacity-70">#{{ row.rank }}</span>
+                <img v-if="row.avatar" :src="row.avatar" class="w-3 h-3 rounded-full" />
+                <span class="truncate max-w-[60px] font-medium">{{ row.id || row.player_id }}</span>
               </div>
             </div>
           </div>
         </template>
 
-        <template v-else-if="type === 'gathering'">
-          <div><span class="text-xs text-slate-400">地点</span> {{ content.location || '待定' }}</div>
-          <div><span class="text-xs text-slate-400">类型</span> {{ content.gather_type || '未填写' }}</div>
+        <!-- 线下聚会 -->
+        <template v-else-if="type === '线下聚会'">
+          <div class="flex items-center gap-2">
+             <span class="text-xs text-sky-500 font-bold dark:text-sky-300">地点</span>
+             <span class="font-medium text-slate-700 bg-orange-50 px-2 py-0.5 rounded text-orange-700 dark:bg-orange-950/30 dark:text-orange-200">{{ content.location || '待定' }}</span>
+          </div>
+          <div class="flex items-center gap-2">
+             <span class="text-xs text-sky-500 font-bold dark:text-sky-300">类型</span>
+             <span>{{ content.gather_type || '未填写' }}</span>
+          </div>
         </template>
       </div>
 
-      <div v-if="$slots.actions" class="pt-2">
+      <div v-if="$slots.actions" class="pt-1">
         <slot name="actions" />
       </div>
     </div>

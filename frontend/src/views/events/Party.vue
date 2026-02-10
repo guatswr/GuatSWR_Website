@@ -4,9 +4,9 @@ import EventBoard from '../../components/events/EventBoard.vue'
 
 <template>
   <EventBoard
-    type="gathering"
+    type="线下聚会"
     title="线下聚会"
-    subtitle="定好时间与地点，组织线下小聚或大聚。"
+    subtitle="小聚、大聚、饭聚 都可以聚！"
     allow-create-mode="none"
   />
 </template>

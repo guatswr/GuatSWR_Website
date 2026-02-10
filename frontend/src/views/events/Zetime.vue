@@ -4,9 +4,9 @@ import EventBoard from '../../components/events/EventBoard.vue'
 
 <template>
   <EventBoard
-    type="match"
-    title="则赛"
-    subtitle="报名挑战制胜规则，战绩将进入桂航排行。"
+    type="则则"
+    title="则则"
+    subtitle="则批大本营，欢迎各位则批报名参加！"
     allow-create-mode="none"
     :enable-signup="true"
   />

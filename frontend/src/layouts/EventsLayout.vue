@@ -14,7 +14,7 @@ const menus = [
   { name: '悬赏令', path: '/events/bounty', icon: '💰', desc: '赏金猎人' },
   { name: '对赌协议', path: '/events/betting', icon: '⚖️', desc: '达成契约' },
   { name: 'STG', path: '/events/stg', icon: '✈', desc: '打飞机' },
-  { name: '则赛', path: '/events/zetime', icon: '🏆', desc: 'ymyz' },
+  { name: '则则', path: '/events/zetime', icon: '🏆', desc: 'ymyz' },
   { name: '聚会', path: '/events/party', icon: '🎉', desc: '线下面基' },
 ]
 </script>

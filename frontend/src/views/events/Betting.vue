@@ -4,9 +4,9 @@ import EventBoard from '../../components/events/EventBoard.vue'
 
 <template>
   <EventBoard
-    type="bet"
+    type="对赌协议"
     title="对赌协议"
-    subtitle="许下赌约，记下决心，让仪式感见证改变。"
+    subtitle="这使你充满了决心！"
     allow-create-mode="visitor"
   />
 </template>

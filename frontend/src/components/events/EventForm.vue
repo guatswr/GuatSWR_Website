@@ -1,459 +1,277 @@
 <script setup>
-import { ref, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { compressImage } from '../../utils/image'
+import { useUserStore } from '../../stores/user'
+import EventCard from './EventCard.vue'
+import EventForm from './EventForm.vue'
+import EventSignup from './EventSignup.vue'
 
 const props = defineProps({
-  allowedTypes: {
-    type: Array,
-    default: () => ['bounty', 'bet']
+  type: {
+    type: String,
+    required: true
   },
-  isAdmin: {
+  title: {
+    type: String,
+    default: ''
+  },
+  subtitle: {
+    type: String,
+    default: ''
+  },
+  enableSignup: {
     type: Boolean,
     default: false
   },
-  submitLabel: {
+  allowCreateMode: {
     type: String,
-    default: '提交活动'
+    default: 'visitor'
   }
 })
 
-const emit = defineEmits(['submitted'])
+const store = useUserStore()
+const isAdmin = computed(() => store.role === 'admin' || store.role === 'super_admin')
 
 const loading = ref(false)
-const draftId = ref(null)
-const fileInput = ref(null)
-const uploadTarget = ref('')
-const betMode = ref('solo')
-const uploadingTarget = ref('')
-const uploadPercent = ref(0)
+const items = ref([])
+const formOpen = ref(false)
+const signupOpen = ref(false)
+const previewOpen = ref(false)
+const selectedEvent = ref(null)
+const previewLoading = ref(false)
+const previewItems = ref([])
 
-const form = ref({
-  type: props.allowedTypes[0] || 'bounty',
-  title: '',
-  initiator_id: '',
-  initiator_qq: '',
-  initiator_avatar: '',
-  challenge: '',
-  requirements: '',
-  reward: '',
-  limit: '',
-  deadline: '',
-  a_id: '',
-  a_qq: '',
-  a_avatar: '',
-  a_goal: '',
-  b_id: '',
-  b_qq: '',
-  b_avatar: '',
-  b_goal: '',
-  penalty: '',
-  proof_image: '',
-  copy: '',
-  cover: '',
-  time: '',
-  rules: '',
-  prizes: '',
-  notes: '',
-  location: '',
-  gather_type: ''
-})
-
-const typeOptions = computed(() => props.allowedTypes)
-
-const ensureDraft = async () => {
-  if (draftId.value) return draftId.value
-  const res = await axios.post('/api/event/draft')
-  draftId.value = res.data.id
-  return draftId.value
-}
-
-const handleUploadClick = (target) => {
-  uploadTarget.value = target
-  fileInput.value?.click()
-}
-
-const handleFileChange = async (event) => {
-  const file = event.target.files?.[0]
-  if (!file) return
-  try {
-    const draft = await ensureDraft()
-    const compressed = await compressImage(file)
-    const formData = new FormData()
-    formData.append('file', compressed)
-    formData.append('eid', draft)
-    uploadingTarget.value = uploadTarget.value
-    uploadPercent.value = 0
-    const res = await axios.post('/api/upload/visitor', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
-      onUploadProgress: (progressEvent) => {
-        if (!progressEvent.total) return
-        uploadPercent.value = Math.round((progressEvent.loaded / progressEvent.total) * 100)
-      }
-    })
-    const url = res.data?.url || ''
-    if (uploadTarget.value) {
-      form.value[uploadTarget.value] = url
-    }
-  } catch (error) {
-    ElMessage.error(error.response?.data?.message || error.message)
-  } finally {
-    uploadingTarget.value = ''
-    uploadPercent.value = 0
-    event.target.value = ''
-  }
-}
-
-const buildContent = () => {
-  const type = form.value.type
-  if (type === 'bounty') {
-    return {
-      initiator: {
-        id: form.value.initiator_id,
-        qq: form.value.initiator_qq,
-        avatar: form.value.initiator_avatar
-      },
-      challenge: form.value.challenge,
-      requirements: form.value.requirements,
-      reward: form.value.reward,
-      limit: form.value.limit,
-      deadline: form.value.deadline
-    }
-  }
-  if (type === 'bet') {
-    return {
-      a: {
-        id: form.value.a_id,
-        qq: form.value.a_qq,
-        avatar: form.value.a_avatar,
-        goal: form.value.a_goal
-      },
-      b: betMode.value === 'duo' && form.value.b_id ? {
-        id: form.value.b_id,
-        qq: form.value.b_qq,
-        avatar: form.value.b_avatar,
-        goal: form.value.b_goal
-      } : null,
-      penalty: form.value.penalty,
-      deadline: form.value.deadline,
-      proof_image: form.value.proof_image
-    }
-  }
-  if (type === 'match' || type === 'stg') {
-    return {
-      copy: form.value.copy,
-      cover: form.value.cover,
-      time: form.value.time,
-      rules: form.value.rules,
-      prizes: form.value.prizes,
-      notes: form.value.notes
-    }
-  }
-  if (type === 'gathering') {
-    return {
-      cover: form.value.cover,
-      time: form.value.time,
-      location: form.value.location,
-      gather_type: form.value.gather_type,
-      notes: form.value.notes
-    }
-  }
-  return {}
-}
-
-const resetForm = () => {
-  const currentType = form.value.type
-  betMode.value = 'solo'
-  form.value = {
-    ...form.value,
-    type: currentType,
-    title: '',
-    initiator_id: '',
-    initiator_qq: '',
-    initiator_avatar: '',
-    challenge: '',
-    requirements: '',
-    reward: '',
-    limit: '',
-    deadline: '',
-    a_id: '',
-    a_qq: '',
-    a_avatar: '',
-    a_goal: '',
-    b_id: '',
-    b_qq: '',
-    b_avatar: '',
-    b_goal: '',
-    penalty: '',
-    proof_image: '',
-    copy: '',
-    cover: '',
-    time: '',
-    rules: '',
-    prizes: '',
-    notes: '',
-    location: '',
-    gather_type: ''
-  }
-  draftId.value = null
-}
-
-const handleSubmit = async () => {
-  if (!form.value.title) return ElMessage.warning('请填写标题')
-  if (form.value.type === 'bounty' && !form.value.reward) {
-    return ElMessage.warning('悬赏令必须填写奖励')
-  }
-  if (form.value.type === 'bounty' && !form.value.initiator_avatar) {
-    return ElMessage.warning('请上传发起人头像')
-  }
-  if (form.value.type === 'bet' && !form.value.a_avatar) {
-    return ElMessage.warning('请上传发起者头像')
-  }
-  if (form.value.type === 'bet' && betMode.value === 'duo' && form.value.b_id && !form.value.b_avatar) {
-    return ElMessage.warning('请上传对手头像')
-  }
+const loadEvents = async () => {
   loading.value = true
   try {
-    const draft = await ensureDraft()
-    const payload = {
-      type: form.value.type,
-      title: form.value.title,
-      content: buildContent()
-    }
-    await axios.put(`/api/event/${draft}`, {
-      ...payload,
-      submit: !props.isAdmin
-    })
-    if (props.isAdmin) {
-      await axios.post(`/api/event/${draft}/approve`)
-    }
-    ElMessage.success(props.isAdmin ? '发布成功' : '提交成功，等待审核')
-    emit('submitted')
-    resetForm()
+    const res = await axios.get('/api/event', { params: { type: props.type, limit: 50 } })
+    items.value = res.data?.items || []
   } catch (error) {
     ElMessage.error(error.response?.data?.message || error.message)
   } finally {
     loading.value = false
   }
 }
+
+const canCreate = computed(() => {
+  if (props.allowCreateMode === 'none') return false
+  if (props.allowCreateMode === 'admin') return isAdmin.value
+  return props.allowCreateMode === 'visitor'
+})
+
+const formTypes = computed(() => [props.type])
+
+onMounted(() => {
+  loadEvents()
+})
+
+const openSignup = (event) => {
+  selectedEvent.value = event
+  signupOpen.value = true
+}
+
+const openPreview = async (event) => {
+  selectedEvent.value = event
+  previewOpen.value = true
+  previewLoading.value = true
+  previewItems.value = []
+  try {
+    const res = await axios.get(`/api/event/${event.id}/participants/public`)
+    previewItems.value = res.data?.items || []
+  } catch (error) {
+    ElMessage.error(error.response?.data?.message || error.message)
+  } finally {
+    previewLoading.value = false
+  }
+}
 </script>
 
 <template>
-  <section class="rounded-2xl border border-slate-200/70 dark:border-white/10 bg-white/90 dark:bg-[#1f2024] p-6 shadow-sm space-y-4">
-    <div class="flex flex-wrap items-center justify-between gap-2">
-      <div>
-        <h3 class="text-lg font-semibold text-slate-900 dark:text-white">发布活动</h3>
-        <p class="text-xs text-slate-500">选择类型后填写对应的活动信息</p>
+  <div class="space-y-8 relative event-list-container">
+    <!-- 顶部横幅：琪露诺(Cirno) 冰雪主题风格 -->
+    <header class="event-banner relative overflow-hidden rounded-2xl p-8 md:p-10 text-white shadow-lg transition-all hover:shadow-xl group">
+      <!-- 清新蓝白渐变背景 -->
+      <div class="absolute inset-0 bg-gradient-to-br from-sky-400 via-blue-500 to-cyan-600" />
+      
+      <!-- 冰晶装饰 (CSS模拟) -->
+      <div class="absolute inset-0 ice-crystal-overlay opacity-20" />
+      
+      <!-- 飘雪动画 -->
+      <div class="snow-container absolute inset-0 overflow-hidden pointer-events-none">
+        <span class="snow s1"></span>
+        <span class="snow s2"></span>
+        <span class="snow s3"></span>
       </div>
-      <select v-model="form.type" class="px-3 py-1.5 rounded-full border border-slate-200/70 bg-white dark:bg-slate-900/40 text-sm">
-        <option v-for="item in typeOptions" :key="item" :value="item">{{ item }}</option>
-      </select>
+
+      <!-- 内容区域 -->
+      <div class="relative z-10 flex flex-col items-start border-l-4 border-white/40 pl-6 backdrop-blur-[2px]">
+        <h2 class="text-3xl md:text-4xl font-bold tracking-normal text-white drop-shadow-sm">
+          {{ title }}
+        </h2>
+        <p class="mt-2 text-sm md:text-base text-blue-50 font-medium tracking-wide max-w-2xl leading-relaxed">
+          {{ subtitle }}
+        </p>
+      </div>
+
+      <!-- 装饰性图案：琪露诺的 ⑨ -->
+      <div class="absolute -right-4 -bottom-10 opacity-15 transform -rotate-12 pointer-events-none text-white select-none transition-transform duration-700 group-hover:scale-110 group-hover:rotate-0">
+        <div class="font-bold text-[180px] leading-none font-serif">⑨</div>
+      </div>
+    </header>
+
+    <!-- 加载状态 -->
+    <div v-if="loading" class="flex justify-center py-12">
+      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
     </div>
 
-    <div class="grid gap-4">
-      <label class="space-y-1">
-        <span class="text-xs text-slate-500">标题</span>
-        <input v-model="form.title" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-      </label>
+    <!-- 内容列表 -->
+    <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 items-start relative z-0">
+      <EventCard
+        v-for="event in items"
+        :key="event.id"
+        :event="event"
+        :clickable="enableSignup"
+        class="group transition-all duration-300 hover:-translate-y-1 hover:shadow-md border border-slate-100 hover:border-sky-200 bg-white"
+        @preview="() => openPreview(event)"
+      >
+        <template v-if="enableSignup" #actions>
+          <!-- 底部操作栏优化：两端对齐，视觉更轻量 -->
+          <div class="flex items-center justify-between w-full mt-4 pt-3 border-t border-slate-100/80 relative z-10">
+            <!-- 状态标签组 -->
+            <div class="flex items-center gap-2">
+               <!-- 装饰性小标签 -->
+               <div class="flex items-center gap-1 text-[10px] font-bold text-sky-400 bg-sky-50 px-2 py-0.5 rounded-full">
+                  <span>⑨</span>
+                  <span class="opacity-70">Ice Fairy</span>
+               </div>
+            </div>
+            
+            <!-- 报名按钮 -->
+            <button
+              class="relative flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 shadow-sm"
+              :class="['published', 'ongoing'].includes(event.status) 
+                ? 'bg-gradient-to-r from-sky-400 to-blue-500 text-white hover:shadow-sky-200 hover:scale-105' 
+                : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
+              :disabled="!['published', 'ongoing'].includes(event.status)"
+              @click.stop="openSignup(event)"
+            >
+              <span>{{ ['published', 'ongoing'].includes(event.status) ? '立即报名' : '已结束' }}</span>
+              <span v-if="['published', 'ongoing'].includes(event.status)" class="text-xs opacity-80">→</span>
+            </button>
+          </div>
+        </template>
+      </EventCard>
 
-      <template v-if="form.type === 'bounty'">
-        <div class="grid md:grid-cols-2 gap-4">
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">发起人ID</span>
-            <input v-model="form.initiator_id" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">QQ</span>
-            <input v-model="form.initiator_qq" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-        </div>
-        <div class="space-y-2">
-          <span class="text-xs text-slate-500">发起人头像上传</span>
-          <div class="flex items-center gap-3">
-            <button type="button" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm" @click="handleUploadClick('initiator_avatar')">上传头像</button>
-            <span class="text-xs text-slate-400 truncate">{{ form.initiator_avatar || '未上传' }}</span>
-          </div>
-          <div v-if="uploadingTarget === 'initiator_avatar'" class="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-            <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
-          </div>
-        </div>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">挑战形式</span>
-          <input v-model="form.challenge" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">要求</span>
-          <textarea v-model="form.requirements" rows="3" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">奖励 (必填)</span>
-          <input v-model="form.reward" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">参与限制</span>
-          <input v-model="form.limit" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">截止时间</span>
-          <input v-model="form.deadline" type="datetime-local" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-      </template>
-
-      <template v-else-if="form.type === 'bet'">
-        <div class="flex items-center gap-3 text-sm">
-          <label class="flex items-center gap-2">
-            <input type="radio" value="solo" v-model="betMode" />
-            单人赌约
-          </label>
-          <label class="flex items-center gap-2">
-            <input type="radio" value="duo" v-model="betMode" />
-            双人对赌
-          </label>
-        </div>
-        <div class="grid md:grid-cols-2 gap-4">
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">发起者ID</span>
-            <input v-model="form.a_id" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">发起者QQ</span>
-            <input v-model="form.a_qq" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">发起者目标</span>
-            <input v-model="form.a_goal" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-        </div>
-        <div v-if="betMode === 'duo'" class="grid md:grid-cols-2 gap-4">
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">对手ID</span>
-            <input v-model="form.b_id" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">对手QQ</span>
-            <input v-model="form.b_qq" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-          <label class="space-y-1">
-            <span class="text-xs text-slate-500">对手目标</span>
-            <input v-model="form.b_goal" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-          </label>
-        </div>
-        <div class="space-y-2">
-          <span class="text-xs text-slate-500">发起者头像上传</span>
-          <div class="flex items-center gap-3">
-            <button type="button" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm" @click="handleUploadClick('a_avatar')">上传头像</button>
-            <span class="text-xs text-slate-400 truncate">{{ form.a_avatar || '未上传' }}</span>
-          </div>
-          <div v-if="uploadingTarget === 'a_avatar'" class="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-            <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
-          </div>
-        </div>
-        <div v-if="betMode === 'duo'" class="space-y-2">
-          <span class="text-xs text-slate-500">对手头像上传</span>
-          <div class="flex items-center gap-3">
-            <button type="button" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm" @click="handleUploadClick('b_avatar')">上传头像</button>
-            <span class="text-xs text-slate-400 truncate">{{ form.b_avatar || '未上传' }}</span>
-          </div>
-          <div v-if="uploadingTarget === 'b_avatar'" class="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-            <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
-          </div>
-        </div>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">惩罚/代价</span>
-          <input v-model="form.penalty" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">截止时间</span>
-          <input v-model="form.deadline" type="datetime-local" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <div class="space-y-2">
-          <span class="text-xs text-slate-500">存档截图</span>
-          <div class="flex items-center gap-3">
-            <button type="button" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm" @click="handleUploadClick('proof_image')">上传图片</button>
-            <span class="text-xs text-slate-400 truncate">{{ form.proof_image || '未上传' }}</span>
-          </div>
-          <div v-if="uploadingTarget === 'proof_image'" class="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-            <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
-          </div>
-        </div>
-      </template>
-
-      <template v-else-if="form.type === 'match' || form.type === 'stg'">
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">活动文案</span>
-          <textarea v-model="form.copy" rows="3" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <div class="space-y-2">
-          <span class="text-xs text-slate-500">封面</span>
-          <div class="flex items-center gap-3">
-            <button type="button" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm" @click="handleUploadClick('cover')">上传封面</button>
-            <span class="text-xs text-slate-400 truncate">{{ form.cover || '未上传' }}</span>
-          </div>
-          <div v-if="uploadingTarget === 'cover'" class="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-            <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
-          </div>
-        </div>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">时间</span>
-          <input v-model="form.time" type="datetime-local" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">规则</span>
-          <textarea v-model="form.rules" rows="2" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">奖品</span>
-          <textarea v-model="form.prizes" rows="2" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">注意事项</span>
-          <textarea v-model="form.notes" rows="2" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-      </template>
-
-      <template v-else-if="form.type === 'gathering'">
-        <div class="space-y-2">
-          <span class="text-xs text-slate-500">封面</span>
-          <div class="flex items-center gap-3">
-            <button type="button" class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm" @click="handleUploadClick('cover')">上传封面</button>
-            <span class="text-xs text-slate-400 truncate">{{ form.cover || '未上传' }}</span>
-          </div>
-          <div v-if="uploadingTarget === 'cover'" class="h-1.5 rounded-full bg-slate-200 overflow-hidden">
-            <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
-          </div>
-        </div>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">时间</span>
-          <input v-model="form.time" type="datetime-local" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">地点</span>
-          <input v-model="form.location" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">类型</span>
-          <select v-model="form.gather_type" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2">
-            <option value="">请选择</option>
-            <option value="小聚">小聚</option>
-            <option value="大聚">大聚</option>
-          </select>
-        </label>
-        <label class="space-y-1">
-          <span class="text-xs text-slate-500">备注</span>
-          <textarea v-model="form.notes" rows="2" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" />
-        </label>
-      </template>
+      <div v-if="!items.length" class="col-span-full py-12 text-center">
+        <div class="text-sky-200 text-4xl mb-2">❄</div>
+        <p class="text-slate-400 text-sm">这里冷冷清清的，什么都没有发生呢...</p>
+      </div>
     </div>
 
-    <input ref="fileInput" type="file" class="hidden" accept="image/*" @change="handleFileChange" />
+    <!-- 弹窗组件 -->
+    <el-dialog v-model="formOpen" title="发布新活动" width="720px" destroy-on-close class="touhou-dialog">
+      <EventForm
+        :allowed-types="formTypes"
+        :is-admin="isAdmin && allowCreateMode === 'admin'"
+        :submit-label="isAdmin && allowCreateMode === 'admin' ? '发布活动' : '提交审核'"
+        @submitted="() => { formOpen = false; loadEvents() }"
+      />
+    </el-dialog>
 
+    <el-dialog v-model="signupOpen" title="活动报名" width="640px" destroy-on-close class="touhou-dialog">
+      <EventSignup
+        v-if="selectedEvent"
+        :event-id="selectedEvent.id"
+        :disabled="!['published', 'ongoing'].includes(selectedEvent.status)"
+      />
+    </el-dialog>
+
+    <el-dialog v-model="previewOpen" title="参赛名单" width="640px" destroy-on-close class="touhou-dialog">
+      <div v-if="previewLoading" class="text-sm text-slate-400 text-center py-4">正在读取...</div>
+      <div v-else-if="!previewItems.length" class="text-sm text-slate-400 text-center py-4">暂无报名人员</div>
+      <div v-else class="space-y-3 text-sm text-slate-700 max-h-[60vh] overflow-y-auto pr-2">
+        <div class="flex items-center justify-between px-1 mb-2">
+          <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded">Total: {{ previewItems.length }}</span>
+        </div>
+        <div class="grid gap-3">
+          <div v-for="item in previewItems" :key="item.id" class="flex items-center gap-3 rounded-lg border border-slate-100 bg-white p-3 hover:border-sky-200 transition-colors">
+            <div class="relative">
+              <img v-if="item.avatar" :src="item.avatar" class="w-10 h-10 rounded-full object-cover border border-slate-100" />
+              <div v-else class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-xs">无</div>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="font-semibold truncate text-slate-700">{{ item.common_id || '用户' }}</div>
+              <div class="text-xs text-slate-400">QQ: {{ item.qq || '未公开' }}</div>
+            </div>
+            <div class="text-xs text-right space-y-0.5">
+              <div class="text-sky-600 bg-sky-50 px-2 py-0.5 rounded inline-block">{{ item.pilot_source || '未知来源' }}</div>
+              <div class="text-slate-400">{{ item.machine_sign || '-' }}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </el-dialog>
+
+    <!-- 悬浮发布按钮 -->
     <button
-      class="w-full py-3 rounded-full bg-gradient-to-r from-slate-900 to-slate-700 text-white text-sm font-semibold tracking-wide disabled:opacity-60"
-      :disabled="loading"
-      @click="handleSubmit"
+      v-if="canCreate"
+      class="fixed right-8 bottom-8 z-40 flex items-center gap-2 px-6 py-3 rounded-full shadow-lg shadow-sky-500/20 transition-all duration-300 bg-gradient-to-r from-sky-400 to-blue-500 text-white hover:brightness-105 hover:-translate-y-0.5 active:scale-95"
+      @click="formOpen = true"
     >
-      {{ loading ? '提交中...' : submitLabel }}
+      <span class="text-xl leading-none font-light">＋</span>
+      <span class="font-medium text-sm">发布活动</span>
     </button>
-  </section>
+  </div>
 </template>
+
+<style scoped>
+/* 冰晶背景纹理 */
+.ice-crystal-overlay {
+  background-image: 
+    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.25) 0%, transparent 8%),
+    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.2) 0%, transparent 10%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 12%);
+  background-size: 80px 80px;
+}
+
+/* 飘雪效果 */
+.snow-container {
+  perspective: 1000px;
+}
+.snow {
+  position: absolute;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  animation: fall linear infinite;
+}
+.s1 { width: 6px; height: 6px; top: -10%; left: 15%; animation-duration: 6s; animation-delay: 0s; }
+.s2 { width: 4px; height: 4px; top: -10%; left: 45%; animation-duration: 9s; animation-delay: 2s; opacity: 0.6; }
+.s3 { width: 5px; height: 5px; top: -10%; left: 85%; animation-duration: 7s; animation-delay: 4s; }
+
+@keyframes fall {
+  0% { transform: translateY(0) translateX(0); opacity: 0; }
+  10% { opacity: 0.8; }
+  100% { transform: translateY(300px) translateX(-20px); opacity: 0; }
+}
+
+/* Dialog 样式微调 */
+:deep(.touhou-dialog) {
+  border-radius: 12px;
+  overflow: hidden;
+}
+:deep(.touhou-dialog .el-dialog__header) {
+  margin-right: 0;
+  background-color: #f0f9ff;
+  border-bottom: 1px solid #e0f2fe;
+  padding: 16px 24px;
+}
+:deep(.touhou-dialog .el-dialog__title) {
+  color: #0369a1;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+:deep(.touhou-dialog .el-dialog__body) {
+  padding: 20px 24px;
+}
+</style>

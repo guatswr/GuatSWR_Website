@@ -114,14 +114,14 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-2xl p-5">
+  <div class="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-2xl p-4 sm:p-5">
     <div class="flex items-center justify-between mb-4">
       <div>
         <h4 class="text-base font-semibold text-slate-900 dark:text-white">报名信息</h4>
-        <p class="text-xs text-slate-500">保存后会记住你的填写内容</p>
+        <p class="text-xs text-slate-500 dark:text-slate-400">保存后会记忆该设备上的填写内容</p>
       </div>
       <button
-        class="text-xs text-rose-500 hover:text-rose-600"
+        class="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300"
         @click="handleDelete"
         :disabled="deleting || disabled"
       >
@@ -129,18 +129,18 @@ onMounted(() => {
       </button>
     </div>
 
-    <div class="grid md:grid-cols-2 gap-4 text-sm">
+    <div class="grid md:grid-cols-2 gap-3 sm:gap-4 text-sm">
       <label class="space-y-1">
-        <span class="text-xs text-slate-500">常用ID</span>
-        <input v-model="form.common_id" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" :disabled="disabled" />
+        <span class="text-xs text-slate-500 dark:text-slate-400">常用ID</span>
+        <input v-model="form.common_id" class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100" :disabled="disabled" />
       </label>
       <label class="space-y-1">
-        <span class="text-xs text-slate-500">机签</span>
-        <input v-model="form.machine_sign" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" :disabled="disabled" />
+        <span class="text-xs text-slate-500 dark:text-slate-400">机签</span>
+        <input v-model="form.machine_sign" class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100" :disabled="disabled" />
       </label>
       <label class="space-y-1">
-        <span class="text-xs text-slate-500">机师来源</span>
-        <select v-model="form.pilot_source" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" :disabled="disabled">
+        <span class="text-xs text-slate-500 dark:text-slate-400">机师来源</span>
+        <select v-model="form.pilot_source" class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100" :disabled="disabled">
           <option value="">请选择</option>
           <option value="桂电">桂电</option>
           <option value="桂航">桂航</option>
@@ -155,32 +155,32 @@ onMounted(() => {
         </select>
       </label>
       <label class="space-y-1">
-        <span class="text-xs text-slate-500">QQ</span>
-        <input v-model="form.qq" class="w-full rounded-lg border border-slate-200/70 bg-white/80 dark:bg-slate-900/40 px-3 py-2" :disabled="disabled" />
+        <span class="text-xs text-slate-500 dark:text-slate-400">QQ</span>
+        <input v-model="form.qq" class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100" :disabled="disabled" />
       </label>
     </div>
 
-    <div class="mt-3 flex items-center gap-3 text-xs text-slate-500">
+    <div class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 text-xs text-slate-500 dark:text-slate-400">
       <button
-        class="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs"
+        class="w-full sm:w-auto px-3 py-2 rounded-full bg-slate-900 text-white text-xs dark:bg-slate-100 dark:text-slate-900"
         :disabled="uploading || disabled"
         @click="handleAvatarUpload"
       >
         {{ uploading ? '上传中...' : '上传头像' }}
       </button>
-      <span class="truncate">{{ form.avatar || '未上传' }}</span>
+      <span class="break-all sm:break-normal sm:truncate sm:flex-1">{{ form.avatar || '未上传' }}</span>
     </div>
-    <div v-if="uploading" class="mt-2 h-1.5 rounded-full bg-slate-200 overflow-hidden">
+    <div v-if="uploading" class="mt-2 h-1.5 rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800">
       <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }"></div>
     </div>
-    <div v-if="form.avatar" class="mt-3 flex items-center gap-3 text-xs text-slate-500">
+    <div v-if="form.avatar" class="mt-3 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
       <img :src="form.avatar" alt="avatar" class="w-10 h-10 rounded-full object-cover" />
       <span>已上传头像</span>
     </div>
 
     <div class="mt-4 flex flex-wrap gap-3">
       <button
-        class="px-4 py-2 rounded-full bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-60"
+        class="w-full sm:w-auto px-4 py-2 rounded-full bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
         @click="handleSubmit"
         :disabled="loading || disabled"
       >

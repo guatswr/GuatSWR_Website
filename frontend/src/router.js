@@ -79,7 +79,7 @@ const routes = [
         path: 'zetime',
         name: 'IncidentZetime',
         component: Zetime,
-        meta: { title: '则赛' }
+        meta: { title: '则则' }
       },
       {
         path: 'party',
