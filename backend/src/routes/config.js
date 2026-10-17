@@ -24,6 +24,9 @@ router.get('/', optionalAuth, (req, res) => {
       'badge_image',
       'mascot_image',
       'qq_qr_image',
+      'qq_group_number',
+      'qq_join_url',
+      'join_question',
       'home_links'
     ];
 

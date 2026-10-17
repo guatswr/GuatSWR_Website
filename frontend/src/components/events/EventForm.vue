@@ -1,277 +1,230 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import axios from 'axios'
 import { ElMessage } from 'element-plus'
-import { useUserStore } from '../../stores/user'
-import EventCard from './EventCard.vue'
-import EventForm from './EventForm.vue'
-import EventSignup from './EventSignup.vue'
+import { compressImage } from '../../utils/image'
+import {
+  EVENT_TYPES, buildEventPayload, createDraftSession, createEventFormState,
+  getEventFields, getEventTypes, saveEventForm, validateEventForm
+} from './eventFormModel.js'
 
 const props = defineProps({
-  type: {
-    type: String,
-    required: true
-  },
-  title: {
-    type: String,
-    default: ''
-  },
-  subtitle: {
-    type: String,
-    default: ''
-  },
-  enableSignup: {
-    type: Boolean,
-    default: false
-  },
-  allowCreateMode: {
-    type: String,
-    default: 'visitor'
-  }
+  allowedTypes: { type: Array, default: () => [...EVENT_TYPES] },
+  isAdmin: { type: Boolean, default: false },
+  submitLabel: { type: String, default: '提交审核' },
+  eventId: { type: [Number, String], default: null },
+  initialData: { type: Object, default: null }
 })
+const emit = defineEmits(['submitted'])
 
-const store = useUserStore()
-const isAdmin = computed(() => store.role === 'admin' || store.role === 'super_admin')
-
+const typeOptions = computed(() => getEventTypes(props.allowedTypes))
+const form = ref(createEventFormState(props.initialData, typeOptions.value))
+const originalEvent = ref(props.initialData)
+const fields = computed(() => getEventFields(form.value))
+const editing = computed(() => Boolean(props.eventId || props.initialData?.id))
 const loading = ref(false)
-const items = ref([])
-const formOpen = ref(false)
-const signupOpen = ref(false)
-const previewOpen = ref(false)
-const selectedEvent = ref(null)
-const previewLoading = ref(false)
-const previewItems = ref([])
+const loadingInitial = ref(false)
+const loadError = ref('')
+const errorMessage = ref('')
+const invalidField = ref('')
+const uploadingTarget = ref('')
+const uploadPercent = ref(0)
+const fileInput = ref(null)
+const formElement = ref(null)
+const uploadTarget = ref('')
+const busy = computed(() => loading.value || loadingInitial.value || Boolean(uploadingTarget.value))
+let draftSession = createDraftSession(axios)
+let loadVersion = 0
 
-const loadEvents = async () => {
-  loading.value = true
+const loadInitial = async () => {
+  const version = ++loadVersion
+  loadError.value = ''
+  errorMessage.value = ''
+  invalidField.value = ''
+  draftSession = createDraftSession(axios)
+  originalEvent.value = props.initialData
+  form.value = createEventFormState(props.initialData, typeOptions.value)
+  loadingInitial.value = false
+  if (!props.eventId || props.initialData) return
+  loadingInitial.value = true
   try {
-    const res = await axios.get('/api/event', { params: { type: props.type, limit: 50 } })
-    items.value = res.data?.items || []
+    const response = await axios.get(`/api/event/${props.eventId}`)
+    if (version !== loadVersion) return
+    originalEvent.value = response.data
+    form.value = createEventFormState(response.data, typeOptions.value)
   } catch (error) {
-    ElMessage.error(error.response?.data?.message || error.message)
+    if (version === loadVersion) loadError.value = error.response?.data?.message || '活动读取失败，请重试'
+  } finally {
+    if (version === loadVersion) loadingInitial.value = false
+  }
+}
+
+watch(() => [props.eventId, props.initialData], loadInitial, { immediate: true })
+onBeforeUnmount(() => { loadVersion += 1 })
+
+const inputType = (item) => {
+  // Keep older ISO timestamps and free-text schedules instead of silently clearing them.
+  if (item.kind === 'datetime-local' && form.value[item.key]
+      && !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?$/.test(form.value[item.key])) return 'text'
+  return item.kind
+}
+
+const chooseImage = (key) => {
+  if (busy.value) return
+  uploadTarget.value = key
+  fileInput.value?.click()
+}
+
+const handleFileChange = async (event) => {
+  const file = event.target.files?.[0]
+  const target = uploadTarget.value
+  if (!file || !target || busy.value) return
+  errorMessage.value = ''
+  if (!['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml'].includes(file.type)
+      || file.size > 50 * 1024 * 1024) {
+    errorMessage.value = '请选择 50 MB 以内的 JPG、PNG、GIF、WebP 或 SVG 图片'
+    event.target.value = ''
+    return
+  }
+  uploadingTarget.value = target
+  uploadPercent.value = 0
+  const version = loadVersion
+  try {
+    const data = new FormData()
+    const image = ['image/gif', 'image/svg+xml'].includes(file.type) ? file : await compressImage(file)
+    data.append('file', image)
+    if (!props.isAdmin) data.append('eid', await draftSession.ensureId())
+    const response = await axios.post(props.isAdmin ? '/api/upload' : '/api/upload/visitor', data, {
+      onUploadProgress: ({ loaded, total }) => {
+        if (version === loadVersion && total) uploadPercent.value = Math.round(loaded / total * 100)
+      }
+    })
+    if (version !== loadVersion) return
+    if (!response.data?.url) throw new Error('图片上传未返回地址，请重试')
+    form.value[target] = response.data.url
+    invalidField.value = ''
+  } catch (error) {
+    if (version === loadVersion) errorMessage.value = error.response?.data?.message || error.message || '图片上传失败，请重试'
+  } finally {
+    uploadingTarget.value = ''
+    uploadPercent.value = 0
+    event.target.value = ''
+  }
+}
+
+const handleSubmit = async () => {
+  if (busy.value || loadError.value) return
+  const validation = validateEventForm(form.value, typeOptions.value)
+  invalidField.value = validation?.field || ''
+  errorMessage.value = validation?.message || ''
+  if (validation) {
+    formElement.value?.elements.namedItem(validation.field)?.focus()
+    return
+  }
+  loading.value = true
+  const version = loadVersion
+  try {
+    const result = await saveEventForm(axios, buildEventPayload(form.value, originalEvent.value), {
+      eventId: props.eventId || props.initialData?.id,
+      isAdmin: props.isAdmin,
+      draftSession
+    })
+    if (version !== loadVersion) return
+    ElMessage.success(editing.value ? '修改已保存' : props.isAdmin ? '活动已发布' : '提交成功，等待管理员审核')
+    emit('submitted', result)
+    if (!editing.value) {
+      form.value = createEventFormState(null, [form.value.type])
+      draftSession = createDraftSession(axios)
+    }
+  } catch (error) {
+    if (version === loadVersion) errorMessage.value = error.response?.data?.message || error.message || '提交失败，请重试'
   } finally {
     loading.value = false
-  }
-}
-
-const canCreate = computed(() => {
-  if (props.allowCreateMode === 'none') return false
-  if (props.allowCreateMode === 'admin') return isAdmin.value
-  return props.allowCreateMode === 'visitor'
-})
-
-const formTypes = computed(() => [props.type])
-
-onMounted(() => {
-  loadEvents()
-})
-
-const openSignup = (event) => {
-  selectedEvent.value = event
-  signupOpen.value = true
-}
-
-const openPreview = async (event) => {
-  selectedEvent.value = event
-  previewOpen.value = true
-  previewLoading.value = true
-  previewItems.value = []
-  try {
-    const res = await axios.get(`/api/event/${event.id}/participants/public`)
-    previewItems.value = res.data?.items || []
-  } catch (error) {
-    ElMessage.error(error.response?.data?.message || error.message)
-  } finally {
-    previewLoading.value = false
   }
 }
 </script>
 
 <template>
-  <div class="space-y-8 relative event-list-container">
-    <!-- 顶部横幅：琪露诺(Cirno) 冰雪主题风格 -->
-    <header class="event-banner relative overflow-hidden rounded-2xl p-8 md:p-10 text-white shadow-lg transition-all hover:shadow-xl group">
-      <!-- 清新蓝白渐变背景 -->
-      <div class="absolute inset-0 bg-gradient-to-br from-sky-400 via-blue-500 to-cyan-600" />
-      
-      <!-- 冰晶装饰 (CSS模拟) -->
-      <div class="absolute inset-0 ice-crystal-overlay opacity-20" />
-      
-      <!-- 飘雪动画 -->
-      <div class="snow-container absolute inset-0 overflow-hidden pointer-events-none">
-        <span class="snow s1"></span>
-        <span class="snow s2"></span>
-        <span class="snow s3"></span>
-      </div>
-
-      <!-- 内容区域 -->
-      <div class="relative z-10 flex flex-col items-start border-l-4 border-white/40 pl-6 backdrop-blur-[2px]">
-        <h2 class="text-3xl md:text-4xl font-bold tracking-normal text-white drop-shadow-sm">
-          {{ title }}
-        </h2>
-        <p class="mt-2 text-sm md:text-base text-blue-50 font-medium tracking-wide max-w-2xl leading-relaxed">
-          {{ subtitle }}
-        </p>
-      </div>
-
-      <!-- 装饰性图案：琪露诺的 ⑨ -->
-      <div class="absolute -right-4 -bottom-10 opacity-15 transform -rotate-12 pointer-events-none text-white select-none transition-transform duration-700 group-hover:scale-110 group-hover:rotate-0">
-        <div class="font-bold text-[180px] leading-none font-serif">⑨</div>
-      </div>
-    </header>
-
-    <!-- 加载状态 -->
-    <div v-if="loading" class="flex justify-center py-12">
-      <div class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500"></div>
+  <form ref="formElement" class="event-form space-y-5 text-slate-800 dark:text-slate-100" novalidate @submit.prevent="handleSubmit">
+    <p class="text-sm text-slate-500 dark:text-slate-400">
+      {{ editing ? '修改活动信息；已有的活动状态、报名和比赛结果会保留。' : isAdmin ? '填写活动信息后即可发布。' : '填写活动信息，提交后由管理员审核。' }}
+      标有 * 的项目为必填。
+    </p>
+    <p v-if="loadingInitial" role="status" class="text-sm">正在读取活动…</p>
+    <div v-if="loadError" role="alert" class="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200">
+      {{ loadError }}
+      <button type="button" class="ml-2 min-h-11 underline" @click="loadInitial">重新读取</button>
     </div>
-
-    <!-- 内容列表 -->
-    <div v-else class="grid gap-6 md:grid-cols-2 xl:grid-cols-3 items-start relative z-0">
-      <EventCard
-        v-for="event in items"
-        :key="event.id"
-        :event="event"
-        :clickable="enableSignup"
-        class="group transition-all duration-300 hover:-translate-y-1 hover:shadow-md border border-slate-100 hover:border-sky-200 bg-white"
-        @preview="() => openPreview(event)"
-      >
-        <template v-if="enableSignup" #actions>
-          <!-- 底部操作栏优化：两端对齐，视觉更轻量 -->
-          <div class="flex items-center justify-between w-full mt-4 pt-3 border-t border-slate-100/80 relative z-10">
-            <!-- 状态标签组 -->
-            <div class="flex items-center gap-2">
-               <!-- 装饰性小标签 -->
-               <div class="flex items-center gap-1 text-[10px] font-bold text-sky-400 bg-sky-50 px-2 py-0.5 rounded-full">
-                  <span>⑨</span>
-                  <span class="opacity-70">Ice Fairy</span>
-               </div>
-            </div>
-            
-            <!-- 报名按钮 -->
-            <button
-              class="relative flex items-center gap-1.5 px-4 py-1.5 rounded-full text-sm font-medium transition-all duration-300 shadow-sm"
-              :class="['published', 'ongoing'].includes(event.status) 
-                ? 'bg-gradient-to-r from-sky-400 to-blue-500 text-white hover:shadow-sky-200 hover:scale-105' 
-                : 'bg-slate-100 text-slate-400 cursor-not-allowed'"
-              :disabled="!['published', 'ongoing'].includes(event.status)"
-              @click.stop="openSignup(event)"
-            >
-              <span>{{ ['published', 'ongoing'].includes(event.status) ? '立即报名' : '已结束' }}</span>
-              <span v-if="['published', 'ongoing'].includes(event.status)" class="text-xs opacity-80">→</span>
+    <fieldset :disabled="busy || Boolean(loadError)" class="grid min-w-0 gap-4 sm:grid-cols-2 disabled:opacity-70">
+      <legend class="sr-only">活动信息</legend>
+      <label class="block space-y-1">
+        <span class="text-sm font-medium">活动类型 *</span>
+        <select v-model="form.type" name="type" :disabled="editing" required :aria-invalid="invalidField === 'type'">
+          <option v-for="type in typeOptions" :key="type" :value="type">{{ type }}</option>
+        </select>
+      </label>
+      <label class="block space-y-1">
+        <span class="text-sm font-medium">标题 *</span>
+        <input v-model="form.title" name="title" maxlength="200" required :aria-invalid="invalidField === 'title'" placeholder="给活动起一个名字" />
+      </label>
+      <fieldset v-if="form.type === '对赌协议'" class="flex min-w-0 flex-wrap gap-4 sm:col-span-2">
+        <legend class="mb-1 text-sm font-medium">对赌方式</legend>
+        <label class="inline-flex min-h-11 items-center gap-2"><input v-model="form.betMode" type="radio" name="bet-mode" value="solo" />单人赌约</label>
+        <label class="inline-flex min-h-11 items-center gap-2"><input v-model="form.betMode" type="radio" name="bet-mode" value="duo" />双人对赌</label>
+      </fieldset>
+      <template v-for="item in fields" :key="item.key">
+        <fieldset v-if="item.kind === 'image'" class="min-w-0 space-y-2 sm:col-span-2">
+          <legend class="text-sm font-medium">{{ item.label }}{{ item.required ? ' *' : '' }}</legend>
+          <div class="flex min-w-0 flex-wrap items-center gap-3">
+            <img v-if="form[item.key]" :src="form[item.key]" :alt="item.label + '预览'" class="h-16 w-16 rounded-lg border border-slate-200 object-cover dark:border-slate-700" />
+            <button type="button" :name="item.key" :aria-label="'上传' + item.label" :aria-invalid="invalidField === item.key" class="min-h-11 rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800" @click="chooseImage(item.key)">
+              {{ uploadingTarget === item.key ? `上传中 ${uploadPercent}%` : form[item.key] ? '更换图片' : '选择图片' }}
             </button>
+            <button v-if="form[item.key] && !item.required" type="button" class="min-h-11 px-2 text-sm text-slate-500 underline dark:text-slate-300" :aria-label="'移除' + item.label" @click="form[item.key] = ''">移除</button>
           </div>
-        </template>
-      </EventCard>
-
-      <div v-if="!items.length" class="col-span-full py-12 text-center">
-        <div class="text-sky-200 text-4xl mb-2">❄</div>
-        <p class="text-slate-400 text-sm">这里冷冷清清的，什么都没有发生呢...</p>
-      </div>
-    </div>
-
-    <!-- 弹窗组件 -->
-    <el-dialog v-model="formOpen" title="发布新活动" width="720px" destroy-on-close class="touhou-dialog">
-      <EventForm
-        :allowed-types="formTypes"
-        :is-admin="isAdmin && allowCreateMode === 'admin'"
-        :submit-label="isAdmin && allowCreateMode === 'admin' ? '发布活动' : '提交审核'"
-        @submitted="() => { formOpen = false; loadEvents() }"
-      />
-    </el-dialog>
-
-    <el-dialog v-model="signupOpen" title="活动报名" width="640px" destroy-on-close class="touhou-dialog">
-      <EventSignup
-        v-if="selectedEvent"
-        :event-id="selectedEvent.id"
-        :disabled="!['published', 'ongoing'].includes(selectedEvent.status)"
-      />
-    </el-dialog>
-
-    <el-dialog v-model="previewOpen" title="参赛名单" width="640px" destroy-on-close class="touhou-dialog">
-      <div v-if="previewLoading" class="text-sm text-slate-400 text-center py-4">正在读取...</div>
-      <div v-else-if="!previewItems.length" class="text-sm text-slate-400 text-center py-4">暂无报名人员</div>
-      <div v-else class="space-y-3 text-sm text-slate-700 max-h-[60vh] overflow-y-auto pr-2">
-        <div class="flex items-center justify-between px-1 mb-2">
-          <span class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded">Total: {{ previewItems.length }}</span>
-        </div>
-        <div class="grid gap-3">
-          <div v-for="item in previewItems" :key="item.id" class="flex items-center gap-3 rounded-lg border border-slate-100 bg-white p-3 hover:border-sky-200 transition-colors">
-            <div class="relative">
-              <img v-if="item.avatar" :src="item.avatar" class="w-10 h-10 rounded-full object-cover border border-slate-100" />
-              <div v-else class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-xs">无</div>
-            </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold truncate text-slate-700">{{ item.common_id || '用户' }}</div>
-              <div class="text-xs text-slate-400">QQ: {{ item.qq || '未公开' }}</div>
-            </div>
-            <div class="text-xs text-right space-y-0.5">
-              <div class="text-sky-600 bg-sky-50 px-2 py-0.5 rounded inline-block">{{ item.pilot_source || '未知来源' }}</div>
-              <div class="text-slate-400">{{ item.machine_sign || '-' }}</div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </el-dialog>
-
-    <!-- 悬浮发布按钮 -->
-    <button
-      v-if="canCreate"
-      class="fixed right-8 bottom-8 z-40 flex items-center gap-2 px-6 py-3 rounded-full shadow-lg shadow-sky-500/20 transition-all duration-300 bg-gradient-to-r from-sky-400 to-blue-500 text-white hover:brightness-105 hover:-translate-y-0.5 active:scale-95"
-      @click="formOpen = true"
-    >
-      <span class="text-xl leading-none font-light">＋</span>
-      <span class="font-medium text-sm">发布活动</span>
+          <p v-if="uploadingTarget === item.key" role="status" class="text-xs text-sky-700 dark:text-sky-300">图片上传中，请稍候… {{ uploadPercent }}%</p>
+        </fieldset>
+        <label v-else class="block min-w-0 space-y-1" :class="item.kind === 'textarea' ? 'sm:col-span-2' : ''">
+          <span class="text-sm font-medium">{{ item.label }}{{ item.required ? ' *' : '' }}</span>
+          <textarea v-if="item.kind === 'textarea'" v-model="form[item.key]" :name="item.key" rows="3" maxlength="5000" :required="item.required" :aria-invalid="invalidField === item.key" />
+          <select v-else-if="item.kind === 'select'" v-model="form[item.key]" :name="item.key">
+            <option value="">请选择</option>
+            <option v-if="form[item.key] && !item.options.includes(form[item.key])" :value="form[item.key]">{{ form[item.key] }}</option>
+            <option v-for="option in item.options" :key="option" :value="option">{{ option }}</option>
+          </select>
+          <input v-else v-model="form[item.key]" :name="item.key" :type="inputType(item)" :maxlength="500" :required="item.required" :aria-invalid="invalidField === item.key" />
+          <span v-if="item.hint" class="block text-xs text-slate-500 dark:text-slate-400">{{ item.hint }}</span>
+        </label>
+      </template>
+    </fieldset>
+    <input ref="fileInput" type="file" class="hidden" accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml" tabindex="-1" @change="handleFileChange" />
+    <p v-if="errorMessage" role="alert" class="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200">{{ errorMessage }}</p>
+    <button type="submit" :disabled="busy || Boolean(loadError) || !typeOptions.length" :aria-busy="loading" class="min-h-11 w-full rounded-xl bg-sky-700 px-5 py-3 font-semibold text-white transition-colors hover:bg-sky-800 disabled:cursor-wait disabled:opacity-60">
+      {{ loading ? '提交中…' : uploadingTarget ? '请等待图片上传完成' : submitLabel }}
     </button>
-  </div>
+  </form>
 </template>
 
 <style scoped>
-/* 冰晶背景纹理 */
-.ice-crystal-overlay {
-  background-image: 
-    radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.25) 0%, transparent 8%),
-    radial-gradient(circle at 80% 70%, rgba(255, 255, 255, 0.2) 0%, transparent 10%),
-    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.15) 0%, transparent 12%);
-  background-size: 80px 80px;
+.event-form input:not([type='radio']):not([type='file']),
+.event-form textarea,
+.event-form select {
+  width: 100%;
+  min-height: 44px;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.5rem;
+  padding: 0.625rem 0.75rem;
+  background: #fff;
+  color: #0f172a;
 }
-
-/* 飘雪效果 */
-.snow-container {
-  perspective: 1000px;
+.event-form :is(input, textarea, select, button):focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 2px;
 }
-.snow {
-  position: absolute;
-  background: rgba(255, 255, 255, 0.8);
-  border-radius: 50%;
-  animation: fall linear infinite;
+html.dark .event-form :is(input, textarea, select):not([type='radio']) {
+  background: #0f172a;
+  color: #e2e8f0;
+  border-color: #475569;
 }
-.s1 { width: 6px; height: 6px; top: -10%; left: 15%; animation-duration: 6s; animation-delay: 0s; }
-.s2 { width: 4px; height: 4px; top: -10%; left: 45%; animation-duration: 9s; animation-delay: 2s; opacity: 0.6; }
-.s3 { width: 5px; height: 5px; top: -10%; left: 85%; animation-duration: 7s; animation-delay: 4s; }
-
-@keyframes fall {
-  0% { transform: translateY(0) translateX(0); opacity: 0; }
-  10% { opacity: 0.8; }
-  100% { transform: translateY(300px) translateX(-20px); opacity: 0; }
-}
-
-/* Dialog 样式微调 */
-:deep(.touhou-dialog) {
-  border-radius: 12px;
-  overflow: hidden;
-}
-:deep(.touhou-dialog .el-dialog__header) {
-  margin-right: 0;
-  background-color: #f0f9ff;
-  border-bottom: 1px solid #e0f2fe;
-  padding: 16px 24px;
-}
-:deep(.touhou-dialog .el-dialog__title) {
-  color: #0369a1;
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-:deep(.touhou-dialog .el-dialog__body) {
-  padding: 20px 24px;
-}
+.event-form [aria-invalid='true'] { border-color: #e11d48; }
 </style>

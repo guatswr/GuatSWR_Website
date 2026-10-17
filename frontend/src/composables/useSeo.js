@@ -35,7 +35,7 @@ export function useSeo() {
     const title = meta.title ? `${meta.title} | 桂航绯想天` : siteTitle
     const description = meta.description || defaultDescription
     const robots = meta.robots || 'index,follow'
-    const url = new URL(route.fullPath, window.location.origin).toString()
+    const url = new URL(route.path, window.location.origin).toString()
     const ogImage = new URL(defaultOgImagePath, window.location.origin).toString()
 
     document.title = title
@@ -47,7 +47,7 @@ export function useSeo() {
     setMetaTag('meta[property="og:site_name"]', { property: 'og:site_name', content: siteTitle })
     setMetaTag('meta[property="og:locale"]', { property: 'og:locale', content: 'zh_CN' })
     setMetaTag('meta[property="og:type"]', { property: 'og:type', content: 'website' })
-    setMetaTag('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary' })
+    setMetaTag('meta[name="twitter:card"]', { name: 'twitter:card', content: 'summary_large_image' })
     setMetaTag('meta[name="twitter:title"]', { name: 'twitter:title', content: title })
     setMetaTag('meta[name="twitter:description"]', { name: 'twitter:description', content: description })
     setMetaTag('meta[property="og:image"]', { property: 'og:image', content: ogImage })

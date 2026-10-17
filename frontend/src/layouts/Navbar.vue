@@ -1,265 +1,636 @@
 <script setup>
-import { ref, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { useRoute } from 'vue-router'
 import { useTheme } from '../composables/useTheme.js'
+import { useSiteConfigStore } from '../stores/siteConfig'
+import ClubAvatar from '../components/ClubAvatar.vue'
 
-const router = useRouter()
+const site = useSiteConfigStore()
+
+const route = useRoute()
+const navRef = ref(null)
+const desktopActivityButton = ref(null)
+const mobileActivityButton = ref(null)
+const mobileMenuButton = ref(null)
 const isMenuOpen = ref(false)
+const isActivitiesOpen = ref(false)
+const isMobileActivitiesOpen = ref(false)
 const isScrolled = ref(false)
+const readingProgress = ref(0)
+const isImmersive = computed(
+  () => route.path === '/' && !isScrolled.value && !isMenuOpen.value
+)
+let desktopQuery
 
-// 移动端子菜单展开状态
-const mobileSubmenuOpen = ref({})
-
-// 使用刚才创建的 Composable
 const { themeMode, isDark, toggleTheme } = useTheme()
-
-// 导航配置：支持层级结构
-const navLinks = [
-  { name: '首页', path: '/' },
-  { 
-    name: '群内活动', // 父级菜单名称
-    path: '', // 父级通常不直接跳转
-    isDropdown: true,
-    children: [
-      { 
-        name: '记忆碎片', 
-        path: '/activities',
-        desc: '往期活动归档' 
-      },
-      { 
-        name: '异变进行时', 
-        path: '/events',
-        desc: '当前正在进行'
-      }
-    ]
+const themeLabel = computed(() => {
+  const current = `${themeMode.value === 'auto' ? '自动 · ' : ''}${isDark.value ? '夜间' : '日间'}`
+  return `当前${current}模式，切换为${isDark.value ? '日间' : '夜间'}模式`
+})
+const activityLinks = [
+  {
+    name: '进行中的活动',
+    path: '/events',
+    desc: '联机、挑战与线下相聚',
+    tag: '异变进行时'
   },
-  { name: '绯想天住民', path: '/members' },
-  { name: '绯想天群史', path: '/history' },
-  { name: '博丽大结界', path: '/social' },
+  {
+    name: '往期活动回顾',
+    path: '/activities',
+    desc: '照片、记录与共同的回忆',
+    tag: '记忆碎片'
+  }
 ]
+const navLinks = [
+  { name: '成员', path: '/members', title: '绯想天住民', number: '03' },
+  { name: '群史', path: '/history', title: '绯想天群史', number: '04' },
+  { name: '社群链接', path: '/social', title: '博丽大结界', number: '05' }
+]
+const isActivityRoute = computed(
+  () =>
+    route.path === '/activities' ||
+    route.path.startsWith('/activity/') ||
+    route.path === '/events' ||
+    route.path.startsWith('/events/')
+)
 
+const closeMenus = () => {
+  isMenuOpen.value = false
+  isActivitiesOpen.value = false
+  isMobileActivitiesOpen.value = false
+}
 const toggleMenu = () => {
-  isMenuOpen.value = !isMenuOpen.value
+  const nextOpen = !isMenuOpen.value
+  closeMenus()
+  isMenuOpen.value = nextOpen
 }
-
-const toggleMobileSubmenu = (menuName) => {
-  mobileSubmenuOpen.value[menuName] = !mobileSubmenuOpen.value[menuName]
+const handleEscape = (event) => {
+  if (event.key !== 'Escape') return
+  if (isActivitiesOpen.value) {
+    isActivitiesOpen.value = false
+    desktopActivityButton.value?.focus()
+  } else if (isMobileActivitiesOpen.value && isMenuOpen.value) {
+    isMobileActivitiesOpen.value = false
+    mobileActivityButton.value?.focus()
+  } else if (isMenuOpen.value) {
+    closeMenus()
+    mobileMenuButton.value?.focus()
+  } else {
+    return
+  }
+  event.preventDefault()
 }
-
+const handleOutside = (event) => {
+  if (navRef.value && !navRef.value.contains(event.target)) closeMenus()
+}
+const handleActivityFocusOut = (event) => {
+  if (!event.currentTarget.contains(event.relatedTarget))
+    isActivitiesOpen.value = false
+}
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 20
+  isScrolled.value = window.scrollY > 16
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight
+  readingProgress.value =
+    scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0
 }
+watch(() => route.fullPath, closeMenus)
 
 onMounted(() => {
-  window.addEventListener('scroll', handleScroll)
+  handleScroll()
+  desktopQuery = window.matchMedia('(min-width: 1024px)')
+  desktopQuery.addEventListener('change', closeMenus)
+  window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('resize', handleScroll, { passive: true })
+  document.addEventListener('pointerdown', handleOutside)
+  document.addEventListener('focusin', handleOutside)
+  document.addEventListener('keydown', handleEscape)
 })
-
 onUnmounted(() => {
+  desktopQuery?.removeEventListener('change', closeMenus)
   window.removeEventListener('scroll', handleScroll)
+  window.removeEventListener('resize', handleScroll)
+  document.removeEventListener('pointerdown', handleOutside)
+  document.removeEventListener('focusin', handleOutside)
+  document.removeEventListener('keydown', handleEscape)
 })
 </script>
 
 <template>
-  <nav 
-    class="fixed w-full z-50 transition-all duration-300 border-b border-transparent"
-    :class="[
-      isScrolled 
-        ? 'bg-white/80 backdrop-blur-md shadow-sm supports-[backdrop-filter]:bg-white/60 dark:bg-slate-900/80 dark:supports-[backdrop-filter]:bg-slate-900/60' 
-        : 'bg-white shadow-md dark:bg-slate-950 dark:shadow-black/40'
-    ]"
+  <nav
+    ref="navRef"
+    aria-label="主导航"
+    class="club-navbar fixed inset-x-0 top-0 z-50"
+    :data-immersive="isImmersive"
+    :style="{ '--reading-progress': readingProgress }"
   >
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <div class="flex justify-between h-16">
-        <!-- Logo -->
-        <div class="flex items-center cursor-pointer" @click="router.push('/')">
-          <span class="text-2xl font-bold text-sky-600 dark:text-sky-400">桂航绯想天</span>
-        </div>
-        
-        <!-- Desktop Menu -->
-        <div class="hidden md:flex items-center space-x-2 lg:space-x-4">
-          <template v-for="link in navLinks" :key="link.name">
-            <!-- 普通链接 -->
-            <router-link 
-              v-if="!link.isDropdown"
-              :to="link.path"
-              class="px-3 py-2 text-gray-600 hover:text-sky-500 dark:text-gray-200 dark:hover:text-sky-300 transition-colors font-medium rounded-md hover:bg-gray-50 dark:hover:bg-slate-800"
+    <div class="club-container">
+      <div class="flex h-16 items-center justify-between gap-3">
+        <RouterLink
+          to="/"
+          class="club-wordmark flex min-h-11 shrink-0 items-center gap-2.5"
+          aria-label="桂航绯想天同好会首页"
+          @click="closeMenus"
+        >
+          <ClubAvatar :src="site.config.badge_image" class="h-9 w-9" />
+          <span class="flex flex-col gap-0.5">
+            <span
+              class="whitespace-nowrap font-serif text-lg font-bold tracking-wider"
+              >桂航绯想天</span
             >
-              {{ link.name }}
-            </router-link>
-
-            <!-- 下拉菜单 (Hover 触发) -->
-            <div v-else class="relative group">
-              <button 
-                class="flex items-center gap-1 px-3 py-2 text-gray-600 group-hover:text-sky-500 dark:text-gray-200 dark:group-hover:text-sky-300 transition-colors font-medium rounded-md group-hover:bg-gray-50 dark:group-hover:bg-slate-800 outline-none"
-              >
-                {{ link.name }}
-                <!-- 小箭头图标 -->
-                <svg class="w-4 h-4 transition-transform group-hover:rotate-180" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-              
-              <!-- 下拉内容面板 -->
-              <div class="absolute left-1/2 -translate-x-1/2 pt-2 w-48 opacity-0 translate-y-2 invisible group-hover:opacity-100 group-hover:translate-y-0 group-hover:visible transition-all duration-200 ease-out">
-                <div class="bg-white dark:bg-slate-900 rounded-lg shadow-xl ring-1 ring-black/5 dark:ring-white/10 overflow-hidden">
-                  <div class="p-1">
-                    <router-link 
-                      v-for="child in link.children"
-                      :key="child.name"
-                      :to="child.path"
-                      class="flex flex-col px-4 py-3 hover:bg-sky-50 dark:hover:bg-slate-800 transition-colors rounded-md group/item"
-                    >
-                      <span class="text-sm font-medium text-gray-900 dark:text-gray-100 group-hover/item:text-sky-600 dark:group-hover/item:text-sky-400">
-                        {{ child.name }}
-                      </span>
-                      <span v-if="child.desc" class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-                        {{ child.desc }}
-                      </span>
-                    </router-link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </template>
-
-          <!-- 分隔线 (视觉优化) -->
-          <div class="h-6 w-px bg-gray-200 dark:bg-slate-700 mx-2"></div>
-
-          <!-- 近期日志入口 (新增 - 桌面端) -->
-          <router-link 
-            to="/logs" 
-            class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 hover:bg-amber-50 hover:border-amber-200 hover:scale-105 dark:border-slate-700 dark:hover:bg-slate-800 dark:hover:border-amber-900/50 transition-all duration-300"
-            title="近期日志"
-          >
-            <span class="text-lg leading-none">📜</span>
-          </router-link>
-
-          <!-- Theme Toggle -->
-          <button
-            type="button"
-            class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-slate-700 dark:text-gray-200 dark:hover:bg-slate-800 transition"
-            :title="themeMode === 'auto' ? `当前自动：${isDark ? '夜间' : '日间'}` : `当前：${isDark ? '夜间' : '日间'}`"
-            aria-label="切换夜间/日间模式"
-            @click="toggleTheme"
-          >
-            <svg v-if="isDark" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 4.5a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5.5a1 1 0 0 1 1-1Zm0 11a1 1 0 0 1 1 1V19a1 1 0 1 1-2 0v-2.5a1 1 0 0 1 1-1Zm7.5-3.5a1 1 0 0 1 1 1 1 1 0 0 1-1 1H18a1 1 0 1 1 0-2h1.5Zm-13.5 0a1 1 0 0 1 0 2H4.5a1 1 0 1 1 0-2H6Zm9.78-4.28a1 1 0 0 1 1.42 1.42l-1.06 1.06a1 1 0 1 1-1.42-1.42l1.06-1.06Zm-7.5 7.5a1 1 0 0 1 1.42 1.42l-1.06 1.06a1 1 0 1 1-1.42-1.42l1.06-1.06Zm7.5 1.06a1 1 0 1 1-1.42 1.42l-1.06-1.06a1 1 0 0 1 1.42-1.42l1.06 1.06ZM7.28 6.28a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1-1.42 1.42L7.28 7.7a1 1 0 0 1 0-1.42ZM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
-            </svg>
-            <svg v-else class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a.75.75 0 0 1 .7 1.04 6.5 6.5 0 0 0 8.26 8.26.75.75 0 0 1 1.04.7Z" />
-            </svg>
-          </button>
-          
-          <!-- Admin Login -->
-          <router-link to="/login" 
-            class="group relative flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-red-500 hover:bg-red-500 hover:text-white hover:border-red-500 hover:shadow-[0_0_15px_rgba(239,68,68,0.5)] dark:border-slate-700 dark:text-red-400 dark:hover:bg-red-500 dark:hover:text-white transition-all duration-300"
-            title="博丽神社通道 (管理员登录)"
-          >
-            <svg class="w-6 h-6 transform transition-transform group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-              <path d="M2 6C2 5.44772 2.44772 5 3 5H21C21.5523 5 22 5.44772 22 6C22 6.55228 21.5523 7 21 7H18V9H17V20H19V22H5V20H7V9H6V7H3C2.44772 7 2 6.55228 2 6Z" fill-opacity="0.2" class="group-hover:fill-opacity-0 transition-all"/>
-              <path fill-rule="evenodd" clip-rule="evenodd" d="M4 6H20V7H17.8L18 9H19V10.5H18V20H16V10.5H8V20H6V10.5H5V9H6.2L6.4 7H4V6ZM16 9H8V7.5H16V9ZM4 3H20V4.5H4V3Z" />
-            </svg>
-          </router-link>
-        </div>
-
-        <!-- Mobile Menu Icons -->
-        <div class="md:hidden flex items-center gap-2">
-           <!-- 近期日志入口 (移动端) -->
-           <router-link 
-             to="/logs" 
-             class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 active:scale-95 dark:border-slate-700 dark:bg-slate-800/50 transition"
-             title="近期日志"
-           >
-             <span class="text-lg leading-none">📜</span>
-           </router-link>
-
-          <!-- Theme Toggle (Mobile) -->
-          <button
-            type="button"
-            class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-gray-600 hover:bg-gray-100 dark:border-slate-700 dark:text-gray-200 dark:bg-slate-800/50 dark:hover:bg-slate-800 transition"
-            @click="toggleTheme"
-          >
-            <svg v-if="isDark" class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M12 4.5a1 1 0 0 1 1 1V7a1 1 0 1 1-2 0V5.5a1 1 0 0 1 1-1Zm0 11a1 1 0 0 1 1 1V19a1 1 0 1 1-2 0v-2.5a1 1 0 0 1 1-1Zm7.5-3.5a1 1 0 0 1 1 1 1 1 0 0 1-1 1H18a1 1 0 1 1 0-2h1.5Zm-13.5 0a1 1 0 0 1 0 2H4.5a1 1 0 1 1 0-2H6Zm9.78-4.28a1 1 0 0 1 1.42 1.42l-1.06 1.06a1 1 0 1 1-1.42-1.42l1.06-1.06Zm-7.5 7.5a1 1 0 0 1 1.42 1.42l-1.06 1.06a1 1 0 1 1-1.42-1.42l1.06-1.06Zm7.5 1.06a1 1 0 1 1-1.42 1.42l-1.06-1.06a1 1 0 0 1 1.42-1.42l1.06 1.06ZM7.28 6.28a1 1 0 0 1 1.42 0l1.06 1.06a1 1 0 0 1-1.42 1.42L7.28 7.7a1 1 0 0 1 0-1.42ZM12 9a3 3 0 1 1 0 6 3 3 0 0 1 0-6Z" />
-            </svg>
-            <svg v-else class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-              <path d="M21 14.5A8.5 8.5 0 1 1 9.5 3a.75.75 0 0 1 .7 1.04 6.5 6.5 0 0 0 8.26 8.26.75.75 0 0 1 1.04.7Z" />
-            </svg>
-          </button>
-
-          <!-- Login (Mobile) -->
-          <router-link to="/login" 
-            class="flex items-center justify-center w-10 h-10 rounded-full border border-gray-200 text-red-500 dark:border-slate-700 dark:text-red-400 dark:bg-slate-800/50 transition"
-          >
-              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2L13 3H17V5H19V7H17V19H19V21H5V19H7V7H5V5H7V3H12M9 7V19H15V7H9M11 9H13V12H11V9Z"/></svg>
-          </router-link>
-
-          <!-- Hamburger -->
-          <button @click="toggleMenu" class="ml-1 text-gray-600 dark:text-gray-200 focus:outline-none p-2 rounded-md hover:bg-gray-100 dark:hover:bg-slate-800 transition">
-            <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path v-if="!isMenuOpen" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-              <path v-else stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- Mobile Dropdown -->
-    <div v-if="isMenuOpen" class="md:hidden bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border-t border-gray-100 dark:border-slate-800 max-h-[80vh] overflow-y-auto">
-      <div class="px-2 pt-2 pb-3 space-y-1">
-        <template v-for="link in navLinks" :key="link.name">
-          <!-- 移动端：普通链接 -->
-          <router-link 
-            v-if="!link.isDropdown"
-            :to="link.path"
-            class="block px-3 py-2 text-base font-medium text-gray-700 hover:text-sky-500 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-slate-800 rounded-md"
-            @click="isMenuOpen = false"
-          >
-            {{ link.name }}
-          </router-link>
-
-          <!-- 移动端：折叠菜单 -->
-          <div v-else>
-            <button 
-              @click="toggleMobileSubmenu(link.name)"
-              class="w-full flex items-center justify-between px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 dark:text-gray-200 dark:hover:bg-slate-800 rounded-md"
+            <span
+              class="club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]"
+              >GUAT TOUHOU FANS CLUB</span
             >
-              <span>{{ link.name }}</span>
-              <svg 
-                class="w-4 h-4 transition-transform duration-200" 
-                :class="mobileSubmenuOpen[link.name] ? 'rotate-180' : ''"
-                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+          </span>
+        </RouterLink>
+
+        <div class="hidden items-center gap-1 lg:flex">
+          <RouterLink
+            to="/"
+            class="nav-link"
+            exact-active-class="nav-link-active"
+            @click="closeMenus"
+            ><span class="nav-number" aria-hidden="true">01</span
+            >首页</RouterLink
+          >
+          <div class="relative" @focusout="handleActivityFocusOut">
+            <button
+              id="desktop-activities-trigger"
+              ref="desktopActivityButton"
+              type="button"
+              class="nav-link gap-1.5"
+              :class="
+                isActivityRoute || isActivitiesOpen ? 'nav-link-active' : ''
+              "
+              :aria-expanded="isActivitiesOpen"
+              aria-controls="desktop-activities-panel"
+              @click="isActivitiesOpen = !isActivitiesOpen"
+            >
+              <span class="nav-number" aria-hidden="true">02</span>活动
+              <svg
+                class="h-3.5 w-3.5 transition-transform duration-200"
+                :class="isActivitiesOpen ? 'rotate-180' : ''"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
               >
-                <path d="M6 9l6 6 6-6" stroke-linecap="round" stroke-linejoin="round"/>
+                <path
+                  d="m6 9 6 6 6-6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
               </svg>
             </button>
-            
-            <!-- 子菜单内容 -->
-            <div v-show="mobileSubmenuOpen[link.name]" class="pl-4 space-y-1 mt-1 border-l-2 border-gray-100 dark:border-slate-800 ml-3">
-              <router-link 
-                v-for="child in link.children"
-                :key="child.name"
-                :to="child.path"
-                class="block px-3 py-2 text-sm font-medium text-gray-600 hover:text-sky-500 hover:bg-gray-50 dark:text-gray-300 dark:hover:bg-slate-800/50 rounded-md"
-                @click="isMenuOpen = false"
+            <Transition name="club-menu">
+              <div
+                v-show="isActivitiesOpen"
+                :inert="isActivitiesOpen ? undefined : ''"
+                id="desktop-activities-panel"
+                role="group"
+                aria-labelledby="desktop-activities-trigger"
+                class="club-nav-panel absolute left-0 top-full mt-2 w-72 border p-2 shadow-lg"
               >
-                {{ child.name }}
-                <span v-if="child.desc" class="block text-xs text-gray-400 font-normal mt-0.5">
-                  {{ child.desc }}
-                </span>
-              </router-link>
-            </div>
+                <RouterLink
+                  v-for="link in activityLinks"
+                  :key="link.path"
+                  :to="link.path"
+                  class="block border-l-2 border-transparent px-4 py-3 text-slate-700 transition-colors hover:border-sky-500 hover:bg-sky-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                  active-class="bg-sky-50 text-sky-700 dark:bg-slate-800 dark:text-sky-300"
+                  @click="closeMenus"
+                >
+                  <span
+                    class="flex items-center justify-between gap-2 text-sm font-semibold"
+                    >{{ link.name
+                    }}<span
+                      class="text-[10px] font-normal text-slate-500 dark:text-slate-400"
+                      >{{ link.tag }}</span
+                    ></span
+                  >
+                  <span
+                    class="mt-1 block text-xs leading-5 text-slate-500 dark:text-slate-400"
+                    >{{ link.desc }}</span
+                  >
+                </RouterLink>
+              </div>
+            </Transition>
           </div>
-        </template>
-        
-        <router-link to="/login" 
-          class="block px-3 py-2 text-base font-medium text-red-500 hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-900/30 rounded-md border-t border-gray-100 dark:border-slate-800 mt-2"
-          @click="isMenuOpen = false"
-        >
-          博丽神社 (管理员入口)
-        </router-link>
+          <RouterLink
+            v-for="link in navLinks"
+            :key="link.path"
+            :to="link.path"
+            :title="link.title"
+            class="nav-link"
+            active-class="nav-link-active"
+            @click="closeMenus"
+            ><span class="nav-number" aria-hidden="true">{{ link.number }}</span
+            >{{ link.name }}</RouterLink
+          >
+          <div
+            class="mx-2 h-5 w-px bg-current opacity-20"
+            aria-hidden="true"
+          ></div>
+          <RouterLink
+            to="/logs"
+            class="nav-icon"
+            aria-label="站点日志"
+            title="站点日志"
+            @click="closeMenus"
+          >
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M8 5h11v15H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2h10"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+              <path
+                d="M5 17a2 2 0 0 1 2-2h12M10 8h6M10 11h4"
+                stroke-linecap="round"
+              />
+            </svg>
+          </RouterLink>
+          <button
+            type="button"
+            class="nav-icon"
+            :aria-label="themeLabel"
+            :title="themeLabel"
+            @click="toggleTheme"
+          >
+            <svg
+              v-if="isDark"
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg
+              v-else
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <RouterLink
+            to="/login"
+            class="nav-icon"
+            aria-label="管理员登录"
+            title="博丽神社 · 管理员登录"
+            @click="closeMenus"
+          >
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M4 6h16M6 3h12M7 6v15m10-15v15M5 10h14M5 21h4m6 0h4"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </RouterLink>
+          <RouterLink
+            to="/join"
+            class="club-nav-join ml-3 inline-flex min-h-11 items-center justify-center gap-3 whitespace-nowrap px-2 text-sm font-medium"
+            @click="closeMenus"
+            >加入我们 <span aria-hidden="true">↗</span></RouterLink
+          >
+        </div>
+
+        <div class="flex shrink-0 items-center gap-1 lg:hidden">
+          <button
+            type="button"
+            class="nav-icon"
+            :aria-label="themeLabel"
+            :title="themeLabel"
+            @click="toggleTheme"
+          >
+            <svg
+              v-if="isDark"
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="4" />
+              <path
+                d="M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.4 1.4m11.2 11.2L19 19M5 19l1.4-1.4M17.6 6.4 19 5"
+                stroke-linecap="round"
+              />
+            </svg>
+            <svg
+              v-else
+              class="h-5 w-5"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.7"
+              aria-hidden="true"
+            >
+              <path
+                d="M20.5 14A8.5 8.5 0 0 1 10 3.5 8.5 8.5 0 1 0 20.5 14Z"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <button
+            ref="mobileMenuButton"
+            type="button"
+            class="nav-icon"
+            :aria-label="isMenuOpen ? '关闭导航菜单' : '打开导航菜单'"
+            :aria-expanded="isMenuOpen"
+            aria-controls="mobile-navigation"
+            @click="toggleMenu"
+          >
+            <svg
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path
+                v-if="!isMenuOpen"
+                d="M4 6h16M4 12h16M4 18h16"
+                stroke-linecap="round"
+              />
+              <path v-else d="m6 6 12 12M6 18 18 6" stroke-linecap="round" />
+            </svg>
+          </button>
+        </div>
       </div>
     </div>
+
+    <Transition name="club-menu">
+      <div
+        v-show="isMenuOpen"
+        :inert="isMenuOpen ? undefined : ''"
+        id="mobile-navigation"
+        class="club-nav-panel max-h-[calc(100dvh-4rem)] overflow-y-auto overscroll-contain border-t px-4 pb-5 pt-3 lg:hidden"
+      >
+        <div class="mx-auto max-w-7xl space-y-1">
+          <RouterLink
+            to="/"
+            class="mobile-nav-link"
+            exact-active-class="nav-link-active"
+            @click="closeMenus"
+            ><span class="nav-number" aria-hidden="true">01</span
+            >首页</RouterLink
+          >
+          <button
+            id="mobile-activities-trigger"
+            ref="mobileActivityButton"
+            type="button"
+            class="mobile-nav-link w-full justify-between"
+            :class="isActivityRoute ? 'nav-link-active' : ''"
+            :aria-expanded="isMobileActivitiesOpen"
+            aria-controls="mobile-activities-panel"
+            @click="isMobileActivitiesOpen = !isMobileActivitiesOpen"
+          >
+            <span class="flex items-center gap-3"
+              ><span class="nav-number" aria-hidden="true">02</span>活动</span
+            >
+            <svg
+              class="h-4 w-4 transition-transform duration-200"
+              :class="isMobileActivitiesOpen ? 'rotate-180' : ''"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <Transition name="club-menu">
+            <div
+              v-show="isMobileActivitiesOpen"
+              :inert="isMobileActivitiesOpen ? undefined : ''"
+              id="mobile-activities-panel"
+              role="group"
+              aria-labelledby="mobile-activities-trigger"
+              class="ml-4 space-y-1 border-l border-sky-100 pl-3 dark:border-slate-800"
+            >
+              <RouterLink
+                v-for="link in activityLinks"
+                :key="link.path"
+                :to="link.path"
+                class="mobile-nav-link flex-wrap gap-x-2 text-sm"
+                active-class="nav-link-active"
+                @click="closeMenus"
+                >{{ link.name
+                }}<span
+                  class="text-xs font-normal text-slate-500 dark:text-slate-400"
+                  >{{ link.tag }}</span
+                ></RouterLink
+              >
+            </div>
+          </Transition>
+          <RouterLink
+            v-for="link in navLinks"
+            :key="link.path"
+            :to="link.path"
+            :title="link.title"
+            class="mobile-nav-link"
+            active-class="nav-link-active"
+            @click="closeMenus"
+            ><span class="nav-number" aria-hidden="true">{{ link.number }}</span
+            >{{ link.name }}</RouterLink
+          >
+          <div
+            class="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 dark:border-slate-800"
+          >
+            <RouterLink
+              to="/logs"
+              class="mobile-nav-link justify-center text-sm"
+              @click="closeMenus"
+              >站点日志</RouterLink
+            >
+            <RouterLink
+              to="/login"
+              class="mobile-nav-link justify-center text-sm"
+              @click="closeMenus"
+              >管理员登录</RouterLink
+            >
+          </div>
+          <RouterLink
+            to="/join"
+            class="club-nav-join mt-3 flex min-h-12 items-center justify-center gap-3 border-y border-sky-200 px-5 text-sm font-semibold dark:border-slate-700"
+            @click="closeMenus"
+            >加入桂航绯想天 <span aria-hidden="true">↗</span></RouterLink
+          >
+        </div>
+      </div>
+    </Transition>
   </nav>
 </template>
+
+<style scoped>
+.club-navbar {
+  --nav-ink: #334155;
+  --nav-accent: #0369a1;
+  color: var(--nav-ink);
+  background: rgb(251 251 248 / 0.96);
+  border-bottom: 1px solid rgb(148 163 184 / 0.22);
+  backdrop-filter: blur(14px);
+  transition:
+    background-color 250ms ease,
+    color 250ms ease,
+    border-color 250ms ease;
+}
+:global(.dark .club-navbar) {
+  --nav-ink: #e2e8f0;
+  --nav-accent: #bae6fd;
+  background: rgb(16 25 35 / 0.96);
+}
+.club-navbar[data-immersive='true'] {
+  --nav-ink: #f1f5f9;
+  --nav-accent: #bae6fd;
+  background: transparent;
+  border-color: rgb(255 255 255 / 0.22);
+  backdrop-filter: none;
+}
+.club-navbar::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 1px;
+  background: var(--nav-accent);
+  transform: scaleX(var(--reading-progress, 0));
+  transform-origin: left;
+  pointer-events: none;
+}
+.club-wordmark {
+  color: var(--nav-ink);
+}
+.club-wordmark-subtitle {
+  opacity: 0.65;
+}
+.nav-number {
+  font-family: ui-monospace, monospace;
+  font-size: 9px;
+  font-weight: 400;
+  opacity: 0.55;
+}
+.nav-link {
+  @apply relative inline-flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-sm font-medium;
+  color: var(--nav-ink);
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: 2px;
+  left: 10px;
+  right: 10px;
+  height: 1px;
+  background: currentColor;
+  transform: scaleX(0);
+  transition: transform 220ms ease;
+  transform-origin: left;
+}
+.nav-link:hover::after,
+.nav-link-active::after {
+  transform: scaleX(1);
+}
+.nav-link-active::before {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: calc(50% - 2px);
+  width: 5px;
+  height: 5px;
+  transform: rotate(45deg);
+  background: var(--nav-accent);
+}
+.nav-icon {
+  @apply inline-flex h-11 w-10 shrink-0 items-center justify-center transition-colors;
+  color: var(--nav-ink);
+  opacity: 0.8;
+}
+.nav-icon:hover {
+  color: var(--nav-accent);
+  opacity: 1;
+}
+.mobile-nav-link {
+  @apply flex min-h-12 items-center gap-3 border-b border-slate-200/60 px-3 text-base font-medium transition-colors dark:border-slate-700/60;
+  color: var(--nav-ink);
+}
+.nav-link-active {
+  color: var(--nav-accent);
+}
+.mobile-nav-link:hover {
+  color: var(--nav-accent);
+}
+.club-nav-panel {
+  background: #fbfbf8;
+  border-color: #dbe4eb;
+}
+:global(.dark .club-nav-panel) {
+  background: #101923;
+  border-color: #334155;
+}
+.club-nav-join {
+  color: var(--nav-accent);
+}
+.club-nav-join span {
+  transition: transform 200ms ease;
+}
+.club-nav-join:hover span {
+  transform: translate(2px, -2px);
+}
+@media (max-width: 359px) {
+  .club-wordmark-subtitle {
+    letter-spacing: 0.12em;
+    font-size: 7px;
+  }
+  .club-wordmark {
+    gap: 0.5rem;
+  }
+}
+.club-navbar :is(a, button):focus-visible {
+  outline: 2px solid var(--nav-accent);
+  outline-offset: 3px;
+}
+@media (prefers-reduced-motion: reduce) {
+  .club-navbar,
+  .club-navbar * {
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>

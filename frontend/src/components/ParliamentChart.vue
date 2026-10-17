@@ -20,19 +20,19 @@ const { data } = toRefs(props)
 
 // 配置项 - 大幅增加尺寸以容纳文字和清晰的间距
 const config = {
-  width: 1000,     // 宽度增加
-  height: 520,     // 高度增加
-  centerX: 500,    // 水平居中
-  centerY: 480,    // 圆心定位在底部，留出一点下边距
+  width: 1000, // 宽度增加
+  height: 520, // 高度增加
+  centerX: 500, // 水平居中
+  centerY: 480, // 圆心定位在底部，留出一点下边距
   radiusInner: 200, // [关键] 增大内圈半径，确保文字不被遮挡
   radiusOuter: 450, // [关键] 增大外圈半径，让扇形更舒展
-  rows: 8           // 保持8排
+  rows: 8 // 保持8排
 }
 
 // 核心算法：生成标准180度半圆席位
 const seats = computed(() => {
   let dotList = []
-  data.value.forEach(group => {
+  data.value.forEach((group) => {
     for (let i = 0; i < group.value; i++) {
       dotList.push({ color: group.color, label: group.label })
     }
@@ -45,42 +45,42 @@ const seats = computed(() => {
   const rowRadii = []
   // 计算行距
   const dr = (config.radiusOuter - config.radiusInner) / (config.rows - 1)
-  for(let i=0; i<config.rows; i++) {
+  for (let i = 0; i < config.rows; i++) {
     rowRadii.push(config.radiusInner + i * dr)
   }
 
   // 2. 按周长比例分配座位
-  const rowLengths = rowRadii.map(r => Math.PI * r)
+  const rowLengths = rowRadii.map((r) => Math.PI * r)
   const totalLength = rowLengths.reduce((a, b) => a + b, 0)
-  
-  const counts = rowLengths.map(l => (l / totalLength) * totalDots)
-  const intCounts = counts.map(c => Math.floor(c))
-  
+
+  const counts = rowLengths.map((l) => (l / totalLength) * totalDots)
+  const intCounts = counts.map((c) => Math.floor(c))
+
   // 补齐余数
   const remainders = counts.map((c, i) => ({ val: c - intCounts[i], idx: i }))
   let currentSum = intCounts.reduce((a, b) => a + b, 0)
   remainders.sort((a, b) => b.val - a.val)
-  for(let i=0; i < (totalDots - currentSum); i++) {
+  for (let i = 0; i < totalDots - currentSum; i++) {
     intCounts[remainders[i].idx]++
   }
 
   // 3. 生成坐标
   const generatedSeats = []
-  
+
   // 动态计算点大小：
   // 找出最密集的行，计算其平均间隔
   let minArcPerDot = Infinity
   intCounts.forEach((count, i) => {
-    if(count > 0) {
-       // 该排弧长 / (数量-1) = 两个圆心之间的弧长距离
-       // 如果 count=1，距离是无穷大，忽略
-       if (count > 1) {
-         const spacing = rowLengths[i] / (count - 1)
-         if(spacing < minArcPerDot) minArcPerDot = spacing
-       }
+    if (count > 0) {
+      // 该排弧长 / (数量-1) = 两个圆心之间的弧长距离
+      // 如果 count=1，距离是无穷大，忽略
+      if (count > 1) {
+        const spacing = rowLengths[i] / (count - 1)
+        if (spacing < minArcPerDot) minArcPerDot = spacing
+      }
     }
   })
-  
+
   // 如果 minArcPerDot 还是 Infinity (例如总共只有1个点)，给个默认值
   if (minArcPerDot === Infinity) minArcPerDot = 40
 
@@ -94,7 +94,7 @@ const seats = computed(() => {
   intCounts.forEach((count, rowIndex) => {
     if (count === 0) return
     const radius = rowRadii[rowIndex]
-    
+
     // 角度分布：严格 180 度 (PI 到 0)
     // 只有一行多于1个点时才铺开，否则居中
     if (count === 1) {
@@ -108,8 +108,8 @@ const seats = computed(() => {
       // 180度均分
       // angle = PI - (i * (PI / (count - 1)))
       const angleStep = Math.PI / (count - 1)
-      for(let i=0; i<count; i++) {
-        const angle = Math.PI - (i * angleStep)
+      for (let i = 0; i < count; i++) {
+        const angle = Math.PI - i * angleStep
         generatedSeats.push({
           x: config.centerX + radius * Math.cos(angle),
           y: config.centerY - radius * Math.sin(angle),
@@ -130,7 +130,9 @@ const seats = computed(() => {
   }))
 })
 
-const totalCount = computed(() => data.value.reduce((acc, cur) => acc + cur.value, 0))
+const totalCount = computed(() =>
+  data.value.reduce((acc, cur) => acc + cur.value, 0)
+)
 </script>
 
 <template>
@@ -150,45 +152,38 @@ const totalCount = computed(() => data.value.reduce((acc, cur) => acc + cur.valu
           <title>{{ dot.label }}</title>
         </circle>
       </g>
-      
+
       <!-- 中心文字 -->
-      <g class="center-text" :transform="`translate(${config.centerX}, ${config.centerY})`">
+      <g
+        class="center-text"
+        :transform="`translate(${config.centerX}, ${config.centerY})`"
+      >
         <!-- 数字稍微上移，避免贴底 -->
-        <text 
-          x="0" 
-          y="-50" 
-          text-anchor="middle" 
-          class="total-number"
-        >
+        <text x="0" y="-50" text-anchor="middle" class="total-number">
           {{ totalCount }}
         </text>
         <!-- 标题 -->
-        <text 
-          x="0" 
-          y="0" 
-          text-anchor="middle" 
-          class="chart-title"
-        >
+        <text x="0" y="0" text-anchor="middle" class="chart-title">
           {{ title }}
         </text>
-         <!-- 日期/副标题 -->
-         <text 
+        <!-- 日期/副标题 -->
+        <text
           v-if="subTitle"
-          x="0" 
-          y="30" 
-          text-anchor="middle" 
+          x="0"
+          y="30"
+          text-anchor="middle"
           class="chart-subtitle"
         >
           {{ subTitle }}
         </text>
       </g>
     </svg>
-    
+
     <!-- 底部图例 -->
     <div class="legend-container">
-      <div 
-        v-for="item in data" 
-        :key="item.label" 
+      <div
+        v-for="item in data"
+        :key="item.label"
         class="legend-item"
         v-show="item.value > 0"
       >
@@ -205,13 +200,15 @@ const totalCount = computed(() => data.value.reduce((acc, cur) => acc + cur.valu
   width: 100%;
   max-width: 900px;
   margin: 0 auto;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial,
+    sans-serif;
 }
 
 .chart-svg {
   width: 100%;
   height: auto;
-  filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.05));
+  filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.05));
 }
 
 .seat-dot {
@@ -260,7 +257,7 @@ const totalCount = computed(() => data.value.reduce((acc, cur) => acc + cur.valu
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 8px; 
+  gap: 8px;
   margin-top: 20px;
   padding: 0 16px;
   width: 100%;
@@ -284,7 +281,7 @@ const totalCount = computed(() => data.value.reduce((acc, cur) => acc + cur.valu
   font-weight: bold;
   border-radius: 4px; /* 微圆角，参考移动端截图 */
   text-align: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s;
   white-space: nowrap;
 }
@@ -305,7 +302,7 @@ const totalCount = computed(() => data.value.reduce((acc, cur) => acc + cur.valu
        (100% - 3 * gap) / 4 ≈ 23%
        让一行容纳 4 个标签，类似参考图的 Grid 布局效果
     */
-    flex: 0 0 calc(25% - 5px); 
+    flex: 0 0 calc(25% - 5px);
     min-width: 0;
   }
 

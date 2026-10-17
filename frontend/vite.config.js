@@ -24,11 +24,11 @@ export default defineConfig({
       // 【重要】不要带末尾斜杠
       hostname: 'https://guatswr.top',
       dynamicRoutes: routerPaths,
-      
+
       // 【关键修复】设置为 true，强制插件生成 robots.txt
       // 这样它就不会去读取不存在的文件，从而修复 ENOENT 报错
       generateRobotsTxt: true,
-      
+
       robots: [{
         userAgent: '*',
         allow: '/',
@@ -50,11 +50,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: 'http://localhost:8080', // 指向后端 Docker 容器
+        target: process.env.DEV_API_TARGET || 'http://localhost:8080',
         changeOrigin: true,
       },
       '/uploads': {
-        target: 'http://localhost:8080',
+        target: process.env.DEV_API_TARGET || 'http://localhost:8080',
         changeOrigin: true,
       }
     }

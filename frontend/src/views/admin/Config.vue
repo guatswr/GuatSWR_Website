@@ -4,14 +4,19 @@ import axios from 'axios'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { compressImage } from '../../utils/image'
 import { useUserStore } from '../../stores/user'
+import { useSiteConfigStore } from '../../stores/siteConfig'
+import { DEFAULT_JOIN_QUESTION, safeHttpUrl } from '../../utils/siteConfig'
 
 const userStore = useUserStore()
+const siteConfigStore = useSiteConfigStore()
 const isSuperAdmin = computed(() => userStore.isSuperAdmin)
 
 // Loading states
 const pageLoading = ref(false)
+const pageError = ref('')
 const saveLoading = ref(false)
 const purgeLoading = ref(false)
+const formError = ref('')
 // 记录正在上传的字段 key
 const uploadingKeys = reactive(new Set())
 
@@ -22,25 +27,30 @@ const configForm = reactive({
   banner_text: '', 
   badge_image: '', 
   mascot_image: '', 
-  qq_qr_image: '' 
+  qq_qr_image: '',
+  qq_group_number: '',
+  qq_join_url: '',
+  join_question: DEFAULT_JOIN_QUESTION
 })
 
 // 配置项定义 (用于渲染循环，减少模板代码)
 const imageConfigs = [
   { key: 'home_bg', label: '主页背景', desc: '首页大幅背景图' },
   { key: 'join_bg', label: '加群背景', desc: '加群页面背景图' },
-  { key: 'badge_image', label: '徽章图标', desc: '显示在标题上的群头像' },
+  { key: 'badge_image', label: '群头像 / 站点 Logo', desc: '用于导航、首页署名与浏览器标签页图标' },
   { key: 'mascot_image', label: '看板娘', desc: '笨琪露的自拍照' },
   { key: 'qq_qr_image', label: '加群二维码', desc: 'QQ二维码' }
 ]
 
 const fetchConfig = async () => {
   pageLoading.value = true
+  pageError.value = ''
   try {
     const res = await axios.get('/api/config')
     // 仅更新存在的字段，防止覆盖 reactive 对象引用
     Object.assign(configForm, res.data || {})
   } catch (e) {
+    pageError.value = '未能加载当前配置，请重试后再编辑。'
     ElMessage.error('加载配置失败')
   } finally {
     pageLoading.value = false
@@ -59,7 +69,7 @@ const handleUpload = async (key, event) => {
     uploadingKeys.add(key)
     
     // 1. 压缩
-    const compressed = await compressImage(file)
+    const compressed = key === 'qq_qr_image' ? file : await compressImage(file)
     
     // 2. 上传
     const d = new FormData()
@@ -78,6 +88,17 @@ const handleUpload = async (key, event) => {
 }
 
 const saveConfig = async () => {
+  formError.value = ''
+  const groupNumber = configForm.qq_group_number.trim()
+  const joinUrl = configForm.qq_join_url.trim()
+  if (groupNumber && !/^\d{5,12}$/.test(groupNumber)) {
+    formError.value = 'QQ群号须为 5 至 12 位数字，或留空。'
+    return
+  }
+  if (joinUrl && !safeHttpUrl(joinUrl)) {
+    formError.value = '入群链接须为完整的 http:// 或 https:// 地址。'
+    return
+  }
   saveLoading.value = true
   try {
     // 这是一个高风险操作，保留确认弹窗
@@ -90,7 +111,10 @@ const saveConfig = async () => {
       { key: 'banner_text', value: configForm.banner_text },
       { key: 'badge_image', value: configForm.badge_image },
       { key: 'mascot_image', value: configForm.mascot_image },
-      { key: 'qq_qr_image', value: configForm.qq_qr_image }
+      { key: 'qq_qr_image', value: configForm.qq_qr_image },
+      { key: 'qq_group_number', value: groupNumber },
+      { key: 'qq_join_url', value: joinUrl },
+      { key: 'join_question', value: configForm.join_question.trim() }
     ].map(item => axios.post('/api/config', item))
 
     // 并发执行，任何一个失败都会抛出错误
@@ -99,6 +123,7 @@ const saveConfig = async () => {
     ElMessage.success('全局配置已更新')
     // 重新获取以确保数据一致性
     await fetchConfig()
+    await siteConfigStore.load({ force: true })
   } catch (e) {
     if (e !== 'cancel') ElMessage.error('保存失败，部分配置可能未更新')
   } finally {
@@ -151,7 +176,7 @@ onMounted(() => {
         </div>
         <button 
           @click="saveConfig" 
-          :disabled="saveLoading"
+          :disabled="saveLoading || pageLoading || !!pageError || uploadingKeys.size > 0"
           class="bg-purple-600 text-white px-6 py-2 rounded-lg hover:bg-purple-700 transition shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
         >
           <span v-if="saveLoading" class="animate-spin">🔄</span>
@@ -162,6 +187,10 @@ onMounted(() => {
       <div class="p-8 space-y-8">
         <div v-if="pageLoading" class="text-center py-10 text-gray-400">
            <span class="animate-spin text-2xl block mb-2">⏳</span>加载配置中...
+        </div>
+        <div v-else-if="pageError" role="alert" class="rounded-xl border border-red-200 p-5 text-sm text-red-700">
+          <p>{{ pageError }}</p>
+          <button type="button" class="mt-2 min-h-11 font-semibold underline underline-offset-4" @click="fetchConfig">重新加载配置</button>
         </div>
 
         <template v-else>
@@ -225,6 +254,28 @@ onMounted(() => {
               >
             </div>
           </div>
+
+          <section aria-labelledby="join-config-heading" class="border-t border-gray-100 pt-8 space-y-5">
+            <div>
+              <h3 id="join-config-heading" class="font-bold text-gray-800">入群引导</h3>
+              <p class="text-xs text-gray-500 mt-1">群号、直达链接可按需填写；留空时前台不会生成虚构的入口。二维码仍由上方图片配置维护。</p>
+            </div>
+            <div>
+              <label for="qq-group-number" class="block text-sm font-medium text-gray-700 mb-2">QQ群号</label>
+              <input id="qq-group-number" v-model="configForm.qq_group_number" inputmode="numeric" maxlength="12" autocomplete="off" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-sky-200 outline-none" placeholder="5 至 12 位数字，可留空">
+            </div>
+            <div>
+              <label for="qq-join-url" class="block text-sm font-medium text-gray-700 mb-2">入群直达链接</label>
+              <input id="qq-join-url" v-model="configForm.qq_join_url" type="url" maxlength="1000" autocomplete="off" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-sky-200 outline-none" placeholder="https://…，可留空" aria-describedby="join-url-help">
+              <p id="join-url-help" class="text-xs text-gray-500 mt-2">仅支持 http / https 网页链接，请粘贴 QQ 提供的真实入群地址。</p>
+            </div>
+            <div>
+              <label for="join-question" class="block text-sm font-medium text-gray-700 mb-2">入群问题</label>
+              <textarea id="join-question" v-model="configForm.join_question" rows="2" maxlength="200" class="w-full border border-gray-300 rounded-lg p-3 focus:ring-2 focus:ring-sky-200 outline-none" placeholder="例如：你是怎么入坑东方的？"></textarea>
+              <p class="text-xs text-gray-500 mt-2">最多 200 字。留空则不显示问题提示。</p>
+            </div>
+            <p v-if="formError" role="alert" class="text-sm text-red-600">{{ formError }}</p>
+          </section>
         </template>
       </div>
     </div>

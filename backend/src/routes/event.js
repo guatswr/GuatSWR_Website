@@ -1,9 +1,12 @@
 const express = require('express');
-const { db, addLog } = require('../models/db');
+const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
 const { authenticateToken, optionalAuth, requireAdmin } = require('../middlewares/auth');
 const { callBotHook } = require('../utils/botHooks');
+const { moveStagedFile } = require('../utils/storage');
+const { createEventContentPersister } = require('../utils/eventContentStorage');
 
 const router = express.Router();
+const persistEventContent = createEventContentPersister({ imageRoot: IMG_ROOT_DIR, moveStagedFile });
 
 const PUBLIC_STATUSES = ['published', 'ongoing', 'ended', 'settled'];
 const SIGNUP_TYPES = ['STG', '则则'];
@@ -115,7 +118,7 @@ router.put('/:id', optionalAuth, (req, res) => {
   const { type, title, content, submit } = req.body;
   const eventId = req.params.id;
 
-  db.get('SELECT id, status FROM events WHERE id = ?', [eventId], (checkErr, row) => {
+  db.get('SELECT id, status FROM events WHERE id = ?', [eventId], async (checkErr, row) => {
     if (checkErr) return res.status(500).json({ error: checkErr.message });
     if (!row) return res.status(404).json({ message: 'Event not found' });
 
@@ -124,12 +127,19 @@ router.put('/:id', optionalAuth, (req, res) => {
       return res.status(403).json({ message: '事件已发布，无法修改' });
     }
 
+    let storedContent;
+    try {
+      if (content) storedContent = await persistEventContent(content, row.id);
+    } catch (error) {
+      return res.status(500).json({ message: '活动图片保存失败，请重试' });
+    }
+
     const updates = [];
     const params = [];
 
     if (type) { updates.push('type = ?'); params.push(type); }
     if (title) { updates.push('title = ?'); params.push(title); }
-    if (content) { updates.push('content = ?'); params.push(JSON.stringify(content)); }
+    if (content) { updates.push('content = ?'); params.push(JSON.stringify(storedContent)); }
 
     // 提交审核：draft -> pending
     if (submit === true) {
@@ -390,11 +400,19 @@ router.post('/admin', authenticateToken, requireAdmin, async (req, res) => {
   try {
     const result = await dbRun(
       'INSERT INTO events (type, title, content, status, created_by, visitor_ip) VALUES (?, ?, ?, ?, ?, ?)',
-      [type, title || '', JSON.stringify(content || {}), finalStatus, req.user.id, req.ip]
+      [type, title || '', JSON.stringify(content || {}), 'draft', req.user.id, req.ip]
     );
+    let storedContent;
+    try {
+      storedContent = await persistEventContent(content || {}, result.lastID);
+      await dbRun('UPDATE events SET content = ?, status = ? WHERE id = ?', [JSON.stringify(storedContent), finalStatus, result.lastID]);
+    } catch (error) {
+      await dbRun('DELETE FROM events WHERE id = ?', [result.lastID]);
+      throw error;
+    }
     addLog(req.user.username, 'CREATE_EVENT', `管理员发布活动 EID: ${result.lastID}`);
     if (finalStatus === 'published') {
-      callBotHook('event.published', { eventId: result.lastID, type, title, content }, getActor(req)).catch(() => {});
+      callBotHook('event.published', { eventId: result.lastID, type, title, content: storedContent }, getActor(req)).catch(() => {});
     }
     res.json({ id: result.lastID, message: '创建成功' });
   } catch (err) {

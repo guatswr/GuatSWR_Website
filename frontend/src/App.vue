@@ -1,14 +1,18 @@
 <script setup>
 import { onMounted } from 'vue'
+import { useRoute } from 'vue-router'
 // 修改为相对路径并添加 .js 后缀，确保 Docker 构建能精确找到文件
 import { useSeo } from './composables/useSeo.js'
 import { useTheme } from './composables/useTheme.js'
 import TheNavbar from './layouts/Navbar.vue'
 import TheFooter from './layouts/Footer.vue'
 import RouteProgressBar from './components/RouteProgressBar.vue'
+import { useSiteBranding } from './composables/useSiteBranding'
 
 // 1. 初始化 SEO 逻辑 (自动监听路由)
 useSeo()
+useSiteBranding()
+const route = useRoute()
 
 // 2. 初始化主题逻辑
 const { initThemeListener, cleanupThemeListener } = useTheme()
@@ -16,7 +20,7 @@ const { initThemeListener, cleanupThemeListener } = useTheme()
 onMounted(() => {
   // 启动主题监听
   initThemeListener()
-  
+
   // 移除 index.html 的原生 Loading 遮罩
   const loader = document.getElementById('pre-loading-screen')
   if (loader) {
@@ -30,16 +34,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="min-h-screen flex flex-col font-sans bg-white text-gray-900 dark:bg-slate-950 dark:text-gray-100 transition-colors">
-    
+  <div
+    class="min-h-screen flex flex-col font-sans bg-white text-gray-900 dark:bg-slate-950 dark:text-gray-100 transition-colors"
+  >
     <!-- 独立的进度条组件 -->
     <RouteProgressBar />
-    
+
     <!-- 独立的导航栏 -->
     <TheNavbar />
 
     <!-- 页面内容 -->
-    <main class="flex-grow pt-16">
+    <main class="flex-grow" :class="{ 'pt-16': route.path !== '/' }">
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -49,7 +54,6 @@ onMounted(() => {
 
     <!-- 独立的页脚 -->
     <TheFooter />
-    
   </div>
 </template>
 
@@ -60,10 +64,12 @@ onMounted(() => {
 }
 
 /* 页面切换动画 */
-.fade-enter-active, .fade-leave-active {
+.fade-enter-active,
+.fade-leave-active {
   transition: opacity 0.2s ease;
 }
-.fade-enter-from, .fade-leave-to {
+.fade-enter-from,
+.fade-leave-to {
   opacity: 0;
 }
 </style>

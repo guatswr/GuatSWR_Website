@@ -55,6 +55,28 @@ const historySchema = z.object({
 const configSchema = z.object({
   key: z.string().trim().min(1, '配置键不能为空').max(100),
   value: z.string().max(5000).optional().default('')
+}).superRefine(({ key, value }, ctx) => {
+  const text = value.trim();
+  const invalid = (message) => ctx.addIssue({ code: z.ZodIssueCode.custom, path: ['value'], message });
+  if (key === 'qq_group_number' && text && !/^\d{5,12}$/.test(text)) {
+    invalid('QQ群号须为 5 至 12 位数字，或留空');
+  }
+  if (key === 'join_question' && text.length > 200) {
+    invalid('入群问题不能超过 200 字');
+  }
+  if (key === 'qq_join_url' && text) {
+    try {
+      const url = new URL(text);
+      if (text.length > 1000 || !/^https?:\/\//i.test(text) || !['http:', 'https:'].includes(url.protocol)) {
+        invalid('入群链接仅支持完整的 http:// 或 https:// 地址，且不能超过 1000 字');
+      }
+    } catch {
+      invalid('请输入有效的 http:// 或 https:// 入群链接');
+    }
+  }
+}).transform((data) => {
+  const joinKeys = ['qq_group_number', 'qq_join_url', 'join_question'];
+  return joinKeys.includes(data.key) ? { ...data, value: data.value.trim() } : data;
 });
 
 module.exports = {

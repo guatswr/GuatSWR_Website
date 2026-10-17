@@ -1,0 +1,71 @@
+/* Homepage motion follows the native scroll position. No transition lag,
+   sticky scenes, wheel interception or artificial scrolling distances. */
+.club-scroll-reveal:not([data-scroll-variant='hero']) > * {
+  --scroll-item-progress: clamp(
+    0,
+    calc(
+      (var(--scroll-progress, 1) - var(--scroll-delay, 0)) *
+        var(--scroll-factor, 1)
+    ),
+    1
+  );
+  opacity: var(--scroll-item-progress);
+  translate: 0 calc((1 - var(--scroll-item-progress)) * 32px);
+}
+.club-scroll-reveal:not([data-scroll-variant='hero']) > :nth-child(2) {
+  --scroll-delay: 0.055;
+  --scroll-factor: 1.06;
+}
+.club-scroll-reveal:not([data-scroll-variant='hero']) > :nth-child(3) {
+  --scroll-delay: 0.11;
+  --scroll-factor: 1.13;
+}
+.club-scroll-reveal:not([data-scroll-variant='hero']) > :nth-child(n + 4) {
+  --scroll-delay: 0.16;
+  --scroll-factor: 1.2;
+}
+.club-scroll-reveal[data-scroll-variant='image'] > :first-child {
+  opacity: calc(0.5 + var(--scroll-progress, 1) * 0.5);
+  translate: none;
+  scale: calc(1.07 - var(--scroll-progress, 1) * 0.07);
+}
+.club-scroll-reveal[data-scroll-variant='card'] > :first-child img {
+  scale: calc(1.06 - var(--scroll-progress, 1) * 0.06);
+}
+.club-scroll-reveal:focus-within > * {
+  opacity: 1;
+  translate: none;
+  scale: 1;
+}
+@media (min-width: 1024px) {
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-background {
+    translate: 0 calc(var(--scroll-progress, 0) * 60px);
+    scale: calc(1 + var(--scroll-progress, 0) * 0.04);
+  }
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-content {
+    translate: 0 calc(var(--scroll-progress, 0) * -48px);
+    opacity: calc(1 - var(--scroll-progress, 0) * 0.65);
+  }
+}
+@media (max-width: 639px) {
+  .club-scroll-reveal:not([data-scroll-variant='hero']) > * {
+    translate: 0 calc((1 - var(--scroll-item-progress)) * 18px);
+  }
+  .club-scroll-reveal[data-scroll-variant='image'] > :first-child {
+    translate: none;
+    scale: calc(1.035 - var(--scroll-progress, 1) * 0.035);
+  }
+  .club-scroll-reveal:focus-within > * {
+    translate: none;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .club-scroll-reveal > *,
+  .club-scroll-reveal[data-scroll-variant='card'] img,
+  .club-scroll-reveal .club-banner-background,
+  .club-scroll-reveal .club-banner-content {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+  }
+}

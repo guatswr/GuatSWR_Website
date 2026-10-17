@@ -1,9 +1,16 @@
 import { createApp } from 'vue'
 import axios from 'axios'
 import { createPinia } from 'pinia'
-import ElementPlus from 'element-plus'
-import 'element-plus/dist/index.css'
+import { ElButton, ElDialog, ElInput } from 'element-plus'
+import 'element-plus/es/components/button/style/css'
+import 'element-plus/es/components/dialog/style/css'
+import 'element-plus/es/components/input/style/css'
+import 'element-plus/es/components/message/style/css'
+import 'element-plus/es/components/message-box/style/css'
 import './style.css'
+import './styles/portal.css'
+import './styles/motion.css'
+import './styles/scrollMotion.css'
 import App from './App.vue'
 import router from './router'
 import { useUserStore } from './stores/user'
@@ -14,7 +21,9 @@ axios.defaults.baseURL = import.meta.env.VITE_API_BASE || ''
 const app = createApp(App)
 const pinia = createPinia()
 app.use(pinia)
-app.use(ElementPlus)
+app.use(ElButton)
+app.use(ElDialog)
+app.use(ElInput)
 app.use(router)
 
 initTheme()

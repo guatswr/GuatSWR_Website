@@ -1,339 +1,499 @@
 <script setup>
-import { ref, onMounted, onUnmounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { getThumbUrl } from '../../utils/image'
-import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
-import ProgressiveImage from '../../components/ProgressiveImage.vue'
+import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import axios from 'axios'
+import HomeHero from '../../components/home/HomeHero.vue'
+import HomeEventCard from '../../components/home/HomeEventCard.vue'
+import ClubIcon from '../../components/ClubIcon.vue'
+import ProgressiveImage from '../../components/ProgressiveImage.vue'
+import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
+import { useSiteConfigStore } from '../../stores/siteConfig'
+import { getThumbUrl } from '../../utils/imageUrl'
+import { upcomingEvents } from '../../utils/community'
+import { vScrollReveal } from '../../directives/scrollMotion'
 
-const router = useRouter()
-const activities = ref([])
-const loading = ref(true) // 默认开启加载状态
-const gridRef = ref(null)
-const containerWidth = ref(typeof window !== 'undefined' ? window.innerWidth : 1280)
-let gridObserver = null
-let resizeHandler = null
+const site = useSiteConfigStore()
+const { config, socialLinks } = storeToRefs(site)
+const archives = ref([])
+const events = ref([])
+const archivesLoading = ref(true)
+const eventsLoading = ref(true)
+const archivesError = ref(false)
+const eventsError = ref(false)
+const now = ref(Date.now())
+const upcoming = computed(() =>
+  upcomingEvents(events.value, now.value).slice(0, 3)
+)
+const controller = new AbortController()
+let clock
 
-// 全局配置状态
-const siteConfig = ref({
-  home_bg: '', 
-  banner_text: '',
-  badge_image: '',
-  mascot_image: '' 
-})
-
-const bgImage = computed(() => siteConfig.value.home_bg || '')
-const badgeImage = computed(() => siteConfig.value.badge_image || '')
-const mascotImage = computed(() => siteConfig.value.mascot_image || '')
-const bgStyle = computed(() => {
-  if (bgImage.value) {
-    return { backgroundImage: `url('${bgImage.value}')` }
+const interests = [
+  {
+    number: '01',
+    icon: 'game',
+    title: '非想天则',
+    subtitle: '在对局中认识彼此',
+    description:
+      '从第一发弹幕到第一场对战，和同好一起练习、切磋，分享每一次进步。',
+    path: '/events/zetime',
+    color: 'sky'
+  },
+  {
+    number: '02',
+    icon: 'sparkles',
+    title: '东方 STG',
+    subtitle: '再来一把，就这一把',
+    description:
+      '正作通关、符卡挑战、路线交流。无论初见还是打分，都能找到一起玩的人。',
+    path: '/events/stg',
+    color: 'violet'
+  },
+  {
+    number: '03',
+    icon: 'music',
+    title: '音乐与现场',
+    subtitle: '一首歌，连接幻想乡',
+    description: '交换循环播放的东方曲目，分享演奏与翻唱，在熟悉的旋律里相遇。',
+    path: '/social',
+    color: 'rose'
+  },
+  {
+    number: '04',
+    icon: 'pen',
+    title: '同人创作',
+    subtitle: '让喜欢，有自己的形状',
+    description:
+      '画画、摄影、文字、Cosplay……欢迎展示作品，也欢迎从一个小小的灵感开始。',
+    path: '/social',
+    color: 'amber'
   }
-  return { background: 'linear-gradient(135deg, #0f172a 0%, #1f2937 40%, #111827 100%)' }
-})
-const bannerText = computed(() => siteConfig.value.banner_text || 'Guat Touhou Fans Club')
-const socialLinks = computed(() => {
-  if (siteConfig.value.home_links) {
-    try {
-      const parsed = JSON.parse(siteConfig.value.home_links)
-      if (Array.isArray(parsed)) {
-        return parsed.filter((item) => item?.showOnHome !== false)
-      }
-    } catch (e) {
-      // ignore
-    }
-  }
-  return [
-    {
-      title: 'Bilibili 官方账号',
-      subtitle: 'UID: 444257435',
-      extra: '投稿联系管理员: Taropoi',
-      url: 'https://space.bilibili.com/444257435',
-      iconText: 'B'
-    },
-    {
-      title: 'QQ 直播频道',
-      subtitle: '游戏直播分享',
-      extra: '点击加入频道',
-      url: 'https://pd.qq.com/s/fxsvvaqqt',
-      iconText: '🎮'
-    }
-  ]
-})
+]
 
-// 获取配置
-const fetchConfig = async () => {
+async function loadEvents() {
+  if (controller.signal.aborted) return
+  eventsLoading.value = true
+  eventsError.value = false
   try {
-    const res = await axios.get('/api/config')
-    if (res.data) siteConfig.value = res.data
+    const { data } = await axios.get('/api/event', {
+      params: { limit: 100 },
+      timeout: 10000,
+      signal: controller.signal
+    })
+    events.value = Array.isArray(data?.items) ? data.items : []
+    now.value = Date.now()
   } catch (error) {
-    console.error("加载全局配置失败:", error)
-  }
-}
-
-// 获取活动
-const fetchActivities = async () => {
-  try {
-    const res = await axios.get('/api/activities', { params: { page: 1, limit: 3 } })
-    activities.value = res.data?.items || []
-  } catch (error) {
-    console.error("加载活动失败", error)
-    activities.value = [] 
-  }
-}
-
-const goJoin = () => {
-  router.push('/join')
-}
-
-const displayCount = computed(() => {
-  const width = containerWidth.value
-  if (width < 640) return 2
-  const minCardWidth = 260
-  const count = Math.max(1, Math.floor(width / minCardWidth))
-  return count
-})
-
-const visibleActivities = computed(() => {
-  return activities.value.slice(0, displayCount.value)
-})
-
-// 移除原生加载层的辅助函数
-const removePreLoader = () => {
-  const loader = document.getElementById('pre-loading-screen')
-  if (loader) {
-    loader.style.opacity = '0'
-    setTimeout(() => {
-      loader.remove()
-    }, 400) // 等待 CSS transition 动画结束
-  }
-}
-
-onMounted(async () => {
-  // 优先并行执行所有初始化数据请求
-  try {
-    await Promise.all([fetchConfig(), fetchActivities()])
+    if (!axios.isCancel(error)) eventsError.value = true
   } finally {
-    // 数据一旦返回，立即关闭 Vue 内部的 loading 状态
-    loading.value = false
-    // 同时移除 index.html 中的原生加载层
-    removePreLoader()
+    eventsLoading.value = false
   }
+}
 
-  if (typeof window !== 'undefined') {
-    const updateWidth = () => {
-      if (gridRef.value) {
-        containerWidth.value = gridRef.value.offsetWidth || window.innerWidth
-      } else {
-        containerWidth.value = window.innerWidth
-      }
-    }
-
-    updateWidth()
-
-    if (window.ResizeObserver) {
-      gridObserver = new ResizeObserver(() => updateWidth())
-      if (gridRef.value) gridObserver.observe(gridRef.value)
-    } else {
-      resizeHandler = updateWidth
-      window.addEventListener('resize', resizeHandler)
-    }
+async function loadArchives() {
+  if (controller.signal.aborted) return
+  archivesLoading.value = true
+  archivesError.value = false
+  try {
+    const { data } = await axios.get('/api/activities', {
+      params: { page: 1, limit: 3 },
+      timeout: 10000,
+      signal: controller.signal
+    })
+    archives.value = Array.isArray(data?.items) ? data.items : []
+  } catch (error) {
+    if (!axios.isCancel(error)) archivesError.value = true
+  } finally {
+    archivesLoading.value = false
   }
+}
+
+onMounted(() => {
+  void site.load()
+  void loadEvents()
+  void loadArchives()
+  clock = window.setInterval(() => {
+    now.value = Date.now()
+  }, 60000)
 })
-
-onUnmounted(() => {
-  if (gridObserver) {
-    gridObserver.disconnect()
-    gridObserver = null
-  }
-  if (typeof window !== 'undefined') {
-    if (resizeHandler) {
-      window.removeEventListener('resize', resizeHandler)
-      resizeHandler = null
-    }
-  }
+onBeforeUnmount(() => {
+  controller.abort()
+  window.clearInterval(clock)
 })
 </script>
 
 <template>
-  <div class="w-full bg-[#fdfdfd] dark:bg-slate-950 overflow-x-hidden font-sans">
-    
-    <!-- 这里不再需要重复的加载 HTML，逻辑已转移至 index.html 和 removePreLoader -->
+  <div class="club-home club-paper">
+    <HomeHero :config="config" />
 
-    <!-- 主体内容 (载入完成后立即显示) -->
-    <div v-if="!loading" class="animate-[fadeIn_0.4s_ease-out]">
-      <!--Banner-->
-      <div class="relative min-h-[calc(100svh-4rem)] flex items-center justify-center overflow-hidden">
-        
-        <!-- 背景 -->
-        <ProgressiveImage
-          v-if="bgImage"
-          :src="bgImage"
-          :thumb="getThumbUrl(bgImage)"
-          alt="Background"
-          wrapperClass="absolute inset-0"
-          imgClass="w-full h-full object-cover transition-all duration-1000 scale-105 blur-sm"
-        />
+    <section
+      id="upcoming"
+      class="club-home-section club-home-upcoming py-16 sm:py-20"
+      aria-labelledby="upcoming-title"
+    >
+      <div class="club-container">
         <div
-          v-else
-          class="absolute inset-0 bg-cover bg-center transition-all duration-1000 scale-105 blur-sm"
-          :style="bgStyle"
-        ></div>
-        
-        <div class="absolute inset-0 bg-gradient-to-br from-blue-900/30 via-gray-900/20 to-red-900/30 mix-blend-multiply"></div>
-        <div class="absolute inset-0 bg-black/20"></div>
-
-        <!-- 装饰 -->
-        <div class="absolute top-20 left-[15%] text-2xl animate-bounce text-blue-200 drop-shadow-md opacity-40">❄️</div>
-        <div class="absolute bottom-32 right-[20%] text-3xl animate-pulse text-blue-100 drop-shadow-md opacity-40">❄️</div>
-
-        <!-- 内容区域 -->
-        <div class="relative z-10 text-center px-4 max-w-5xl mx-auto pt-10 flex flex-col items-center">
-            <div class="mb-8 w-24 h-24 md:w-32 md:h-32 rounded-full border-[6px] border-white/90 shadow-[0_0_30px_rgba(255,255,255,0.4)] overflow-hidden transform -rotate-12 bg-white dark:bg-slate-900 z-10 transition duration-500 hover:scale-110 hover:rotate-0 flex items-center justify-center text-gray-400">
-              <ProgressiveImage
-                v-if="badgeImage"
-                :src="badgeImage"
-                :thumb="getThumbUrl(badgeImage)"
-                alt="Badge"
-                wrapperClass="w-full h-full"
-                imgClass="w-full h-full object-cover"
-              />
-              <span v-else class="text-xs">未配置</span>
-          </div>
-
-          <div class="mb-6 relative">
-              <h1 class="text-6xl md:text-8xl font-bold text-white tracking-widest" 
-                  style="font-family: 'Noto Serif SC', serif; text-shadow: 0 4px 15px rgba(0,0,0,0.9), 0 0 2px rgba(0,0,0,0.5);">
-              桂航绯想天
-              </h1>
-          </div>
-          
-          <p class="text-xl md:text-2xl text-blue-50 mb-8 font-serif tracking-wider uppercase border-y-2 border-blue-200/80 py-2 inline-block font-bold"
-             style="text-shadow: 0 2px 4px rgba(0,0,0,0.9);">
-            {{ bannerText }}
-          </p>
-
-          <div class="max-w-3xl mx-auto mb-12 p-4">
-            <p class="text-lg md:text-2xl text-white leading-loose font-bold text-center" 
-               style="text-shadow: 0 2px 8px rgba(0,0,0,0.95), 0 0 2px black;">
-               跨越现世的境界,<br>
-               我们因为热爱而相遇。<br>
-               弹幕、格斗、音乐、二创,<br>
-               一切热爱都能共鸣。
+          v-scroll-reveal
+          class="mb-8 flex flex-wrap items-end justify-between gap-4"
+        >
+          <div>
+            <p class="club-eyebrow">LET'S MEET</p>
+            <h2 id="upcoming-title" class="club-section-title mt-3">
+              下一次相遇
+            </h2>
+            <p
+              class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400"
+            >
+              一场对局，一次聚会。看看有什么可以一起参与。
             </p>
           </div>
-
-          <button 
-            @click="goJoin"
-            class="group inline-flex items-center gap-3 bg-[#12b7f5] hover:bg-[#0ea5e9] text-white px-10 py-4 rounded-full font-bold shadow-[0_0_20px_rgba(18,183,245,0.6)] transition transform hover:scale-105 border-2 border-white/50 relative overflow-hidden"
-          >
-              <span class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700 ease-in-out"></span>
-              <svg class="w-7 h-7" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" fill="currentColor">
-                 <path d="M824.8 613.2c-16-51.4-34.4-94.6-62.7-165.3C766.5 262.2 689.3 112 511.5 112 331.7 112 256.2 265.2 261 447.9c-28.4 70.8-46.7 113.7-62.7 165.3-34 109.5-23 154.8-14.6 155.8 18 2.2 70.1-82.4 70.1-82.4 0 49 25.2 112.9 79.8 159-26.4 8.1-85.7 29.9-71.6 53.8 11.4 19.3 196.2 12.3 249.5 6.3 53.3 6 238.1 13 249.5-6.3 14.1-23.8-45.2-45.7-71.6-53.8 54.6-46.2 79.8-110.1 79.8-159 0 0 52.1 84.6 70.1 82.4 8.5-1.1 19.5-46.4-14.5-155.8z" />
-              </svg>
-              <span class="text-lg">欢迎入群~</span>
+          <RouterLink to="/events" class="club-text-link"
+            >全部活动 <ClubIcon name="arrow" class="h-4 w-4"
+          /></RouterLink>
+        </div>
+        <div
+          v-if="eventsLoading"
+          class="grid gap-5 md:grid-cols-3"
+          role="status"
+          aria-label="正在加载活动"
+        >
+          <div
+            v-for="n in 3"
+            :key="n"
+            class="h-48 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+          />
+        </div>
+        <div v-else-if="eventsError" class="club-empty" role="status">
+          <p>活动暂时没有加载出来。</p>
+          <button class="club-text-link mt-3" @click="loadEvents">
+            重新加载 <ClubIcon name="arrow" class="h-4 w-4" />
           </button>
         </div>
-      </div>
-
-      <!-- 社团介绍 & 动态展示 -->
-      <section class="py-16 relative bg-gradient-to-b from-blue-50 to-white dark:from-slate-900 dark:to-slate-950">
-          <div class="max-w-6xl mx-auto px-4 relative z-10">
-              <div class="flex flex-col md:flex-row gap-10">
-                  <!-- 左侧：公告文本 -->
-                  <div class="md:w-3/5 space-y-8">
-                        <div class="bg-white dark:bg-slate-900 p-8 rounded-2xl shadow-sm border-l-4 border-red-400 relative overflow-hidden">
-                          <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 flex items-center">
-                            <span class="text-3xl mr-2">⛩️</span> 欢迎来到桂航一角的幻想乡
-                          </h2>
-                          <div class="prose text-gray-600 dark:text-gray-300 leading-relaxed">
-                            <p class="mb-2">这里是本校东方众的聚集地：手残但瘾大的正作玩家、沉迷非想天则的格斗达人、只会喊“卧槽好听”的音乐爱好者、以及二创/磕CP设定党——统统欢迎。</p>
-                            <p class="mb-2">你可以光明正大地讨论幻想乡的八卦，不用担心被当成中二病。我们社团活动包括但不限于：线下聚会（拼酒量堪比萃香？）、联机对战、甚至一起出C炸街（。</p>
-                              <p class="mt-4 p-3 bg-blue-50 dark:bg-slate-800 rounded-lg border border-blue-100 dark:border-slate-700 text-blue-800 dark:text-blue-200 text-sm">
-                              <span class="font-bold">小提示：</span>新人加群后可以联系管理，获取一枚<span class="font-bold">社团定制吧唧</span>哦~
-                              </p>
-                          </div>
-                      </div>
-
-                        <HomeSocialLinks :links="socialLinks" />
-                  </div>
-
-                  <!-- 右侧：看板娘区域 -->
-                  <div class="md:w-2/5 flex items-center justify-center relative">
-                      <div class="relative w-full aspect-[3/4] rounded-2xl overflow-hidden shadow-2xl transition duration-500 group">
-                           <ProgressiveImage
-                             v-if="mascotImage"
-                             :src="mascotImage"
-                             :thumb="getThumbUrl(mascotImage)"
-                             alt="Mascot"
-                             wrapperClass="w-full h-full"
-                             imgClass="w-full h-full object-cover"
-                           />
-                           <div v-else class="w-full h-full flex items-center justify-center text-gray-300">未配置</div>
-                          
-                          <div class="absolute inset-0 bg-gradient-to-t from-blue-900/80 to-transparent flex flex-col justify-end p-6">
-                              <div class="text-white">
-                                  <div class="text-xs uppercase tracking-widest mb-1 text-blue-200">看起来很聪明的看板娘~</div>
-                                  <h3 class="text-3xl font-bold mb-1 font-serif">琪露诺⑨</h3>
-                                  <p class="text-blue-100 text-sm">"幻想乡最强!"</p>
-                              </div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </section>
-
-      <!-- 近期动态展示 -->
-      <section class="py-20 bg-gray-900 text-white relative overflow-hidden min-h-[calc(100svh-var(--footer-h))]">
-        <div class="max-w-7xl mx-auto px-4 relative z-10">
-          <div class="flex flex-col md:flex-row justify-between items-end mb-12 border-b border-gray-700 pb-4">
-            <div>
-              <h2 class="text-3xl font-bold text-red-500 font-serif">近期异变</h2>
-              <p class="text-sm text-gray-400 mt-1">Recent Activities</p>
-            </div>
-            <router-link to="/activities" class="text-sm text-gray-300 hover:text-white transition mt-4 md:mt-0">
-              查看全部记录 <span class="ml-1 text-red-500">>></span>
-            </router-link>
-          </div>
-          
-          <div ref="gridRef" class="grid gap-6 grid-cols-[repeat(auto-fit,minmax(260px,1fr))]">
-            <div v-for="activity in visibleActivities" :key="activity.id" 
-                 class="group relative cursor-pointer bg-gray-800 rounded-lg overflow-hidden flex flex-col h-64"
-                 @click="$router.push(`/activity/${activity.id}`)"
-            >
-              <div class="h-46 overflow-hidden">
-                <ProgressiveImage
-                  :src="activity.cover_image"
-                  :thumb="getThumbUrl(activity.cover_image)"
-                  alt="Event"
-                  wrapperClass="w-full h-full"
-                  imgClass="w-full h-full object-cover transition duration-700 group-hover:scale-110 opacity-80 group-hover:opacity-100"
-                />
-              </div>
-              
-              <div class="p-3 flex flex-col flex-1">
-                <div class="flex items-center text-xs text-red-400 mb-2 font-mono">
-                  <span>{{ activity.date }}</span>
-                </div>
-                <h3 class="text-lg font-bold text-gray-200 group-hover:text-red-500 transition font-serif line-clamp-1">{{ activity.title }}</h3>
-                <p class="text-sm text-gray-500 mt-2 line-clamp-2">
-                  {{ activity.description }}
-                </p>
-              </div>
-            </div>
+        <div
+          v-else-if="upcoming.length"
+          class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
+        >
+          <div
+            v-for="(event, index) in upcoming"
+            :key="event.id"
+            v-scroll-reveal="index * 24"
+          >
+            <HomeEventCard :event="event" />
           </div>
         </div>
-      </section>
-    </div>
+        <div
+          v-else
+          v-scroll-reveal
+          class="flex flex-col gap-5 border-y border-slate-200 py-6 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700"
+        >
+          <div class="flex items-start gap-4">
+            <span
+              class="flex h-10 w-8 shrink-0 items-center justify-center text-sky-600 dark:text-sky-300"
+              ><ClubIcon name="calendar" class="h-6 w-6"
+            /></span>
+            <div>
+              <h3 class="font-semibold text-slate-800 dark:text-slate-100">
+                下一场活动，等你一起来
+              </h3>
+              <p
+                class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400"
+              >
+                目前暂无可参与的公开活动。加入同好群，交流日常，也留意下一次相约。
+              </p>
+            </div>
+          </div>
+          <RouterLink to="/join" class="club-text-link shrink-0"
+            >先来认识大家 <ClubIcon name="arrow" class="h-4 w-4"
+          /></RouterLink>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="club-home-section club-home-interests py-16 sm:py-20"
+      aria-labelledby="interests-title"
+    >
+      <div class="club-container">
+        <div v-scroll-reveal class="mb-10 max-w-xl">
+          <p class="club-eyebrow">SOMETHING WE LOVE</p>
+          <h2 id="interests-title" class="club-section-title mt-3">
+            总有一种热爱，与你同频
+          </h2>
+          <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
+            擅长什么并不重要。愿意分享喜欢的事，就是成为同好的开始。
+          </p>
+        </div>
+        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+          <RouterLink
+            v-for="(interest, index) in interests"
+            :key="interest.number"
+            v-scroll-reveal="index * 24"
+            :to="interest.path"
+            class="club-interest-card group relative border-t border-slate-300 py-6 dark:border-slate-700"
+            :data-tone="interest.color"
+          >
+            <div class="flex items-center justify-between">
+              <span class="club-interest-icon flex h-8 w-8 items-center"
+                ><ClubIcon :name="interest.icon" class="h-6 w-6" /></span
+              ><span class="font-mono text-xs text-slate-400">{{
+                interest.number
+              }}</span>
+            </div>
+            <h3 class="mt-6 text-xl font-semibold">{{ interest.title }}</h3>
+            <p
+              class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400"
+            >
+              {{ interest.subtitle }}
+            </p>
+            <p
+              class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400"
+            >
+              {{ interest.description }}
+            </p>
+            <span
+              class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-sky-700 dark:text-sky-300"
+              >一起探索
+              <ClubIcon
+                name="external"
+                class="h-4 w-4 transition-transform motion-safe:group-hover:-translate-y-0.5"
+            /></span>
+          </RouterLink>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="club-home-section club-home-archive py-16 sm:py-20"
+      aria-labelledby="archive-title"
+    >
+      <div class="club-container">
+        <div
+          v-scroll-reveal
+          class="mb-8 flex flex-wrap items-end justify-between gap-4"
+        >
+          <div>
+            <p class="club-eyebrow">OUR SHARED MEMORIES</p>
+            <h2 id="archive-title" class="club-section-title mt-3">
+              把相遇，留在这里
+            </h2>
+            <p
+              class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400"
+            >
+              从校园走向更大的同好圈，每一段回忆都有迹可循。
+            </p>
+          </div>
+          <RouterLink to="/activities" class="club-text-link"
+            >活动回顾 <ClubIcon name="arrow" class="h-4 w-4"
+          /></RouterLink>
+        </div>
+        <div
+          v-if="archivesLoading"
+          class="grid gap-6 md:grid-cols-3"
+          role="status"
+          aria-label="正在加载活动回顾"
+        >
+          <div
+            v-for="n in 3"
+            :key="n"
+            class="h-72 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+          />
+        </div>
+        <div v-else-if="archivesError" class="club-empty" role="status">
+          <p>回忆暂时没有加载出来。</p>
+          <button class="club-text-link mt-3" @click="loadArchives">
+            重新加载 <ClubIcon name="arrow" class="h-4 w-4" />
+          </button>
+        </div>
+        <div v-else-if="archives.length" class="grid gap-6 md:grid-cols-3">
+          <RouterLink
+            v-for="(activity, index) in archives"
+            :key="activity.id"
+            v-scroll-reveal="{ variant: 'card', offset: index * 24 }"
+            :to="'/activity/' + activity.id"
+            class="group flex h-full min-w-0 flex-col border-b border-slate-200 pb-6 dark:border-slate-700"
+          >
+            <ProgressiveImage
+              :src="getThumbUrl(activity.cover_image)"
+              :fallbackSrc="activity.cover_image"
+              :alt="activity.title"
+              wrapperClass="aspect-[16/10] overflow-hidden bg-slate-100 dark:bg-slate-800"
+              imgClass="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
+            />
+            <div class="flex flex-1 flex-col pt-5">
+              <div
+                class="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400"
+              >
+                <time :datetime="activity.date">{{ activity.date }}</time
+                ><span
+                  v-if="activity.tag"
+                  class="text-sky-700 dark:text-sky-300"
+                  >{{ activity.tag }}</span
+                >
+              </div>
+              <h3
+                class="mt-3 text-lg font-semibold leading-7 group-hover:text-sky-700 dark:group-hover:text-sky-300"
+              >
+                {{ activity.title }}
+              </h3>
+              <p
+                v-if="activity.description"
+                class="mt-3 line-clamp-2 text-sm leading-7 text-slate-500 dark:text-slate-400"
+              >
+                {{ activity.description }}
+              </p>
+              <span
+                class="mt-auto flex items-center justify-between pt-6 text-xs font-medium text-slate-500 dark:text-slate-400"
+                >翻开这段回忆
+                <ClubIcon
+                  name="external"
+                  class="h-4 w-4 text-sky-600 dark:text-sky-400"
+              /></span>
+            </div>
+          </RouterLink>
+        </div>
+        <div v-else class="club-empty">
+          我们的故事正在继续，活动记录将在这里更新。
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="club-home-section club-home-about py-16 sm:py-20"
+      aria-labelledby="about-title"
+    >
+      <div
+        class="club-container grid items-center gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20"
+      >
+        <div
+          v-scroll-reveal="{ variant: 'image' }"
+          class="relative overflow-hidden bg-sky-100 dark:bg-slate-800"
+        >
+          <ProgressiveImage
+            v-if="config.mascot_image"
+            :src="getThumbUrl(config.mascot_image)"
+            :fallbackSrc="config.mascot_image"
+            alt="社团看板娘琪露诺"
+            wrapperClass="aspect-[4/3]"
+            imgClass="h-full w-full object-cover object-top"
+          />
+          <div
+            v-else
+            class="flex aspect-[4/3] items-center justify-center text-sky-400/50"
+          >
+            <ClubIcon name="snow" class="h-32 w-32" />
+          </div>
+          <div
+            class="absolute bottom-4 left-4 rounded-lg bg-white/95 px-4 py-2 text-xs font-medium text-slate-700 shadow-sm dark:bg-slate-900/95 dark:text-slate-200"
+          >
+            我们的幻想乡一角 · 琪露诺⑨
+          </div>
+        </div>
+        <div v-scroll-reveal="24">
+          <p class="club-eyebrow">A LITTLE ABOUT US</p>
+          <h2 id="about-title" class="club-section-title mt-3">
+            因东方相识，<br class="hidden sm:block" />让同好成为朋友
+          </h2>
+          <p class="mt-5 text-sm leading-8 text-slate-600 dark:text-slate-300">
+            桂航绯想天是桂林航天工业学院东方 Project
+            爱好者的聚集地。正作玩家、非想天则爱好者、音乐与二创同好，都可以在这里找到自己的位置。
+          </p>
+          <p class="mt-3 text-sm leading-8 text-slate-600 dark:text-slate-300">
+            我们也欢迎校外的朋友。聊一聊最近喜欢的曲子，约一场对战，或一起参加线下活动——每一次分享，都让幻想乡近一点。
+          </p>
+          <div class="mt-6 flex flex-wrap gap-6">
+            <RouterLink to="/history" class="club-text-link"
+              ><ClubIcon name="book" class="h-4 w-4" />读读我们的群史
+              <ClubIcon name="arrow" class="h-4 w-4" /></RouterLink
+            ><RouterLink to="/members" class="club-text-link"
+              >认识同好 <ClubIcon name="arrow" class="h-4 w-4"
+            /></RouterLink>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="club-home-section club-home-community py-16 sm:py-20"
+      aria-labelledby="community-title"
+    >
+      <div class="club-container">
+        <div class="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20">
+          <div v-scroll-reveal>
+            <p class="club-eyebrow">STAY CONNECTED</p>
+            <h2 id="community-title" class="club-section-title mt-3">
+              在这里，找到我们
+            </h2>
+            <p
+              class="mt-4 text-sm leading-8 text-slate-500 dark:text-slate-400"
+            >
+              关注社团动态，分享你的创作，或者来语音频道坐坐。选择你习惯的方式保持联系。
+            </p>
+            <RouterLink to="/social" class="club-text-link mt-5"
+              >全部社群渠道 <ClubIcon name="arrow" class="h-4 w-4"
+            /></RouterLink>
+          </div>
+          <HomeSocialLinks
+            :links="socialLinks.filter((link) => link.showOnHome !== false)"
+          />
+        </div>
+        <div
+          v-scroll-reveal
+          class="mt-14 grid gap-6 border-t border-slate-300 pt-10 sm:grid-cols-[1fr_auto] sm:items-center dark:border-slate-700"
+        >
+          <div>
+            <p class="club-eyebrow">YOUR NEXT CHAPTER</p>
+            <h2
+              class="mt-3 font-serif text-2xl font-semibold leading-relaxed sm:text-3xl"
+            >
+              幻想乡的下一页，和我们一起写。
+            </h2>
+            <p
+              class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400"
+            >
+              无需入坑门槛，带上你的热爱就好。
+            </p>
+          </div>
+          <RouterLink to="/join" class="club-text-link"
+            >加入桂航绯想天 <ClubIcon name="arrow" class="h-4 w-4"
+          /></RouterLink>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <style scoped>
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+/* Full-width color fields separate chapters, following SCTA's section rhythm. */
+.club-home-section {
+  background-color: var(--section-background);
+  scroll-margin-top: 4rem;
 }
-
-/* 移除 Vue 内部原有的加载层样式，现在由 index.html 处理 */
+.club-home-upcoming {
+  --section-background: #fff;
+}
+.club-home-interests {
+  --section-background: #eaf3f9;
+}
+.club-home-archive {
+  --section-background: #faf6ee;
+}
+.club-home-about {
+  --section-background: #f1eef8;
+}
+.club-home-community {
+  --section-background: #e6f0ef;
+}
+:global(.dark .club-home-upcoming) {
+  --section-background: #101923;
+}
+:global(.dark .club-home-interests) {
+  --section-background: #162838;
+}
+:global(.dark .club-home-archive) {
+  --section-background: #24231f;
+}
+:global(.dark .club-home-about) {
+  --section-background: #211f32;
+}
+:global(.dark .club-home-community) {
+  --section-background: #152b2c;
+}
 </style>

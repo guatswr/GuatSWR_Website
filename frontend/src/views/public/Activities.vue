@@ -1,18 +1,18 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import axios from 'axios'
-import { useRouter } from 'vue-router' // 引入 router
 import { getThumbUrl } from '../../utils/image'
 import ProgressiveImage from '../../components/ProgressiveImage.vue'
 
-const router = useRouter()
 const activities = ref([])
+const errorMsg = ref('')
 const loading = ref(true)
 const page = ref(1)
 const limit = ref(12)
 const total = ref(0)
 
 const fetchActivities = async () => {
+  errorMsg.value = ''
   try {
     const res = await axios.get('/api/activities', {
       params: { page: page.value, limit: limit.value }
@@ -20,7 +20,8 @@ const fetchActivities = async () => {
     activities.value = res.data?.items || []
     total.value = res.data?.total || 0
   } catch (error) {
-    console.error("加载失败", error)
+    console.error('加载失败', error)
+    errorMsg.value = '活动记录暂时无法加载，请稍后重试。'
   } finally {
     loading.value = false
   }
@@ -30,11 +31,9 @@ onMounted(() => {
   fetchActivities()
 })
 
-const goDetail = (id) => {
-  router.push(`/activity/${id}`)
-}
-
-const totalPages = computed(() => Math.max(1, Math.ceil(total.value / limit.value)))
+const totalPages = computed(() =>
+  Math.max(1, Math.ceil(total.value / limit.value))
+)
 const canPrev = computed(() => page.value > 1)
 const canNext = computed(() => page.value < totalPages.value)
 
@@ -74,103 +73,132 @@ const changePage = async (nextPage) => {
 </script>
 
 <template>
-  <div class="min-h-screen bg-gray-50 dark:bg-slate-950 py-12 px-4 sm:px-6 lg:px-8">
-    <div class="max-w-7xl mx-auto text-center mb-16">
-      <h1 class="text-4xl font-bold text-red-600 dark:text-red-400 font-serif mb-4 flex justify-center items-center gap-4">
-        <span class="text-2xl opacity-50">☯</span>
-        社团活动记录
-        <span class="text-2xl opacity-50">☯</span>
-      </h1>
-      <p class="text-gray-500 dark:text-gray-400 italic">Records of Activities</p>
-      <div class="w-24 h-1 bg-red-400 mx-auto mt-6 rounded-full"></div>
-    </div>
-
-    <div v-if="loading" class="text-center py-20 text-gray-500 dark:text-gray-300">
-      <div class="animate-spin text-4xl mb-4 inline-block">⏳</div>
-      <p>少女祈祷中...</p>
-    </div>
-
-    <div v-else class="max-w-5xl mx-auto space-y-8">
-       <div v-for="(activity, index) in activities" :key="activity.id" 
-         class="bg-white dark:bg-slate-900 rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 border border-gray-100 dark:border-slate-800 flex flex-col md:flex-row h-auto md:h-64 group cursor-pointer"
-           @click="goDetail(activity.id)"> <!-- 点击整个卡片跳转 -->
-        
-        <div class="md:w-2/5 h-48 md:h-full relative overflow-hidden shrink-0">
-          <ProgressiveImage
-            :src="activity.cover_image"
-            :thumb="getThumbUrl(activity.cover_image)"
-            alt="Cover"
-            wrapperClass="w-full h-full"
-            imgClass="w-full h-full object-cover transition duration-700 group-hover:scale-110"
-          />
-          <div class="absolute inset-0 bg-black/10 group-hover:bg-transparent transition"></div>
-        </div>
-
-        <div class="p-6 md:p-8 flex flex-col justify-center flex-grow">
-          <div class="flex flex-wrap items-center justify-between gap-3 z-10 mb-3">
-            <div class="flex flex-wrap items-center gap-2">
-              <span class="inline-flex items-center gap-1 text-[11px] font-semibold px-3 py-1 rounded-full bg-white/70 text-red-600 border border-red-100 shadow-sm dark:bg-slate-800/80 dark:text-red-200 dark:border-slate-700">
-                <span class="text-[10px]">📅</span>
-                {{ activity.date }}
-              </span>
-              <span
-                class="inline-flex items-center gap-1 text-[11px] font-semibold px-3 py-1 rounded-full bg-gradient-to-r from-rose-50 via-red-50 to-amber-50 text-red-600 border border-red-100 shadow-sm dark:from-slate-800 dark:via-slate-800 dark:to-slate-800 dark:text-red-200 dark:border-slate-700"
-              >
-                <span class="text-[10px]">🏷️</span>
-                {{ activity.tag || '未标注' }}
-              </span>
-            </div>
-
-            <span class="inline-flex items-center text-[11px] font-mono px-2.5 py-1 rounded-full bg-gray-100 text-gray-600 border border-gray-200 dark:bg-slate-800 dark:text-gray-200 dark:border-slate-700">
-              pid: {{ activity.id }}
-            </span>
-          </div>
-
-          <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-4 group-hover:text-red-600 transition z-10 font-serif">
-            {{ activity.title }}
-          </h2>
-          <p class="text-gray-600 dark:text-gray-300 leading-relaxed z-10 line-clamp-3">
-            {{ activity.description }}
+  <div class="club-paper min-h-screen">
+    <div class="club-container py-12 sm:py-20">
+      <header
+        class="mb-12 flex flex-wrap items-end justify-between gap-6 border-b border-slate-200 pb-10 dark:border-slate-800"
+      >
+        <div>
+          <p class="club-eyebrow">OUR SHARED MEMORIES</p>
+          <h1 class="club-page-title mt-4">社团活动记录</h1>
+          <p class="mt-5 text-sm leading-7 text-slate-500 dark:text-slate-400">
+            一场聚会，一段故事。翻翻我们一起走过的日子。
           </p>
-          
-          <div class="mt-6 pt-4 border-t border-gray-100 dark:border-slate-800 flex justify-between items-center z-10">
-            <span class="text-xs text-gray-400 dark:text-gray-500 uppercase tracking-widest">Activity Record</span>
-            <!-- 按钮点击事件 -->
-            <button @click.stop="goDetail(activity.id)" class="text-sm text-red-500 dark:text-red-300 font-medium hover:text-red-600 flex items-center gap-1 group/btn">
-              查看详情
-              <span class="transform group-hover/btn:translate-x-1 transition">→</span>
+        </div>
+        <RouterLink to="/events" class="club-text-link"
+          >看看近期活动 <span aria-hidden="true">↗</span></RouterLink
+        >
+      </header>
+      <p
+        v-if="loading"
+        class="py-20 text-center text-sm text-slate-500"
+        role="status"
+      >
+        正在翻阅活动记录…
+      </p>
+      <div v-else>
+        <p
+          v-if="errorMsg"
+          class="py-10 text-sm text-red-600 dark:text-red-400"
+          role="status"
+        >
+          {{ errorMsg }}
+          <button
+            type="button"
+            class="club-text-link ml-3"
+            @click="fetchActivities"
+          >
+            重新加载
+          </button>
+        </p>
+        <p v-else-if="!activities.length" class="py-16 text-sm text-slate-500">
+          活动记录将在这里更新。
+        </p>
+        <div v-else class="grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-3">
+          <RouterLink
+            v-for="activity in activities"
+            :key="activity.id"
+            :to="'/activity/' + activity.id"
+            class="group min-w-0 border-b border-slate-200 pb-6 dark:border-slate-800"
+          >
+            <ProgressiveImage
+              :src="getThumbUrl(activity.cover_image)"
+              :fallbackSrc="activity.cover_image"
+              :alt="activity.title"
+              wrapperClass="aspect-[4/3] overflow-hidden bg-slate-100 dark:bg-slate-800"
+              imgClass="h-full w-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-[1.03]"
+            />
+            <div
+              class="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 dark:text-slate-400"
+            >
+              <time :datetime="activity.date">{{ activity.date }}</time
+              ><span
+                v-if="activity.tag"
+                class="text-sky-700 dark:text-sky-300"
+                >{{ activity.tag }}</span
+              >
+            </div>
+            <h2
+              class="mt-3 break-words font-serif text-xl font-semibold leading-8 group-hover:text-sky-700 dark:group-hover:text-sky-300"
+            >
+              {{ activity.title }}
+            </h2>
+            <p
+              v-if="activity.description"
+              class="mt-3 line-clamp-3 text-sm leading-7 text-slate-500 dark:text-slate-400"
+            >
+              {{ activity.description }}
+            </p>
+            <span
+              class="mt-5 inline-flex min-h-11 items-center gap-3 text-xs font-semibold text-sky-700 dark:text-sky-300"
+              >翻开这段回忆
+              <span
+                class="transition-transform motion-safe:group-hover:translate-x-1"
+                aria-hidden="true"
+                >→</span
+              ></span
+            >
+          </RouterLink>
+        </div>
+        <nav
+          v-if="total > 0"
+          class="mt-12 flex flex-wrap items-center justify-between gap-5 border-t border-slate-200 pt-6 dark:border-slate-800"
+          aria-label="活动记录分页"
+        >
+          <p class="text-xs text-slate-500 dark:text-slate-400">
+            共 {{ total }} 条 · 第 {{ page }}/{{ totalPages }} 页
+          </p>
+          <div class="flex flex-wrap items-center gap-2">
+            <button
+              type="button"
+              class="club-pagination"
+              :disabled="!canPrev"
+              @click="changePage(page - 1)"
+            >
+              上一页
+            </button>
+            <template v-for="(item, idx) in pageItems" :key="item + '-' + idx"
+              ><span v-if="item === '...'" class="px-1 text-slate-400">···</span
+              ><button
+                v-else
+                type="button"
+                class="club-pagination"
+                :aria-current="item === page ? 'page' : undefined"
+                @click="changePage(item)"
+              >
+                {{ item }}
+              </button></template
+            >
+            <button
+              type="button"
+              class="club-pagination"
+              :disabled="!canNext"
+              @click="changePage(page + 1)"
+            >
+              下一页
             </button>
           </div>
-        </div>
-      </div>
-
-      <div v-if="total > 0" class="flex flex-col md:flex-row md:items-center md:justify-between gap-3 pt-4 border-t border-gray-100 dark:border-slate-800">
-        <div class="text-xs text-gray-500 dark:text-gray-400">
-          共 {{ total }} 条 · 第 {{ page }}/{{ totalPages }} 页
-        </div>
-        <div class="flex flex-wrap items-center gap-2">
-          <button
-            class="px-3 py-1 text-sm rounded border text-gray-600 dark:text-gray-200 border-gray-200 dark:border-slate-700 disabled:opacity-50"
-            :disabled="!canPrev"
-            @click="changePage(page - 1)"
-          >上一页</button>
-
-          <template v-for="(item, idx) in pageItems" :key="`${item}-${idx}`">
-            <span v-if="item === '...'" class="px-2 text-gray-400">···</span>
-            <button
-              v-else
-              class="px-3 py-1 text-sm rounded border border-gray-200 dark:border-slate-700"
-              :class="item === page ? 'bg-red-600 text-white border-red-600' : 'text-gray-600 dark:text-gray-200'"
-              @click="changePage(item)"
-            >{{ item }}</button>
-          </template>
-
-          <button
-            class="px-3 py-1 text-sm rounded border text-gray-600 dark:text-gray-200 border-gray-200 dark:border-slate-700 disabled:opacity-50"
-            :disabled="!canNext"
-            @click="changePage(page + 1)"
-          >下一页</button>
-        </div>
+        </nav>
       </div>
     </div>
   </div>

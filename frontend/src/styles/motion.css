@@ -1,0 +1,202 @@
+/* Inspired by SCTA's layered hero, spring-like entrance and once-only reveals.
+   Independent translate/transform channels keep reveals and hover from fighting. */
+.club-reveal {
+  transition:
+    opacity 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    translate 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    scale 600ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 180ms ease;
+}
+.club-reveal[data-reveal='pending'] {
+  opacity: 0;
+  translate: 0 22px;
+  transition-delay: var(--reveal-delay, 0ms);
+}
+.club-reveal[data-reveal='visible'] {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+  transition-delay:
+    var(--reveal-delay, 0ms), var(--reveal-delay, 0ms),
+    var(--reveal-delay, 0ms), 0ms, 0ms, 0ms, 0ms;
+}
+.club-reveal[data-reveal='pending'][data-reveal-variant='scale'] {
+  translate: 0 12px;
+  scale: 0.97;
+}
+.club-reveal:focus-within {
+  opacity: 1;
+  translate: 0 0;
+  scale: 1;
+  transition-delay: 0ms;
+}
+.club-hero-step {
+  animation: club-hero-rise 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation-delay: calc(var(--motion-order, 0) * 75ms);
+}
+@keyframes club-hero-rise {
+  from {
+    opacity: 0.6;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.club-hero-art-enter {
+  animation: club-art-arrive 850ms 120ms both;
+}
+@keyframes club-art-arrive {
+  0% {
+    opacity: 0.5;
+    transform: translateY(16px) scale(0.94) rotate(-1.5deg);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(-2px) scale(1.008) rotate(0.25deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1) rotate(0);
+  }
+}
+.club-hero-art-surface {
+  transition: transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.club-hero-grid {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  opacity: 0.18;
+  background-image:
+    linear-gradient(#7dd3fc 1px, transparent 1px),
+    linear-gradient(90deg, #7dd3fc 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: linear-gradient(110deg, transparent 25%, #000);
+}
+.club-ambient {
+  position: absolute;
+  z-index: -1;
+  pointer-events: none;
+  border-radius: 50%;
+  animation: club-ambient-breathe 10s ease-in-out infinite;
+}
+.club-ambient-one {
+  width: 28rem;
+  height: 28rem;
+  top: -12rem;
+  right: -8rem;
+  background: rgb(56 189 248 / 0.07);
+}
+.club-ambient-two {
+  width: 20rem;
+  height: 20rem;
+  left: -10rem;
+  bottom: -10rem;
+  background: rgb(251 113 133 / 0.045);
+  animation-duration: 12s;
+  animation-delay: -4s;
+}
+@keyframes club-ambient-breathe {
+  50% {
+    transform: translate(12px, 8px) scale(1.08);
+  }
+}
+.club-hero-orbit {
+  animation: club-orbit 120s linear infinite;
+}
+@keyframes club-orbit {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.club-hero[data-scene-active='false'] :is(.club-ambient, .club-hero-orbit) {
+  animation-play-state: paused;
+}
+.club-button {
+  transition:
+    transform 220ms ease,
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    background-color 180ms ease;
+}
+@media (hover: hover) and (pointer: fine) {
+  .club-button:hover {
+    transform: translateY(-2px) scale(1.02);
+  }
+  .club-hero-art-surface:hover {
+    transform: scale(1.012) rotate(0.5deg);
+  }
+}
+.club-button:active {
+  transform: scale(0.98);
+}
+.club-menu-enter-active {
+  transition:
+    opacity 200ms ease,
+    transform 250ms cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: top;
+}
+.club-menu-leave-active {
+  transition:
+    opacity 140ms ease,
+    transform 140ms ease;
+  pointer-events: none;
+}
+.club-menu-enter-from,
+.club-menu-leave-to {
+  opacity: 0;
+  transform: translateY(-8px) scale(0.99);
+}
+@media (max-width: 639px) {
+  .club-reveal {
+    transition-duration: 450ms, 450ms, 450ms, 220ms, 220ms, 220ms, 180ms;
+  }
+  .club-reveal[data-reveal='pending'] {
+    translate: 0 12px;
+  }
+  .club-reveal[data-reveal='visible'] {
+    transition-delay:
+      var(--reveal-mobile-delay, 0ms), var(--reveal-mobile-delay, 0ms),
+      var(--reveal-mobile-delay, 0ms), 0ms, 0ms, 0ms, 0ms;
+  }
+  .club-hero-step {
+    animation-duration: 480ms;
+    animation-delay: calc(var(--motion-order, 0) * 45ms);
+  }
+  .club-hero-art-enter {
+    animation-duration: 600ms;
+  }
+  .club-ambient,
+  .club-hero-orbit {
+    animation: none;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
+  .club-reveal {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+    transition: none !important;
+  }
+  .club-hero-step,
+  .club-hero-art-enter,
+  .club-ambient,
+  .club-hero-orbit {
+    animation: none !important;
+  }
+  .club-button,
+  .club-hero-art-surface {
+    transform: none !important;
+    transition: none !important;
+  }
+  .club-menu-enter-from,
+  .club-menu-leave-to {
+    transform: none;
+  }
+}

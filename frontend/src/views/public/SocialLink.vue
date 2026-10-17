@@ -1,78 +1,60 @@
 <script setup>
-import { ref, onMounted } from 'vue'
-import axios from 'axios'
+import { onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useSiteConfigStore } from '../../stores/siteConfig'
 import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
 
-const links = ref([])
-const loading = ref(true)
-const errorMsg = ref('')
-
-const defaultLinks = [
-  {
-    title: 'Bilibili 官方账号',
-    subtitle: 'UID: 444257435',
-    extra: '投稿联系管理员: Taropoi',
-    url: 'https://space.bilibili.com/444257435',
-    iconText: 'B'
-  },
-  {
-    title: 'QQ 直播频道',
-    subtitle: '游戏直播分享',
-    extra: '点击加入频道',
-    url: 'https://pd.qq.com/s/fxsvvaqqt',
-    iconText: '🎮'
-  }
-]
-
-const fetchLinks = async () => {
-  try {
-    const res = await axios.get('/api/config')
-    if (res.data?.home_links) {
-      links.value = JSON.parse(res.data.home_links)
-    } else {
-      links.value = defaultLinks
-    }
-  } catch (e) {
-    errorMsg.value = '后端连接异常，请联系管理员Taropoi'
-  } finally {
-    loading.value = false
-  }
-}
-
+const site = useSiteConfigStore()
+const { socialLinks: links, loading, error: errorMsg } = storeToRefs(site)
 onMounted(() => {
-  fetchLinks()
+  site.load()
 })
 </script>
 
 <template>
-  <div class="min-h-screen bg-gradient-to-b from-purple-50 via-white to-pink-50 dark:from-slate-900 dark:via-slate-950 dark:to-slate-900 font-sans">
-    <div class="max-w-6xl mx-auto px-4 py-14">
-      <div class="text-center mb-10">
-        <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-purple-100 dark:bg-slate-800 text-purple-700 dark:text-purple-200 text-xs font-bold border border-purple-200 dark:border-slate-700">
-          绯想天 · 外界通讯
+  <div class="club-paper min-h-screen">
+    <div class="club-container py-12 sm:py-20">
+      <header class="border-b border-slate-200 pb-10 dark:border-slate-800">
+        <p class="club-eyebrow">ELSEWHERE, TOGETHER</p>
+        <h1 class="club-page-title mt-4">绯想天 · 外界通讯</h1>
+        <p class="mt-5 text-sm leading-8 text-slate-500 dark:text-slate-400">
+          分享创作，约一场游戏，或在语音里打声招呼。<br />在你习惯的地方，也能找到我们。
+        </p>
+      </header>
+      <section
+        class="grid gap-10 py-12 lg:grid-cols-[.7fr_1.3fr] lg:gap-20"
+        aria-labelledby="channels-title"
+      >
+        <div>
+          <h2 id="channels-title" class="font-serif text-2xl font-semibold">
+            保持联系
+          </h2>
+          <p class="mt-4 text-sm leading-8 text-slate-500 dark:text-slate-400">
+            关注最新动态，也欢迎把你的作品带来。<br />以下链接将在新窗口打开。
+          </p>
+          <RouterLink to="/join" class="club-text-link mt-5"
+            >加入同好群 <span aria-hidden="true">→</span></RouterLink
+          >
         </div>
-        <h1 class="text-4xl md:text-5xl font-bold text-gray-800 dark:text-gray-100 font-serif mt-4">
-          桂航绯想天社交结界
-        </h1>
-        <p class="text-gray-500 dark:text-gray-400 mt-3">GuatSwr Community Gateway</p>
-      </div>
-
-      <div v-if="loading" class="text-center py-16 text-gray-400 dark:text-gray-300">
-        <div class="animate-spin text-3xl mb-2">⏳</div>
-        <p>正在建立外界链接...</p>
-      </div>
-
-      <div v-else-if="errorMsg" class="text-center py-16 text-red-500">
-        <p class="font-bold">{{ errorMsg }}</p>
-      </div>
-
-      <div v-else class="bg-white/70 dark:bg-slate-900/70 backdrop-blur rounded-2xl p-6 shadow-sm border border-purple-100 dark:border-slate-800">
-        <HomeSocialLinks :links="links" />
-      </div>
-
-      <div class="mt-10 text-center text-xs text-gray-400 dark:text-gray-300">
-        <span class="px-3 py-1 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200 dark:border-slate-700">结界提示：点击卡片即可前往</span>
-      </div>
+        <p v-if="loading" class="py-10 text-sm text-slate-500" role="status">
+          正在建立外界链接…
+        </p>
+        <div
+          v-else-if="errorMsg"
+          class="py-10 text-sm text-red-600 dark:text-red-400"
+          role="status"
+        >
+          <p>{{ errorMsg }}</p>
+          <button
+            type="button"
+            class="club-text-link mt-3"
+            @click="site.load({ force: true })"
+          >
+            重新加载
+          </button>
+        </div>
+        <HomeSocialLinks v-else :links="links" />
+      </section>
     </div>
   </div>
 </template>
