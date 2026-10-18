@@ -10,7 +10,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "vitest run",
+    "test": "tsc -p tsconfig.build.json && vitest run",
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": { "zod": "4.6.7" },

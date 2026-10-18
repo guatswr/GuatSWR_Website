@@ -1,0 +1,279 @@
+{
+  "date": "2026-10-19",
+  "timezone": "Asia/Shanghai",
+  "scope": "Frozen public v1 read adapters and shared-layout regression; migrated-page acceptance not included",
+  "baseCommit": "1cfe6b83a03cf1898543815b089f73d1970da369",
+  "platform": "Windows",
+  "node": "24.15.0",
+  "pnpm": "11.25.0",
+  "gates": [
+    {
+      "gate": "typecheck",
+      "exit": 0
+    },
+    {
+      "gate": "lint",
+      "exit": 0
+    },
+    {
+      "gate": "test",
+      "exit": 0
+    },
+    {
+      "gate": "build",
+      "exit": 0
+    }
+  ],
+  "unitTests": {
+    "shared": 23,
+    "total": 78,
+    "web": 55
+  },
+  "productionHttpSmoke": {
+    "passed": 9,
+    "log": ".tools/lead-data-http-smoke.log",
+    "realBackendUsed": false
+  },
+  "e2e": {
+    "passed": 20,
+    "log": ".tools/lead-data-final-e2e.log",
+    "comparisons": [
+      {
+        "component": "footer",
+        "project": "desktop",
+        "state": "navigation and footer match archived dark layout",
+        "width": 1280,
+        "height": 358,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false,
+        "capture": {
+          "devicePixelRatio": 1,
+          "actualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 358.5
+          },
+          "rawDevicePixels": {
+            "width": 1280,
+            "height": 359
+          },
+          "croppedDevicePixels": {
+            "width": 1280,
+            "height": 358
+          },
+          "targetDevicePixels": {
+            "width": 1280,
+            "height": 358
+          },
+          "excludedDevicePixels": {
+            "width": 0,
+            "height": 0.5
+          },
+          "excludedCssPixels": {
+            "width": 0,
+            "height": 0.5
+          },
+          "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+        }
+      },
+      {
+        "component": "navbar",
+        "project": "desktop",
+        "state": "navigation and footer match archived dark layout",
+        "width": 1280,
+        "height": 65,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false
+      },
+      {
+        "component": "footer",
+        "project": "mobile",
+        "state": "navigation and footer match archived dark layout",
+        "width": 1081,
+        "height": 1947,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false,
+        "capture": {
+          "devicePixelRatio": 2.625,
+          "actualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 412,
+            "height": 741.719
+          },
+          "rawDevicePixels": {
+            "width": 1082,
+            "height": 1948
+          },
+          "croppedDevicePixels": {
+            "width": 1081,
+            "height": 1947
+          },
+          "targetDevicePixels": {
+            "width": 1081,
+            "height": 1947
+          },
+          "excludedDevicePixels": {
+            "width": 0.5,
+            "height": 0.01171875
+          },
+          "excludedCssPixels": {
+            "width": 0.19047619047619047,
+            "height": 0.004464285714285714
+          },
+          "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+        }
+      },
+      {
+        "component": "mobile-menu",
+        "project": "mobile",
+        "state": "navigation and footer match archived dark layout",
+        "width": 1082,
+        "height": 1229,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false
+      },
+      {
+        "component": "navbar",
+        "project": "mobile",
+        "state": "navigation and footer match archived dark layout",
+        "width": 1082,
+        "height": 171,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false
+      },
+      {
+        "component": "footer",
+        "project": "desktop",
+        "state": "navigation and footer match archived light layout",
+        "width": 1280,
+        "height": 358,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false,
+        "capture": {
+          "devicePixelRatio": 1,
+          "actualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 1280,
+            "height": 358.5
+          },
+          "rawDevicePixels": {
+            "width": 1280,
+            "height": 359
+          },
+          "croppedDevicePixels": {
+            "width": 1280,
+            "height": 358
+          },
+          "targetDevicePixels": {
+            "width": 1280,
+            "height": 358
+          },
+          "excludedDevicePixels": {
+            "width": 0,
+            "height": 0.5
+          },
+          "excludedCssPixels": {
+            "width": 0,
+            "height": 0.5
+          },
+          "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+        }
+      },
+      {
+        "component": "navbar",
+        "project": "desktop",
+        "state": "navigation and footer match archived light layout",
+        "width": 1280,
+        "height": 65,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false
+      },
+      {
+        "component": "footer",
+        "project": "mobile",
+        "state": "navigation and footer match archived light layout",
+        "width": 1081,
+        "height": 1947,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false,
+        "capture": {
+          "devicePixelRatio": 2.625,
+          "actualRect": {
+            "x": 0,
+            "y": 0,
+            "width": 412,
+            "height": 741.719
+          },
+          "rawDevicePixels": {
+            "width": 1082,
+            "height": 1948
+          },
+          "croppedDevicePixels": {
+            "width": 1081,
+            "height": 1947
+          },
+          "targetDevicePixels": {
+            "width": 1081,
+            "height": 1947
+          },
+          "excludedDevicePixels": {
+            "width": 0.5,
+            "height": 0.01171875
+          },
+          "excludedCssPixels": {
+            "width": 0.19047619047619047,
+            "height": 0.004464285714285714
+          },
+          "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+        }
+      },
+      {
+        "component": "mobile-menu",
+        "project": "mobile",
+        "state": "navigation and footer match archived light layout",
+        "width": 1082,
+        "height": 1229,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false
+      },
+      {
+        "component": "navbar",
+        "project": "mobile",
+        "state": "navigation and footer match archived light layout",
+        "width": 1082,
+        "height": 171,
+        "differingPixels": 0,
+        "pixelmatchThreshold": 0.1,
+        "includeAntialias": false
+      }
+    ]
+  },
+  "artifacts": {
+    "sourceMaps": 0,
+    "publicJavaScriptGzipBytes": 125859,
+    "budgetBytes": 153600
+  },
+  "lighthouse": {
+    "measuredForThisArtifact": false,
+    "fixedLcpBudgetMs": 1800,
+    "fixedPerformanceBudget": 95,
+    "remoteLinuxRunPending": true
+  },
+  "boundaries": {
+    "deploymentPerformed": false,
+    "legacySourceDiffEmpty": true,
+    "qqSuccessNotificationSent": false
+  }
+}

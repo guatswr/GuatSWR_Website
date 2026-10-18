@@ -1,20 +1,12 @@
 import { createServer } from 'node:http'
+import { handlePublicFixture } from './public-data.mjs'
 
 // In-memory test server only. Never starts or writes to the real backend.
+// The shared `public-data.mjs` fixture mirrors the frozen v1 public reads and
+// keeps the config credential-leak/banner/private-decoy assertions intact.
 createServer((request, response) => {
+  if (handlePublicFixture(request, response)) return
+  response.statusCode = 404
   response.setHeader('Content-Type', 'application/json')
-  if (request.url === '/health') {
-    response.end(JSON.stringify({ status: 'ok' }))
-  }
-  else if (request.url === '/api/config') {
-    response.end(JSON.stringify({
-      home_bg: request.headers.authorization || request.headers.cookie ? 'credential-leak' : '/uploads/fixture.webp',
-      banner_text: '契约测试',
-      token_version: 'private-value',
-    }))
-  }
-  else {
-    response.statusCode = 404
-    response.end(JSON.stringify({ message: 'Not Found' }))
-  }
+  response.end(JSON.stringify({ message: 'Not Found' }))
 }).listen(Number(process.env.PORT ?? 3181), '127.0.0.1')

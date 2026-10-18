@@ -11,15 +11,24 @@ notification, after the local migration has actually passed acceptance.
 
 | Worker | Checkout | Current scope | Integration boundary |
 | --- | --- | --- | --- |
-| Acceptance | Primary `revamp/nuxt-foundation` | Dialog lifecycle/loading, performance collection and CI diagnostics, stage 02 evidence | Finish or report a concrete blocker before taking another batch. |
-| Public data | Managed `revamp-public-data` worktree | Projected shared DTOs, public v1 read adapters, bounded upload reads, deterministic fixtures | No UI, package/lockfile, CI or general status edits. |
-| Public UI | Managed `revamp-homepage` worktree | Homepage, social/join, progressive images, typed motion/freeze logic and focused tests | No API/schema, package/lockfile, CI or general status edits. |
+| Acceptance | Primary `revamp/nuxt-foundation` | CI cross-platform correction; legacy typography and exact component screenshot bounds | No API/package changes or competing builds/performance tests. |
+| Public data | Originally managed `revamp-public-data`; candidate files now in primary | Correct projected DTOs, public read adapters, bounded reads and fixtures; run real recursive gates | Owns only data-related package/lock changes; no UI, CI or ledger edits. |
+| Homepage candidate | Frozen managed `revamp-homepage` worktree | Homepage, social/join, progressive images, typed motion/freeze logic and tests ready for integration | Source reviewed; actual integrated gates and browser acceptance still owed. |
+| Events UI | Managed `revamp-events` worktree, same H implementer | Event categories/cards/forms/signup UI, typed form models and shared rules | No guest-server endpoints, auth helpers, package/lockfile or ledger edits. |
+| Public prose pages | Managed `revamp-public-pages` worktree | Activities/detail, members, history, logs, safe Markdown, exact member sorting and local icons | Server-only highlighter/pinyin imports proposed centrally; no homepage, public read adapters or package edits. |
+| Auth server / client | Managed `revamp-auth` worktree | Server session candidate plus login/client CSRF/session boundary | Auth-only runtime defaults; no guest/admin CRUD, shared index, package/lock or public API changes. |
 | Codex | Primary checkout | Architecture, cross-boundary review, integration, acceptance, commits/pushes and reporting | Only reviewed changes enter the revamp branch. |
 
 Workers do not commit, push, switch branches, deploy, or send external messages.
 They preserve the archived `frontend/` and `backend/` sources and v1 contract.
 Each batch returns an explicit file inventory, test evidence and unresolved
 limitations. A worker's completion report alone is not acceptance.
+
+The first public-data pass reached its turn limit without a final report. Its
+temporary syntax/Vitest shim was not integrated and is not test evidence. Only
+the reviewed candidate source files were copied; the correction turn must use
+the primary checkout's actual installed toolchain. Public UI and prose-page
+workers likewise label unexecuted tests honestly until integration.
 
 ## Integration and verification
 
