@@ -1,5 +1,25 @@
 # guatswr_web
 
+## Nuxt 改版工作区（并行开发中）
+
+新版位于 `web/`，契约类型与校验位于 `packages/shared/`。`frontend/`、`backend/` 保留原有构建和部署方式，不参与新 workspace。进度与验收证据见 [STATUS.md](docs/revamp/STATUS.md)，基础设施操作前先审阅 [预发布方案](docs/revamp/STAGING.md)。
+
+新版使用 Node **24.15.0**（`.node-version`）与 pnpm **11.25.0**，生产默认不生成 sourcemap，`next.guatswr.top` 默认禁止索引。当前首页仅为 SSR 脚手架验证页，正式视觉迁移将在后续阶段进行。
+
+```powershell
+pnpm install --frozen-lockfile
+pnpm dev # http://127.0.0.1:3100
+pnpm -r typecheck
+pnpm -r lint
+pnpm -r test
+pnpm -r build
+pnpm check:artifacts
+pnpm --filter @guatswr/web exec playwright install chromium
+pnpm test:e2e
+```
+
+开发环境按 `web/.env.example` 设置变量；生产从服务环境注入 `NUXT_API_BASE` 和随机 `NUXT_SESSION_PASSWORD`。不要将密钥写入仓库。E2E 使用内存 API fixture，不连接真实后端、不写真实账户或业务数据。截图基线针对 Windows Chromium；改版页面仍需逐页与旧站比较。
+
 桂航绯想天门户站点，包含前端（Vite + Vue 3）与后端（Express）。
 
 ## 社群门户与入群配置

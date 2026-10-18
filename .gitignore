@@ -22,6 +22,14 @@ frontend/dist/
 frontend/.vite/
 **/coverage/
 **/.cache/
+/.tools/
+**/.nuxt/
+**/.output/
+**/.data/
+**/test-results/
+**/playwright-report/
+**/.lighthouseci/
+packages/shared/dist/
 
 # Databases
 **/*.db

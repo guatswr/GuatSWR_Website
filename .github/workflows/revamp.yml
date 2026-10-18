@@ -1,0 +1,71 @@
+name: Revamp quality gates
+
+on:
+  push:
+    branches: ['revamp/**']
+  pull_request:
+    branches: [main]
+    paths:
+      - 'web/**'
+      - 'packages/**'
+      - 'scripts/revamp/**'
+      - 'pnpm-lock.yaml'
+      - 'pnpm-workspace.yaml'
+      - 'package.json'
+      - '.node-version'
+      - '.npmrc'
+      - '.github/workflows/revamp.yml'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: revamp-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  linux-container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker build --file web/Dockerfile --tag guatswr-revamp:ci .
+  foundation:
+    # Visual fixtures are generated on Windows. Keep the platform stable until
+    # reviewed Linux baselines are added for the staging deployment target.
+    runs-on: windows-latest
+    timeout-minutes: 20
+    env:
+      NUXT_SESSION_PASSWORD: ${{ secrets.REVAMP_TEST_SESSION_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - name: Generate an ephemeral test session secret
+        if: env.NUXT_SESSION_PASSWORD == ''
+        shell: pwsh
+        run: |
+          $secret = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(48))
+          Write-Output "::add-mask::$secret"
+          Add-Content -LiteralPath $env:GITHUB_ENV -Value "NUXT_SESSION_PASSWORD=$secret"
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r typecheck
+      - run: pnpm -r lint
+      - run: pnpm -r test
+      - run: pnpm -r build
+      - run: pnpm check:artifacts
+      - run: pnpm --filter @guatswr/web exec playwright install chromium
+      - run: pnpm test:e2e
+      - run: pnpm --filter @guatswr/web test:performance
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: revamp-playwright-failure
+          path: |
+            web/playwright-report/
+            web/test-results/
+            web/.lighthouseci/
+          retention-days: 7

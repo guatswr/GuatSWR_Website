@@ -1,0 +1,11 @@
+@import "tailwindcss";
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* Existing brand values; the full token and layout port is stage 02. */
+@theme {
+  --color-sky-brand: #38bdf8;
+  --color-sky-dark: #0284c7;
+  --font-sans: system-ui, -apple-system, "Segoe UI", "Microsoft YaHei", sans-serif;
+}
+
+body { margin: 0; }

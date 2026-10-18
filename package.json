@@ -1,0 +1,17 @@
+{
+  "name": "guatswr-workspace",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@11.25.0",
+  "engines": { "node": ">=24.15.0 <25" },
+  "scripts": {
+    "dev": "pnpm --filter @guatswr/shared build && pnpm --filter @guatswr/web dev",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "pnpm -r lint",
+    "test": "pnpm -r test",
+    "build": "pnpm -r build",
+    "test:e2e": "pnpm --filter @guatswr/web test:e2e",
+    "test:legacy": "node --test frontend/src/components/events/eventFormModel.test.js frontend/src/components/home/freezeInteraction.test.js frontend/src/components/home/iceThaw.test.js frontend/src/components/ProgressiveImage.test.js frontend/src/directives/motion.test.js frontend/src/directives/scrollMotion.test.js frontend/src/utils/community.test.js frontend/src/utils/imageLoader.test.js",
+    "check:artifacts": "node scripts/revamp/check-artifacts.mjs"
+  }
+}

@@ -1,0 +1,17 @@
+.git
+.tools
+.pnpm-store
+**/node_modules
+**/dist
+**/.nuxt
+**/.output
+**/.cache
+**/.data
+**/.env
+**/.env.*
+**/test-results
+**/playwright-report
+**/.lighthouseci
+frontend
+backend
+backups

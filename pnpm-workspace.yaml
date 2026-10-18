@@ -1,0 +1,20 @@
+packages:
+  - web
+  - packages/*
+
+saveExact: true
+nodeLinker: hoisted
+injectWorkspacePackages: true
+# Install explicitly (frozen in CI); script invocations must not mutate modules
+# or race an implicit reinstall when multiple quality checks run together.
+verifyDepsBeforeRun: false
+strictPeerDependencies: true
+engineStrict: true
+minimumReleaseAge: 1440
+allowBuilds:
+  esbuild: true
+  unrs-resolver: true
+  '@parcel/watcher': true
+  '@tailwindcss/oxide': true
+  sharp: true
+  vue-demi: true

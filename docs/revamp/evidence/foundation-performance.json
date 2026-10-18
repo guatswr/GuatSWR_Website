@@ -1,0 +1,22 @@
+{
+  "url": "http://127.0.0.1:3100",
+  "device": "Lighthouse default mobile / simulated throttling",
+  "runs": [
+    {
+      "performance": 100,
+      "lcpMs": 1535.1459
+    },
+    {
+      "performance": 100,
+      "lcpMs": 1654.0522999999998
+    },
+    {
+      "performance": 100,
+      "lcpMs": 1654.439
+    }
+  ],
+  "median": {
+    "performance": 100,
+    "lcpMs": 1654.0522999999998
+  }
+}
