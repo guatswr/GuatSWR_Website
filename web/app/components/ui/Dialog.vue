@@ -1,13 +1,12 @@
 <script setup lang="ts">
-import { onMounted, shallowRef, watch, type Component } from 'vue'
+import { onBeforeUnmount, shallowRef, type Component } from 'vue'
 
-defineProps<{ title: string, description: string }>()
+defineProps<{ title: string, description: string, triggerClass?: string }>()
 
-// Reka's dialog runtime (~12 KB gzip) is only needed once the dialog is
-// actually opened. It is imported on first activation instead of shipping in
-// the initial page load, and prefetched while the browser is idle so the
-// first open stays instant. The trigger remains a normal SSR button, so
-// hydration and the first activation behave exactly as before.
+// The trigger is an ordinary server-rendered button, so its ARIA contract,
+// keyboard activation and focus return work before and without the dialog
+// runtime. Only the Reka primitives are loaded, lazily, on intent or on
+// activation; the first activation waits for that load.
 type DialogParts = {
   Root: Component
   Portal: Component
@@ -20,66 +19,79 @@ type DialogParts = {
 
 const parts = shallowRef<DialogParts | null>(null)
 const open = shallowRef(false)
-const wrap = shallowRef<HTMLElement | null>(null)
+const loading = shallowRef(false)
+const error = shallowRef('')
+const trigger = shallowRef<HTMLButtonElement | null>(null)
+const contentId = useId()
+let disposed = false
+let pending: Promise<void> | undefined
 
 async function ensureReka() {
   if (parts.value) return
-  const reka = await import('~/utils/dialog-reka')
-  parts.value = {
-    Root: reka.DialogRoot,
-    Portal: reka.DialogPortal,
-    Overlay: reka.DialogOverlay,
-    Content: reka.DialogContent,
-    Title: reka.DialogTitle,
-    Description: reka.DialogDescription,
-    Close: reka.DialogClose,
+  if (!pending) {
+    pending = import('~/utils/dialog-reka').then((reka) => {
+      if (disposed) return
+      parts.value = {
+        Root: reka.DialogRoot, Portal: reka.DialogPortal,
+        Overlay: reka.DialogOverlay, Content: reka.DialogContent,
+        Title: reka.DialogTitle, Description: reka.DialogDescription,
+        Close: reka.DialogClose,
+      }
+    }).finally(() => { pending = undefined })
   }
+  await pending
+}
+
+function prefetch() {
+  void ensureReka().catch(() => { /* Activation surfaces the recoverable error. */ })
 }
 
 async function openDialog() {
-  await ensureReka()
-  open.value = true
-}
-
-function triggerButton() {
-  return wrap.value?.querySelector('button') ?? null
-}
-
-function onClosed() {
-  open.value = false
-  // The unmounting content re-focuses its close button and focus guards while
-  // closing; restore focus to the original trigger once that sequence has
-  // settled. (The E2E contract is: focus is back on the trigger after close.)
-  window.setTimeout(() => { triggerButton()?.focus() }, 60)
+  if (loading.value) return
+  loading.value = true
+  error.value = ''
+  try {
+    await ensureReka()
+    if (!disposed) open.value = true
+  }
+  catch {
+    if (!disposed) error.value = '弹窗组件加载失败，请刷新页面后重试。'
+  }
+  finally { if (!disposed) loading.value = false }
 }
 
 function onCloseAutoFocus(event: Event) {
-  // Focus return is done explicitly on the original trigger button above.
   event.preventDefault()
+  if (trigger.value?.isConnected) trigger.value.focus({ preventScroll: true })
 }
 
-onMounted(() => {
-  const button = triggerButton()
-  button?.setAttribute('aria-haspopup', 'dialog')
-  button?.setAttribute('aria-expanded', 'false')
-  // Warm the dialog runtime after the page has settled; a user who never
-  // opens the dialog never downloads it.
-  window.setTimeout(() => { void ensureReka() }, 2000)
-})
-
-watch(open, (value) => {
-  triggerButton()?.setAttribute('aria-expanded', String(value))
-})
+onBeforeUnmount(() => { disposed = true })
 </script>
 
 <template>
-  <span ref="wrap" style="display: contents" @click="openDialog"><slot name="trigger" /></span>
-  <template v-if="open && parts">
-    <component :is="parts.Root" :open="true" @update:open="onClosed">
+  <button
+    ref="trigger"
+    type="button"
+    :class="triggerClass"
+    aria-haspopup="dialog"
+    :aria-expanded="open"
+    :aria-controls="open ? contentId : undefined"
+    :aria-busy="loading || undefined"
+    :disabled="loading"
+    @pointerenter="prefetch"
+    @focus="prefetch"
+    @click="openDialog"
+  >
+    <slot name="trigger" />
+  </button>
+  <p v-if="error" role="alert" class="mt-3 text-sm text-red-700 dark:text-red-300">{{ error }}</p>
+  <template v-if="parts">
+    <component :is="parts.Root" :open="open" @update:open="open = $event">
       <component :is="parts.Portal">
         <component :is="parts.Overlay" class="fixed inset-0 z-[60] bg-slate-950/55" />
         <component
           :is="parts.Content"
+          :id="contentId"
           class="club-paper fixed left-1/2 top-1/2 z-[61] w-[calc(100%-2rem)] max-w-lg -translate-x-1/2 -translate-y-1/2 rounded p-6 shadow-xl focus:outline-none"
           @close-auto-focus="onCloseAutoFocus"
         >

@@ -1,7 +1,9 @@
 {
-  "recordedAt": "2026-10-18T14:42:23.721Z",
+  "recordedAt": "2026-10-18T19:05:33.668Z",
+  "recordedAtLocal": "2026-10-19 03:05 Asia/Shanghai",
   "sourceCheckpoint": "v1-archive (f1215d4)",
-  "scope": "Temporary SSR fixture and shared layout; not complete public-page acceptance",
+  "revision": "working tree on revamp/nuxt-foundation at eca246c plus the uncommitted Batch A changes (not yet committed or pushed)",
+  "scope": "Temporary SSR fixtures (`/`, `/__revamp/layout`) and the shared navbar/footer/mobile-menu/dialog layout. Not public-page parity, not migrated homepage content and not complete-site acceptance.",
   "runtime": {
     "node": "24.15.0",
     "platform": "win32",
@@ -9,22 +11,29 @@
     "lighthouse": "13.5.0"
   },
   "unitTestsPassed": 15,
-  "e2eTestsPassed": 18,
+  "e2eTestsPassed": 20,
   "artifacts": {
     "sourceMaps": 0,
-    "publicJavaScriptGzipBytes": 126249,
+    "publicJavaScriptGzipBytes": 125861,
     "budgetBytes": 153600
   },
+  "initialRouteJavaScript": {
+    "note": "Layout fixture scripts requested before the Lighthouse LCP moment; measured from the same run as the budget samples.",
+    "requests": 5,
+    "transferBytes": 96499,
+    "previousCheckpoint": {
+      "requests": 8,
+      "transferBytes": 100157
+    }
+  },
   "linuxRuntime": {
-    "image": "guatswr-revamp:design-local",
-    "manifest": "sha256:872751fd6cb15ef9b87eae620bcc405e32863cab3ce4c9e6a5b26c8ed160f3e9",
-    "smoke": [
-      "health",
-      "layout SSR",
-      "fixture API",
-      "CSP nonce",
-      "noindex"
-    ]
+    "image": "guatswr-revamp:accepted-stage02",
+    "manifest": "sha256:3ec900700f4381be8c61b4eea6f6246a1591d38a2a827aae9e9f84f9c8b41917",
+    "recursiveGates": ["typecheck", "lint", "test", "build"],
+    "unitTestsPassed": 15,
+    "artifacts": { "sourceMaps": 0, "publicJavaScriptGzipBytes": 125859, "budgetBytes": 153600 },
+    "runtimeEvidence": "evidence/design-linux-smoke.json",
+    "verification": "Fresh local Linux build and isolated runtime smoke performed by Codex after source review; container removed afterward. No real backend or deployment."
   },
   "visual": [
     {
@@ -128,52 +137,92 @@
       "includeAntialias": false
     }
   ],
+  "visualNote": "Ten desktop/mobile, day/night navbar/footer/mobile-menu comparisons against the archived frontend in the same browser, viewport, theme and fixture data; every comparison asserts zero differing pixels after pixelmatch antialias filtering.",
   "performance": {
     "device": "Lighthouse default mobile / simulated throttling",
+    "serverState": "Prewarmed by two HTTP document requests per route; Lighthouse resets browser storage/cache",
+    "threshold": {
+      "minPerformance": 95,
+      "maxLcpMs": 1800,
+      "samplesPerRoute": 3,
+      "aggregate": "median"
+    },
+    "warmup": [
+      {
+        "path": "/",
+        "firstDocumentRequestMs": 83.62779999999998,
+        "secondDocumentRequestMs": 4.5922999999997955
+      },
+      {
+        "path": "/__revamp/layout",
+        "firstDocumentRequestMs": 125.17939999999999,
+        "secondDocumentRequestMs": 20.692199999999957
+      }
+    ],
+    "invalidAttempts": [],
     "results": [
       {
-        "url": "http://127.0.0.1:3100/",
+        "url": "http://127.0.0.1:3200/",
         "runs": [
           {
             "performance": 99,
-            "lcpMs": 1816.143
+            "lcpMs": 1560.913
+          },
+          {
+            "performance": 100,
+            "lcpMs": 1509.0749
+          },
+          {
+            "performance": 100,
+            "lcpMs": 1506.6073
+          }
+        ],
+        "median": {
+          "performance": 100,
+          "lcpMs": 1509.0749
+        }
+      },
+      {
+        "url": "http://127.0.0.1:3200/__revamp/layout",
+        "runs": [
+          {
+            "performance": 97,
+            "lcpMs": 2107.764
           },
           {
             "performance": 99,
-            "lcpMs": 1805.0448000000004
+            "lcpMs": 1654.3692
           },
           {
             "performance": 99,
-            "lcpMs": 1805.6648
+            "lcpMs": 1656.3012
           }
         ],
         "median": {
           "performance": 99,
-          "lcpMs": 1805.6648
-        }
-      },
-      {
-        "url": "http://127.0.0.1:3100/__revamp/layout",
-        "runs": [
-          {
-            "performance": 97,
-            "lcpMs": 2105.4303
-          },
-          {
-            "performance": 98,
-            "lcpMs": 1805.5180999999998
-          },
-          {
-            "performance": 97,
-            "lcpMs": 1804.6143000000002
-          }
-        ],
-        "median": {
-          "performance": 98,
-          "lcpMs": 1805.5180999999998
+          "lcpMs": 1656.3012
         }
       }
-    ]
+    ],
+    "command": "pnpm --filter @guatswr/web test:performance",
+    "exitCode": 0
   },
-  "performancePassed": false
+  "performancePassed": true,
+  "previousCheckpoint": {
+    "evidence": "evidence/design-validation-checkpoint-2026-10-18.json",
+    "performancePassed": false,
+    "note": "Superseded. The 2026-10-18 file recorded the pre-closure checkpoint (18 E2E, 126,249 bytes gzip, medians 1805.7 / 1805.5 ms)."
+  },
+  "supersededRun": {
+    "evidence": ".tools/lighthouse-failed-2026-10-19/",
+    "recordedAt": "2026-10-19 02:24-02:25 Asia/Shanghai",
+    "note": "The valid over-budget run on Codex's intermediate working tree with a static Primitive import: `/` median 1657.6829 ms (runs 1815.129 / 1657.6829 / 1655.2315), `/__revamp/layout` median 1804.7523 ms (runs 2113.5159 / 1655.8779 / 1804.7523). Unmodified Hermes HEAD eca246c separately passed the independent local baseline. No invalid attempts; no sample was retried. Raw reports retained locally (~1.2 MB)."
+  },
+  "verificationLimits": {
+    "windows": "All four recursive gates, artifact check, 20 E2E cases and the three-sample performance run were executed sequentially on this Windows host against the current build output.",
+    "linux": "Codex independently rebuilt the current source on Linux/Alpine and verified the isolated runtime; see linuxRuntime. Browser/visual/Lighthouse checks in this record ran on Windows.",
+    "remoteCi": "Not run. It remains pending until the branch is pushed through github-second and the Windows/Linux jobs are inspected.",
+    "independence": "Codex independently reviewed the implementation diff and produced gate, browser, visual and raw Lighthouse evidence, then rebuilt and smoke-tested Linux. The new pushed commit's CI remains pending.",
+    "cacheProtocol": "Lighthouse samples reset browser storage/cache against a prewarmed server. Separate warm-up document timings describe first/repeated server requests. A maximum sample is not proof of a different cache state; full real-page cold/warm comparison remains pending."
+  }
 }

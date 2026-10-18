@@ -1,8 +1,8 @@
 # GuatSWR revamp — 待完成迁移项目清单（107 条）
 
 来源：Codex 规划会话移交的 107 条清单（2026-10-18 原文）。本文件是共享台账：
-Hermes 逐条实施并自验收，通过后在此打勾，证据与进度记录在 [STATUS.md](STATUS.md)，
-供 Codex 后续做独立二次验收。
+当前由 Codex 负责方案、代码审查与独立验收，Claude Code（Opus 5）分批实施；
+已完成的 Hermes 工作保留原有证据。通过后在此打勾，证据与进度记录在 [STATUS.md](STATUS.md)。
 
 图例：
 - `[ ]` 未开始或未通过验收
@@ -17,10 +17,10 @@ Hermes 逐条实施并自验收，通过后在此打勾，证据与进度记录�
 ## 阶段 02 收口（01–05）
 
 - [x] 01 分析 Lighthouse trace，定位当前约 1806ms LCP 的网络、服务端和 CPU 开销。（✅ 2026-10-19 收口：`evidence/lcp-trace-analysis.md`）
-- [x] 02 根据分析实施性能修复，验证冷、热缓存结果，保留 LCP≤1800ms 门槛。（✅ 最终产物中位数 1507.7 / 1654.6ms；冷跑记录为三跑最大值并说明）
-- [x] 03 修复后重新通过类型检查、lint、单测、构建及相关 E2E、视觉对照。（✅ typecheck/lint ✓，单测 15/15，构建 ✓，E2E 18/18，视觉 10 组零像素差，0 sourcemap，JS 125,504B gzip）
-- [x] 04 更新阶段 02 的证据与 STATUS，明确是否达到收口条件。（✅ 收口条件成立：见 STATUS.md「Stage 02 closure」）
-- [ ] 05 收口后，仅通过 github-second 推送 revamp/*，检查新版 Windows/Linux 远端 CI。
+- [x] 02 根据分析实施性能修复，验证冷、热缓存结果，保留 LCP≤1800ms 门槛。（✅ 2026-10-19 Batch A：中位数 1509.1 / 1656.3ms，score 100/99；保留三次浏览器冷缓存样本及服务端首次/预热文档请求时间，无效尝试 0、无重跑；中间引入 Primitive 的 Codex 工作树曾失败于 1804.8ms，原始报告留档在 `.tools/lighthouse-failed-2026-10-19/`。完整真实页面冷热对照仍属 81，不能把最大值直接称为冷启动测量。）
+- [x] 03 修复后重新通过类型检查、lint、单测、构建及相关 E2E、视觉对照。（✅ 2026-10-19 Batch A 同一产物顺序复测：typecheck/lint ✓，单测 15/15，构建 ✓，artifact 检查 0 sourcemap，E2E 20/20（含弹窗分片下载失败/刷新恢复与 10 组零像素差视觉对照），JS 125,861B gzip）
+- [x] 04 更新阶段 02 的证据与 STATUS，明确是否达到收口条件。（✅ 收口条件在当前产物上成立：见 STATUS.md「Batch A follow-up」；机器可读证据 `evidence/design-validation.json`，旧检查点在同目录 `design-validation-checkpoint-2026-10-18.json`）
+- [ ] 05 收口后，仅通过 github-second 推送 revamp/*，检查新版 Windows/Linux 远端 CI。（依赖 Codex 提交与推送；本地未推送，远端 CI 仍是旧版本，故未勾选）
 
 ## 实现方案待确定（候选库尚未正式采用，06–10）
 

@@ -30,7 +30,7 @@ export default defineNitroPlugin((nitroApp) => {
       // that is still ahead of every inline style block.
       hoisted.join(''),
       prefetch.length
-        ? `<script${nonce ? ` nonce="${nonce}"` : ''}>addEventListener("load",function(){var t=${JSON.stringify(prefetch)};for(var i=0;i<t.length;i++){document.head.insertAdjacentHTML("beforeend",t[i])}},{once:true})</script>`
+        ? `<script${nonce ? ` nonce="${nonce}"` : ''}>addEventListener("load",function(){var t=${JSON.stringify(prefetch).replace(/</g, '\\u003c')};for(var i=0;i<t.length;i++){document.head.insertAdjacentHTML("beforeend",t[i])}},{once:true})</script>`
         : '',
     ].join('')
     const head = html.head.join('')

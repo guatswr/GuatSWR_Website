@@ -1,6 +1,6 @@
 # GuatSWR frontend revamp status
 
-Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
+Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
 ## Boundaries
 
@@ -19,10 +19,10 @@ Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 | --- | --- | --- |
 | 00 Legacy checkpoint | Done locally | `f1215d4`; annotated `v1-archive`; Vite production build passed; 55 frontend tests passed. |
 | 01 Workspace / Nuxt foundation | Local gates passed | `f587518`, pushed only to `revamp/nuxt-foundation`; all local gates passed. Deployment deferred by user. |
-| 02 Design system | In progress; stopped for performance sync | Shared tokens/layout/navigation/theme/dialog ported. Four recursive gates, 18 E2E and 10 archive visual comparisons pass. Mobile LCP median ~1806ms exceeds 1800ms; stage is not accepted. |
-| 03 Public pages | Pending | Preserve existing URLs (including singular `/activity/:id`), SSR/SWR, content SEO, images, sitemap/RSS. |
-| 04 Interactive forms | Pending | Existing guest upload/submission/signup contracts; shared zod + vee-validate; TanStack Query. |
-| 05 Administration | Pending | Element Plus only in admin chunks; BFF encrypted HttpOnly session; CSRF; no JWT serialization. |
+| 02 Design system | Codex local acceptance passed; new remote CI pending | Shared tokens/layout/navigation/theme/dialog ported. Windows four gates, 15 unit tests, 20 E2E, 10 zero-difference archive comparisons and fixed performance budgets pass (1509.1 / 1656.3 ms). Independent Linux container gates and runtime smoke also pass. See [acceptance report](ACCEPTANCE-2026-10-19.md). This is shared-layout acceptance, not whole-site acceptance. |
+| 03 Public pages | Implementing in isolated worktrees; not integrated or accepted | Preserve existing URLs (including singular `/activity/:id`), SSR/SWR, content SEO, images, sitemap/RSS. See [COORDINATION.md](COORDINATION.md). |
+| 04 Interactive forms | Pending | Existing guest upload/submission/signup contracts; shared Zod 4 with a native Standard Schema form integration to be verified; Query only where interactive data needs it. |
+| 05 Administration | Pending | Element Plus only in admin chunks; opaque HttpOnly session id with the backend JWT stored only on the server; current backend identity checks and CSRF. |
 | 06 Performance / security | Pending | Mobile Lighthouse ≥95, LCP ≤1.8s, initial JS ≤150KB gzip, a11y, monitoring, full E2E/visual gates. |
 | 07 Cutover readiness | Pending | Approved next.guatswr.top deployment, production-sized data verification, ≤5-minute rollback rehearsal; traffic switch separately approved. |
 
@@ -78,9 +78,75 @@ Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 - Final artifact, medians of three runs, 1800 ms threshold unchanged: `/` LCP 1507.7 ms (was 1806.3); `/__revamp/layout` LCP 1654.6 ms (was 1805.6); scores 100/99; the performance command exits 0.
 - Full gates green on the same artifact: typecheck/lint/unit 15/15, build, E2E 18/18 (including lazy-dialog first activation, Escape/focus return, and ten zero-pixel visual comparisons), 0 source maps, all client JavaScript 125,504 bytes gzip (budget 153,600).
 - Recorded follow-ups (not blocking): duplicate CSS download via the Vite preload helper (Nuxt inlineStyles issue class), 9.8 KB favicon, router R0004 warnings for unmigrated routes, occasional warm-run 150 ms grid step, HTTP/1.1 preview vs HTTP/2 production.
+- Historical result: Codex independently reproduced a passing local run on clean Hermes HEAD `eca246c` (`/` median 1554.9 ms, layout 1504.8 ms; 18 E2E passed). During subsequent robustness work, Codex introduced a static Reka `Primitive` import; that intermediate working tree increased the eager graph and failed the layout budget at 1804.8 ms. The Batch A section records its removal and the final result. The retained failure belongs to that intermediate Codex change, not the unmodified Hermes delivery. Remote Windows CI on `eca246c` separately failed at `NO_NAVSTART`.
+
+### Batch A follow-up — native dialog trigger, smaller eager module wave (2026-10-19, implementation worker)
+
+The retained valid performance run for the intermediate Codex working tree failed the layout budget
+(`/` median 1657.7 ms, `/__revamp/layout` median 1804.8 ms; raw reports preserved under
+`.tools/lighthouse-failed-2026-10-19/`). Lantern attribution from a captured artifact set showed the
+layout LCP graph ending on the entry chunk, with the eight initial module requests reaching it in a
+chain of ~150 ms (one simulated RTT) steps each.
+
+- **UiDialog owns its trigger.** `Dialog.vue` no longer statically imports Reka's `Primitive`. It renders
+  its own `<button type="button">`, so `aria-haspopup="dialog"`, `aria-expanded`, `aria-controls` (only
+  while open), `aria-busy` and `disabled` are declarative SSR state; keyboard activation, intent
+  prefetch and focus return use the element ref. A `triggerClass` prop carries the consumer's classes;
+  the only consumer, the internal `/__revamp/layout` fixture, passes them and supplies text (not a button)
+  through the trigger slot. The Reka dialog runtime stays a lazy, deduplicated import that is fetched on
+  intent or activation, still with the recoverable error message, the unmount guard, the mounted
+  controlled Root and no timers.
+- Removing that import also changed Rollup's chunking: the initial request wave for the layout fixture
+  is now **5 script requests / 96,499 B transfer** (five parallel, all finished within 11 ms observed)
+  instead of **8 requests / 100,157 B**, and the Reka dialog runtime (~33.7 KB raw) is no longer reachable
+  from the eager graph. All client JavaScript is 125,861 B gzip (budget 153,600) with 0 source maps.
+- `performance.mjs` now requires a finite performance score and a finite positive LCP before a sample
+  counts; a missing audit value is recorded as an instrumentation failure instead of being coerced into
+  a pass. The bounded `NO_NAVSTART` retry, the never-retry-a-valid-slow-sample rule and the thresholds
+  are unchanged.
+
+Result of one three-sample run per target on this artifact, threshold unchanged at 1800 ms,
+`invalidAttempts: []`: `/` runs 1560.9 / 1509.1 / 1506.6 ms, median **1509.1 ms**, score 100;
+`/__revamp/layout` runs 2107.8 / 1654.4 / 1656.3 ms, median **1656.3 ms**, score 99. The command exits 0.
+The first sample of each route is the largest observed sample in this run; no sample was retried and no
+valid slow result was discarded. The server render path is prewarmed before Lighthouse, and Lighthouse
+clears browser storage/cache for each sample. These are cold-browser samples against a warm server;
+the maximum sample is not a separate cold-server or warm-browser benchmark. The two document-request
+warm-up timings are retained separately. Full real-page cold/warm comparison remains checklist 81.
+
+Sequential verification on the same build output: `pnpm -r typecheck`, `pnpm -r lint`, `pnpm -r test`
+(15/15), `pnpm -r build`, `check:artifacts` (0 maps, 125,861 B gzip), `pnpm test:e2e` (20/20, including
+the lazy-dialog download-failure/reload case and the ten zero-pixel archive comparisons) and then the
+single performance run above. Logs: `.tools/claude-{typecheck,lint,test,build,artifacts,e2e,performance}.log`.
+
+The implementation worker did not rebuild the Linux/Alpine container or run remote CI. Codex is verifying
+the current source independently, including a local Linux build, before committing and pushing the
+reviewed revamp branch. No deployment or infrastructure change is authorized by this verification.
 
 ## Next action
 
-Stage 02's performance gate is closed locally (checklist 01–04 verified; the earlier "unaccepted checkpoint" note above is superseded). Per checklist 05 the branch is pushed through `github-second` for the revised remote CI; verify the Windows/Linux runs, then continue with checklist 06–10 (implementation decisions) and Stage 03 (public pages) one item at a time, each self-verified and ticked in [CHECKLIST.md](CHECKLIST.md). Items 94–99 stay untouched without explicit approval. Deployment remains deferred; no production/DNS/Cloudflare changes have been made.
+Codex independently reviewed the source diff and raw Windows gate/browser/visual/performance evidence.
+A fresh Linux/Alpine build passed all four recursive gates (15 unit tests), 0 maps and 125,859 B gzip JS;
+image `guatswr-revamp:accepted-stage02`, manifest
+`sha256:3ec900700f4381be8c61b4eea6f6246a1591d38a2a827aae9e9f84f9c8b41917`.
+An isolated loopback container passed health, SSR/layout, public config projection, credential isolation,
+gzip and CSP/header consistency; it was stopped and removed. See [runtime evidence](evidence/design-linux-smoke.json).
 
-Foundation `f587518` was published through `github-second`; remote main remains `9cef07a`, archive tag remains local. [First CI run](https://github.com/guatswr/GuatSWR_Website/actions/runs/39133021626) found cross-machine scaffold screenshot differences; the revised archive-comparison approach is verified locally only. [STAGING.md](STAGING.md) is retained for later planning. Local development/testing only; deployment remains deferred with the user's estimated launch date 2026-11-11. Stage 02's performance gate is now closed (see above); Stages 03–07 remain unaccepted. No production/DNS/Cloudflare changes have been made. No infrastructure approval or server credentials are needed now.
+One hardening follow-up was verified: full-page SWR reuses the cached HTML nonce, while the uncached layout
+generates a new nonce per response. Before release, use fresh HTML nonces with SWR on projected public data,
+or validate an equally strict maintainable CSP/cache alternative. This remains stage 06/checklist 84;
+shared-layout acceptance does not certify the final security architecture.
+
+Push only the reviewed revamp branch through `github-second`, inspect the new Windows/Linux CI and close
+checklist 05 only on actual success. Public API and homepage workers are implementing isolated batches;
+remaining public pages, forms, BFF and administration follow [COORDINATION.md](COORDINATION.md). Items 94–99
+stay untouched without explicit approval, and 101–107 remain optional for the 2026-11-11 target.
+
+Foundation `f587518` was published through `github-second`; remote main remains `9cef07a`, the archive tag
+remains local. [First CI run](https://github.com/guatswr/GuatSWR_Website/actions/runs/39133021626) found
+cross-machine scaffold screenshot differences; the revised archive-comparison approach is verified locally
+only, and [the later run](https://github.com/guatswr/GuatSWR_Website/actions/runs/39152214698) failed Windows
+only at Lighthouse `NO_NAVSTART` while the Linux container passed — that is an instrumentation failure, not an
+over-budget measurement. [STAGING.md](STAGING.md) is retained for later planning. Local development/testing
+only; deployment remains deferred with the user's estimated launch date 2026-11-11. No production, DNS or
+Cloudflare changes have been made and no server credentials are needed now.

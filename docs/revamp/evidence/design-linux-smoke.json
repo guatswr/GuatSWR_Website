@@ -1,0 +1,19 @@
+{
+  "recordedAtLocal": "2026-10-19 03:12 Asia/Shanghai",
+  "scope": "Local Linux container with an isolated in-memory fixture backend; no deployment",
+  "routes": [
+    {
+      "path": "/", "status": 200, "ssr": true, "noindex": true,
+      "matchingCspNonce": true, "nonceReusedAcrossRequests": true,
+      "cacheControl": "s-maxage=60, stale-while-revalidate", "etagPresent": true
+    },
+    {
+      "path": "/__revamp/layout", "status": 200, "ssr": true, "noindex": true,
+      "matchingCspNonce": true, "nonceReusedAcrossRequests": false,
+      "cacheControl": null, "etagPresent": false
+    }
+  ],
+  "checks": ["health", "public config projection and credential isolation", "gzip HTML and readable body"],
+  "releaseFollowUp": "Stage 06 must resolve full-page SWR nonce reuse without weakening CSP, breaking compression/304 behavior or caching private state. Prefer fresh HTML plus projected-public-data SWR after validation.",
+  "temporaryContainerRemoved": true
+}
