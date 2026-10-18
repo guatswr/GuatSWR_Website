@@ -73,7 +73,10 @@ try {
   const summary = { device: 'Lighthouse default mobile / simulated throttling', results }
   await writeFile('.lighthouseci/summary.json', JSON.stringify(summary, null, 2))
   console.log(JSON.stringify(summary, null, 2))
-  if (results.some(({ median }) => median.performance < 95 || median.lcpMs > 1800)) throw new Error('Mobile performance budget exceeded')
+  if (results.some(({ median }) => median.performance < 95 || median.lcpMs > 1800)) {
+    const detail = results.map(({ url, median }) => `${new URL(url).pathname} median ${median.lcpMs.toFixed(1)} ms, score ${median.performance}`).join(' | ')
+    throw new Error(`Mobile performance budget exceeded — ${detail}`)
+  }
 }
 finally {
   if (chrome) await chrome.kill()

@@ -63,6 +63,15 @@ jobs:
           npm --prefix frontend run build
       - run: pnpm test:e2e
       - run: pnpm --filter @guatswr/web test:performance
+      - name: Report performance medians on failure
+        if: failure()
+        shell: bash
+        run: |
+          if [ -f web/.lighthouseci/summary.json ]; then
+            node -e "const s=require('./web/.lighthouseci/summary.json');console.log('::error title=Performance budgets::'+s.results.map(r=>new URL(r.url).pathname+' median '+r.median.lcpMs.toFixed(1)+' ms score '+r.median.performance+' runs ['+r.runs.map(x=>x.lcpMs.toFixed(0)).join('/')+']').join(' || '));"
+          else
+            echo "::error title=Performance budgets::summary.json missing - the performance step did not reach the summary"
+          fi
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
