@@ -158,3 +158,20 @@ only at Lighthouse `NO_NAVSTART` while the Linux container passed — that is an
 over-budget measurement. [STAGING.md](STAGING.md) is retained for later planning. Local development/testing
 only; deployment remains deferred with the user's estimated launch date 2026-11-11. No production, DNS or
 Cloudflare changes have been made and no server credentials are needed now.
+
+### Public-data checkpoint — remote CI accepted (2026-10-19)
+
+Commit `6c07760` was pushed only to `revamp/nuxt-foundation` through `github-second`.
+[CI run 39163987930](https://github.com/guatswr/GuatSWR_Website/actions/runs/39163987930)
+completed successfully in all three jobs: Windows foundation, Ubuntu foundation and Linux container.
+The committed source passed the four recursive gates (78 unit tests), 20 E2E cases and ten zero-pixel
+archived-layout comparisons, with 0 production source maps and 125,859 B gzip for all client JavaScript.
+Linux Lighthouse retained all three valid samples per route with no invalid retries: scaffold home
+771.6 / 1513.5 / 1511.4 ms (median 1511.4 ms, score 100); internal layout
+2116.0 / 1511.3 / 1659.6 ms (median 1659.6 ms, score 99). The 1800 ms median gate is unchanged.
+Server render paths were prewarmed; browser caches were reset for each sample. These are fixture
+measurements, not a migrated-homepage speed comparison or final whole-site acceptance.
+[Machine evidence](evidence/public-data-ci-validation.json) closes checklist 05. Homepage, public prose,
+event UI and login/auth candidates remain subject to central integration and independent acceptance.
+Guest/private admin APIs and fresh-HTML-nonce/data-SWR hardening are being implemented in isolated
+worktrees. Local testing only; deployment and infrastructure remain deferred.

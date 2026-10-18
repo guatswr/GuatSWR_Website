@@ -1,0 +1,96 @@
+{
+  "recordedAt": "2026-10-18T20:43:08.6741539Z",
+  "commit": "6c07760c27d9bf5a3b9658b8dc492b89834ca88d",
+  "run": "https://github.com/guatswr/GuatSWR_Website/actions/runs/39163987930",
+  "conclusion": "success",
+  "scope": "Committed public-read adapters and shared-layout checkpoint; does not accept uncommitted migrated homepage or whole migration",
+  "jobs": [
+    {
+      "id": 117782985174,
+      "conclusion": "success",
+      "name": "foundation (windows-latest)"
+    },
+    {
+      "id": 117782985315,
+      "conclusion": "success",
+      "name": "linux-container"
+    },
+    {
+      "id": 117782985321,
+      "conclusion": "success",
+      "name": "foundation (ubuntu-latest)"
+    }
+  ],
+  "units": 78,
+  "e2e": 20,
+  "archivedLayoutComparisons": 10,
+  "sourceMaps": 0,
+  "allJavaScriptGzipBytes": 125859,
+  "thresholds": {
+    "initialJavaScriptGzipBytes": 153600,
+    "performance": 95,
+    "medianLcpMs": 1800
+  },
+  "performance": {
+    "device": "Lighthouse default mobile / simulated throttling",
+    "serverState": "Prewarmed by two HTTP document requests per route; Lighthouse resets browser storage/cache",
+    "warmup": [
+      {
+        "path": "/",
+        "firstDocumentRequestMs": 71.23988399999996,
+        "secondDocumentRequestMs": 4.041124000000082
+      },
+      {
+        "path": "/__revamp/layout",
+        "firstDocumentRequestMs": 55.1751119999999,
+        "secondDocumentRequestMs": 23.20947500000011
+      }
+    ],
+    "invalidAttempts": [],
+    "results": [
+      {
+        "url": "http://127.0.0.1:3200/",
+        "runs": [
+          {
+            "performance": 100,
+            "lcpMs": 771.5799999999999
+          },
+          {
+            "performance": 100,
+            "lcpMs": 1513.4573
+          },
+          {
+            "performance": 100,
+            "lcpMs": 1511.3629
+          }
+        ],
+        "median": {
+          "performance": 100,
+          "lcpMs": 1511.3629
+        }
+      },
+      {
+        "url": "http://127.0.0.1:3200/__revamp/layout",
+        "runs": [
+          {
+            "performance": 98,
+            "lcpMs": 2116.0341
+          },
+          {
+            "performance": 100,
+            "lcpMs": 1511.3255
+          },
+          {
+            "performance": 99,
+            "lcpMs": 1659.5642
+          }
+        ],
+        "median": {
+          "performance": 99,
+          "lcpMs": 1659.5642
+        }
+      }
+    ],
+    "complete": true
+  }
+}

@@ -20,7 +20,7 @@
 - [x] 02 根据分析实施性能修复，验证冷、热缓存结果，保留 LCP≤1800ms 门槛。（✅ 2026-10-19 Batch A：中位数 1509.1 / 1656.3ms，score 100/99；保留三次浏览器冷缓存样本及服务端首次/预热文档请求时间，无效尝试 0、无重跑；中间引入 Primitive 的 Codex 工作树曾失败于 1804.8ms，原始报告留档在 `.tools/lighthouse-failed-2026-10-19/`。完整真实页面冷热对照仍属 81，不能把最大值直接称为冷启动测量。）
 - [x] 03 修复后重新通过类型检查、lint、单测、构建及相关 E2E、视觉对照。（✅ 2026-10-19 Batch A 同一产物顺序复测：typecheck/lint ✓，单测 15/15，构建 ✓，artifact 检查 0 sourcemap，E2E 20/20（含弹窗分片下载失败/刷新恢复与 10 组零像素差视觉对照），JS 125,861B gzip）
 - [x] 04 更新阶段 02 的证据与 STATUS，明确是否达到收口条件。（✅ 收口条件在当前产物上成立：见 STATUS.md「Batch A follow-up」；机器可读证据 `evidence/design-validation.json`，旧检查点在同目录 `design-validation-checkpoint-2026-10-18.json`）
-- [ ] 05 收口后，仅通过 github-second 推送 revamp/*，检查新版 Windows/Linux 远端 CI。（已推送 c4d6694 / 1cfe6b8；Windows 构建及 E2E、Linux 容器通过，Linux 手机菜单视觉失败。行高修正及精确截图边界已在本地通过，仍待新提交的完整远端 CI 和有效 Lighthouse 样本，故未勾选。）
+- [x] 05 收口后，仅通过 github-second 推送 revamp/*，检查新版 Windows/Linux 远端 CI。（2026-10-19：6c07760 经 github-second 推送，远端 CI 39163987930 的 Windows、Ubuntu 和 Linux 容器全部成功；78 项单测、20 项 E2E，10 组旧新版布局零像素差，0 sourcemap、全部 JS 125859B gzip。Linux Lighthouse 三次有效样本中位数：首页脚手架 1511.4ms/100 分、内部布局 1659.6ms/99 分，无无效重试。仅覆盖已提交基础与读取适配层，未接受迁移首页或全站；证据 public-data-ci-validation.json。）
 
 ## 实现方案待确定（候选库尚未正式采用，06–10）
 
@@ -153,3 +153,4 @@
 - [ ] 105【可选】 在通用操作图标明显增多后，引入按需图标库。
 - [ ] 106【可选】 若文章样式确有需要，引入并定制 Typography 插件。
 - [ ] 107【可选】 引入 Prettier 等统一格式化工具。
+
