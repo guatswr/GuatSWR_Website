@@ -17,4 +17,4 @@ createServer((request, response) => {
     response.statusCode = 404
     response.end(JSON.stringify({ message: 'Not Found' }))
   }
-}).listen(3181, '127.0.0.1')
+}).listen(Number(process.env.PORT ?? 3181), '127.0.0.1')

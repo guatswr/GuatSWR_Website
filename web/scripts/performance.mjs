@@ -6,25 +6,31 @@ import { chromium } from '@playwright/test'
 import { launch } from 'chrome-launcher'
 import lighthouse from 'lighthouse'
 
-const url = 'http://127.0.0.1:3100'
+// Dedicated ports: the E2E web servers own 3100/3181, and on Windows CI a
+// leftover E2E preview could still hold those ports when this script starts.
+const url = 'http://127.0.0.1:3200'
+const upstreamUrl = 'http://127.0.0.1:3281'
 const paths = process.argv.slice(2)
 if (!paths.length) paths.push('/')
-for (const origin of [url, 'http://127.0.0.1:3181']) {
+for (const origin of [url, upstreamUrl]) {
   let occupied = false
   try { await fetch(origin, { signal: AbortSignal.timeout(500) }); occupied = true }
   catch { /* The test processes must own both ports. */ }
   if (occupied) throw new Error(`${origin} is already in use; stop that preview before performance tests`)
 }
 
-const upstream = spawn(process.execPath, ['tests/fixtures/upstream.mjs'], { stdio: 'inherit' })
+const upstream = spawn(process.execPath, ['tests/fixtures/upstream.mjs'], {
+  stdio: 'inherit',
+  env: { ...process.env, PORT: '3281' },
+})
 const server = spawn(process.execPath, ['.output/server/index.mjs'], {
   stdio: 'inherit',
   env: {
     ...process.env,
-    PORT: '3100',
+    PORT: '3200',
     HOST: '127.0.0.1',
     NUXT_SESSION_PASSWORD: randomBytes(48).toString('hex'),
-    NUXT_API_BASE: 'http://127.0.0.1:3181',
+    NUXT_API_BASE: upstreamUrl,
   },
 })
 let chrome
@@ -35,7 +41,7 @@ try {
     if (upstream.exitCode !== null) throw new Error(`Fixture API exited with ${upstream.exitCode}`)
     try {
       ready = (await fetch(`${url}/api/health`, { signal: AbortSignal.timeout(500) })).ok
-        && (await fetch('http://127.0.0.1:3181/health', { signal: AbortSignal.timeout(500) })).ok
+        && (await fetch(`${upstreamUrl}/health`, { signal: AbortSignal.timeout(500) })).ok
     }
     catch { /* Wait for the concrete HTTP readiness condition. */ }
     if (ready) break
