@@ -4,8 +4,103 @@ import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { writeFileSync } from 'node:fs'
 
+// Fixture images that are laid out must be loaded and decoded before a crop is
+// taken; a hidden lazy image is skipped rather than awaited forever, and a
+// broken one resolves so the pixel comparison still reports the difference.
+async function waitForVisibleImages(locator: Locator) {
+  await locator.locator('img').evaluateAll(async (nodes) => {
+    const visible = nodes.map(node => node as HTMLImageElement).filter((image) => {
+      const rect = image.getBoundingClientRect()
+      return rect.width > 0 && rect.height > 0 && getComputedStyle(image).visibility !== 'hidden'
+    })
+    await Promise.all(visible.map(async (image) => {
+      if (!image.complete) {
+        await new Promise<void>((resolve) => {
+          const settle = () => resolve()
+          image.addEventListener('load', settle, { once: true })
+          image.addEventListener('error', settle, { once: true })
+          setTimeout(settle, 5000)
+        })
+      }
+      await image.decode().catch(() => {})
+    }))
+  })
+}
+
+type CaptureBytes = Awaited<ReturnType<Locator['screenshot']>>
+
+type DevicePixelCrop = {
+  devicePixelRatio: number
+  actualRect: { x: number, y: number, width: number, height: number }
+  targetDevicePixels: { width: number, height: number }
+  excludedDevicePixels: { width: number, height: number }
+  rawDevicePixels?: { width: number, height: number }
+}
+
+// An aligned locator screenshot rounds a fractional component box up to the
+// next device pixel, so it can carry one partial row/column of whatever page
+// content sits outside the component. The raw capture is kept and the
+// comparison runs on a geometric crop of it: floor(rect * dpr) taken from the
+// top-left, i.e. every device pixel the component fully covers and nothing
+// else. Cropping the image rather than clipping the page keeps all of that
+// area; a page clip would additionally quantise to whole CSS pixels.
+async function footerDevicePixelCrop(reference: Locator, current: Locator): Promise<DevicePixelCrop> {
+  const archiveRect = await reference.boundingBox()
+  const actualRect = await current.boundingBox()
+  if (!archiveRect || !actualRect) throw new Error('footer bounding box unavailable')
+  const round = (value: number) => Math.round(value * 1000) / 1000
+  const shape = (rect: { x: number, y: number, width: number, height: number }) => ({
+    x: round(rect.x), y: round(rect.y), width: round(rect.width), height: round(rect.height),
+  })
+  // Same aligned origin and size on both sides: a different box is a layout
+  // difference, not a capture artefact.
+  expect(shape(actualRect), 'footer bounds differ from the archived site').toEqual(shape(archiveRect))
+  expect(shape(actualRect).x).toBe(0)
+  expect(shape(actualRect).y).toBe(0)
+  const [archiveDpr, devicePixelRatio] = await Promise.all([
+    reference.page().evaluate(() => window.devicePixelRatio),
+    current.page().evaluate(() => window.devicePixelRatio),
+  ])
+  expect(devicePixelRatio, 'device pixel ratio differs from the archived page').toBe(archiveDpr)
+  // Unrounded geometry: the crop keeps whole device pixels, so at most one
+  // fractional device pixel per axis stays outside the comparison.
+  const excludedDevicePixels = {
+    width: actualRect.width * devicePixelRatio - Math.floor(actualRect.width * devicePixelRatio),
+    height: actualRect.height * devicePixelRatio - Math.floor(actualRect.height * devicePixelRatio),
+  }
+  expect(excludedDevicePixels.width).toBeGreaterThanOrEqual(0)
+  expect(excludedDevicePixels.height).toBeGreaterThanOrEqual(0)
+  expect(excludedDevicePixels.width).toBeLessThanOrEqual(1 + Number.EPSILON)
+  expect(excludedDevicePixels.height).toBeLessThanOrEqual(1 + Number.EPSILON)
+  return {
+    devicePixelRatio,
+    actualRect: shape(actualRect),
+    targetDevicePixels: {
+      width: Math.floor(actualRect.width * devicePixelRatio),
+      height: Math.floor(actualRect.height * devicePixelRatio),
+    },
+    excludedDevicePixels,
+  }
+}
+
+// Keep the uncropped capture beside the cropped one so the excluded border can
+// be inspected, then cut the fully covered device pixels out of it.
+function cropCapture(rawBytes: CaptureBytes, crop: DevicePixelCrop, info: TestInfo, label: string) {
+  const raw = PNG.sync.read(rawBytes)
+  const target = crop.targetDevicePixels
+  expect(raw.width, `${label}: raw capture is narrower than the device pixel crop`).toBeGreaterThanOrEqual(target.width)
+  expect(raw.height, `${label}: raw capture is shorter than the device pixel crop`).toBeGreaterThanOrEqual(target.height)
+  writeFileSync(info.outputPath(`${label}-raw.png`), rawBytes)
+  const cropped = new PNG({ width: target.width, height: target.height })
+  // PNG.sync.read returns a plain object, so use the static form.
+  PNG.bitblt(raw, cropped, 0, 0, target.width, target.height, 0, 0)
+  return { bytes: PNG.sync.write(cropped), rawDevicePixels: { width: raw.width, height: raw.height } }
+}
+
 async function compareToArchive(reference: Locator, current: Locator, name: string, info: TestInfo) {
   const options = { animations: 'disabled' as const, caret: 'hide' as const }
+  await waitForVisibleImages(reference)
+  await waitForVisibleImages(current)
   const oldStyle = await reference.getAttribute('style')
   const newStyle = await current.getAttribute('style')
   if (name === 'footer') {
@@ -17,8 +112,23 @@ async function compareToArchive(reference: Locator, current: Locator, name: stri
       })
     }
   }
-  const oldBytes = await reference.screenshot(options)
-  const newBytes = await current.screenshot(options)
+  let crop: DevicePixelCrop | undefined
+  if (name === 'footer') {
+    // Both pages start at the same scroll origin so the aligned component and
+    // its capture share one coordinate space.
+    await Promise.all([reference.page(), current.page()].map(async (page) => { await page.evaluate(() => window.scrollTo(0, 0)) }))
+    crop = await footerDevicePixelCrop(reference, current)
+  }
+  let oldBytes = await reference.screenshot(options)
+  let newBytes = await current.screenshot(options)
+  if (crop) {
+    const archiveCapture = cropCapture(oldBytes, crop, info, `${name}-archive`)
+    const nuxtCapture = cropCapture(newBytes, crop, info, `${name}-nuxt`)
+    oldBytes = archiveCapture.bytes
+    newBytes = nuxtCapture.bytes
+    crop.rawDevicePixels = archiveCapture.rawDevicePixels
+    expect(nuxtCapture.rawDevicePixels).toEqual(archiveCapture.rawDevicePixels)
+  }
   for (const [element, style] of [[reference, oldStyle], [current, newStyle]] as const) {
     await element.evaluate((node, saved) => {
       if (saved === null) node.removeAttribute('style')
@@ -30,6 +140,11 @@ async function compareToArchive(reference: Locator, current: Locator, name: stri
   const oldImage = PNG.sync.read(oldBytes)
   const newImage = PNG.sync.read(newBytes)
   expect({ width: newImage.width, height: newImage.height }).toEqual({ width: oldImage.width, height: oldImage.height })
+  if (crop) {
+    // The compared image is exactly the fully covered device pixels.
+    expect({ width: oldImage.width, height: oldImage.height }, 'cropped capture differs from the device pixel target')
+      .toEqual(crop.targetDevicePixels)
+  }
   const diff = new PNG({ width: oldImage.width, height: oldImage.height })
   const pixels = pixelmatch(oldImage.data, newImage.data, diff.data, oldImage.width, oldImage.height, { threshold: 0.1 })
   writeFileSync(info.outputPath(`${name}-diff.png`), PNG.sync.write(diff))
@@ -37,9 +152,61 @@ async function compareToArchive(reference: Locator, current: Locator, name: stri
     component: name, project: info.project.name, state: info.title,
     width: oldImage.width, height: oldImage.height, differingPixels: pixels,
     pixelmatchThreshold: 0.1, includeAntialias: false,
+    ...(crop ? {
+      capture: {
+        devicePixelRatio: crop.devicePixelRatio,
+        actualRect: crop.actualRect,
+        rawDevicePixels: crop.rawDevicePixels,
+        croppedDevicePixels: { width: oldImage.width, height: oldImage.height },
+        targetDevicePixels: crop.targetDevicePixels,
+        excludedDevicePixels: crop.excludedDevicePixels,
+        excludedCssPixels: {
+          width: crop.excludedDevicePixels.width / crop.devicePixelRatio,
+          height: crop.excludedDevicePixels.height / crop.devicePixelRatio,
+        },
+        source: 'geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png',
+      },
+    } : {}),
   }, null, 2))
   // Same browser, same data, same viewport: unexpected layout/colour changes fail.
   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)
+}
+
+// Typography parity for the small numeric labels in the mobile menu. The crop
+// comparison above only reports "some pixels differ"; this records the actual
+// computed style and geometry of every label so a regression names the cause
+// (for example an inherited line-height that changed with the Tailwind major).
+// It returns the measurements instead of asserting, so the JSON is on disk
+// before the zero-pixel comparison can abort the test.
+async function captureNumericLabelMetrics(reference: Locator, current: Locator, info: TestInfo) {
+  const read = (container: Locator) => container.locator('.nav-number').evaluateAll(nodes => nodes.map((node) => {
+    const element = node as HTMLElement
+    const style = getComputedStyle(element)
+    const rect = element.getBoundingClientRect()
+    const parentRect = element.parentElement?.getBoundingClientRect() ?? rect
+    const round = (value: number) => Math.round(value * 1000) / 1000
+    return {
+      text: element.textContent?.trim() ?? '',
+      fontFamily: style.fontFamily,
+      fontSize: style.fontSize,
+      fontWeight: style.fontWeight,
+      lineHeight: style.lineHeight,
+      width: round(rect.width),
+      height: round(rect.height),
+      // Offsets are relative to the label's own parent so the numbers stay
+      // meaningful if the two pages scroll differently; the crop comparison
+      // covers absolute placement.
+      offsetX: round(rect.x - parentRect.x),
+      offsetY: round(rect.y - parentRect.y),
+    }
+  }))
+  const [archive, nuxt] = await Promise.all([read(reference), read(current)])
+  // Written beside the screenshots so the uploaded failure artifact carries
+  // the measurements, not just a diff image.
+  writeFileSync(info.outputPath('nav-number-metrics.json'), JSON.stringify({
+    component: 'nav-number', project: info.project.name, state: info.title, archive, nuxt,
+  }, null, 2))
+  return { archive, nuxt }
 }
 
 for (const theme of ['light', 'dark'] as const) {
@@ -48,6 +215,14 @@ for (const theme of ['light', 'dark'] as const) {
     const config = await (await request.get('/api/config')).json()
     const archive = await context.newPage()
     await archive.route('**/api/**', route => route.fulfill({ json: config }))
+    // The archived page now receives the same config, which points at
+    // /uploads/**. Its static server has no uploads tree, so the same exact
+    // paths are relayed from the deterministic isolated fixture origin instead
+    // of 404ing into a different brand fallback.
+    await archive.route('**/uploads/**', async (route) => {
+      const { pathname } = new URL(route.request().url())
+      await route.fulfill({ response: await request.get(`http://127.0.0.1:3181${pathname}`) })
+    })
     await archive.emulateMedia({ reducedMotion: 'reduce' })
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await archive.goto('http://127.0.0.1:5174/join')
@@ -62,7 +237,9 @@ for (const theme of ['light', 'dark'] as const) {
     if (isMobile) {
       await archive.getByRole('button', { name: '打开导航菜单' }).click()
       await page.getByRole('button', { name: '打开导航菜单' }).click()
+      const numericLabels = await captureNumericLabelMetrics(archive.locator('#mobile-navigation'), page.locator('#mobile-navigation'), info)
       await compareToArchive(archive.getByRole('navigation', { name: '主导航' }), page.getByRole('navigation', { name: '主导航' }), 'mobile-menu', info)
+      expect(numericLabels.nuxt, 'mobile numeric label typography differs from the archived site').toEqual(numericLabels.archive)
     }
     await archive.close()
   })
