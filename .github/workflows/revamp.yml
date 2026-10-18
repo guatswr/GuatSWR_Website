@@ -31,8 +31,7 @@ jobs:
       - uses: actions/checkout@v4
       - run: docker build --file web/Dockerfile --tag guatswr-revamp:ci .
   foundation:
-    # Visual fixtures are generated on Windows. Keep the platform stable until
-    # reviewed Linux baselines are added for the staging deployment target.
+    # Both UIs are rendered in the same pinned browser for direct comparisons.
     runs-on: windows-latest
     timeout-minutes: 20
     env:
@@ -58,6 +57,10 @@ jobs:
       - run: pnpm -r build
       - run: pnpm check:artifacts
       - run: pnpm --filter @guatswr/web exec playwright install chromium
+      - name: Build read-only legacy reference for layout comparisons
+        run: |
+          npm --prefix frontend ci
+          npm --prefix frontend run build
       - run: pnpm test:e2e
       - run: pnpm --filter @guatswr/web test:performance
       - uses: actions/upload-artifact@v4

@@ -9,6 +9,7 @@ Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 - Frozen v1 API; public visuals will be ported 1:1 before any redesign.
 - Only `revamp/*` may be pushed, via `github-second`. No push to main.
 - No DNS, server, Cloudflare, production switch, or real account writes without first presenting the concrete plan.
+- User steering (2026-10-18): local development/testing only for now; do not deploy. Target launch remains 2026-11-11. Infrastructure is deferred, not a prerequisite for subsequent local migration stages.
 - Never commit credentials. New production artifacts must contain no source maps.
 - Pause and report any blocker lasting over 30 minutes or a major uncertain decision.
 
@@ -17,8 +18,8 @@ Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 | Stage | State | Evidence / remaining acceptance |
 | --- | --- | --- |
 | 00 Legacy checkpoint | Done locally | `f1215d4`; annotated `v1-archive`; Vite production build passed; 55 frontend tests passed. |
-| 01 Workspace / Nuxt foundation | Local gates passed; staging pending | Nuxt 4 / strict TS / Tailwind 4, shared contracts, CI and independent Docker image. All local recursive gates, 10 E2E cases, screenshots, artifact and mobile performance budgets passed. Infrastructure awaits approval/target details. |
-| 02 Design system | Pending | Copy existing tokens, layout, navigation, motion, and accessible primitives; desktop/mobile visual comparisons. |
+| 01 Workspace / Nuxt foundation | Local gates passed | `f587518`, pushed only to `revamp/nuxt-foundation`; all local gates passed. Deployment deferred by user. |
+| 02 Design system | In progress; stopped for performance sync | Shared tokens/layout/navigation/theme/dialog ported. Four recursive gates, 18 E2E and 10 archive visual comparisons pass. Mobile LCP median ~1806ms exceeds 1800ms; stage is not accepted. |
 | 03 Public pages | Pending | Preserve existing URLs (including singular `/activity/:id`), SSR/SWR, content SEO, images, sitemap/RSS. |
 | 04 Interactive forms | Pending | Existing guest upload/submission/signup contracts; shared zod + vee-validate; TanStack Query. |
 | 05 Administration | Pending | Element Plus only in admin chunks; BFF encrypted HttpOnly session; CSRF; no JWT serialization. |
@@ -38,6 +39,11 @@ Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 - Staging is `noindex` everywhere, with sitemap/OG generation disabled until real public routes land; indexing must remain off on `next.guatswr.top`.
 - Foundation home is a temporary SSR smoke fixture, not a migrated homepage or accepted visual design. Foundation snapshots do not count as old/new visual acceptance.
 - Public backend reads never forward browser credentials. No blanket authenticated proxy is enabled.
+- Public defaults have a pure shared export so the global client layout does not import zod. Validation remains in the BFF; Pinia state is scoped to each Nuxt application, with explicit `usePinia()` injection.
+- Port the existing Tailwind 3 palette, component CSS and markup to Tailwind 4. Preserve the mobile menu's original spacing explicitly. Theme keeps the Beijing 19:00–08:00 automatic schedule and applies through a CSP-nonced prepaint script.
+- Actual navbar/footer/mobile-menu visuals are compared directly with the archived app in the same browser, device, theme and fixture data. Remove the unapproved temporary scaffold goldens and their font fixtures; retain semantic/CSP smoke checks and diagnostic screenshots for that scaffold.
+- Inline global critical CSS; negotiate dynamic HTML gzip/Brotli with standard compression middleware. API responses and no-store HTML bypass that middleware. Cached compression variants must retain matching CSP nonces.
+- Disable automatic public session loading; the future admin middleware must explicitly fetch and enforce its BFF session. Keep normal component hydration: dialog interaction hydration failed its first-activation test, and footer visibility hydration worsened LCP. Both experiments were reverted.
 - The legacy build currently emits source maps and large chunks; these pre-existing risks remain in the archived old frontend and are not silently changed during the read-only migration.
 
 ## Validation log
@@ -49,11 +55,24 @@ Updated: 2026-10-18 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 - `check:artifacts`: 0 `.map` / `.map.gz` / `.map.br` files; all public JS combined 86,649 bytes gzip (budget 153,600 bytes), stricter than this fixture's initial-route-only sum.
 - Lighthouse 13.5.0, three default mobile simulated-throttling runs: performance 100/100/100; LCP 1535/1654/1654 ms, median 1654 ms; CLS 0. See [recorded metrics](evidence/foundation-performance.json). These are local fixture metrics, not real-site acceptance.
 - Clean Linux/Alpine Docker build passed frozen install + all four recursive gates + artifact checks. Image: `guatswr-revamp:foundation-local`, manifest `sha256:5371e0ef92d25b8fff40cbfc9320daee6f2f6cf3150d695e1929688621b51128`. Isolated loopback container smoke confirmed health/SSR/CSP/noindex; temporary container was stopped afterward.
-- CI workflow is committed for Windows browser/visual/performance gates and a separate Linux Docker build. Remote execution status must be verified after pushing; local results do not assert a remote CI pass.
+- First remote CI run: Linux container passed; Windows typecheck/lint/unit/build passed, 8 functional E2E cases passed, and two golden screenshots failed on 125 text-edge pixels. The downloaded diff was inspected; stage 02 replaces those unapproved scaffold goldens with direct archived-UI comparisons, verified locally. The remote performance step was not reached, so no remote all-green claim is made.
 - Browser skill bootstrap attempted; no IAB backends were discovered. Use the committed Playwright runner for local verification; interactive in-app browser review remains unavailable in this session.
 - Browser tooling on this host needed a workspace-local temporary directory and browser cache due to EPERM in the system temp directory; this did not require changing global environment variables.
 - Remaining upstream warnings: nuxt-security's esbuild logger-drop option is ignored by Vite 8's oxc path; Rollup/Vue annotation/deprecation notices. The Windows Nitro linker also reports an entities symlink collision, while runtime/E2E pass; the clean Linux build/runtime passed. Revisit these integrations during hardening rather than treating a successful build alone as runtime evidence.
 
+### Stage 02 local checkpoint
+
+- Final Windows `pnpm -r typecheck/lint/test/build` passed sequentially. Unit tests: 15/15. Playwright: 18/18, including first mouse/Enter dialog activation, Escape/focus return, browser CSP/hydration errors, and gzip/identity/Brotli negotiation against warmed SWR HTML.
+- Ten desktop/mobile, day/night navbar/footer/mobile-menu comparisons passed with zero differing pixels after pixelmatch antialias filtering. Archive/new/diff PNGs are generated in ignored test results. The reproducible protocol is in [DESIGN.md](DESIGN.md).
+- Final production artifacts: 0 source maps; all client JavaScript combined 126,249 bytes gzip (budget 153,600). This conservative total is broader than initial-route JS.
+- Final Linux/Alpine build passed all four recursive gates and artifact checks. Local image `guatswr-revamp:design-local`, manifest `sha256:872751fd6cb15ef9b87eae620bcc405e32863cab3ce4c9e6a5b26c8ed160f3e9`. Loopback smoke passed health, layout SSR, fixture API, CSP nonce and noindex; the temporary container was removed.
+- Final Lighthouse default-mobile simulation, three runs per route: `/` score 99/99/99, LCP 1816/1805/1806ms (median 1805.665ms); `/__revamp/layout` score 97/98/97, LCP 2105/1806/1805ms (median 1805.518ms). **Performance command exits with failure:** the 1800ms threshold remains unchanged. No further retries or performance changes were made after this final rollback verification.
+- [Machine-readable stage evidence](evidence/design-validation.json) records every visual comparison, all six Lighthouse runs and the artifact/runtime results. These are fixture/shared-layout measurements, not migrated homepage or complete-site acceptance.
+- Current stage changes are a local checkpoint only, not pushed. Remote CI still refers to the published foundation revision; no claim is made that the revised visual tests have passed remote CI.
+- `git diff --name-only v1-archive -- frontend backend` is empty. No real backend/account writes or infrastructure changes were made.
+
 ## Next action
 
-Publish the reviewed foundation only to `revamp/nuxt-foundation` via `github-second` (archive tag remains local). Review [STAGING.md](STAGING.md) and supply the target server/deployment convention, backend internal origin and preview access policy before infrastructure changes. Next code stage is the 1:1 design-system/layout port. Stages 02–07 remain unaccepted; no production/DNS/Cloudflare changes have been made.
+Performance tuning reached the user's roughly 30-minute stop line; stop further tuning and synchronize this unaccepted checkpoint. The next technical step is a trace-based review of the modeled mobile LCP/network/CPU path before changing hydration or CSS loading again. Do not declare stage 02 accepted, push this checkpoint, or begin the public-page stage as though the performance gate had passed.
+
+Foundation `f587518` was published through `github-second`; remote main remains `9cef07a`, archive tag remains local. [First CI run](https://github.com/guatswr/GuatSWR_Website/actions/runs/39133021626) found cross-machine scaffold screenshot differences; the revised archive-comparison approach is verified locally only. [STAGING.md](STAGING.md) is retained for later planning. Local development/testing only; deployment remains deferred with the user's estimated launch date 2026-11-11. Stages 02–07 remain unaccepted; no production/DNS/Cloudflare changes have been made. No infrastructure approval or server credentials are needed now.

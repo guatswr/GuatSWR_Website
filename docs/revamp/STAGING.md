@@ -1,6 +1,10 @@
-# next.guatswr.top deployment proposal — awaiting infrastructure approval
+# next.guatswr.top deployment proposal — deferred
 
 This document is a proposal only. No DNS, server, Cloudflare, or production configuration has been changed.
+
+User direction on 2026-10-18: do not deploy now; develop and test locally. Target
+launch is 2026-11-11. Retain this proposal for review closer to launch. Missing
+infrastructure inputs do not block subsequent local implementation stages.
 
 An independent local image is now build-verified: `guatswr-revamp:foundation-local`.
 Reproduce from the repository root with `docker build -f web/Dockerfile -t guatswr-revamp:<reviewed-sha> .`.

@@ -8,6 +8,10 @@ export default defineNuxtConfig({
   vite: { plugins: [tailwindcss()] },
   build: { transpile: ['@guatswr/shared'] },
   sourcemap: { server: false, client: false },
+  features: { inlineStyles: true },
+  // Cached public pages do not need a session. Admin middleware will explicitly
+  // fetch its BFF session when that stage is implemented.
+  auth: { loadStrategy: 'none' },
   typescript: {
     strict: true,
     tsConfig: { compilerOptions: { noUncheckedIndexedAccess: true } },
@@ -64,7 +68,11 @@ export default defineNuxtConfig({
       crossOriginEmbedderPolicy: 'unsafe-none',
     },
   },
-  nitro: { preset: 'node-server', compressPublicAssets: true },
+  nitro: {
+    preset: 'node-server',
+    compressPublicAssets: true,
+    externals: { inline: ['pinia', 'reka-ui'] },
+  },
   app: {
     head: {
       htmlAttrs: { lang: 'zh-CN' },

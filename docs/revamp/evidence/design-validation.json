@@ -1,0 +1,179 @@
+{
+  "recordedAt": "2026-10-18T14:42:23.721Z",
+  "sourceCheckpoint": "v1-archive (f1215d4)",
+  "scope": "Temporary SSR fixture and shared layout; not complete public-page acceptance",
+  "runtime": {
+    "node": "24.15.0",
+    "platform": "win32",
+    "playwright": "1.64.1",
+    "lighthouse": "13.5.0"
+  },
+  "unitTestsPassed": 15,
+  "e2eTestsPassed": 18,
+  "artifacts": {
+    "sourceMaps": 0,
+    "publicJavaScriptGzipBytes": 126249,
+    "budgetBytes": 153600
+  },
+  "linuxRuntime": {
+    "image": "guatswr-revamp:design-local",
+    "manifest": "sha256:872751fd6cb15ef9b87eae620bcc405e32863cab3ce4c9e6a5b26c8ed160f3e9",
+    "smoke": [
+      "health",
+      "layout SSR",
+      "fixture API",
+      "CSP nonce",
+      "noindex"
+    ]
+  },
+  "visual": [
+    {
+      "component": "footer",
+      "project": "desktop",
+      "state": "navigation and footer match archived dark layout",
+      "width": 1280,
+      "height": 359,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "footer",
+      "project": "desktop",
+      "state": "navigation and footer match archived light layout",
+      "width": 1280,
+      "height": 359,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "footer",
+      "project": "mobile",
+      "state": "navigation and footer match archived dark layout",
+      "width": 1082,
+      "height": 1769,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "footer",
+      "project": "mobile",
+      "state": "navigation and footer match archived light layout",
+      "width": 1082,
+      "height": 1769,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "mobile-menu",
+      "project": "mobile",
+      "state": "navigation and footer match archived dark layout",
+      "width": 1082,
+      "height": 1229,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "mobile-menu",
+      "project": "mobile",
+      "state": "navigation and footer match archived light layout",
+      "width": 1082,
+      "height": 1229,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "navbar",
+      "project": "desktop",
+      "state": "navigation and footer match archived dark layout",
+      "width": 1280,
+      "height": 65,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "navbar",
+      "project": "desktop",
+      "state": "navigation and footer match archived light layout",
+      "width": 1280,
+      "height": 65,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "navbar",
+      "project": "mobile",
+      "state": "navigation and footer match archived dark layout",
+      "width": 1082,
+      "height": 171,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    },
+    {
+      "component": "navbar",
+      "project": "mobile",
+      "state": "navigation and footer match archived light layout",
+      "width": 1082,
+      "height": 171,
+      "differingPixels": 0,
+      "pixelmatchThreshold": 0.1,
+      "includeAntialias": false
+    }
+  ],
+  "performance": {
+    "device": "Lighthouse default mobile / simulated throttling",
+    "results": [
+      {
+        "url": "http://127.0.0.1:3100/",
+        "runs": [
+          {
+            "performance": 99,
+            "lcpMs": 1816.143
+          },
+          {
+            "performance": 99,
+            "lcpMs": 1805.0448000000004
+          },
+          {
+            "performance": 99,
+            "lcpMs": 1805.6648
+          }
+        ],
+        "median": {
+          "performance": 99,
+          "lcpMs": 1805.6648
+        }
+      },
+      {
+        "url": "http://127.0.0.1:3100/__revamp/layout",
+        "runs": [
+          {
+            "performance": 97,
+            "lcpMs": 2105.4303
+          },
+          {
+            "performance": 98,
+            "lcpMs": 1805.5180999999998
+          },
+          {
+            "performance": 97,
+            "lcpMs": 1804.6143000000002
+          }
+        ],
+        "median": {
+          "performance": 98,
+          "lcpMs": 1805.5180999999998
+        }
+      }
+    ]
+  },
+  "performancePassed": false
+}

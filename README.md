@@ -4,7 +4,7 @@
 
 新版位于 `web/`，契约类型与校验位于 `packages/shared/`。`frontend/`、`backend/` 保留原有构建和部署方式，不参与新 workspace。进度与验收证据见 [STATUS.md](docs/revamp/STATUS.md)，基础设施操作前先审阅 [预发布方案](docs/revamp/STAGING.md)。
 
-新版使用 Node **24.15.0**（`.node-version`）与 pnpm **11.25.0**，生产默认不生成 sourcemap，`next.guatswr.top` 默认禁止索引。当前首页仅为 SSR 脚手架验证页，正式视觉迁移将在后续阶段进行。
+新版使用 Node **24.15.0**（`.node-version`）与 pnpm **11.25.0**，生产默认不生成 sourcemap，`next.guatswr.top` 默认禁止索引。导航、页脚与主题已平移至内部布局验证页；当前首页主体仍是 SSR 脚手架，完整公开页将在后续阶段迁移。
 
 ```powershell
 pnpm install --frozen-lockfile
@@ -15,10 +15,13 @@ pnpm -r test
 pnpm -r build
 pnpm check:artifacts
 pnpm --filter @guatswr/web exec playwright install chromium
+npm --prefix frontend ci
+npm --prefix frontend run build # 只读视觉参考，不修改旧站源码
 pnpm test:e2e
+pnpm --filter @guatswr/web test:performance
 ```
 
-开发环境按 `web/.env.example` 设置变量；生产从服务环境注入 `NUXT_API_BASE` 和随机 `NUXT_SESSION_PASSWORD`。不要将密钥写入仓库。E2E 使用内存 API fixture，不连接真实后端、不写真实账户或业务数据。截图基线针对 Windows Chromium；改版页面仍需逐页与旧站比较。
+开发环境按 `web/.env.example` 设置变量；生产从服务环境注入 `NUXT_API_BASE` 和随机 `NUXT_SESSION_PASSWORD`。不要将密钥写入仓库。E2E 使用内存 API fixture，不连接真实后端、不写真实账户或业务数据。视觉回归在同一浏览器内直接比较新旧站组件，覆盖桌面/手机及日间/夜间。当前仅本地开发测试，预计 2026 年 11 月 11 日上线，部署操作另行确认。
 
 桂航绯想天门户站点，包含前端（Vite + Vue 3）与后端（Express）。
 

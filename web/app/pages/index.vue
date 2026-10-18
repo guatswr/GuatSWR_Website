@@ -1,4 +1,5 @@
 <script setup lang="ts">
+definePageMeta({ layout: false })
 useSeoMeta({
   title: '桂航绯想天',
   description: '桂林航天工业学院东方同好社群',

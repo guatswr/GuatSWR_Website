@@ -1,4 +1,5 @@
 import { z } from 'zod'
+import { defaultPublicConfig } from './config.js'
 
 // Mirrors backend/src/controllers/schemas.js; the frozen backend is not a
 // workspace consumer yet. Contract parity is tested before changing either side.
@@ -11,16 +12,16 @@ export const loginSchema = z.object({
 
 // Explicit projection avoids ever serializing private configuration into SSR.
 export const publicConfigSchema = z.object({
-  home_bg: z.string().default(''),
-  join_bg: z.string().default(''),
-  banner_text: z.string().default(''),
-  badge_image: z.string().default(''),
-  mascot_image: z.string().default(''),
-  qq_qr_image: z.string().default(''),
-  qq_group_number: z.string().default(''),
-  qq_join_url: z.string().default(''),
-  join_question: z.string().default('你是怎么入坑东方的？'),
-  home_links: z.string().default(''),
+  home_bg: z.string().default(defaultPublicConfig.home_bg),
+  join_bg: z.string().default(defaultPublicConfig.join_bg),
+  banner_text: z.string().default(defaultPublicConfig.banner_text),
+  badge_image: z.string().default(defaultPublicConfig.badge_image),
+  mascot_image: z.string().default(defaultPublicConfig.mascot_image),
+  qq_qr_image: z.string().default(defaultPublicConfig.qq_qr_image),
+  qq_group_number: z.string().default(defaultPublicConfig.qq_group_number),
+  qq_join_url: z.string().default(defaultPublicConfig.qq_join_url),
+  join_question: z.string().default(defaultPublicConfig.join_question),
+  home_links: z.string().default(defaultPublicConfig.home_links),
 })
 
 export type LoginInput = z.infer<typeof loginSchema>

@@ -1,0 +1,24 @@
+# 1:1 design-system port
+
+Source checkpoint: `v1-archive` / `f1215d4`. No redesign is part of this stage.
+
+- `app/assets/css/legacy-palette.css` expresses the archived Tailwind 3 palette and typography as Tailwind 4 `@theme` values. The existing `portal.css`, `invitation.css`, `motion.css` and `scroll-motion.css` are copied into the new app. Scoped utility application uses Tailwind 4 `@reference`.
+- `SiteNavbar.vue`, `SiteFooter.vue`, `ClubAvatar.vue`, and `ClubIcon.vue` preserve existing markup, text, artwork and component CSS. RouterLink becomes NuxtLink; browser access moves into client lifecycles; DOM refs/events and public DTOs gain strict types.
+- Public configuration is loaded once through the unauthenticated BFF, projected to public fields, and stored in the current Nuxt app's Pinia instance. Stores explicitly receive `usePinia()`; module-scope reactive singleton state is prohibited.
+- Nitro bundles Pinia with the SSR application to avoid separate module instances between its plugin and lazy layout chunks. Public defaults have a separate shared-package export; global layout code does not import zod. Validation remains in the BFF until individual forms consume their schemas.
+- Theme preference is UI state only. Automatic mode keeps the original Beijing 19:00–08:00 schedule. A static CSP-nonced head script applies it before paint without varying shared HTML on browser storage. Components hydrate with stable initial state and synchronize after mounting. Storage failures must not break navigation.
+- `UiDialog` wraps Reka dialog primitives for accessible focus trapping, Escape dismissal, labelling and focus return. It is demonstrated only on the internal `/__revamp/layout` fixture until forms migrate.
+- Use Nuxt's loading indicator with the archived three-pixel blue gradient; the legacy DOM-scanning progress controller is not ported. Image readiness remains owned by image components during the public-page stage.
+- `/` is still the temporary foundation fixture with `layout: false`. The internal layout fixture has no public navigation entry and must be removed before traffic cutover.
+- Inline the global critical stylesheet through Nuxt `features.inlineStyles`, avoiding a render-blocking CSS round trip. Nitro still precompresses static assets. Standard [compression middleware](https://expressjs.com/en/resources/middleware/compression/) negotiates gzip/Brotli for HTML on the standalone Node server; API responses and `no-store` HTML bypass it. E2E alternates compression variants against the warmed SWR cache and verifies the decoded body and CSP nonce together.
+- Keep navigation, footer and dialogs on ordinary hydration. Interaction-triggered dialog hydration lost the first mouse/keyboard activation in E2E; visibility-triggered footer hydration increased the measured LCP. Both experiments were rejected. The regression test keeps the first-activation requirement. The navbar avatar uses native image lazy loading, avoiding the download while hidden on mobile. Auth Utils automatic session loading is disabled on public pages; the admin stage must explicitly load and enforce its BFF session.
+
+## Visual evidence protocol
+
+Playwright serves the existing legacy `frontend/dist` read-only through `tests/fixtures/legacy.mjs`. It neither imports Vite config nor writes temporary files into `frontend/`. CI builds that reference from the unchanged source before comparisons.
+
+For each desktop/mobile and day/night case, render both sites in the same Chromium build, viewport, local theme preference, public configuration fixture and reduced-motion mode. Compare navbar/footer/mobile-menu component crops directly using pixelmatch, with expected dimensions and zero differing pixels after antialias filtering. Isolated footer crops are aligned to the same viewport origin before capture, avoiding fractional device-pixel offsets caused by different page heights. Store archive/new/diff PNGs with the test results so differences can be inspected. This avoids approving a new screenshot against itself and avoids relying on installed CJK language packs across machines.
+
+The initial temporary foundation-page golden CI reported 125 differing body-text edge pixels on Windows Server; the downloaded diff was inspected. That unapproved two-line scaffold is retained as a semantic/CSP smoke test with diagnostic screenshots. Its cross-machine goldens and test-only fonts are replaced by the stronger archived-UI comparisons above. Pin Chromium font-rendering flags and keep actual component comparison at zero differing pixels; no public-page threshold is loosened.
+
+This stage does not certify complete public-page parity, image pipelines, forms or administration. Those need their own old/new states and real content when their migration lands.
