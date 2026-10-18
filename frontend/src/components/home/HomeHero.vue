@@ -76,10 +76,10 @@ defineProps({ config: { type: Object, default: () => ({}) } })
             <span class="club-invitation-label">加入我们</span>
             <ClubIcon name="arrow" class="club-invitation-arrow" />
           </RouterLink>
-          <a href="#upcoming" class="club-invitation club-hero-explore">
+          <RouterLink to="/events" class="club-invitation club-hero-explore">
             <span class="club-invitation-label">看看活动</span>
             <ClubIcon name="arrow" class="club-invitation-arrow" />
-          </a>
+          </RouterLink>
         </div>
       </div>
       <HomeAvatarToy
@@ -88,7 +88,7 @@ defineProps({ config: { type: Object, default: () => ({}) } })
       />
     </div>
     <a
-      href="#upcoming"
+      href="#interests"
       class="club-scroll-cue absolute bottom-4 left-1/2 z-10 hidden min-h-11 -translate-x-1/2 items-center gap-3 text-[10px] tracking-[.2em] text-white/80 lg:flex"
     >
       <span class="club-scroll-line" aria-hidden="true" />向下，遇见同好

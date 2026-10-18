@@ -3,27 +3,21 @@ import { computed, onBeforeUnmount, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import axios from 'axios'
 import HomeHero from '../../components/home/HomeHero.vue'
-import HomeEventCard from '../../components/home/HomeEventCard.vue'
+import HomeAbout from '../../components/home/HomeAbout.vue'
+import HomeInterests from '../../components/home/HomeInterests.vue'
 import ClubIcon from '../../components/ClubIcon.vue'
 import ProgressiveImage from '../../components/ProgressiveImage.vue'
 import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
 import { useSiteConfigStore } from '../../stores/siteConfig'
 import { getThumbUrl } from '../../utils/imageUrl'
-import { formatClubDate, upcomingEvents } from '../../utils/community'
+import { formatClubDate } from '../../utils/community'
 import { vScrollReveal } from '../../directives/scrollMotion'
 
 const site = useSiteConfigStore()
 const { config, socialLinks } = storeToRefs(site)
 const archives = ref([])
-const events = ref([])
 const archivesLoading = ref(true)
-const eventsLoading = ref(true)
 const archivesError = ref(false)
-const eventsError = ref(false)
-const now = ref(Date.now())
-const upcoming = computed(() =>
-  upcomingEvents(events.value, now.value).slice(0, 3)
-)
 const groupNumber = computed(() =>
   /^\d{5,12}$/.test(config.value.qq_group_number || '')
     ? config.value.qq_group_number
@@ -32,12 +26,11 @@ const groupNumber = computed(() =>
 const formatArchiveDate = (value) =>
   formatClubDate(value, { year: true, fallback: value })
 const controller = new AbortController()
-let clock
 
 const interests = [
   {
     number: '01',
-    icon: 'game',
+    icon: 'duel',
     title: '非想天则',
     subtitle: '在对局中认识彼此',
     description:
@@ -48,7 +41,7 @@ const interests = [
   },
   {
     number: '02',
-    icon: 'sparkles',
+    icon: 'danmaku',
     title: '东方 STG',
     subtitle: '再来一把，就这一把',
     description:
@@ -69,7 +62,7 @@ const interests = [
   },
   {
     number: '04',
-    icon: 'pen',
+    icon: 'creation',
     title: '同人创作',
     subtitle: '让喜欢，有自己的形状',
     description:
@@ -79,25 +72,6 @@ const interests = [
     color: 'amber'
   }
 ]
-
-async function loadEvents() {
-  if (controller.signal.aborted) return
-  eventsLoading.value = true
-  eventsError.value = false
-  try {
-    const { data } = await axios.get('/api/event', {
-      params: { limit: 100 },
-      timeout: 10000,
-      signal: controller.signal
-    })
-    events.value = Array.isArray(data?.items) ? data.items : []
-    now.value = Date.now()
-  } catch (error) {
-    if (!axios.isCancel(error)) eventsError.value = true
-  } finally {
-    eventsLoading.value = false
-  }
-}
 
 async function loadArchives() {
   if (controller.signal.aborted) return
@@ -119,15 +93,10 @@ async function loadArchives() {
 
 onMounted(() => {
   void site.load()
-  void loadEvents()
   void loadArchives()
-  clock = window.setInterval(() => {
-    now.value = Date.now()
-  }, 60000)
 })
 onBeforeUnmount(() => {
   controller.abort()
-  window.clearInterval(clock)
 })
 </script>
 
@@ -135,224 +104,9 @@ onBeforeUnmount(() => {
   <div class="club-home club-paper">
     <HomeHero :config="config" />
 
-    <section
-      id="upcoming"
-      class="club-home-section club-home-upcoming py-16 sm:py-20"
-      aria-labelledby="upcoming-title"
-    >
-      <div class="club-container">
-        <div
-          v-scroll-reveal
-          class="mb-8 flex flex-wrap items-end justify-between gap-4"
-        >
-          <div>
-            <p class="club-eyebrow">LET'S MEET</p>
-            <h2 id="upcoming-title" class="club-section-title mt-3">
-              下一次相遇
-            </h2>
-            <p
-              class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400"
-            >
-              一场对局，一次聚会。看看有什么可以一起参与。
-            </p>
-          </div>
-          <RouterLink to="/events" class="club-text-link"
-            >全部活动 <ClubIcon name="arrow" class="h-4 w-4"
-          /></RouterLink>
-        </div>
-        <div
-          v-if="eventsLoading"
-          class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-          role="status"
-          aria-label="正在加载活动"
-        >
-          <div
-            v-for="n in 3"
-            :key="n"
-            class="border-t border-slate-200 py-6 dark:border-slate-700"
-          >
-            <div class="flex items-center justify-between">
-              <div
-                class="h-3 w-16 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-              />
-              <div
-                class="h-3 w-12 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-              />
-            </div>
-            <div
-              class="mt-6 h-6 w-3/4 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-            />
-            <div
-              class="mt-4 h-3 w-full bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-            />
-            <div
-              class="mt-2 h-3 w-5/6 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-            />
-            <div
-              class="mt-8 h-4 w-1/2 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-            />
-          </div>
-        </div>
-        <div v-else-if="eventsError" class="club-empty" role="status">
-          <p>活动暂时没有加载出来。</p>
-          <button class="club-text-link mt-3" @click="loadEvents">
-            重新加载 <ClubIcon name="arrow" class="h-4 w-4" />
-          </button>
-        </div>
-        <div
-          v-else-if="upcoming.length"
-          class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
-        >
-          <div
-            v-for="(event, index) in upcoming"
-            :key="event.id"
-            v-scroll-reveal="index * 90"
-          >
-            <HomeEventCard :event="event" />
-          </div>
-        </div>
-        <div
-          v-else
-          v-scroll-reveal
-          class="flex flex-col gap-5 border-y border-slate-200 py-6 sm:flex-row sm:items-center sm:justify-between dark:border-slate-700"
-        >
-          <div class="flex items-start gap-4">
-            <span
-              class="flex h-10 w-8 shrink-0 items-center justify-center text-sky-600 dark:text-sky-300"
-              ><ClubIcon name="calendar" class="h-6 w-6"
-            /></span>
-            <div>
-              <h3 class="font-semibold text-slate-800 dark:text-slate-100">
-                下一场活动，等你一起来
-              </h3>
-              <p
-                class="mt-2 text-sm leading-7 text-slate-500 dark:text-slate-400"
-              >
-                目前暂无可参与的公开活动。加入同好群，交流日常，也留意下一次相约。
-              </p>
-            </div>
-          </div>
-          <RouterLink to="/join" class="club-text-link shrink-0"
-            >先来认识大家 <ClubIcon name="arrow" class="h-4 w-4"
-          /></RouterLink>
-        </div>
-      </div>
-    </section>
+    <HomeInterests :items="interests" />
 
-    <section
-      class="club-home-section club-home-interests py-16 sm:py-20"
-      aria-labelledby="interests-title"
-    >
-      <div class="club-container">
-        <div v-scroll-reveal class="mb-10 max-w-xl">
-          <p class="club-eyebrow">SOMETHING WE LOVE</p>
-          <h2 id="interests-title" class="club-section-title mt-3">
-            总有一种热爱，与你同频
-          </h2>
-          <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
-            擅长什么并不重要。愿意分享喜欢的事，就是成为同好的开始。
-          </p>
-        </div>
-        <div
-          class="grid auto-rows-fr grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4"
-        >
-          <RouterLink
-            v-for="(interest, index) in interests"
-            :key="interest.number"
-            v-scroll-reveal="index * 90"
-            :to="interest.path"
-            class="club-interest-card group relative flex h-full min-w-0 flex-col border-t border-slate-300 py-5 dark:border-slate-700 sm:py-6"
-            :data-tone="interest.color"
-          >
-            <div class="flex items-center justify-between">
-              <span class="club-interest-icon flex h-8 w-8 items-center"
-                ><ClubIcon :name="interest.icon" class="h-6 w-6" /></span
-              ><span class="font-mono text-xs text-slate-400">{{
-                interest.number
-              }}</span>
-            </div>
-            <h3
-              class="mt-5 text-lg font-semibold group-hover:text-sky-700 dark:group-hover:text-sky-300 sm:mt-6 sm:text-xl"
-            >
-              {{ interest.title }}
-            </h3>
-            <p
-              class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400"
-            >
-              {{ interest.subtitle }}
-            </p>
-            <p
-              class="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400 sm:mt-4 sm:leading-7"
-            >
-              {{ interest.description }}
-            </p>
-            <span
-              class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-sky-700 dark:text-sky-300 sm:pt-6"
-              >{{ interest.cta }}
-              <ClubIcon
-                name="arrow"
-                class="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1"
-            /></span>
-          </RouterLink>
-        </div>
-      </div>
-    </section>
-
-    <section
-      class="club-home-section club-home-about py-16 sm:py-20"
-      aria-labelledby="about-title"
-    >
-      <div
-        class="club-container grid items-center gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20"
-      >
-        <div
-          v-scroll-reveal="{ variant: 'image' }"
-          class="relative overflow-hidden bg-sky-100 dark:bg-slate-800"
-        >
-          <ProgressiveImage
-            v-if="config.mascot_image"
-            rise
-            :src="getThumbUrl(config.mascot_image)"
-            :fallbackSrc="config.mascot_image"
-            alt="社团看板娘"
-            wrapperClass="aspect-[4/3]"
-            imgClass="h-full w-full object-cover object-top"
-          />
-          <div
-            v-else
-            class="flex aspect-[4/3] items-center justify-center text-sky-400/50"
-          >
-            <ClubIcon name="snow" class="h-32 w-32" />
-          </div>
-          <div
-            class="absolute bottom-4 left-4 rounded-lg bg-white/95 px-4 py-2 text-xs font-medium text-slate-700 shadow-sm dark:bg-slate-900/95 dark:text-slate-200"
-          >
-            我们的幻想乡一角 · 社团看板娘
-          </div>
-        </div>
-        <div v-scroll-reveal="100">
-          <p class="club-eyebrow">A LITTLE ABOUT US</p>
-          <h2 id="about-title" class="club-section-title mt-3">
-            因东方相识，<br class="hidden sm:block" />让同好成为朋友
-          </h2>
-          <p class="mt-5 text-sm leading-8 text-slate-600 dark:text-slate-300">
-            桂航绯想天是桂林航天工业学院东方 Project
-            爱好者的聚集地。正作玩家、非想天则爱好者、音乐与二创同好，都可以在这里找到自己的位置。
-          </p>
-          <p class="mt-3 text-sm leading-8 text-slate-600 dark:text-slate-300">
-            我们也欢迎校外的朋友。聊一聊最近喜欢的曲子，约一场对战，或一起参加线下活动——每一次分享，都让幻想乡近一点。
-          </p>
-          <div class="mt-6 flex flex-wrap gap-6">
-            <RouterLink to="/history" class="club-text-link"
-              ><ClubIcon name="book" class="h-4 w-4" />读读我们的群史
-              <ClubIcon name="arrow" class="h-4 w-4" /></RouterLink
-            ><RouterLink to="/members" class="club-text-link"
-              >认识同好 <ClubIcon name="arrow" class="h-4 w-4"
-            /></RouterLink>
-          </div>
-        </div>
-      </div>
-    </section>
+    <HomeAbout :mascot="config.mascot_image" />
 
     <section
       class="club-home-section club-home-archive py-16 sm:py-20"
@@ -529,36 +283,27 @@ onBeforeUnmount(() => {
 
 <style scoped>
 /* Full-width color fields separate chapters, following SCTA's section rhythm. */
+.club-home {
+  --home-about-background: #f5f3ed;
+}
+:global(.dark .club-home) {
+  --home-about-background: #1d272d;
+}
 .club-home-section {
   background-color: var(--section-background);
   scroll-margin-top: 4rem;
-}
-.club-home-upcoming {
-  --section-background: #fff;
-}
-.club-home-interests {
-  --section-background: #eaf3f9;
 }
 .club-home-archive {
   --section-background: #faf6ee;
 }
 .club-home-about {
-  --section-background: #f1eef8;
+  --section-background: var(--home-about-background);
 }
 .club-home-community {
   --section-background: #e6f0ef;
 }
-:global(.dark .club-home-upcoming) {
-  --section-background: #101923;
-}
-:global(.dark .club-home-interests) {
-  --section-background: #162838;
-}
 :global(.dark .club-home-archive) {
   --section-background: #24231f;
-}
-:global(.dark .club-home-about) {
-  --section-background: #211f32;
 }
 :global(.dark .club-home-community) {
   --section-background: #152b2c;
