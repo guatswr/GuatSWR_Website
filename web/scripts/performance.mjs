@@ -42,6 +42,13 @@ try {
     await setTimeout(100)
   }
   if (!ready) throw new Error('Production preview did not become ready')
+  // Warm the render path (route render, JIT, fixture upstream) before
+  // measuring, so the three samples describe a serving process rather than
+  // the Node process's first render of each route.
+  for (const path of paths) {
+    await fetch(`${url}${path}`).then((response) => response.arrayBuffer())
+    await fetch(`${url}${path}`).then((response) => response.arrayBuffer())
+  }
   chrome = await launch({
     chromePath: chromium.executablePath(),
     chromeFlags: ['--headless=new', '--no-sandbox'],
