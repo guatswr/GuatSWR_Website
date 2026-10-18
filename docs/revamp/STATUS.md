@@ -19,7 +19,7 @@ Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 | --- | --- | --- |
 | 00 Legacy checkpoint | Done locally | `f1215d4`; annotated `v1-archive`; Vite production build passed; 55 frontend tests passed. |
 | 01 Workspace / Nuxt foundation | Local gates passed | `f587518`, pushed only to `revamp/nuxt-foundation`; all local gates passed. Deployment deferred by user. |
-| 02 Design system | Codex local acceptance passed; new remote CI pending | Shared tokens/layout/navigation/theme/dialog ported. Windows four gates, 15 unit tests, 20 E2E, 10 zero-difference archive comparisons and fixed performance budgets pass (1509.1 / 1656.3 ms). Independent Linux container gates and runtime smoke also pass. See [acceptance report](ACCEPTANCE-2026-10-19.md). This is shared-layout acceptance, not whole-site acceptance. |
+| 02 Design system | Codex local acceptance passed; CI instrumentation correction pending | Shared tokens/layout/navigation/theme/dialog ported. Windows four gates, 15 unit tests, 20 E2E, 10 zero-difference archive comparisons and fixed performance budgets pass (1509.1 / 1656.3 ms). Independent Linux container gates and runtime smoke also pass. See [acceptance report](ACCEPTANCE-2026-10-19.md). This is shared-layout acceptance, not whole-site acceptance. |
 | 03 Public pages | Implementing in isolated worktrees; not integrated or accepted | Preserve existing URLs (including singular `/activity/:id`), SSR/SWR, content SEO, images, sitemap/RSS. See [COORDINATION.md](COORDINATION.md). |
 | 04 Interactive forms | Pending | Existing guest upload/submission/signup contracts; shared Zod 4 with a native Standard Schema form integration to be verified; Query only where interactive data needs it. |
 | 05 Administration | Pending | Element Plus only in admin chunks; opaque HttpOnly session id with the backend JWT stored only on the server; current backend identity checks and CSRF. |
@@ -47,6 +47,9 @@ Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 - The legacy build currently emits source maps and large chunks; these pre-existing risks remain in the archived old frontend and are not silently changed during the read-only migration.
 
 ## Validation log
+
+- Remote run [39157921834](https://github.com/guatswr/GuatSWR_Website/actions/runs/39157921834) on `c4d6694`: Linux container passed; Windows four gates, production-artifact check, archived build and all 20 E2E cases passed. Lighthouse produced `NO_NAVSTART` on both its first attempt and the permitted fresh-browser retry; neither attempt had a valid performance measurement. Reports were downloaded and inspected. Checklist 05 remains open.
+- CI now runs functional, visual and build gates on both Linux and Windows, with CJK fonts installed on Linux. The unchanged three-sample Lighthouse command and fixed budgets run on Linux; the repeated Windows tracing failure is an instrumentation issue, not a performance pass. No cross-host number is reported as a code speedup. This workflow correction still needs an actual successful remote run.
 
 - Legacy: `npm run build` in `frontend` passed (10.91s); existing sourcemap/chunk and Browserslist warnings recorded.
 - Legacy: eight test files, 55 assertions passed using Node's test runner.

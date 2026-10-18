@@ -32,7 +32,15 @@ jobs:
       - run: docker build --file web/Dockerfile --tag guatswr-revamp:ci .
   foundation:
     # Both UIs are rendered in the same pinned browser for direct comparisons.
-    runs-on: windows-latest
+    # Every host runs the full functional, visual and build gate. The Lighthouse
+    # budget is measured only on Linux, where the navigation trace is reliable;
+    # a Windows run without a trace is an instrumentation failure, never a
+    # performance pass, so it does not decide the budget.
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     env:
       NUXT_SESSION_PASSWORD: ${{ secrets.REVAMP_TEST_SESSION_PASSWORD }}
@@ -45,11 +53,11 @@ jobs:
           cache: pnpm
       - name: Generate an ephemeral test session secret
         if: env.NUXT_SESSION_PASSWORD == ''
-        shell: pwsh
+        shell: bash
         run: |
-          $secret = [Convert]::ToHexString([Security.Cryptography.RandomNumberGenerator]::GetBytes(48))
-          Write-Output "::add-mask::$secret"
-          Add-Content -LiteralPath $env:GITHUB_ENV -Value "NUXT_SESSION_PASSWORD=$secret"
+          secret=$(node -p "require('node:crypto').randomBytes(48).toString('hex')")
+          echo "::add-mask::$secret"
+          echo "NUXT_SESSION_PASSWORD=$secret" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r typecheck
       - run: pnpm -r lint
@@ -57,12 +65,21 @@ jobs:
       - run: pnpm -r build
       - run: pnpm check:artifacts
       - run: pnpm --filter @guatswr/web exec playwright install chromium
+        if: runner.os == 'Windows'
+      - name: Install Chromium with Linux OS dependencies and CJK fonts
+        if: runner.os == 'Linux'
+        shell: bash
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes fonts-noto-cjk
+          pnpm --filter @guatswr/web exec playwright install --with-deps chromium
       - name: Build read-only legacy reference for layout comparisons
         run: |
           npm --prefix frontend ci
           npm --prefix frontend run build
       - run: pnpm test:e2e
       - id: performance
+        if: runner.os == 'Linux'
         run: pnpm --filter @guatswr/web test:performance
       - name: Report performance medians on failure
         if: failure() && steps.performance.outcome == 'failure'
@@ -76,14 +93,14 @@ jobs:
       - uses: actions/upload-artifact@v4
         if: always() && steps.performance.outcome != 'skipped' && steps.performance.outcome != ''
         with:
-          name: revamp-performance
+          name: revamp-performance-${{ runner.os }}
           path: web/.lighthouseci/
           include-hidden-files: true
           retention-days: 7
       - uses: actions/upload-artifact@v4
         if: failure()
         with:
-          name: revamp-playwright-failure
+          name: revamp-playwright-failure-${{ runner.os }}
           path: |
             web/playwright-report/
             web/test-results/
