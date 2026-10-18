@@ -4,12 +4,28 @@ import ClubIcon from '../ClubIcon.vue'
 import {
   eventContent,
   eventRoutes,
+  eventSchedule,
+  eventStatusLabel,
   eventSummary,
-  eventTime,
-  formatClubDate
+  eventTypeLabel,
+  formatClubDate,
+  formatClubTime
 } from '../../utils/community'
+
 const props = defineProps({ event: { type: Object, required: true } })
 const content = computed(() => eventContent(props.event))
+const schedule = computed(() => eventSchedule(props.event))
+const scheduleDate = computed(() => {
+  if (!schedule.value.value) return '时间待确认'
+  return formatClubDate(schedule.value.value, { weekday: true, fallback: '时间待确认' })
+})
+const scheduleTime = computed(() => formatClubTime(schedule.value.value))
+const status = computed(() => eventStatusLabel(props.event))
+const statusTone = computed(() => {
+  if (props.event.status === 'ongoing') return 'bg-emerald-500'
+  if (content.value.deadline) return 'bg-sky-500'
+  return 'bg-amber-500'
+})
 </script>
 
 <template>
@@ -19,12 +35,12 @@ const content = computed(() => eventContent(props.event))
   >
     <div class="flex flex-wrap items-center justify-between gap-2 text-xs">
       <span class="font-medium text-sky-700 dark:text-sky-300">{{
-        event.type
+        eventTypeLabel(event.type)
       }}</span
       ><span
         class="flex items-center gap-1.5 text-slate-500 dark:text-slate-400"
-        ><span class="h-1.5 w-1.5 rounded-full bg-emerald-500" />{{
-          event.status === 'ongoing' ? '进行中' : '已发布'
+        ><span class="h-1.5 w-1.5 rounded-full" :class="statusTone" />{{
+          status
         }}</span
       >
     </div>
@@ -42,9 +58,16 @@ const content = computed(() => eventContent(props.event))
       class="mb-5 mt-6 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 dark:text-slate-400"
     >
       <span class="flex items-center gap-1.5"
-        ><ClubIcon name="calendar" class="h-4 w-4" />{{
-          formatClubDate(eventTime(event))
-        }}</span
+        ><ClubIcon name="calendar" class="h-4 w-4" /><span
+          v-if="schedule.prefix"
+          class="font-medium text-slate-600 dark:text-slate-300"
+          >{{ schedule.prefix }}</span
+        >{{ scheduleDate
+        }}<span
+          v-if="scheduleTime"
+          class="whitespace-nowrap font-mono text-xs text-slate-500 dark:text-slate-400"
+          >· {{ scheduleTime }}</span
+        ></span
       ><span v-if="content.location" class="max-w-full truncate">{{
         content.location
       }}</span>

@@ -122,6 +122,7 @@ const changePage = async (nextPage) => {
             class="group min-w-0 border-b border-slate-200 pb-6 dark:border-slate-800"
           >
             <ProgressiveImage
+              rise
               :src="getThumbUrl(activity.cover_image)"
               :fallbackSrc="activity.cover_image"
               :alt="activity.title"

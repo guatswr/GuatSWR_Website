@@ -29,6 +29,11 @@ const applyTheme = (theme) => {
   const root = document.documentElement
   root.classList.toggle('dark', theme === 'dark')
   root.dataset.theme = theme
+  root.style.colorScheme = theme
+  const themeColor = document.querySelector('meta[name="theme-color"]')
+  if (themeColor) {
+    themeColor.setAttribute('content', theme === 'dark' ? '#101923' : '#fbfbf8')
+  }
 }
 
 const startAutoTimer = () => {

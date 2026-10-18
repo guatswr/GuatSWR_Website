@@ -307,6 +307,7 @@ const sortedMembers = computed(() => {
               class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner overflow-hidden"
             >
               <ProgressiveImage
+                preload-margin="160px 0px"
                 :src="member.avatar"
                 :thumb="member.avatar_thumb || getThumbUrl(member.avatar)"
                 alt="Avatar"

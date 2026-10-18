@@ -5,10 +5,10 @@ import vue from '@vitejs/plugin-vue'
 import Sitemap from 'vite-plugin-sitemap'
 
 // 定义需要生成 Sitemap 的静态路由
-// 根据提供的 XML 补充了所有公共页面路径
+// 首页由插件自动加入，这里只列其余公共页面
 const routerPaths = [
-  '/',           // 首页
-  '/activities', // 异变活动
+  '/events',     // 异变进行时
+  '/activities', // 往期活动
   '/members',    // 成员列表
   '/history',    // 群史
   '/social',     // 社交外链

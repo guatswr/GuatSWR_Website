@@ -9,7 +9,7 @@ import ProgressiveImage from '../../components/ProgressiveImage.vue'
 import HomeSocialLinks from '../../components/HomeSocialLinks.vue'
 import { useSiteConfigStore } from '../../stores/siteConfig'
 import { getThumbUrl } from '../../utils/imageUrl'
-import { upcomingEvents } from '../../utils/community'
+import { formatClubDate, upcomingEvents } from '../../utils/community'
 import { vScrollReveal } from '../../directives/scrollMotion'
 
 const site = useSiteConfigStore()
@@ -24,6 +24,13 @@ const now = ref(Date.now())
 const upcoming = computed(() =>
   upcomingEvents(events.value, now.value).slice(0, 3)
 )
+const groupNumber = computed(() =>
+  /^\d{5,12}$/.test(config.value.qq_group_number || '')
+    ? config.value.qq_group_number
+    : ''
+)
+const formatArchiveDate = (value) =>
+  formatClubDate(value, { year: true, fallback: value })
 const controller = new AbortController()
 let clock
 
@@ -36,6 +43,7 @@ const interests = [
     description:
       '从第一发弹幕到第一场对战，和同好一起练习、切磋，分享每一次进步。',
     path: '/events/zetime',
+    cta: '看看活动',
     color: 'sky'
   },
   {
@@ -46,6 +54,7 @@ const interests = [
     description:
       '正作通关、符卡挑战、路线交流。无论初见还是打分，都能找到一起玩的人。',
     path: '/events/stg',
+    cta: '看看活动',
     color: 'violet'
   },
   {
@@ -55,6 +64,7 @@ const interests = [
     subtitle: '一首歌，连接幻想乡',
     description: '交换循环播放的东方曲目，分享演奏与翻唱，在熟悉的旋律里相遇。',
     path: '/social',
+    cta: '去社群看看',
     color: 'rose'
   },
   {
@@ -65,6 +75,7 @@ const interests = [
     description:
       '画画、摄影、文字、Cosplay……欢迎展示作品，也欢迎从一个小小的灵感开始。',
     path: '/social',
+    cta: '去社群看看',
     color: 'amber'
   }
 ]
@@ -151,15 +162,36 @@ onBeforeUnmount(() => {
         </div>
         <div
           v-if="eventsLoading"
-          class="grid gap-5 md:grid-cols-3"
+          class="grid gap-5 md:grid-cols-2 lg:grid-cols-3"
           role="status"
           aria-label="正在加载活动"
         >
           <div
             v-for="n in 3"
             :key="n"
-            class="h-48 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-          />
+            class="border-t border-slate-200 py-6 dark:border-slate-700"
+          >
+            <div class="flex items-center justify-between">
+              <div
+                class="h-3 w-16 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+              />
+              <div
+                class="h-3 w-12 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+              />
+            </div>
+            <div
+              class="mt-6 h-6 w-3/4 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-4 h-3 w-full bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-2 h-3 w-5/6 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-8 h-4 w-1/2 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+          </div>
         </div>
         <div v-else-if="eventsError" class="club-empty" role="status">
           <p>活动暂时没有加载出来。</p>
@@ -174,7 +206,7 @@ onBeforeUnmount(() => {
           <div
             v-for="(event, index) in upcoming"
             :key="event.id"
-            v-scroll-reveal="index * 24"
+            v-scroll-reveal="index * 90"
           >
             <HomeEventCard :event="event" />
           </div>
@@ -221,13 +253,15 @@ onBeforeUnmount(() => {
             擅长什么并不重要。愿意分享喜欢的事，就是成为同好的开始。
           </p>
         </div>
-        <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        <div
+          class="grid auto-rows-fr grid-cols-2 gap-4 sm:gap-5 lg:grid-cols-4"
+        >
           <RouterLink
             v-for="(interest, index) in interests"
             :key="interest.number"
-            v-scroll-reveal="index * 24"
+            v-scroll-reveal="index * 90"
             :to="interest.path"
-            class="club-interest-card group relative border-t border-slate-300 py-6 dark:border-slate-700"
+            class="club-interest-card group relative flex h-full min-w-0 flex-col border-t border-slate-300 py-5 dark:border-slate-700 sm:py-6"
             :data-tone="interest.color"
           >
             <div class="flex items-center justify-between">
@@ -237,25 +271,85 @@ onBeforeUnmount(() => {
                 interest.number
               }}</span>
             </div>
-            <h3 class="mt-6 text-xl font-semibold">{{ interest.title }}</h3>
+            <h3
+              class="mt-5 text-lg font-semibold group-hover:text-sky-700 dark:group-hover:text-sky-300 sm:mt-6 sm:text-xl"
+            >
+              {{ interest.title }}
+            </h3>
             <p
               class="mt-2 text-xs font-medium text-slate-500 dark:text-slate-400"
             >
               {{ interest.subtitle }}
             </p>
             <p
-              class="mt-4 text-sm leading-7 text-slate-500 dark:text-slate-400"
+              class="mt-3 text-sm leading-6 text-slate-500 dark:text-slate-400 sm:mt-4 sm:leading-7"
             >
               {{ interest.description }}
             </p>
             <span
-              class="mt-6 inline-flex items-center gap-2 text-sm font-medium text-sky-700 dark:text-sky-300"
-              >一起探索
+              class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-medium text-sky-700 dark:text-sky-300 sm:pt-6"
+              >{{ interest.cta }}
               <ClubIcon
-                name="external"
-                class="h-4 w-4 transition-transform motion-safe:group-hover:-translate-y-0.5"
+                name="arrow"
+                class="h-4 w-4 transition-transform motion-safe:group-hover:translate-x-1"
             /></span>
           </RouterLink>
+        </div>
+      </div>
+    </section>
+
+    <section
+      class="club-home-section club-home-about py-16 sm:py-20"
+      aria-labelledby="about-title"
+    >
+      <div
+        class="club-container grid items-center gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20"
+      >
+        <div
+          v-scroll-reveal="{ variant: 'image' }"
+          class="relative overflow-hidden bg-sky-100 dark:bg-slate-800"
+        >
+          <ProgressiveImage
+            v-if="config.mascot_image"
+            rise
+            :src="getThumbUrl(config.mascot_image)"
+            :fallbackSrc="config.mascot_image"
+            alt="社团看板娘"
+            wrapperClass="aspect-[4/3]"
+            imgClass="h-full w-full object-cover object-top"
+          />
+          <div
+            v-else
+            class="flex aspect-[4/3] items-center justify-center text-sky-400/50"
+          >
+            <ClubIcon name="snow" class="h-32 w-32" />
+          </div>
+          <div
+            class="absolute bottom-4 left-4 rounded-lg bg-white/95 px-4 py-2 text-xs font-medium text-slate-700 shadow-sm dark:bg-slate-900/95 dark:text-slate-200"
+          >
+            我们的幻想乡一角 · 社团看板娘
+          </div>
+        </div>
+        <div v-scroll-reveal="100">
+          <p class="club-eyebrow">A LITTLE ABOUT US</p>
+          <h2 id="about-title" class="club-section-title mt-3">
+            因东方相识，<br class="hidden sm:block" />让同好成为朋友
+          </h2>
+          <p class="mt-5 text-sm leading-8 text-slate-600 dark:text-slate-300">
+            桂航绯想天是桂林航天工业学院东方 Project
+            爱好者的聚集地。正作玩家、非想天则爱好者、音乐与二创同好，都可以在这里找到自己的位置。
+          </p>
+          <p class="mt-3 text-sm leading-8 text-slate-600 dark:text-slate-300">
+            我们也欢迎校外的朋友。聊一聊最近喜欢的曲子，约一场对战，或一起参加线下活动——每一次分享，都让幻想乡近一点。
+          </p>
+          <div class="mt-6 flex flex-wrap gap-6">
+            <RouterLink to="/history" class="club-text-link"
+              ><ClubIcon name="book" class="h-4 w-4" />读读我们的群史
+              <ClubIcon name="arrow" class="h-4 w-4" /></RouterLink
+            ><RouterLink to="/members" class="club-text-link"
+              >认识同好 <ClubIcon name="arrow" class="h-4 w-4"
+            /></RouterLink>
+          </div>
         </div>
       </div>
     </section>
@@ -293,8 +387,24 @@ onBeforeUnmount(() => {
           <div
             v-for="n in 3"
             :key="n"
-            class="h-72 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
-          />
+            class="border-b border-slate-200 pb-6 dark:border-slate-700"
+          >
+            <div
+              class="aspect-[16/10] bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-5 h-3 w-24 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-4 h-6 w-3/4 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-3 h-3 w-full bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+            <div
+              class="mt-2 h-3 w-5/6 bg-slate-100 motion-safe:animate-pulse dark:bg-slate-900"
+            />
+          </div>
         </div>
         <div v-else-if="archivesError" class="club-empty" role="status">
           <p>回忆暂时没有加载出来。</p>
@@ -306,11 +416,12 @@ onBeforeUnmount(() => {
           <RouterLink
             v-for="(activity, index) in archives"
             :key="activity.id"
-            v-scroll-reveal="{ variant: 'card', offset: index * 24 }"
+            v-scroll-reveal="{ variant: 'card', delay: index * 100 }"
             :to="'/activity/' + activity.id"
             class="group flex h-full min-w-0 flex-col border-b border-slate-200 pb-6 dark:border-slate-700"
           >
             <ProgressiveImage
+              rise
               :src="getThumbUrl(activity.cover_image)"
               :fallbackSrc="activity.cover_image"
               :alt="activity.title"
@@ -321,7 +432,9 @@ onBeforeUnmount(() => {
               <div
                 class="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400"
               >
-                <time :datetime="activity.date">{{ activity.date }}</time
+                <time :datetime="activity.date">{{
+                  formatArchiveDate(activity.date)
+                }}</time
                 ><span
                   v-if="activity.tag"
                   class="text-sky-700 dark:text-sky-300"
@@ -343,69 +456,14 @@ onBeforeUnmount(() => {
                 class="mt-auto flex items-center justify-between pt-6 text-xs font-medium text-slate-500 dark:text-slate-400"
                 >翻开这段回忆
                 <ClubIcon
-                  name="external"
-                  class="h-4 w-4 text-sky-600 dark:text-sky-400"
+                  name="arrow"
+                  class="h-4 w-4 text-sky-600 transition-transform motion-safe:group-hover:translate-x-1 dark:text-sky-400"
               /></span>
             </div>
           </RouterLink>
         </div>
         <div v-else class="club-empty">
           我们的故事正在继续，活动记录将在这里更新。
-        </div>
-      </div>
-    </section>
-
-    <section
-      class="club-home-section club-home-about py-16 sm:py-20"
-      aria-labelledby="about-title"
-    >
-      <div
-        class="club-container grid items-center gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20"
-      >
-        <div
-          v-scroll-reveal="{ variant: 'image' }"
-          class="relative overflow-hidden bg-sky-100 dark:bg-slate-800"
-        >
-          <ProgressiveImage
-            v-if="config.mascot_image"
-            :src="getThumbUrl(config.mascot_image)"
-            :fallbackSrc="config.mascot_image"
-            alt="社团看板娘琪露诺"
-            wrapperClass="aspect-[4/3]"
-            imgClass="h-full w-full object-cover object-top"
-          />
-          <div
-            v-else
-            class="flex aspect-[4/3] items-center justify-center text-sky-400/50"
-          >
-            <ClubIcon name="snow" class="h-32 w-32" />
-          </div>
-          <div
-            class="absolute bottom-4 left-4 rounded-lg bg-white/95 px-4 py-2 text-xs font-medium text-slate-700 shadow-sm dark:bg-slate-900/95 dark:text-slate-200"
-          >
-            我们的幻想乡一角 · 琪露诺⑨
-          </div>
-        </div>
-        <div v-scroll-reveal="24">
-          <p class="club-eyebrow">A LITTLE ABOUT US</p>
-          <h2 id="about-title" class="club-section-title mt-3">
-            因东方相识，<br class="hidden sm:block" />让同好成为朋友
-          </h2>
-          <p class="mt-5 text-sm leading-8 text-slate-600 dark:text-slate-300">
-            桂航绯想天是桂林航天工业学院东方 Project
-            爱好者的聚集地。正作玩家、非想天则爱好者、音乐与二创同好，都可以在这里找到自己的位置。
-          </p>
-          <p class="mt-3 text-sm leading-8 text-slate-600 dark:text-slate-300">
-            我们也欢迎校外的朋友。聊一聊最近喜欢的曲子，约一场对战，或一起参加线下活动——每一次分享，都让幻想乡近一点。
-          </p>
-          <div class="mt-6 flex flex-wrap gap-6">
-            <RouterLink to="/history" class="club-text-link"
-              ><ClubIcon name="book" class="h-4 w-4" />读读我们的群史
-              <ClubIcon name="arrow" class="h-4 w-4" /></RouterLink
-            ><RouterLink to="/members" class="club-text-link"
-              >认识同好 <ClubIcon name="arrow" class="h-4 w-4"
-            /></RouterLink>
-          </div>
         </div>
       </div>
     </section>
@@ -436,12 +494,12 @@ onBeforeUnmount(() => {
         </div>
         <div
           v-scroll-reveal
-          class="mt-14 grid gap-6 border-t border-slate-300 pt-10 sm:grid-cols-[1fr_auto] sm:items-center dark:border-slate-700"
+          class="mt-14 grid gap-8 border-t border-slate-300 pt-10 sm:grid-cols-[1fr_auto] sm:items-center dark:border-slate-700"
         >
           <div>
             <p class="club-eyebrow">YOUR NEXT CHAPTER</p>
             <h2
-              class="mt-3 font-serif text-2xl font-semibold leading-relaxed sm:text-3xl"
+              class="club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl"
             >
               幻想乡的下一页，和我们一起写。
             </h2>
@@ -449,11 +507,20 @@ onBeforeUnmount(() => {
               class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400"
             >
               无需入坑门槛，带上你的热爱就好。
+              <span v-if="groupNumber">
+                也欢迎先加 QQ 群
+                <span class="font-mono text-slate-700 dark:text-slate-200">{{
+                  groupNumber
+                }}</span>
+                打个招呼。
+              </span>
             </p>
           </div>
-          <RouterLink to="/join" class="club-text-link"
-            >加入桂航绯想天 <ClubIcon name="arrow" class="h-4 w-4"
-          /></RouterLink>
+          <RouterLink
+            to="/join"
+            class="club-button club-button-primary shrink-0"
+            >加入桂航绯想天 <span aria-hidden="true">↗</span></RouterLink
+          >
         </div>
       </div>
     </section>

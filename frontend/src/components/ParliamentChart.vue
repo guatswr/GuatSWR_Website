@@ -228,7 +228,7 @@ const totalCount = computed(() =>
   fill: #111;
   letter-spacing: -3px;
 }
-:global(.dark) .total-number {
+:global(.dark .total-number) {
   fill: #fff;
 }
 
@@ -238,7 +238,7 @@ const totalCount = computed(() =>
   fill: #333;
   letter-spacing: 2px;
 }
-:global(.dark) .chart-title {
+:global(.dark .chart-title) {
   fill: #ddd;
 }
 
@@ -248,7 +248,7 @@ const totalCount = computed(() =>
   font-weight: 500;
   letter-spacing: 1px;
 }
-:global(.dark) .chart-subtitle {
+:global(.dark .chart-subtitle) {
   fill: #999;
 }
 

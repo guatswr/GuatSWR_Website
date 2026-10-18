@@ -15,7 +15,7 @@ useSiteBranding()
 const route = useRoute()
 
 // 2. 初始化主题逻辑
-const { initThemeListener, cleanupThemeListener } = useTheme()
+const { initThemeListener } = useTheme()
 
 onMounted(() => {
   // 启动主题监听
@@ -37,6 +37,8 @@ onMounted(() => {
   <div
     class="min-h-screen flex flex-col font-sans bg-white text-gray-900 dark:bg-slate-950 dark:text-gray-100 transition-colors"
   >
+    <a href="#main-content" class="skip-link">跳到主要内容</a>
+
     <!-- 独立的进度条组件 -->
     <RouteProgressBar />
 
@@ -44,7 +46,12 @@ onMounted(() => {
     <TheNavbar />
 
     <!-- 页面内容 -->
-    <main class="flex-grow" :class="{ 'pt-16': route.path !== '/' }">
+    <main
+      id="main-content"
+      tabindex="-1"
+      class="flex-grow"
+      :class="{ 'pt-16': route.path !== '/' }"
+    >
       <router-view v-slot="{ Component }">
         <transition name="fade" mode="out-in">
           <component :is="Component" />
@@ -58,11 +65,6 @@ onMounted(() => {
 </template>
 
 <style scoped>
-/* 全局 CSS 变量定义 */
-:global(:root) {
-  --footer-h: 0px;
-}
-
 /* 页面切换动画 */
 .fade-enter-active,
 .fade-leave-active {

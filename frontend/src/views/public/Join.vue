@@ -354,23 +354,23 @@ onMounted(() => {
 .join-loading-dot {
   animation: join-pulse 1.5s ease-in-out infinite;
 }
-:global(html.dark) .join-text {
+:global(html.dark .join-text) {
   color: #e2e8f0;
 }
-:global(html.dark) .join-text-muted {
+:global(html.dark .join-text-muted) {
   color: #94a3b8;
 }
-:global(html.dark) :is(.join-panel, .join-rules) {
+:global(html.dark :is(.join-panel, .join-rules)) {
   border-color: #334155;
 }
-:global(html.dark) :is(.join-step, .join-copy) {
+:global(html.dark :is(.join-step, .join-copy)) {
   color: #7dd3fc;
   border-color: #375363;
 }
-:global(html.dark) .join-copy:hover {
+:global(html.dark .join-copy:hover) {
   background: #243440;
 }
-:global(html.dark) .join-error {
+:global(html.dark .join-error) {
   background: #3b301d;
   border-color: #69552c;
   color: #f7ddab;

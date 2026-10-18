@@ -4,6 +4,7 @@ import { useRoute } from 'vue-router'
 import { useTheme } from '../composables/useTheme.js'
 import { useSiteConfigStore } from '../stores/siteConfig'
 import ClubAvatar from '../components/ClubAvatar.vue'
+import ClubIcon from '../components/ClubIcon.vue'
 
 const site = useSiteConfigStore()
 
@@ -88,12 +89,20 @@ const handleActivityFocusOut = (event) => {
     isActivitiesOpen.value = false
 }
 const handleScroll = () => {
-  isScrolled.value = window.scrollY > 16
+  const threshold =
+    route.path === '/' ? Math.max(64, window.innerHeight * 0.6) : 16
+  isScrolled.value = window.scrollY > threshold
   const scrollable = document.documentElement.scrollHeight - window.innerHeight
   readingProgress.value =
     scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0
 }
-watch(() => route.fullPath, closeMenus)
+watch(
+  () => route.fullPath,
+  () => {
+    closeMenus()
+    window.requestAnimationFrame(handleScroll)
+  }
+)
 
 onMounted(() => {
   handleScroll()
@@ -131,10 +140,13 @@ onUnmounted(() => {
           aria-label="桂航绯想天同好会首页"
           @click="closeMenus"
         >
-          <ClubAvatar :src="site.config.badge_image" class="h-9 w-9" />
+          <ClubAvatar
+            :src="site.config.badge_image"
+            class="hidden h-9 w-9 lg:block"
+          />
           <span class="flex flex-col gap-0.5">
             <span
-              class="whitespace-nowrap font-serif text-lg font-bold tracking-wider"
+              class="club-display whitespace-nowrap font-serif text-lg font-bold tracking-wider"
               >桂航绯想天</span
             >
             <span
@@ -231,32 +243,6 @@ onUnmounted(() => {
             class="mx-2 h-5 w-px bg-current opacity-20"
             aria-hidden="true"
           ></div>
-          <RouterLink
-            to="/logs"
-            class="nav-icon"
-            aria-label="站点日志"
-            title="站点日志"
-            @click="closeMenus"
-          >
-            <svg
-              class="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-              aria-hidden="true"
-            >
-              <path
-                d="M8 5h11v15H8a3 3 0 0 1-3-3V5a2 2 0 0 1 2-2h10"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-              <path
-                d="M5 17a2 2 0 0 1 2-2h12M10 8h6M10 11h4"
-                stroke-linecap="round"
-              />
-            </svg>
-          </RouterLink>
           <button
             type="button"
             class="nav-icon"
@@ -295,33 +281,13 @@ onUnmounted(() => {
             </svg>
           </button>
           <RouterLink
-            to="/login"
-            class="nav-icon"
-            aria-label="管理员登录"
-            title="博丽神社 · 管理员登录"
-            @click="closeMenus"
-          >
-            <svg
-              class="h-5 w-5"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="1.7"
-              aria-hidden="true"
-            >
-              <path
-                d="M4 6h16M6 3h12M7 6v15m10-15v15M5 10h14M5 21h4m6 0h4"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-              />
-            </svg>
-          </RouterLink>
-          <RouterLink
             to="/join"
-            class="club-nav-join ml-3 inline-flex min-h-11 items-center justify-center gap-3 whitespace-nowrap px-2 text-sm font-medium"
+            class="club-invitation club-nav-join ml-4 whitespace-nowrap"
             @click="closeMenus"
-            >加入我们 <span aria-hidden="true">↗</span></RouterLink
-          >
+            ><span class="club-invitation-seal" aria-hidden="true">入社</span>
+            <span class="club-invitation-label">加入我们</span>
+            <ClubIcon name="arrow" class="club-invitation-arrow"
+          /></RouterLink>
         </div>
 
         <div class="flex shrink-0 items-center gap-1 lg:hidden">
@@ -489,10 +455,12 @@ onUnmounted(() => {
           </div>
           <RouterLink
             to="/join"
-            class="club-nav-join mt-3 flex min-h-12 items-center justify-center gap-3 border-y border-sky-200 px-5 text-sm font-semibold dark:border-slate-700"
+            class="club-invitation club-nav-join mt-3 flex w-full min-h-12"
             @click="closeMenus"
-            >加入桂航绯想天 <span aria-hidden="true">↗</span></RouterLink
-          >
+            ><span class="club-invitation-seal" aria-hidden="true">入社</span>
+            <span class="club-invitation-label">加入桂航绯想天</span>
+            <ClubIcon name="arrow" class="club-invitation-arrow"
+          /></RouterLink>
         </div>
       </div>
     </Transition>
@@ -606,13 +574,22 @@ onUnmounted(() => {
   border-color: #334155;
 }
 .club-nav-join {
-  color: var(--nav-accent);
+  --invitation-ink: var(--nav-ink);
+  padding: 0.35rem 0.15rem;
+  border-bottom: 1px solid var(--invitation-line);
+  background: transparent;
+  transition: border-color 250ms ease;
 }
-.club-nav-join span {
-  transition: transform 200ms ease;
+.club-navbar[data-immersive='true'] .club-nav-join {
+  --invitation-line: rgb(224 242 254 / 0.4);
+  --invitation-accent: #edb2a5;
 }
-.club-nav-join:hover span {
-  transform: translate(2px, -2px);
+:global(.dark .club-navbar .club-nav-join) {
+  --invitation-line: rgb(186 230 253 / 0.35);
+  --invitation-accent: #edb2a5;
+}
+.club-nav-join:is(:hover, :focus-visible) {
+  border-bottom-color: var(--invitation-accent);
 }
 @media (max-width: 359px) {
   .club-wordmark-subtitle {

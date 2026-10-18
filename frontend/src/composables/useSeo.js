@@ -3,8 +3,8 @@ import { useRoute } from 'vue-router'
 
 export function useSeo() {
   const route = useRoute()
-  const siteTitle = '桂航绯想天 | 车万同好会'
-  const defaultDescription = '桂航绯想天，车万同好会交流社区，提供群活动、成员、历史与社交链接等信息。'
+  const siteTitle = '桂航绯想天 | 东方Project同好会'
+  const defaultDescription = '桂航绯想天是桂林航天工业学院东方 Project 同好会，记录活动、成员与群史，欢迎校内外同好一起加入。'
   const defaultOgImagePath = '/og-image.png'
 
   const getMergedRouteMeta = (r) => r.matched.reduce((acc, record) => ({ ...acc, ...record.meta }), {})

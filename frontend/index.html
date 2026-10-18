@@ -2,29 +2,58 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="桂航绯想天，车万同好会交流社区，提供群活动、成员、历史与社交链接等信息。" />
-    <meta name="keywords" content="桂航绯想天,车万同好会,东方Project,同好社群,群活动" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <meta name="description" content="桂航绯想天是桂林航天工业学院东方 Project 同好会，记录活动、成员与群史，欢迎校内外同好一起加入。" />
+    <meta name="keywords" content="桂航绯想天,东方Project,同好会,桂林航天工业学院,群活动" />
     <meta name="robots" content="index,follow" />
-    <meta name="theme-color" content="#ffffff" />
+    <meta name="theme-color" content="#fbfbf8" />
     <link rel="icon" href="/brand/favicon-64.png" type="image/png" sizes="64x64" />
     <link rel="apple-touch-icon" href="/brand/apple-touch-icon.png" />
-    <meta property="og:site_name" content="桂航绯想天 | 车万同好会" />
+    <meta property="og:site_name" content="桂航绯想天 | 东方Project同好会" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="zh_CN" />
-    <meta property="og:title" content="桂航绯想天 | 车万同好会" />
-    <meta property="og:description" content="桂航绯想天，车万同好会交流社区，提供群活动、成员、历史与社交链接等信息。" />
+    <meta property="og:title" content="桂航绯想天 | 东方Project同好会" />
+    <meta property="og:description" content="桂航绯想天是桂林航天工业学院东方 Project 同好会，记录活动、成员与群史，欢迎校内外同好一起加入。" />
     <meta property="og:url" content="https://guatswr.top/" />
     <link rel="canonical" href="https://guatswr.top/" />
     <meta property="og:image" content="https://guatswr.top/og-image.png" />
     <meta property="og:image:width" content="1200" />
     <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="桂航绯想天，桂林航天工业学院东方 Project 同好会" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="桂航绯想天 | 车万同好会" />
-    <meta name="twitter:description" content="桂航绯想天，车万同好会交流社区，提供群活动、成员、历史与社交链接等信息。" />
+    <meta name="twitter:title" content="桂航绯想天 | 东方Project同好会" />
+    <meta name="twitter:description" content="桂航绯想天是桂林航天工业学院东方 Project 同好会，记录活动、成员与群史，欢迎校内外同好一起加入。" />
     <meta name="twitter:image" content="https://guatswr.top/og-image.png" />
-   <script defer src="https://stats.guatswr.top/script.js" data-website-id="2b03bf5d-751a-4a7c-be54-d545fe250209"></script>
+    <script defer src="https://stats.guatswr.top/script.js" data-website-id="2b03bf5d-751a-4a7c-be54-d545fe250209"></script>
     <title>桂航绯想天</title>
+    <script>
+      /* Set the theme before the first paint so the preloader never flashes white. */
+      (() => {
+        try {
+          const stored = localStorage.getItem('theme-preference')
+          let theme = stored === 'dark' || stored === 'light' ? stored : 'auto'
+          if (theme === 'auto') {
+            const hour = Number(
+              new Intl.DateTimeFormat('en-US', {
+                hour: 'numeric',
+                hour12: false,
+                timeZone: 'Asia/Shanghai'
+              }).format(new Date())
+            )
+            theme = hour >= 19 || hour < 8 ? 'dark' : 'light'
+          }
+          document.documentElement.classList.toggle('dark', theme === 'dark')
+          document.documentElement.dataset.theme = theme
+          document.documentElement.style.colorScheme = theme
+          const themeColor = document.querySelector('meta[name="theme-color"]')
+          if (themeColor) {
+            themeColor.setAttribute('content', theme === 'dark' ? '#101923' : '#fbfbf8')
+          }
+        } catch {
+          /* Keep the light default when storage is unavailable. */
+        }
+      })()
+    </script>
     <style>
       /* 极致精简背景，防止加载前闪烁 */
       body { margin: 0; background-color: #ffffff; }

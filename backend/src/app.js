@@ -89,6 +89,7 @@ app.get('/sitemap.xml', (req, res) => {
     .replace(/\/+$/, '');
   const staticUrls = [
     { loc: '/', changefreq: 'daily', priority: 1.0 },
+    { loc: '/events', changefreq: 'daily', priority: 0.8 },
     { loc: '/activities', changefreq: 'daily', priority: 0.8 },
     { loc: '/members', changefreq: 'weekly', priority: 0.6 },
     { loc: '/history', changefreq: 'weekly', priority: 0.6 },

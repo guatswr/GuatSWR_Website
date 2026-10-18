@@ -319,7 +319,7 @@ onUnmounted(() => {
   transition: width 0.2s linear, opacity 0.25s ease;
 }
 
-:global(.dark) .route-progress__bar {
+:global(.dark .route-progress__bar) {
   background: linear-gradient(90deg, #0b2a3c 0%, #1e3a8a 45%, #38bdf8 100%);
   box-shadow: 0 0 8px rgba(56, 189, 248, 0.5);
 }

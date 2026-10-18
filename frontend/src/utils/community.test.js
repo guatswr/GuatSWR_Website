@@ -1,7 +1,18 @@
 import assert from 'node:assert/strict'
 import { spawnSync } from 'node:child_process'
 import test from 'node:test'
-import { eventContent, eventSummary, eventTime, formatClubDate, parseClubTime, upcomingEvents } from './community.js'
+import {
+  eventContent,
+  eventSchedule,
+  eventStatusLabel,
+  eventSummary,
+  eventTime,
+  eventTypeLabel,
+  formatClubDate,
+  formatClubTime,
+  parseClubTime,
+  upcomingEvents
+} from './community.js'
 
 const now = Date.parse('2026-10-16T12:00:00+08:00')
 const event = (id, status, content = {}) => ({ id, status, content })
@@ -51,6 +62,46 @@ test('STG and fighting-event copy is used as the real summary', () => {
   assert.equal(eventSummary({ type: 'STG', content: { copy: '周末一起挑战东方正作。' } }), '周末一起挑战东方正作。')
   assert.equal(eventSummary({ type: '则则', content: '{"copy":"新手友好的联机交流。"}' }), '新手友好的联机交流。')
   assert.equal(eventTime({ content: { deadline: 'a', end_time: 'b', time: 'c' } }), 'a')
+})
+
+test('public type labels translate internal tokens without changing routes', () => {
+  assert.equal(eventTypeLabel('则则'), '非想天则')
+  assert.equal(eventTypeLabel('STG'), '东方 STG')
+  assert.equal(eventTypeLabel('线下聚会'), '线下聚会')
+  assert.equal(eventTypeLabel(''), '同好活动')
+})
+
+test('event schedule keeps deadlines, start times, and ongoing end times distinct', () => {
+  assert.deepEqual(eventSchedule(event(1, 'published', { deadline: '2026-10-25T22:00' })), {
+    prefix: '截止',
+    value: '2026-10-25T22:00'
+  })
+  assert.deepEqual(eventSchedule(event(2, 'published', { time: '2026-10-20T19:30' })), {
+    prefix: '开始',
+    value: '2026-10-20T19:30'
+  })
+  assert.deepEqual(eventSchedule(event(3, 'ongoing', { deadline: '2026-10-18T12:00', end_time: '2026-10-20T21:30' })), {
+    prefix: '至',
+    value: '2026-10-20T21:30'
+  })
+  assert.deepEqual(eventSchedule(event(4, 'published')), { prefix: '', value: '' })
+})
+
+test('status labels make the visitor-facing action clear', () => {
+  assert.equal(eventStatusLabel(event(1, 'ongoing')), '进行中')
+  assert.equal(eventStatusLabel(event(2, 'published', { deadline: '2026-10-25T22:00' }), now), '报名中')
+  assert.equal(eventStatusLabel(event(3, 'published', { time: '2026-10-20T19:30' }), now), '即将开始')
+  assert.equal(eventStatusLabel(event(4, 'published'), now), '待定')
+})
+
+test('date and time formatting adds weekday and year only when asked', () => {
+  assert.equal(formatClubDate('2026-10-20T19:30'), '10月20日')
+  assert.equal(formatClubDate('2026-10-20T19:30', { weekday: true }), '10月20日 · 周二')
+  assert.equal(formatClubDate('2026-10-20T19:30', { year: true }), '2026年10月20日')
+  assert.equal(formatClubDate('not-a-date', { fallback: 'not-a-date' }), 'not-a-date')
+  assert.equal(formatClubTime('2026-10-20T19:30'), '19:30')
+  assert.equal(formatClubTime('2026-10-20'), '')
+  assert.equal(formatClubTime('not-a-date'), '')
 })
 
 test('Beijing timestamps retain explicit offsets and date-only midnight semantics', () => {

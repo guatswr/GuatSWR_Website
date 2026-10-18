@@ -25,7 +25,7 @@ const DEFAULT_SOCIAL_LINKS = [
     subtitle: '游戏直播分享',
     extra: '点击加入频道',
     url: 'https://pd.qq.com/s/fxsvvaqqt',
-    iconText: '🎮'
+    iconText: 'QQ'
   }
 ]
 

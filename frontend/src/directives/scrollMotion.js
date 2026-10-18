@@ -1,3 +1,5 @@
+import { createRevealController } from './motion.js'
+
 const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, value))
 
 function options(value) {
@@ -30,7 +32,7 @@ export function scrollProgress(
   return progress * progress * (3 - 2 * progress)
 }
 
-export function createScrollMotionController(environment) {
+function createHeroMotionController(environment) {
   const records = new Map()
   const active = new Set()
   let preference, observer, frame
@@ -194,6 +196,47 @@ export function createScrollMotionController(environment) {
         preference?.removeEventListener('change', preferenceChanged)
         preference = undefined
       }
+    }
+  }
+}
+
+// Product-page entrances finish smoothly even when the visitor stops scrolling.
+// Only the full-screen hero retains a small, reversible scroll-linked parallax.
+export function createScrollMotionController(environment) {
+  const hero = createHeroMotionController(environment)
+  const reveal = createRevealController(environment)
+  const modes = new WeakMap()
+  return {
+    mount(element, value) {
+      if (modes.has(element)) return
+      const isHero = value?.variant === 'hero'
+      modes.set(element, isHero)
+      if (isHero) hero.mount(element, value)
+      else {
+        element.classList.add('club-entrance')
+        reveal.mount(element, {
+          delay:
+            typeof value === 'number'
+              ? value
+              : (value?.delay ?? value?.offset ?? 0),
+          variant: ['image', 'card'].includes(value?.variant) ? 'scale' : 'up'
+        })
+      }
+    },
+    update(element, value) {
+      if (modes.get(element)) hero.update(element, value)
+    },
+    unmount(element) {
+      if (modes.get(element)) hero.unmount(element)
+      else {
+        reveal.unmount(element)
+        element.classList.remove('club-entrance', 'club-reveal')
+        delete element.dataset.reveal
+        delete element.dataset.revealVariant
+        element.style.removeProperty('--reveal-delay')
+        element.style.removeProperty('--reveal-mobile-delay')
+      }
+      modes.delete(element)
     }
   }
 }

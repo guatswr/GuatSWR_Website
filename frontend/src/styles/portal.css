@@ -1,4 +1,15 @@
 /* Shared presentation styles for the public community portal. */
+html {
+  color-scheme: light;
+}
+html.dark {
+  color-scheme: dark;
+}
+:root {
+  --club-serif: ui-serif, 'Noto Serif SC', 'Songti SC', 'Source Han Serif SC',
+    SimSun, serif;
+  --club-gutter: 3rem;
+}
 .club-paper {
   color: #243440;
   background-color: #fbfbf8;
@@ -8,11 +19,14 @@
   background-color: #101923;
 }
 .club-page-title {
-  font-family: ui-serif, 'Noto Serif SC', 'Songti SC', SimSun, serif;
+  font-family: var(--club-serif);
   font-size: clamp(2rem, 4vw, 3.25rem);
   font-weight: 600;
   line-height: 1.4;
   letter-spacing: 0.025em;
+}
+.club-display {
+  font-family: var(--club-serif);
 }
 .club-pagination {
   min-height: 2.75rem;
@@ -39,7 +53,7 @@
   color: #7dd3fc;
 }
 .club-container {
-  width: min(100% - 3rem, 76rem);
+  width: min(100% - var(--club-gutter), 76rem);
   margin-inline: auto;
 }
 .club-hero {
@@ -52,7 +66,7 @@
   letter-spacing: 0.17em;
 }
 .club-section-title {
-  font-family: ui-serif, 'Noto Serif SC', 'Songti SC', SimSun, serif;
+  font-family: var(--club-serif);
   color: #0f172a;
   font-size: clamp(1.55rem, 3vw, 2rem);
   font-weight: 650;
@@ -164,9 +178,43 @@
   outline: 2px solid #0284c7;
   outline-offset: 4px;
 }
+/* Utility greys are intentionally readable on the tinted paper sections. */
+.club-paper .text-slate-500 {
+  color: #475569;
+}
+.dark .club-paper .text-slate-500 {
+  color: #94a3b8;
+}
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.7rem 1rem;
+  color: #0f172a;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  border-radius: 0.25rem;
+  box-shadow: 0 8px 24px rgb(2 6 23 / 0.18);
+  font-size: 0.875rem;
+  font-weight: 600;
+  transform: translateY(-160%);
+  transition: transform 180ms ease;
+}
+.skip-link:focus {
+  transform: translateY(0);
+}
+#main-content:focus {
+  outline: none;
+}
+.dark .skip-link {
+  color: #e2e8f0;
+  background: #0f172a;
+  border-color: #334155;
+}
 @media (max-width: 639px) {
-  .club-container {
-    width: min(100% - 2rem, 76rem);
+  :root {
+    --club-gutter: 2rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {

@@ -12,7 +12,8 @@ class Target {
     this.listeners.get(type)?.delete(callback)
   }
   emit(type, event = {}) {
-    for (const callback of this.listeners.get(type) || []) callback(event)
+    for (const callback of this.listeners.get(type) || [])
+      callback({ currentTarget: this, ...event })
   }
   count(type) {
     return this.listeners.get(type)?.size || 0
@@ -69,7 +70,7 @@ function setup(reduced = false) {
     target.classes = new Set()
     target.classList = {
       add: (name) => target.classes.add(name),
-      remove: (name) => target.classes.delete(name)
+      remove: (...names) => names.forEach((name) => target.classes.delete(name))
     }
     target.rect = { top, height: 300 }
     target.styles = new Map()
@@ -118,24 +119,24 @@ test('entry progress is clamped, reversible and supports pixel staggering', () =
   )
 })
 
-test('shared frame batches reads before writes and follows scroll in both directions', () => {
+test('hero frames batch reads before writes and follow scroll in both directions', () => {
   const qa = setup()
   const controller = createScrollMotionController(qa.environment)
-  const first = qa.element(),
-    second = qa.element()
-  controller.mount(first)
-  controller.mount(second, 24)
+  const first = qa.element(-150),
+    second = qa.element(-150)
+  controller.mount(first, { variant: 'hero' })
+  controller.mount(second, { variant: 'hero' })
   for (let index = 0; index < 10; index++) qa.environment.emit('scroll')
   assert.equal(qa.frames.size, 1)
   assert.equal(qa.observers.length, 1)
   qa.flush()
   assert.deepEqual(qa.operations, ['read', 'read', 'write', 'write'])
   assert.equal(first.styles.get('--scroll-progress'), '0.5000')
-  first.rect.top = 540
+  first.rect.top = -300
   qa.environment.emit('scroll')
   qa.flush()
   assert.equal(first.styles.get('--scroll-progress'), '1.0000')
-  first.rect.top = 940
+  first.rect.top = 0
   qa.environment.emit('scroll')
   qa.flush()
   assert.equal(first.styles.get('--scroll-progress'), '0.0000')
@@ -151,7 +152,7 @@ test('reduced motion stays visible, cancels work, and can resume without reload'
   const qa = setup(true)
   const controller = createScrollMotionController(qa.environment)
   const element = qa.element()
-  controller.mount(element)
+  controller.mount(element, { variant: 'hero' })
   assert.equal(element.classes.size, 0)
   assert.equal(qa.environment.count('scroll'), 0)
   qa.preference.matches = false
@@ -176,11 +177,11 @@ test('keyboard focus reveals content immediately, including the hero exit state'
   qa.flush()
   element.emit('focusin')
   hero.emit('focusin')
-  assert.equal(element.styles.get('--scroll-progress'), '1.0000')
+  assert.equal(element.dataset.reveal, 'visible')
   assert.equal(hero.styles.get('--scroll-progress'), '0.0000')
   element.emit('focusout', { relatedTarget: null })
   qa.flush()
-  assert.equal(element.styles.get('--scroll-progress'), '0.0000')
+  assert.equal(element.dataset.reveal, 'visible')
 })
 
 test('hidden tabs pause work and the last unmount releases every listener', () => {
@@ -188,8 +189,8 @@ test('hidden tabs pause work and the last unmount releases every listener', () =
   const controller = createScrollMotionController(qa.environment)
   const first = qa.element(),
     second = qa.element()
-  controller.mount(first)
-  controller.mount(second)
+  controller.mount(first, { variant: 'hero' })
+  controller.mount(second, { variant: 'hero' })
   qa.environment.document.hidden = true
   qa.environment.document.emit('visibilitychange')
   assert.equal(qa.frames.size, 0)
@@ -211,7 +212,7 @@ test('hidden tabs pause work and the last unmount releases every listener', () =
   assert.equal(second.count('focusout'), 0)
   assert.equal(second.classes.size, 0)
   assert.equal(second.styles.size, 0)
-  controller.mount(first)
+  controller.mount(first, { variant: 'hero' })
   qa.flush()
   assert.equal(qa.environment.count('scroll'), 1)
   assert.equal(qa.observers.length, 2)
@@ -222,7 +223,7 @@ test('missing APIs and an unavailable observer fail open', () => {
   for (const environment of [undefined, {}]) {
     const element = qa.element()
     createScrollMotionController(environment).mount(element)
-    assert.equal(element.classes.size, 0)
+    assert.equal(element.classes.has('club-reveal'), false)
   }
   qa.environment.IntersectionObserver = class {
     constructor() {
@@ -232,8 +233,35 @@ test('missing APIs and an unavailable observer fail open', () => {
   const element = qa.element()
   const controller = createScrollMotionController(qa.environment)
   controller.mount(element)
-  assert.equal(element.classes.size, 0)
+  assert.equal(element.classes.has('club-reveal'), false)
   assert.equal(qa.frames.size, 0)
   controller.unmount(element)
+  assert.equal(qa.preference.count('change'), 0)
+})
+
+test('content entrances reveal once with a row stagger and without a scroll listener', () => {
+  const qa = setup()
+  const controller = createScrollMotionController(qa.environment)
+  const first = qa.element(),
+    second = qa.element()
+  controller.mount(first, 100)
+  controller.mount(second, { variant: 'image', delay: 200 })
+  assert.equal(qa.environment.count('scroll'), 0)
+  assert.equal(qa.frames.size, 0)
+  assert.equal(first.dataset.reveal, 'pending')
+  assert.equal(first.styles.get('--reveal-delay'), '100ms')
+  assert.equal(second.dataset.revealVariant, 'scale')
+  assert.equal(second.styles.get('--reveal-delay'), '200ms')
+  qa.observers[0].intersect(first, true)
+  qa.observers[0].intersect(second, true)
+  assert.equal(first.dataset.reveal, 'visible')
+  assert.equal(second.dataset.reveal, 'visible')
+  assert.equal(qa.observers[0].targets.size, 0)
+  first.rect.top = 1100
+  qa.environment.emit('scroll')
+  assert.equal(first.dataset.reveal, 'visible')
+  controller.unmount(first)
+  controller.unmount(second)
+  assert.equal(first.classes.size, 0)
   assert.equal(qa.preference.count('change'), 0)
 })

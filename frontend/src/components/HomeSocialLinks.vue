@@ -47,6 +47,7 @@ defineProps({ links: { type: Array, default: () => [] } })
           class="mt-2 block text-xs leading-6 text-slate-500 dark:text-slate-400"
           >{{ link.extra }}</span
         >
+        <span class="sr-only">（在新标签页打开）</span>
       </span>
       <ClubIcon
         name="external"
