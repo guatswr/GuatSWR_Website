@@ -4,6 +4,10 @@
   "type": "module",
   "packageManager": "pnpm@11.25.0",
   "engines": { "node": ">=24.15.0 <25" },
+  "devDependencies": {
+    "@playwright/test": "1.64.1",
+    "es-module-lexer": "2.3.2"
+  },
   "scripts": {
     "dev": "pnpm --filter @guatswr/shared build && pnpm --filter @guatswr/web dev",
     "typecheck": "pnpm -r typecheck",
@@ -12,6 +16,8 @@
     "build": "pnpm -r build",
     "test:e2e": "pnpm --filter @guatswr/web test:e2e",
     "test:legacy": "node --test frontend/src/components/events/eventFormModel.test.js frontend/src/components/home/freezeInteraction.test.js frontend/src/components/home/iceThaw.test.js frontend/src/components/ProgressiveImage.test.js frontend/src/directives/motion.test.js frontend/src/directives/scrollMotion.test.js frontend/src/utils/community.test.js frontend/src/utils/imageLoader.test.js",
-    "check:artifacts": "node scripts/revamp/check-artifacts.mjs"
+    "check:artifacts": "node scripts/revamp/check-artifacts.mjs",
+    "check:routes": "node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json",
+    "test:tooling": "node --test scripts/revamp/route-budget.test.mjs"
   }
 }

@@ -59,6 +59,7 @@ jobs:
           echo "::add-mask::$secret"
           echo "NUXT_SESSION_PASSWORD=$secret" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile
+      - run: pnpm test:tooling
       - run: pnpm -r typecheck
       - run: pnpm -r lint
       - run: pnpm -r test
@@ -78,6 +79,10 @@ jobs:
           npm --prefix frontend ci
           npm --prefix frontend run build
       - run: pnpm test:e2e
+      - name: Account initial route JavaScript
+        id: route-budget
+        if: runner.os == 'Linux'
+        run: node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json > web/route-budget-report.json
       - id: performance
         if: runner.os == 'Linux'
         run: pnpm --filter @guatswr/web test:performance
@@ -90,6 +95,12 @@ jobs:
           else
             echo "::error title=Performance budgets::summary.json missing - the performance step did not reach the summary"
           fi
+      - uses: actions/upload-artifact@v4
+        if: always() && steps.route-budget.outcome != 'skipped' && steps.route-budget.outcome != ''
+        with:
+          name: revamp-route-budget-${{ runner.os }}
+          path: web/route-budget-report.json
+          retention-days: 7
       - uses: actions/upload-artifact@v4
         if: always() && steps.performance.outcome != 'skipped' && steps.performance.outcome != ''
         with:

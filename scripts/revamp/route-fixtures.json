@@ -1,0 +1,6 @@
+{
+  "routes": [
+    { "name": "foundation home checkpoint", "path": "/", "mainContent": "桂航绯想天" },
+    { "name": "shared layout checkpoint", "path": "/__revamp/layout", "mainContent": "查看社群信息" }
+  ]
+}

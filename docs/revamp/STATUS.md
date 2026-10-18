@@ -175,3 +175,14 @@ measurements, not a migrated-homepage speed comparison or final whole-site accep
 event UI and login/auth candidates remain subject to central integration and independent acceptance.
 Guest/private admin APIs and fresh-HTML-nonce/data-SWR hardening are being implemented in isolated
 worktrees. Local testing only; deployment and infrastructure remain deferred.
+
+### Initial-route budget tooling — integration in progress (2026-10-19)
+
+The accounting tool now unions SSR script/preload seeds, the transitive static-import graph and actual
+cold-browser requests, including automatic prefetch. It rejects empty/error pages, failed/stalled scripts,
+missing/foreign assets and any production source maps. The fixed budget remains 153,600 B gzip.
+Codex independently reproduced 27/27 tooling unit cases. The first CI fixture set covers only the
+already accepted scaffold and internal shared-layout route, while their all-JS gate is kept unchanged.
+Real browser accounting on CI is still pending; checklist 82 remains open. Migrated homepage candidates
+have passed four recursive gates (136 unit tests) but their first E2E run failed, with real UI/test issues
+and later production-rate-limit saturation; they are not accepted or included in this tooling commit.
