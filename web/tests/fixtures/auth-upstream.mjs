@@ -1,6 +1,7 @@
 import { createServer } from 'node:http'
 import { pathToFileURL } from 'node:url'
 import { handlePublicFixture } from './public-data.mjs'
+import { exitWithParent } from './parent-watch.mjs'
 
 // Deterministic in-memory auth fixture for the BFF integration test. It never
 // starts or writes to the real backend, and it is a separate file from the
@@ -227,4 +228,7 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   fixture.listen(port).then((bound) => {
     console.log(`auth fixture listening on http://127.0.0.1:${bound}`)
   })
+  // A leftover listener on this port makes the next E2E batch's webServer fail
+  // to start, so this process must not outlive the parent that spawned it.
+  exitWithParent()
 }

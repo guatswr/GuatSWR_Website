@@ -1,5 +1,6 @@
 import { createServer } from 'node:http'
 import { readFile, stat } from 'node:fs/promises'
+import { exitWithParent } from './parent-watch.mjs'
 import { resolve, extname, sep } from 'node:path'
 
 // Serve the checkpoint's existing build without loading Vite config or writing
@@ -21,3 +22,7 @@ createServer(async (request, response) => {
   }
   catch { response.writeHead(500).end('Legacy fixture unavailable; build frontend first') }
 }).listen(Number(process.env.PORT ?? 5174), '127.0.0.1')
+
+// A leftover listener on this port makes the next E2E batch's webServer fail to
+// start, so this process must not outlive the parent that spawned it.
+exitWithParent()
