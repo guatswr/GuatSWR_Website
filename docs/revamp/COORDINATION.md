@@ -84,3 +84,22 @@ not contend for those shared files.
 
 The working-tree loss and its recovery are recorded in
 [`logs/00-recovery-2026-10-19`](logs/00-recovery-2026-10-19/README.md).
+
+## Handoff to secondary acceptance (2026-10-19)
+
+Round 1 under the Claude Code lead closed at `2ea87f7`. The entry point for
+secondary acceptance and for continuing the migration is
+[HANDOFF-2026-10-19.md](HANDOFF-2026-10-19.md): it lists the reproduction
+commands, the state of every gate, the per-workstream evidence, the defects the
+migration found, the six blockers (including a critical warm-reload defect that
+is not login-specific), what has not been started, and a suggested acceptance
+order.
+
+Three agents ran concurrently in the primary checkout with disjoint file
+ownership and per-workstream Playwright port bases, and each left a
+re-verifiable report under `logs/`. The lead owned the shared files
+(`package.json`, the lockfile, `packages/shared/src/index.ts`,
+`web/nuxt.config.ts`, `web/playwright.config.ts`, `web/scripts/e2e-isolated.mjs`,
+`web/vitest.config.ts`, `web/app/assets/css/main.css`) and the recursive gates.
+Authentication/BFF and the SEO outputs are the next round; the admin API and its
+eleven pages follow the auth base that now exists.
