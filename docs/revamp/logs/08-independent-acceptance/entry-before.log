@@ -1,0 +1,8 @@
+headless-shell /login warm cache + reload      first=[登录 | 桂航绯想天 || 登录 | 桂航绯想天] reload=[500 - Internal Server Error | Nuxt || 500 Internal Server Er]
+headless-shell / warm cache + reload           first=[首页 | 桂航绯想天 || 首页 | 桂航绯想天] reload=[500 - Internal Server Error | Nuxt || 500 Internal Server Er]
+headless-shell /members warm cache + reload    first=[绯想天住民名录 | 桂航绯想天 | 桂航绯想天 ] reload=[500 - Internal Server Error | Nuxt || 500 Internal Server Er]
+headless-shell /login cache disabled + reload  first=[登录 | 桂航绯想天 || 登录 | 桂航绯想天] reload=[登录 | 桂航绯想天 || 登录 | 桂航绯想天 跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB ]
+headless-shell / cache disabled + reload       first=[首页 | 桂航绯想天 || 首页 | 桂航绯想天] reload=[首页 | 桂航绯想天 || 首页 | 桂航绯想天 跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB ]
+headless-shell /members cache disabled + reload first=[绯想天住民名录 | 桂航绯想天 | 桂航绯想天 ] reload=[绯想天住民名录 | 桂航绯想天 | 桂航绯想天 || 绯想天住民名录 | 桂航绯想天 | 桂航绯想天 跳到主要内容 桂航]
+headless-shell /login 2nd goto, cache disabled first=[登录 | 桂航绯想天 || 登录 | 桂航绯想天] reload=[登录 | 桂航绯想天 || 登录 | 桂航绯想天 跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB ]
+full-chromium /login warm cache + reload       reload=[500 - Internal Server Error | Nuxt || 500 Internal Server Er]

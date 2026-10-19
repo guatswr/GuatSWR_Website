@@ -1,6 +1,18 @@
 # GuatSWR frontend revamp status
 
-Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation` at `4ed54a8`.
+Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
+
+## Current independent review (Codex, after `bf18a36`)
+
+User steering: continue directly, without Claude/subagent delegation; local
+testing only. The warm-cache `#entry` 500 was independently reproduced in
+headless/full Chromium and fixed by preserving import-map-before-module ordering.
+Four recursive gates pass (604 unit tests), runner tests 22/22, new warm-cache
+and existing session-redirect subset 8/8 with no skip/retry. Public-page visual
+review and the independently confirmed 177,477 B initial JS failure are being
+resolved next; admin/SEO/full-site acceptance remain open. Detailed scope and
+limits: [independent acceptance log](logs/08-independent-acceptance/README.md).
+The historical entries below retain their original checkpoint-specific status.
 
 ## Boundaries
 
