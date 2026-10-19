@@ -1,6 +1,6 @@
 # GuatSWR frontend revamp status
 
-Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation` at `0954b8a`.
+Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation` at `4ed54a8`.
 
 ## Boundaries
 
@@ -253,3 +253,42 @@ Lead-owned integration fixes applied this round: `web/vitest.config.ts` now alia
 (any module importing either could not previously load under Vitest), and five type errors in the
 event files were fixed after that workstream closed. Unit tests across the workspace are 35 shared +
 232 web, all passing.
+
+### Authentication round integrated; guest BFF restored (2026-10-19, `4ed54a8`)
+
+The authentication workstream integrated the `revamp-auth` candidate: an opaque 256-bit session id in
+an encrypted cookie, the upstream JWT stored only as AES-256-GCM ciphertext with purpose-separated
+HKDF, exact origin checks, session-bound CSRF, JSON content-type enforcement, bounded bodies and a
+fixed-window login limiter. The client side lands `/login`, the admin middleware and the session
+composable. The guest BFF that was parked pending these helpers is restored, and the two gaps the
+earlier round recorded are now closed by tests: a per-draft in-flight submission marker returning
+`409 submission_in_progress`, and a real oversize upload returning `413`.
+
+Nothing in that batch had ever been executed before this round. Running it found real defects:
+`login()` returned an undeclared `expiresAt` (a `ReferenceError` on every login); `guest-upload`'s
+`detach()` removed its listeners before destroying the stream, so an aborted upload leaked its
+concurrency slot and temp directory; the guest content-bound check rejected the payloads the guest
+form builds; `safeLocalReturnPath` accepted `/admin\t`; `useBffSession` used a non-existent Nuxt
+hook; and the admin star export collided with `public.js` on three row schemas, which an ambiguous
+star export would have dropped at runtime.
+
+**Lead integration fixes.** `xssValidator` is disabled for `/api/bff/**` only: nuxt-security's
+validator runs as a Nitro middleware and consumes the request stream with `readBody(event)`, while the
+BFF reads its body itself as a bounded raw stream, so every write arrived empty. The change is scoped
+to the BFF write namespace, which enforces its own origin, content type, size/time bounds and Zod
+validation, and whose output is sanitized or escaped; it is verified end to end, since the same login
+now reaches the upstream and returns its `401 invalid_credentials`. The Playwright auth wiring, the
+port derivation in `login.spec.ts`, the `web/shared/auth.d.ts` consolidation (replacing a
+triple-slash reference the lint config forbids) and the two declared skips for that spec's
+project-conditional loop are also lead-owned changes in the same commit.
+
+**Measured.** typecheck 0, lint 0 (33 pre-existing warnings), test 0 — shared 68 + web 535 = 603 unit
+tests, up from 267. Build 0. The login E2E ran for the first time: 15/22 passed, 5 real failures
+(the reloaded-session redirect, the client-validation focus, and the desktop archived-visual
+comparison), now assigned to a dedicated workstream.
+
+**Still open at this point.** The public-pages E2E (18 visual-parity differences plus two functional
+cases) and the event E2E (a form/hydration defect plus visual differences) are being worked in
+parallel. The route-level JavaScript budget is measured at 177,477 B gzip against a 153,600 B ceiling
+— a real overage in client code, unrelated to the BFF, which ships no browser bytes. The admin BFF
+API, the eleven admin pages, the SEO outputs and all of stages 06–07 remain outstanding.
