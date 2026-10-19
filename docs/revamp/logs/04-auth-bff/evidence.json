@@ -1,0 +1,176 @@
+{
+  "workstream": "04-auth-bff",
+  "round": 1,
+  "date": "2026-10-19",
+  "checkout": "E:/Taropoi/workspace/GuatSWR_Website",
+  "branch": "revamp/nuxt-foundation",
+  "baseCommit": "319e295",
+  "source": {
+    "worktree": "C:/Users/water/.codex/worktrees/revamp-auth/GuatSWR_Website",
+    "basedOn": "1cfe6b8",
+    "previouslyExecuted": false
+  },
+  "committed": false,
+  "gates": [
+    {
+      "name": "shared typecheck",
+      "command": "pnpm --filter @guatswr/shared typecheck",
+      "result": "pass",
+      "note": "failed first with 3x TS2308 star-export collision; clean after renaming the three admin row schemas"
+    },
+    {
+      "name": "shared tests",
+      "command": "pnpm --filter @guatswr/shared test",
+      "result": "pass",
+      "files": 5,
+      "tests": 68,
+      "failed": 0
+    },
+    {
+      "name": "web auth/client unit tests",
+      "command": "vitest run tests/auth-*.test.ts tests/bff-*.test.ts tests/login-*.test.ts",
+      "result": "pass",
+      "files": 15,
+      "tests": 274,
+      "failed": 0
+    },
+    {
+      "name": "web auth+guest+compress unit tests",
+      "command": "vitest run <19 files owned by this workstream>",
+      "result": "pass",
+      "files": 19,
+      "tests": 312,
+      "failed": 0
+    },
+    {
+      "name": "web package unit suite",
+      "command": "cd web && vitest run",
+      "result": "pass",
+      "files": 39,
+      "tests": 535,
+      "failed": 0,
+      "note": "reproduced 3x; one earlier run reported '530 passed / 1 error' without a named failing test and did not reproduce"
+    },
+    {
+      "name": "scoped lint",
+      "command": "eslint <files owned by this workstream>",
+      "result": "pass",
+      "note": "4 errors found and fixed: 2x no-control-regex, 2x useless/prefer-const assignment"
+    },
+    {
+      "name": "server typecheck (read-only typegen)",
+      "command": "vue-tsc --noEmit -p .nuxt/tsconfig.server.json",
+      "result": "pass",
+      "note": "6 real errors found and fixed first (sessionHeader widening, Retry-After overload, IncomingRequest.resume, expiresAt binding, BffErrorCode union, ...)"
+    },
+    {
+      "name": "app typecheck (read-only typegen)",
+      "command": "vue-tsc --noEmit -p .nuxt/tsconfig.app.json",
+      "result": "partial",
+      "note": "2 remaining errors are stale .nuxt/imports.d.ts (auto-import of useBffSession); resolved by nuxt prepare in the lead's nuxt typecheck"
+    },
+    {
+      "name": "recursive build",
+      "command": "pnpm -r build (under .tools/build.lock)",
+      "result": "pass",
+      "exitCode": 0,
+      "durationSeconds": 74,
+      "note": "all api/bff/auth/* and api/bff/guest/* route chunks emitted"
+    },
+    {
+      "name": "restored event E2E",
+      "command": "E2E_PORT_BASE=3700 node scripts/e2e-isolated.mjs tests/e2e/events.spec.ts tests/e2e/events-visual.spec.ts",
+      "result": "fail",
+      "declared": 26,
+      "passed": 16,
+      "failed": 10,
+      "skipped": 0,
+      "note": "all 10 failures are in the event UI (workstream 03 / commit 6be6e8e); the specs stub /api/bff/** so no auth or guest BFF code runs in them"
+    },
+    {
+      "name": "login E2E",
+      "command": "not run",
+      "result": "blocked",
+      "note": "web/playwright.config.ts (lead-owned) has no auth-upstream webServer and no BFF env; the spec also hardcodes ports 3100/3182/5174 and is skipped without BFF_AUTH_E2E=1, which e2e-isolated rejects as an undeclared skip"
+    },
+    {
+      "name": "live smoke against the built server",
+      "command": "node .output/server/index.mjs + curl (ports 3800/3882)",
+      "result": "partial",
+      "note": "see smoke-transcript.md; POST /api/bff/auth/login returns 400 invalid_request because nuxt-security's xssValidator consumed the body before the handler - the lead-owned '/api/bff/**': { security: { xssValidator: false } } route rule is required"
+    }
+  ],
+  "parkedGuestBff": {
+    "restored": true,
+    "unitSuites": {
+      "web/tests/guest-bff.test.ts": "17 passed",
+      "web/tests/guest-upload.test.ts": "8 passed",
+      "web/tests/guest-drafts.test.ts": "11 passed"
+    },
+    "green": true,
+    "e2eSuites": {
+      "web/tests/e2e/events.spec.ts": "9 passed / 3 failed (x2 projects)",
+      "web/tests/e2e/events-visual.spec.ts": "0 passed / 2 failed (x2 projects)"
+    }
+  },
+  "leadNoteItems": {
+    "saveLocking": "implemented in web/server/utils/guest-drafts.ts (busy marker + abortSubmission) and events/[id]/index.put.ts (409 submission_in_progress); 2 new tests",
+    "uploadOversize": "tested with a real 51 MiB upload (413 too_large) and an exact-limit upload (413, busboy truncates at the limit)",
+    "gifSvgNoReEncode": "tested in web/tests/compress-image.test.ts (identity of the returned File object)"
+  },
+  "bugsFixed": [
+    "bff-auth-service.ts: login returned an undeclared `expiresAt` (ReferenceError on every login)",
+    "guest-upload.ts: removeAllListeners() before destroy() left the write pipeline pending forever, leaking the concurrency slot and temp dir on client abort",
+    "guest-bff.ts: protected-key check rejected `id` inside person objects that the form builds and the member allowlist accepts",
+    "bff-client.ts: safeLocalReturnPath accepted /admin\\t by trimming before the control-character check",
+    "bff-client.ts: BffErrorCode missing unauthenticated/not_found/conflict/upstream_error",
+    "useBffSession.ts: nuxtApp.hook('app:beforeUnmount') is not a Nuxt 4.6 hook; disposal never ran",
+    "bff-auth-context.ts: sessionHeader widened to boolean; Retry-After passed as string",
+    "packages/shared/src/index.ts: export * from './admin.js' collided with './public.js' (TS2308)"
+  ],
+  "testBugsFixed": [
+    "auth-session.test.ts: base64url tamper that changed no decoded bytes",
+    "auth-session.test.ts: invalid-capacity flood used an already-expired absolute expiry",
+    "auth-service.test.ts (4) and auth-api-integration.test.ts (1): fakes could not distinguish login-time from protected-time /me",
+    "bff-session-core.test.ts and login-form.test.ts: microtask-count synchronisation",
+    "login-form.test.ts: standalone Field without a form prop; wrong submit-error shape for TanStack Form 1.33.5"
+  ],
+  "blockersForLead": [
+    {
+      "id": "xss-validator-route-rule",
+      "owner": "lead",
+      "file": "web/nuxt.config.ts",
+      "patch": "'/api/bff/**': { security: { xssValidator: false } }",
+      "impact": "every BFF POST/PUT is unusable at runtime (empty body) until applied"
+    },
+    {
+      "id": "login-e2e-playwright-wiring",
+      "owner": "lead",
+      "file": "web/playwright.config.ts",
+      "impact": "login.spec.ts cannot run; needs an auth-upstream webServer, NUXT_API_BASE/NUXT_BFF_AUTH_ALLOWED_ORIGINS/NUXT_SESSION_PASSWORD on the Nuxt webServer, BFF_AUTH_E2E=1, and port-base-derived constants in the spec"
+    }
+  ],
+  "outOfScopeNotIntegrated": [
+    "web/server/api/bff/admin/**",
+    "web/server/api/bff/account/**",
+    "web/server/utils/bff-admin-resources.ts",
+    "web/server/utils/bff-admin-upstream.ts",
+    "web/server/utils/bff-protected.ts",
+    "web/shared/admin-contract.ts",
+    "web/tests/admin-contract.test.ts",
+    "web/tests/admin-resources.test.ts",
+    "docs/revamp/ADMIN-API.md"
+  ],
+  "deletedFromWorktreeCandidate": [
+    "web/shared/bff-auth-contract.ts (temporary mirror; imports switched to @guatswr/shared)",
+    "web/tests/auth-contract.test.ts (mirror parity test)"
+  ],
+  "unverified": [
+    "login/logout/session round trip against a real server (blocked by xss-validator-route-rule)",
+    "browser cookie persistence, h3 session rotation, real plugin ordering",
+    "login/permission/expiry/logout browser E2E (blocked by login-e2e-playwright-wiring)",
+    "compressorjs re-encode path (needs a canvas)",
+    "pnpm -r typecheck / pnpm -r lint (lead-owned)",
+    "multi-instance or restart-durable session storage"
+  ]
+}

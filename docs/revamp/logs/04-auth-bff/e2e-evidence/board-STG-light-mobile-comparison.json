@@ -1,0 +1,10 @@
+{
+  "region": "board-STG-light-mobile",
+  "project": "mobile",
+  "state": "event pages match the archived light layout",
+  "width": 1082,
+  "height": 2528,
+  "differingPixels": 0,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}

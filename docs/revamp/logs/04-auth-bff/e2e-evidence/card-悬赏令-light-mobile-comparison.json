@@ -1,0 +1,10 @@
+{
+  "region": "card-悬赏令-light-mobile",
+  "project": "mobile",
+  "state": "event pages match the archived light layout",
+  "width": 998,
+  "height": 767,
+  "differingPixels": 0,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}

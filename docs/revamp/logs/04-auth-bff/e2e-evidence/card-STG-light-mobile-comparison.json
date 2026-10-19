@@ -1,0 +1,10 @@
+{
+  "region": "card-STG-light-mobile",
+  "project": "mobile",
+  "state": "event pages match the archived light layout",
+  "width": 998,
+  "height": 1488,
+  "differingPixels": 0,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}

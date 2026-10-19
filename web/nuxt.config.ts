@@ -86,6 +86,19 @@ export default defineNuxtConfig({
     '/admin': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
     '/admin/**': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
     '/api/**': { headers: { 'Cache-Control': 'no-store' } },
+    // nuxt-security's xssValidator runs as a Nitro middleware and, for POST,
+    // consumes the request stream with `readBody(event)`. The BFF reads the
+    // request body itself as a bounded raw stream, so the validator left every
+    // write with an empty body (400 `invalid_request`). It is disabled only for
+    // the BFF write namespace, which enforces its own exact origin, JSON
+    // content type, byte/time bounds and Zod validation, and whose rendered
+    // output is sanitized or escaped. On these routes the validator could only
+    // reject legitimate content (any body whose JSON changes after HTML-entity
+    // filtering) while breaking every write.
+    '/api/bff/**': {
+      security: { xssValidator: false },
+      headers: { 'Cache-Control': 'no-store' },
+    },
     '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
   security: {

@@ -1,0 +1,10 @@
+{
+  "region": "board-悬赏令-dark-mobile",
+  "project": "mobile",
+  "state": "event pages match the archived dark layout",
+  "width": 1082,
+  "height": 2370,
+  "differingPixels": 3719,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}

@@ -1,0 +1,476 @@
+{
+  "generatedAt": "2026-10-19T02:07:12.587Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events",
+  "totalShards": 13,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 1
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 1
+    },
+    {
+      "index": 6,
+      "exitCode": 1
+    },
+    {
+      "index": 7,
+      "exitCode": 1
+    },
+    {
+      "index": 8,
+      "exitCode": 1
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 1
+    },
+    {
+      "index": 12,
+      "exitCode": 1
+    },
+    {
+      "index": 13,
+      "exitCode": 1
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 13,
+    "missingBlobs": []
+  },
+  "ok": false,
+  "declared": 26,
+  "counts": {
+    "passed": 16,
+    "expected": 16,
+    "flaky": 0,
+    "failed": 10,
+    "skipped": 0,
+    "allDeclared": 26
+  },
+  "failedBatches": [
+    {
+      "index": 1,
+      "exitCode": 1
+    },
+    {
+      "index": 5,
+      "exitCode": 1
+    },
+    {
+      "index": 6,
+      "exitCode": 1
+    },
+    {
+      "index": 7,
+      "exitCode": 1
+    },
+    {
+      "index": 8,
+      "exitCode": 1
+    },
+    {
+      "index": 11,
+      "exitCode": 1
+    },
+    {
+      "index": 12,
+      "exitCode": 1
+    },
+    {
+      "index": 13,
+      "exitCode": 1
+    }
+  ],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-01\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-01\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\trace.zip"
+      ],
+      "errors": [
+        "Error: board-悬赏令-dark-desktop: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m23901\u001b[39m\n\n   at support\\events-parity.ts:188\n\n  186 |     )\n  187 |   )\n> 188 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  189 | }\n  190 |\n  191 | /** The archived preloader is removed on mount; wait before capturing. */\n    at compareRegion (E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\support\\events-parity.ts:188:70)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events-visual.spec.ts:43:7"
+      ],
+      "batch": 1,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-01\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-01\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\trace.zip"
+      ],
+      "errors": [
+        "Error: board-悬赏令-light-desktop: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m19281\u001b[39m\n\n   at support\\events-parity.ts:188\n\n  186 |     )\n  187 |   )\n> 188 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  189 | }\n  190 |\n  191 | /** The archived preloader is removed on mount; wait before capturing. */\n    at compareRegion (E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\support\\events-parity.ts:188:70)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events-visual.spec.ts:43:7"
+      ],
+      "batch": 1,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-05\\test-results\\events-event-board-interac-d9459-nd-retries-with-the-same-id-desktop\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-05\\test-results\\events-event-board-interac-d9459-nd-retries-with-the-same-id-desktop\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('event-modal').getByText('服务暂时不可用，请稍后重试')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('event-modal').getByText('服务暂时不可用，请稍后重试') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('event-modal').getByText('服务暂时不可用，请稍后重试')\u001b[22m\n\n\n  146 |     await modal.getByRole('button', { name: '提交审核' }).click()\n  147 |     // First attempt fails and must not be retried automatically.\n> 148 |     await expect(modal.getByText('服务暂时不可用，请稍后重试')).toBeVisible()\n      |                                                    ^\n  149 |     const draftCalls = bff.calls.filter((call) => call.path.endsWith('/events/draft'))\n  150 |     expect(draftCalls).toHaveLength(1)\n  151 |     expect(bff.calls.filter((call) => call.method === 'PUT')).toHaveLength(1)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events.spec.ts:148:52"
+      ],
+      "batch": 5,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::162:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::195:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-06\\test-results\\events-event-board-interac-483fb-ors-from-an-expired-session-desktop\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-06\\test-results\\events-event-board-interac-483fb-ors-from-an-expired-session-desktop\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('event-modal').getByText('没有权限执行该操作')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('event-modal').getByText('没有权限执行该操作') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('event-modal').getByText('没有权限执行该操作')\u001b[22m\n\n\n  203 |     await modal.locator('input[name=\"qq\"]').fill('123456')\n  204 |     await modal.getByRole('button', { name: '保存报名' }).click()\n> 205 |     await expect(modal.getByText('没有权限执行该操作')).toBeVisible()\n      |                                                ^\n  206 |     // The theme preference survives a permission error.\n  207 |     const theme = await page.locator('html').getAttribute('data-theme')\n  208 |     expect(['light', 'dark']).toContain(theme)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events.spec.ts:205:48"
+      ],
+      "batch": 6,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::212:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-06\\test-results\\events-event-board-interac-63f38-and-retries-after-a-failure-desktop\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-06\\test-results\\events-event-board-interac-63f38-and-retries-after-a-failure-desktop\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('event-modal').getByText('参赛名单读取失败，请重试')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('event-modal').getByText('参赛名单读取失败，请重试') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('event-modal').getByText('参赛名单读取失败，请重试')\u001b[22m\n\n\n  240 |     await card.click()\n  241 |     const modal = page.getByTestId('event-modal')\n> 242 |     await expect(modal.getByText('参赛名单读取失败，请重试')).toBeVisible()\n      |                                                   ^\n  243 |     await modal.getByRole('button', { name: '重新读取' }).click()\n  244 |     await expect(modal.getByText('Total: 1')).toBeVisible()\n  245 |     await expect(modal.getByText('QQ: 123456')).toBeVisible()\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events.spec.ts:242:51"
+      ],
+      "batch": 6,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::248:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-08\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-08\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\trace.zip"
+      ],
+      "errors": [
+        "Error: board-悬赏令-dark-mobile: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m3719\u001b[39m\n\n   at support\\events-parity.ts:188\n\n  186 |     )\n  187 |   )\n> 188 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  189 | }\n  190 |\n  191 | /** The archived preloader is removed on mount; wait before capturing. */\n    at compareRegion (E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\support\\events-parity.ts:188:70)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events-visual.spec.ts:43:7"
+      ],
+      "batch": 8,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-07\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-07\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoEqual\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // deep equality\u001b[22m\n\n\u001b[32m- Expected  - 2\u001b[39m\n\u001b[31m+ Received  + 2\u001b[39m\n\n\u001b[2m  Object {\u001b[22m\n\u001b[32m-   \"height\": 1486,\u001b[39m\n\u001b[32m-   \"width\": 914,\u001b[39m\n\u001b[31m+   \"height\": 1507,\u001b[39m\n\u001b[31m+   \"width\": 992,\u001b[39m\n\u001b[2m  }\u001b[22m\n\n   at support\\events-parity.ts:162\n\n  160 |   const oldImage = PNG.sync.read(oldBytes)\n  161 |   const newImage = PNG.sync.read(newBytes)\n> 162 |   expect({ width: newImage.width, height: newImage.height }).toEqual({\n      |                                                              ^\n  163 |     width: oldImage.width,\n  164 |     height: oldImage.height\n  165 |   })\n    at compareRegion (E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\support\\events-parity.ts:162:62)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events-visual.spec.ts:72:7"
+      ],
+      "batch": 7,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-11\\test-results\\events-event-board-interac-d9459-nd-retries-with-the-same-id-mobile\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-11\\test-results\\events-event-board-interac-d9459-nd-retries-with-the-same-id-mobile\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('event-modal').getByText('服务暂时不可用，请稍后重试')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('event-modal').getByText('服务暂时不可用，请稍后重试') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('event-modal').getByText('服务暂时不可用，请稍后重试')\u001b[22m\n\n\n  146 |     await modal.getByRole('button', { name: '提交审核' }).click()\n  147 |     // First attempt fails and must not be retried automatically.\n> 148 |     await expect(modal.getByText('服务暂时不可用，请稍后重试')).toBeVisible()\n      |                                                    ^\n  149 |     const draftCalls = bff.calls.filter((call) => call.path.endsWith('/events/draft'))\n  150 |     expect(draftCalls).toHaveLength(1)\n  151 |     expect(bff.calls.filter((call) => call.method === 'PUT')).toHaveLength(1)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events.spec.ts:148:52"
+      ],
+      "batch": 11,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::162:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::195:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-12\\test-results\\events-event-board-interac-483fb-ors-from-an-expired-session-mobile\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-12\\test-results\\events-event-board-interac-483fb-ors-from-an-expired-session-mobile\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('event-modal').getByText('没有权限执行该操作')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('event-modal').getByText('没有权限执行该操作') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('event-modal').getByText('没有权限执行该操作')\u001b[22m\n\n\n  203 |     await modal.locator('input[name=\"qq\"]').fill('123456')\n  204 |     await modal.getByRole('button', { name: '保存报名' }).click()\n> 205 |     await expect(modal.getByText('没有权限执行该操作')).toBeVisible()\n      |                                                ^\n  206 |     // The theme preference survives a permission error.\n  207 |     const theme = await page.locator('html').getAttribute('data-theme')\n  208 |     expect(['light', 'dark']).toContain(theme)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events.spec.ts:205:48"
+      ],
+      "batch": 12,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::212:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-13\\test-results\\events-event-board-interac-63f38-and-retries-after-a-failure-mobile\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\auth-events\\batch-13\\test-results\\events-event-board-interac-63f38-and-retries-after-a-failure-mobile\\trace.zip"
+      ],
+      "errors": [
+        "Error: \u001b[2mexpect(\u001b[22m\u001b[31mlocator\u001b[39m\u001b[2m).\u001b[22mtoBeVisible\u001b[2m(\u001b[22m\u001b[2m)\u001b[22m failed\n\nLocator: getByTestId('event-modal').getByText('参赛名单读取失败，请重试')\nExpected: visible\nTimeout: 5000ms\nError: element(s) not found\n\nCall log:\n\u001b[2m  - Expect \"toBeVisible\" getByTestId('event-modal').getByText('参赛名单读取失败，请重试') with timeout 5000ms\u001b[22m\n\u001b[2m  - waiting for getByTestId('event-modal').getByText('参赛名单读取失败，请重试')\u001b[22m\n\n\n  240 |     await card.click()\n  241 |     const modal = page.getByTestId('event-modal')\n> 242 |     await expect(modal.getByText('参赛名单读取失败，请重试')).toBeVisible()\n      |                                                   ^\n  243 |     await modal.getByRole('button', { name: '重新读取' }).click()\n  244 |     await expect(modal.getByText('Total: 1')).toBeVisible()\n  245 |     await expect(modal.getByText('QQ: 123456')).toBeVisible()\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events.spec.ts:242:51"
+      ],
+      "batch": 13,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::248:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    }
+  ]
+}

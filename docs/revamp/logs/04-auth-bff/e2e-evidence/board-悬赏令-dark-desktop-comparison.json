@@ -1,0 +1,10 @@
+{
+  "region": "board-悬赏令-dark-desktop",
+  "project": "desktop",
+  "state": "event pages match the archived dark layout",
+  "width": 1280,
+  "height": 784,
+  "differingPixels": 23901,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}

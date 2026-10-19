@@ -74,6 +74,8 @@ export interface IssuedDraft {
 
 export type GuestSubmissionState =
   | { kind: 'replay', id: number }
+  /** Another submission for the same draft id is still in flight. */
+  | { kind: 'busy' }
   | { kind: 'new' }
 
 export interface GuestDraftStore {
@@ -89,9 +91,14 @@ export interface GuestDraftStore {
   /**
    * Confirmed-submission bookkeeping. `begin` reports a replay for an identical
    * payload that already succeeded, so the caller must not repeat the mutation.
+   * It also takes an exclusive per-draft in-flight marker: `owns()` stays true
+   * until `confirmSubmission` runs, so without the marker two concurrent
+   * identical saves would both be told `new` and both reach the frozen backend.
    */
   beginSubmission(intent: GuestIntent, id: number, digest: string): GuestSubmissionState
   confirmSubmission(intent: GuestIntent, id: number, digest: string): void
+  /** Releases the in-flight marker after a failed or abandoned submission. */
+  abortSubmission(intent: GuestIntent, id: number): void
   /** Canonical payload digest, derived from the store's own key. */
   digest(intent: GuestIntent, payload: unknown): string
   size(): number
@@ -135,6 +142,18 @@ export function createGuestDraftStore(
   const reuseMs = boundedOption(options.reuseMs, GUEST_DRAFT_REUSE_MS, 0, 60 * 60 * 1000)
   const records = new Map<string, GuestDraftRecord>()
   const inFlight = new Map<string, Promise<IssuedDraft>>()
+  /** Per-draft exclusive submission markers, `${recordKey}:${draftId}`. */
+  const submissionsInFlight = new Set<string>()
+
+  /**
+   * Release a submission marker only for the record the caller actually owns:
+   * `read` enforces the client-IP binding, so a foreign caller cannot free the
+   * owner's marker (which would re-open the concurrent-save race).
+   */
+  function releaseMarker(intent: GuestIntent, id: number): void {
+    const record = read(intent)
+    if (record) submissionsInFlight.delete(`${record.key}:${id}`)
+  }
 
   /** Evicts expired entries first, then oldest, and never leaves the map oversized. */
   function enforceRecordBound(): void {
@@ -257,12 +276,22 @@ export function createGuestDraftStore(
       if (!record) return { kind: 'new' }
       const receipt = record.receipts.find((entry) => entry.digest === digest)
       if (receipt && receipt.id === id) return { kind: 'replay', id: receipt.id }
+      const marker = `${record.key}:${id}`
+      if (submissionsInFlight.has(marker)) return { kind: 'busy' }
+      // Bounded like every other structure here: a marker lost to eviction can
+      // only allow a duplicate upstream write, never block a legitimate save.
+      if (submissionsInFlight.size >= maxInflight) {
+        const oldest = submissionsInFlight.values().next().value
+        if (oldest !== undefined) submissionsInFlight.delete(oldest)
+      }
+      submissionsInFlight.add(marker)
       return { kind: 'new' }
     },
     digest(_intent, payload) {
       return digestGuestPayload(key, payload)
     },
     confirmSubmission(intent, id, digest) {
+      releaseMarker(intent, id)
       const record = read(intent)
       if (!record) return
       if (!record.submitted.includes(id)) record.submitted.push(id)
@@ -273,6 +302,9 @@ export function createGuestDraftStore(
       record.lastIssuedAt = 0
       record.updatedAt = now()
       put(record.key, record)
+    },
+    abortSubmission(intent, id) {
+      releaseMarker(intent, id)
     },
     size() {
       enforceRecordBound()

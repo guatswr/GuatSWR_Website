@@ -95,7 +95,12 @@ export const publicActivitiesFixture = [
     tag: '主题日',
     date: '2026-08-02',
     description: '冰之妖精主题的夏日聚会，附现场照片。',
-    content: '## 冰祭\n\n冷饮、猜谜与 9 号挑战赛。',
+    // Activity 3 carries the fenced block the `code block copy` E2E needs. The
+    // visual parity spec compares `/activity/1`, whose content stays fence-free
+    // (the archived md-editor-v3 preview colours a fence with its own palette,
+    // which the server-side Shiki `github-light` tokens deliberately do not
+    // reproduce), and no list or grid region renders article content.
+    content: '## 冰祭\n\n冷饮、猜谜与 9 号挑战赛。\n\n```js\nconst answer = 42\n```\n',
     cover_image: '/uploads/img/activity/3/cover.png',
     images: JSON.stringify(['/uploads/img/activity/3/photo.png']),
     created_at: '2026-08-02 12:00:00',

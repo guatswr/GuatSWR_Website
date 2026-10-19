@@ -141,6 +141,46 @@ describe('guest draft ownership and receipts', () => {
     expect(qa.store.owns(intent, issued.id)).toBe(false)
   })
 
+  it('locks a draft while its save is in flight so a concurrent save cannot repeat it', async () => {
+    const qa = setup()
+    const issued = await qa.store.issue(qa.intent(), qa.create)
+    const intent = qa.intent(issued.cookieId)
+    const digest = qa.store.digest(intent, { type: 'STG', title: '比赛', content: {} })
+
+    // `owns()` stays true until the write is confirmed, so the store itself has
+    // to reject the second concurrent save.
+    expect(qa.store.owns(intent, issued.id)).toBe(true)
+    expect(qa.store.beginSubmission(intent, issued.id, digest)).toEqual({ kind: 'new' })
+    expect(qa.store.owns(intent, issued.id)).toBe(true)
+    expect(qa.store.beginSubmission(intent, issued.id, digest)).toEqual({ kind: 'busy' })
+
+    // A failed upstream write releases the marker, so the client may retry.
+    qa.store.abortSubmission(intent, issued.id)
+    expect(qa.store.beginSubmission(intent, issued.id, digest)).toEqual({ kind: 'new' })
+    qa.store.confirmSubmission(intent, issued.id, digest)
+    expect(qa.store.beginSubmission(intent, issued.id, digest)).toEqual({ kind: 'replay', id: issued.id })
+
+    // A different draft id is not blocked by this one's marker.
+    const other = await qa.store.issue(intent, qa.create)
+    const otherIntent = qa.intent(other.cookieId)
+    const otherDigest = qa.store.digest(otherIntent, { type: 'STG', title: '另一场', content: {} })
+    expect(qa.store.beginSubmission(otherIntent, other.id, otherDigest)).toEqual({ kind: 'new' })
+  })
+
+  it('refuses a foreign client the owner’s in-flight marker', async () => {
+    const qa = setup()
+    const issued = await qa.store.issue(qa.intent(), qa.create)
+    const owner = qa.intent(issued.cookieId)
+    const digest = qa.store.digest(owner, { type: 'STG', title: '比赛', content: {} })
+    expect(qa.store.beginSubmission(owner, issued.id, digest)).toEqual({ kind: 'new' })
+
+    // Same cookie, different address: not the owner, so it must not free the
+    // marker (which would re-open the concurrent-save race).
+    const intruder = qa.intent(issued.cookieId, '198.51.100.9')
+    qa.store.abortSubmission(intruder, issued.id)
+    expect(qa.store.beginSubmission(owner, issued.id, digest)).toEqual({ kind: 'busy' })
+  })
+
   it('bounds drafts and receipts per record', async () => {
     const qa = setup({ maxDrafts: 2, maxReceipts: 1, reuseMs: 0 })
     const first = await qa.store.issue(qa.intent(), qa.create)

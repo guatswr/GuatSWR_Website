@@ -1,0 +1,11 @@
+routes/api/bff/auth/csrf.get.mjs
+routes/api/bff/auth/login.post.mjs
+routes/api/bff/auth/logout.post.mjs
+routes/api/bff/auth/session.get.mjs
+routes/api/bff/guest/events/_id/signup.delete.mjs
+routes/api/bff/guest/events/_id/signup.get.mjs
+routes/api/bff/guest/events/_id/signup.post.mjs
+routes/api/bff/guest/events/draft.post.mjs
+routes/api/bff/guest/events/index.put.mjs
+routes/api/bff/guest/upload/avatar.post.mjs
+routes/api/bff/guest/upload/content.post.mjs

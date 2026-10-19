@@ -1,0 +1,10 @@
+{
+  "region": "board-悬赏令-light-desktop",
+  "project": "desktop",
+  "state": "event pages match the archived light layout",
+  "width": 1280,
+  "height": 784,
+  "differingPixels": 19281,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}
