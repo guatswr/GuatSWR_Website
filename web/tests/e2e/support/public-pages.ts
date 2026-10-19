@@ -54,6 +54,31 @@ export async function proxyArchiveRequests(page: Page): Promise<void> {
 }
 
 /**
+ * Explicit security deviation: compare the old renderer using independently
+ * specified public text, never by running the production redactor on both sides.
+ * The raw archive capture and the privacy assertions remain in the spec.
+ */
+export const PUBLIC_LOG_VISUAL_DETAILS: Readonly<Record<number, string>> = {
+  4: '登录成功',
+  5: '登录成功',
+  6: '登录尝试过多，已临时锁定',
+  7: '封禁了一个访问来源',
+  8: '重置了管理员密码',
+  9: '强制刷新了登录凭证',
+  10: '修改了站点配置',
+  12: '更新活动: 秋季例会 ([redacted]',
+}
+
+export async function usePublicLogVisualExpectation(page: Page): Promise<void> {
+  await page.route('**/api/logs?*', async route => {
+    const response = await route.fetch({ url: rewrite(route.request().url()) })
+    const data = await response.json() as { logs: { id: number, details: string }[] }
+    for (const row of data.logs) row.details = PUBLIC_LOG_VISUAL_DETAILS[row.id] ?? row.details
+    await route.fulfill({ response, json: data })
+  })
+}
+
+/**
  * Archived CDN asset -> the pinned local file that replaces it. Mirrors
  * `web/public/icons/env/SOURCES.md` (which records the nine archived URLs that
  * answer 404 upstream and the generic mark used for them).
@@ -108,6 +133,26 @@ export function trackExternalRequests(page: Page): string[] {
     if (!url.startsWith('http://127.0.0.1')) external.push(url)
   })
   return external
+}
+
+/** Observe the finished page, rather than a race between decode and IO paint. */
+export async function settlePublicPage(page: Page): Promise<void> {
+  await page.evaluate(async () => {
+    await document.fonts.ready
+    const step = Math.max(300, Math.floor(innerHeight * 0.8))
+    for (let y = 0; y < document.documentElement.scrollHeight; y += step) {
+      scrollTo(0, y)
+      await new Promise(resolve => requestAnimationFrame(resolve))
+    }
+    scrollTo(0, 0)
+  })
+  await expect.poll(() => page.locator('.progressive-image').evaluateAll(nodes =>
+    nodes.every(node => ['ready', 'empty', 'error'].includes(node.getAttribute('data-image-state') ?? ''))
+  ), { timeout: 15_000, message: 'progressive loaders settle after entering the viewport' }).toBe(true)
+  await expect.poll(() => page.locator('.route-progress__bar, .nuxt-loading-indicator').evaluateAll(nodes =>
+    nodes.every(node => Number(getComputedStyle(node).opacity) === 0)
+  ), { timeout: 15_000, message: 'route progress has actually finished' }).toBe(true)
+  await expect(page.locator('#pre-loading-screen')).toHaveCount(0)
 }
 
 /**
@@ -217,12 +262,31 @@ export async function compareToArchive(
   const options = { animations: 'disabled' as const, caret: 'hide' as const }
   await waitForVisibleImages(reference)
   await waitForVisibleImages(current)
+  // A tall locator screenshot can composite unrelated fixed navigation at a
+  // different scroll offset on each site. Align just this region above those
+  // layers, retaining its measured width and height. No pixels are masked.
+  const saved = await Promise.all([reference, current].map(async locator => ({
+    style: await locator.getAttribute('style'), rect: await locator.boundingBox(),
+  })))
+  for (const [index, locator] of [reference, current].entries()) {
+    const rect = saved[index]!.rect
+    if (!rect) throw new Error(`${name}: region has no bounds`)
+    await locator.evaluate((node, width) => Object.assign((node as HTMLElement).style, {
+      position: 'fixed', top: '0', left: '0', width: `${width}px`, zIndex: '9999',
+    }), rect.width)
+  }
   await Promise.all([reference.page(), current.page()].map(async (page) => {
     await page.evaluate(() => window.scrollTo(0, 0))
   }))
   const crop = await devicePixelCrop(reference, current, name)
   const archiveCapture = cropCapture(await reference.screenshot(options), crop, info, `${name}-archive`)
   const newCapture = cropCapture(await current.screenshot(options), crop, info, `${name}-nuxt`)
+  for (const [index, locator] of [reference, current].entries()) {
+    await locator.evaluate((node, style) => {
+      if (style === null) node.removeAttribute('style')
+      else node.setAttribute('style', style)
+    }, saved[index]!.style)
+  }
   crop.rawDevicePixels = archiveCapture.rawDevicePixels
   expect(newCapture.rawDevicePixels).toEqual(archiveCapture.rawDevicePixels)
 

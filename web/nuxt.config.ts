@@ -18,6 +18,11 @@ export default defineNuxtConfig({
   build: { transpile: ['@guatswr/shared'] },
   sourcemap: { server: false, client: false },
   features: { inlineStyles: true },
+  // Fetch the next route on pointer/focus intent. Viewport prefetch on the
+  // homepage otherwise downloads event validators before any navigation.
+  experimental: {
+    defaults: { nuxtLink: { prefetchOn: { visibility: false, interaction: true } } },
+  },
   // Public pages do not need a session; only projected public reads are cached.
   // Admin middleware will explicitly fetch its BFF session when implemented.
   auth: { loadStrategy: 'none' },

@@ -1,0 +1,3668 @@
+{
+  "generatedAt": "2026-10-19T05:57:05.809Z",
+  "budgetBytes": 153600,
+  "routes": [
+    {
+      "name": "home",
+      "path": "/",
+      "query": null,
+      "mainContent": "桂航绯想天",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "首页 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "桂航绯想天",
+        "mainContentFound": true,
+        "mainContentTextLength": 1401,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 1412
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C4-LXC_f.js",
+          "source": "ssr",
+          "rawBytes": 3359,
+          "gzipBytes": 1629,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CIzSA5oU.js",
+          "source": "ssr",
+          "rawBytes": 29071,
+          "gzipBytes": 11058,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CcuJ67my.js",
+          "source": "ssr",
+          "rawBytes": 1776,
+          "gzipBytes": 973,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D6kMY_Hi.js",
+          "source": "ssr",
+          "rawBytes": 5975,
+          "gzipBytes": 2626,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 26,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/C4-LXC_f.js",
+        "/_nuxt/CIzSA5oU.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CcuJ67my.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/C4-LXC_f.js",
+        "/_nuxt/CIzSA5oU.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CcuJ67my.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 26,
+      "observedRequestCount": 26,
+      "rawBytes": 330030,
+      "initialRouteJsGzipBytes": 129542,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2910
+    },
+    {
+      "name": "activities",
+      "path": "/activities",
+      "query": null,
+      "mainContent": "社团活动记录",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "社团活动记录 | 桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "社团活动记录",
+        "mainContentFound": true,
+        "mainContentTextLength": 656,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 679
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BvKSYsyL.js",
+          "source": "ssr",
+          "rawBytes": 6281,
+          "gzipBytes": 2759,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D6kMY_Hi.js",
+          "source": "ssr",
+          "rawBytes": 5975,
+          "gzipBytes": 2626,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DUnrNi0-.js",
+          "source": "ssr",
+          "rawBytes": 3995,
+          "gzipBytes": 1945,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/pViSocRl.js",
+          "source": "ssr",
+          "rawBytes": 48,
+          "gzipBytes": 68,
+          "gzipSource": "gzip-level-9-fallback"
+        }
+      ],
+      "assetCount": 25,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BvKSYsyL.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js",
+        "/_nuxt/pViSocRl.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BvKSYsyL.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js",
+        "/_nuxt/pViSocRl.js"
+      ],
+      "staticGraphCount": 25,
+      "observedRequestCount": 25,
+      "rawBytes": 305398,
+      "initialRouteJsGzipBytes": 120179,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2935
+    },
+    {
+      "name": "activity detail",
+      "path": "/activity/1",
+      "query": null,
+      "mainContent": "秋季例会",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "秋季例会 · 冰之妖精的茶会 | 桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "秋季例会",
+        "mainContentFound": true,
+        "mainContentTextLength": 535,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 566
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CsiJzvH7.js",
+          "source": "ssr",
+          "rawBytes": 8902,
+          "gzipBytes": 3560,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D6kMY_Hi.js",
+          "source": "ssr",
+          "rawBytes": 5975,
+          "gzipBytes": 2626,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DUnrNi0-.js",
+          "source": "ssr",
+          "rawBytes": 3995,
+          "gzipBytes": 1945,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DruAUH5j.js",
+          "source": "ssr",
+          "rawBytes": 4287,
+          "gzipBytes": 2078,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 25,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/CsiJzvH7.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/DruAUH5j.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/CsiJzvH7.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/DruAUH5j.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 25,
+      "observedRequestCount": 25,
+      "rawBytes": 312258,
+      "initialRouteJsGzipBytes": 122990,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2596
+    },
+    {
+      "name": "members",
+      "path": "/members",
+      "query": null,
+      "mainContent": "绯想天住民名录",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "绯想天住民名录 | 桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "绯想天住民名录",
+        "mainContentFound": true,
+        "mainContentTextLength": 664,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 688
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D6kMY_Hi.js",
+          "source": "ssr",
+          "rawBytes": 5975,
+          "gzipBytes": 2626,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DEmewrMK.js",
+          "source": "ssr",
+          "rawBytes": 483,
+          "gzipBytes": 289,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DUnrNi0-.js",
+          "source": "ssr",
+          "rawBytes": 3995,
+          "gzipBytes": 1945,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dk78ywyi.js",
+          "source": "ssr",
+          "rawBytes": 12184,
+          "gzipBytes": 4964,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 25,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DEmewrMK.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dk78ywyi.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DEmewrMK.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dk78ywyi.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 25,
+      "observedRequestCount": 25,
+      "rawBytes": 311736,
+      "initialRouteJsGzipBytes": 122605,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2659
+    },
+    {
+      "name": "history",
+      "path": "/history",
+      "query": null,
+      "mainContent": "绯想天群史",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "绯想天群史 | 桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "绯想天群史",
+        "mainContentFound": true,
+        "mainContentTextLength": 545,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 567
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BruLlIqD.js",
+          "source": "ssr",
+          "rawBytes": 9385,
+          "gzipBytes": 4092,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D6kMY_Hi.js",
+          "source": "ssr",
+          "rawBytes": 5975,
+          "gzipBytes": 2626,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DUnrNi0-.js",
+          "source": "ssr",
+          "rawBytes": 3995,
+          "gzipBytes": 1945,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DruAUH5j.js",
+          "source": "ssr",
+          "rawBytes": 4287,
+          "gzipBytes": 2078,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 25,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BruLlIqD.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/DruAUH5j.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BruLlIqD.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D6kMY_Hi.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/DruAUH5j.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 25,
+      "observedRequestCount": 25,
+      "rawBytes": 312741,
+      "initialRouteJsGzipBytes": 123522,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2156
+    },
+    {
+      "name": "logs",
+      "path": "/logs",
+      "query": null,
+      "mainContent": "日志档案",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "日志档案 | 桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "日志档案",
+        "mainContentFound": true,
+        "mainContentTextLength": 1908,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 1929
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DEmewrMK.js",
+          "source": "ssr",
+          "rawBytes": 483,
+          "gzipBytes": 289,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DUnrNi0-.js",
+          "source": "ssr",
+          "rawBytes": 3995,
+          "gzipBytes": 1945,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Ol-BEsOV.js",
+          "source": "ssr",
+          "rawBytes": 31414,
+          "gzipBytes": 10586,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/pViSocRl.js",
+          "source": "ssr",
+          "rawBytes": 48,
+          "gzipBytes": 68,
+          "gzipSource": "gzip-level-9-fallback"
+        }
+      ],
+      "assetCount": 25,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DEmewrMK.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Ol-BEsOV.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js",
+        "/_nuxt/pViSocRl.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DEmewrMK.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DUnrNi0-.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Ol-BEsOV.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js",
+        "/_nuxt/pViSocRl.js"
+      ],
+      "staticGraphCount": 25,
+      "observedRequestCount": 25,
+      "rawBytes": 325039,
+      "initialRouteJsGzipBytes": 125669,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 4637
+    },
+    {
+      "name": "social",
+      "path": "/social",
+      "query": null,
+      "mainContent": "绯想天 · 外界通讯",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "博丽大结界 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "绯想天 · 外界通讯",
+        "mainContentFound": true,
+        "mainContentTextLength": 537,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 551
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/2vxUdoiH.js",
+          "source": "ssr",
+          "rawBytes": 1970,
+          "gzipBytes": 1226,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C4-LXC_f.js",
+          "source": "ssr",
+          "rawBytes": 3359,
+          "gzipBytes": 1629,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CcuJ67my.js",
+          "source": "ssr",
+          "rawBytes": 1776,
+          "gzipBytes": 973,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/2vxUdoiH.js",
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/C4-LXC_f.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CcuJ67my.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/2vxUdoiH.js",
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/C4-LXC_f.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CcuJ67my.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 296204,
+      "initialRouteJsGzipBytes": 116609,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 1455
+    },
+    {
+      "name": "join",
+      "path": "/join",
+      "query": null,
+      "mainContent": "加入桂航绯想天",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "加入我们 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "加入桂航绯想天",
+        "mainContentFound": true,
+        "mainContentTextLength": 781,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 794
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C4-LXC_f.js",
+          "source": "ssr",
+          "rawBytes": 3359,
+          "gzipBytes": 1629,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co-X4jgt.js",
+          "source": "ssr",
+          "rawBytes": 9125,
+          "gzipBytes": 3847,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DbRnPop_.js",
+          "source": "ssr",
+          "rawBytes": 37,
+          "gzipBytes": 53,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 23,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/C4-LXC_f.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co-X4jgt.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/C4-LXC_f.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co-X4jgt.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DbRnPop_.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 23,
+      "observedRequestCount": 23,
+      "rawBytes": 301583,
+      "initialRouteJsGzipBytes": 118257,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 1453
+    },
+    {
+      "name": "events entry redirect",
+      "path": "/events",
+      "query": null,
+      "mainContent": "悬赏令",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "悬赏令",
+        "mainContentFound": true,
+        "mainContentTextLength": 643,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 657
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BmXc5GtW.js",
+          "source": "ssr",
+          "rawBytes": 301,
+          "gzipBytes": 281,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DNs2eaur.js",
+          "source": "ssr",
+          "rawBytes": 4531,
+          "gzipBytes": 2104,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DgBGEgef.js",
+          "source": "ssr",
+          "rawBytes": 19641,
+          "gzipBytes": 6783,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BmXc5GtW.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BmXc5GtW.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 314285,
+      "initialRouteJsGzipBytes": 122371,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2431
+    },
+    {
+      "name": "bounty",
+      "path": "/events/bounty",
+      "query": null,
+      "mainContent": "悬赏令",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "悬赏令",
+        "mainContentFound": true,
+        "mainContentTextLength": 643,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 657
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BmXc5GtW.js",
+          "source": "ssr",
+          "rawBytes": 301,
+          "gzipBytes": 281,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DNs2eaur.js",
+          "source": "ssr",
+          "rawBytes": 4531,
+          "gzipBytes": 2104,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DgBGEgef.js",
+          "source": "ssr",
+          "rawBytes": 19641,
+          "gzipBytes": 6783,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BmXc5GtW.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/BmXc5GtW.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 314285,
+      "initialRouteJsGzipBytes": 122371,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2431
+    },
+    {
+      "name": "betting",
+      "path": "/events/betting",
+      "query": null,
+      "mainContent": "对赌协议",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "对赌协议",
+        "mainContentFound": true,
+        "mainContentTextLength": 625,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 639
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/4CfHae4e.js",
+          "source": "ssr",
+          "rawBytes": 278,
+          "gzipBytes": 252,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DNs2eaur.js",
+          "source": "ssr",
+          "rawBytes": 4531,
+          "gzipBytes": 2104,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DgBGEgef.js",
+          "source": "ssr",
+          "rawBytes": 19641,
+          "gzipBytes": 6783,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/4CfHae4e.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/4CfHae4e.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 314262,
+      "initialRouteJsGzipBytes": 122342,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2521
+    },
+    {
+      "name": "STG",
+      "path": "/events/stg",
+      "query": null,
+      "mainContent": "欢迎STGer报名参加",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "欢迎STGer报名参加",
+        "mainContentFound": true,
+        "mainContentTextLength": 670,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 684
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DNs2eaur.js",
+          "source": "ssr",
+          "rawBytes": 4531,
+          "gzipBytes": 2104,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DT00jn1r.js",
+          "source": "ssr",
+          "rawBytes": 271,
+          "gzipBytes": 248,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DgBGEgef.js",
+          "source": "ssr",
+          "rawBytes": 19641,
+          "gzipBytes": 6783,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DT00jn1r.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DT00jn1r.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 314255,
+      "initialRouteJsGzipBytes": 122338,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2628
+    },
+    {
+      "name": "zetime",
+      "path": "/events/zetime",
+      "query": null,
+      "mainContent": "则批大本营",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "则批大本营",
+        "mainContentFound": true,
+        "mainContentTextLength": 570,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 584
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CkYe9Leh.js",
+          "source": "ssr",
+          "rawBytes": 305,
+          "gzipBytes": 276,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DNs2eaur.js",
+          "source": "ssr",
+          "rawBytes": 4531,
+          "gzipBytes": 2104,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DgBGEgef.js",
+          "source": "ssr",
+          "rawBytes": 19641,
+          "gzipBytes": 6783,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/CkYe9Leh.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/CkYe9Leh.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 314289,
+      "initialRouteJsGzipBytes": 122366,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 1570
+    },
+    {
+      "name": "party",
+      "path": "/events/party",
+      "query": null,
+      "mainContent": "小聚、大聚、饭聚",
+      "ok": true,
+      "checks": {
+        "httpStatus": true,
+        "noindex": true,
+        "contentReady": true
+      },
+      "evidence": {
+        "status": 200,
+        "robotsTag": "noindex, nofollow",
+        "noindex": true,
+        "title": "桂航绯想天 | 桂航绯想天",
+        "nuxtRootFound": true,
+        "nuxtRootClosed": true,
+        "mainContentExpected": "小聚、大聚、饭聚",
+        "mainContentFound": true,
+        "mainContentTextLength": 593,
+        "mainContentExcerpt": "跳到主要内容 桂航绯想天 GUAT TOUHOU FANS CLUB 01 首页 02 活动 进行中的活动 异变进行时 联机、挑战与线下相聚 往期活动回顾 记忆碎片 照片、记录与共同的回忆 03 成员 04 群史 05 社群链接 入社 加入我们 01 首页 02 活动 进行中的活动 异变进行时 往期活动回顾 记忆碎片 ",
+        "visibleTextLength": 607
+      },
+      "assets": [
+        {
+          "path": "/_nuxt/3V9C8Zjt.js",
+          "source": "ssr",
+          "rawBytes": 10775,
+          "gzipBytes": 4175,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/B6BQ63_j.js",
+          "source": "ssr",
+          "rawBytes": 4473,
+          "gzipBytes": 1933,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/BOyrFrfl.js",
+          "source": "ssr",
+          "rawBytes": 7095,
+          "gzipBytes": 2856,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/C-XP0Z8B.js",
+          "source": "ssr",
+          "rawBytes": 766,
+          "gzipBytes": 516,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/C3AEO0S2.js",
+          "source": "ssr",
+          "rawBytes": 2006,
+          "gzipBytes": 1216,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CMrBy46C.js",
+          "source": "ssr",
+          "rawBytes": 25071,
+          "gzipBytes": 9769,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CRzLMJPS.js",
+          "source": "ssr",
+          "rawBytes": 1534,
+          "gzipBytes": 798,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CTrtR3Er.js",
+          "source": "ssr",
+          "rawBytes": 72260,
+          "gzipBytes": 27026,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/CfdtqJqy.js",
+          "source": "ssr",
+          "rawBytes": 8155,
+          "gzipBytes": 3287,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Co_7DPYB.js",
+          "source": "ssr",
+          "rawBytes": 750,
+          "gzipBytes": 475,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/D5ZL4ihU.js",
+          "source": "ssr",
+          "rawBytes": 7342,
+          "gzipBytes": 2948,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D7Ezi9VR.js",
+          "source": "ssr",
+          "rawBytes": 18281,
+          "gzipBytes": 6446,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9D_YlD4.js",
+          "source": "ssr",
+          "rawBytes": 87399,
+          "gzipBytes": 33605,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/D9GtEUMG.js",
+          "source": "ssr",
+          "rawBytes": 201,
+          "gzipBytes": 175,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DNs2eaur.js",
+          "source": "ssr",
+          "rawBytes": 4531,
+          "gzipBytes": 2104,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/DSJ9I3OW.js",
+          "source": "ssr",
+          "rawBytes": 645,
+          "gzipBytes": 392,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DTzZQ4lQ.js",
+          "source": "ssr",
+          "rawBytes": 286,
+          "gzipBytes": 255,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/DgBGEgef.js",
+          "source": "ssr",
+          "rawBytes": 19641,
+          "gzipBytes": 6783,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Dnl39Kfn.js",
+          "source": "ssr",
+          "rawBytes": 1371,
+          "gzipBytes": 805,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Fm6F54P4.js",
+          "source": "ssr",
+          "rawBytes": 354,
+          "gzipBytes": 238,
+          "gzipSource": "gzip-level-9-fallback"
+        },
+        {
+          "path": "/_nuxt/JlzIlQCG.js",
+          "source": "ssr",
+          "rawBytes": 13463,
+          "gzipBytes": 5067,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/Z6wf_6C_.js",
+          "source": "ssr",
+          "rawBytes": 14285,
+          "gzipBytes": 5457,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/c16DZMCC.js",
+          "source": "ssr",
+          "rawBytes": 5068,
+          "gzipBytes": 2335,
+          "gzipSource": "precompressed"
+        },
+        {
+          "path": "/_nuxt/oqrabJUK.js",
+          "source": "ssr",
+          "rawBytes": 8518,
+          "gzipBytes": 3684,
+          "gzipSource": "precompressed"
+        }
+      ],
+      "assetCount": 24,
+      "staticGraphPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DTzZQ4lQ.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "observedRequestPaths": [
+        "/_nuxt/3V9C8Zjt.js",
+        "/_nuxt/B6BQ63_j.js",
+        "/_nuxt/BOyrFrfl.js",
+        "/_nuxt/C-XP0Z8B.js",
+        "/_nuxt/C3AEO0S2.js",
+        "/_nuxt/CMrBy46C.js",
+        "/_nuxt/CRzLMJPS.js",
+        "/_nuxt/CTrtR3Er.js",
+        "/_nuxt/CfdtqJqy.js",
+        "/_nuxt/Co_7DPYB.js",
+        "/_nuxt/D5ZL4ihU.js",
+        "/_nuxt/D7Ezi9VR.js",
+        "/_nuxt/D9D_YlD4.js",
+        "/_nuxt/D9GtEUMG.js",
+        "/_nuxt/DNs2eaur.js",
+        "/_nuxt/DSJ9I3OW.js",
+        "/_nuxt/DTzZQ4lQ.js",
+        "/_nuxt/DgBGEgef.js",
+        "/_nuxt/Dnl39Kfn.js",
+        "/_nuxt/Fm6F54P4.js",
+        "/_nuxt/JlzIlQCG.js",
+        "/_nuxt/Z6wf_6C_.js",
+        "/_nuxt/c16DZMCC.js",
+        "/_nuxt/oqrabJUK.js"
+      ],
+      "staticGraphCount": 24,
+      "observedRequestCount": 24,
+      "rawBytes": 314270,
+      "initialRouteJsGzipBytes": 122345,
+      "budgetBytes": 153600,
+      "withinBudget": true,
+      "allJavaScriptGzipBytes": 269515,
+      "sourceMaps": 0,
+      "payloadBytes": 2347
+    }
+  ],
+  "passed": true,
+  "origin": "http://127.0.0.1:3300",
+  "serve": true,
+  "settleWindowMs": 2000,
+  "completionWindowMs": 5000,
+  "output": {
+    "dir": "web/.output",
+    "allJavaScriptGzipBytes": 269515,
+    "sourceMaps": 0
+  }
+}

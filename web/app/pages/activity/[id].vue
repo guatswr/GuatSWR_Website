@@ -151,7 +151,7 @@ useHead({
                     {{ activity.tag || '未标注' }}
                   </span>
                 </div>
-                <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold !text-white font-serif tracking-wide drop-shadow-lg">
+                <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold !text-white font-serif tracking-wide leading-tight md:leading-none drop-shadow-lg">
                   {{ activity.title }}
                 </h1>
               </div>

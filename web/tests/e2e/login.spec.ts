@@ -188,9 +188,8 @@ test.describe('login and client session boundary', () => {
     await expect(page.locator('#login-username-error')).toContainText('用户名')
   })
 
-  for (const [project] of [['desktop'], ['mobile']] as const) {
-    test(`matches the archived login visuals on ${project}`, async ({ context, page, isMobile }, info: TestInfo) => {
-      test.skip(isMobile !== (project === 'mobile'), `runs on the ${project} project only`)
+    test('matches the archived login visuals', async ({ context, page, isMobile }, info: TestInfo) => {
+      const project = isMobile ? 'mobile' : 'desktop'
       // Same seeded randomness for both apps so the same archived image bytes
       // are compared (index 1 -> /login-bg/2.jpg).
       await context.addInitScript(() => {
@@ -240,5 +239,4 @@ test.describe('login and client session boundary', () => {
 
       await archive.close()
     })
-  }
 })

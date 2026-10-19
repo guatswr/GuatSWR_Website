@@ -3,34 +3,23 @@
 //    critical CSS, but always after the import map. The parser reaches the hints
 //    before tokenizing the inline <style>, so the browser
 //    dispatches the script fetches while it is still parsing CSS.
-// 2. `rel="prefetch"` hints for chunks this page does not need yet (the other
-//    layouts, error pages and their styles) are deferred to the `load` event.
-//    They keep working for following navigations without competing with the
-//    first paint for bandwidth and for the six connections per origin.
+// 2. Remove speculative SSR `prefetch` hints. They include private middleware,
+//    auth validators and error pages, even on an anonymous public route.
+//    NuxtLink still prefetches on explicit pointer/focus intent; dynamic imports
+//    load normally when their owning route or interaction actually needs them.
 export default defineNitroPlugin((nitroApp) => {
   nitroApp.hooks.hook('render:html', (html) => {
     const hoisted: string[] = []
-    const prefetch: string[] = []
     const transform = (chunk: string) =>
       chunk
         .replace(/<link[^>]+rel="(?:modulepreload|preload)"[^>]*>/g, (tag) => {
           hoisted.push(tag)
           return ''
         })
-        .replace(/<link[^>]+rel="prefetch"[^>]*>/g, (tag) => {
-          prefetch.push(tag)
-          return ''
-        })
+        .replace(/<link[^>]+rel="prefetch"[^>]*>/g, '')
     html.head = html.head.map(transform)
-    if (!hoisted.length && !prefetch.length) return
-
-    const nonce = html.head.join('').match(/nonce="([^"]+)"/)?.[1]
-    const injected = [
-      hoisted.join(''),
-      prefetch.length
-        ? `<script${nonce ? ` nonce="${nonce}"` : ''}>addEventListener("load",function(){var t=${JSON.stringify(prefetch).replace(/</g, '\\u003c')};for(var i=0;i<t.length;i++){document.head.insertAdjacentHTML("beforeend",t[i])}},{once:true})</script>`
-        : '',
-    ].join('')
+    if (!hoisted.length) return
+    const injected = hoisted.join('')
     const head = html.head.join('')
     /**
      * The hints must come *after* the import map, never before it. A

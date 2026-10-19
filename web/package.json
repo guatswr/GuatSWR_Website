@@ -11,7 +11,7 @@
     "typecheck": "nuxt typecheck",
     "lint": "nuxt prepare && eslint .",
     "test": "vitest run",
-    "test:e2e": "playwright test",
+    "test:e2e": "node scripts/e2e-isolated.mjs",
     "test:performance": "node scripts/performance.mjs / /__revamp/layout"
   },
   "dependencies": {

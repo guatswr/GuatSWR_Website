@@ -1,11 +1,15 @@
 import { expect, test } from '@playwright/test'
 import type { BrowserContext, Locator, Page } from '@playwright/test'
+import { writeFileSync } from 'node:fs'
 import {
   ARCHIVE_ORIGIN,
   CLUB_TIMEZONE,
   compareToArchive,
   proxyArchiveRequests,
   routeArchiveIcons,
+  settlePublicPage,
+  PUBLIC_LOG_VISUAL_DETAILS,
+  usePublicLogVisualExpectation,
   trackExternalRequests,
 } from './support/public-pages'
 
@@ -434,6 +438,29 @@ test.describe('visual parity with the archived site', () => {
         await page.goto(target.path)
         await expect(archive.getByText(target.wait).first()).toBeVisible({ timeout: 20_000 })
         await expect(page.getByText(target.wait).first()).toBeVisible()
+        await settlePublicPage(archive)
+        await settlePublicPage(page)
+
+        if (target.path === '/logs') {
+          // Keep the raw security difference reviewable. Do not call this a
+          // zero-difference comparison against the unsafe archived payload.
+          await archive.screenshot({ path: info.outputPath(`logs-raw-archive-${theme}.png`), fullPage: true })
+          const raw = await archive.locator('table').innerText()
+          expect(raw).toContain('smtp_password')
+          expect(raw).toContain('198.51.100.7')
+          const current = await page.locator('table').innerText()
+          expect(current).not.toMatch(/smtp_password|198\.51\.100\.7|203\.0\.113\.9|2001:db8|SomeAdmin|version=42|eyJhbGci/)
+          for (const details of new Set(Object.values(PUBLIC_LOG_VISUAL_DETAILS))) expect(current).toContain(details)
+          writeFileSync(info.outputPath('logs-privacy-deviation.json'), JSON.stringify({
+            reason: 'Public logs redact client IPs, credentials and private configuration keys.',
+            rawArchiveDiffers: raw !== current,
+            expectedDetails: PUBLIC_LOG_VISUAL_DETAILS,
+            comparison: 'Archived renderer with independently specified safe public text; no masks or pixel tolerance.',
+          }, null, 2))
+          await usePublicLogVisualExpectation(archive)
+          await archive.reload()
+          await settlePublicPage(archive)
+        }
 
         for (const region of target.regions) {
           if (region.desktopOnly && isMobile) continue
@@ -448,8 +475,8 @@ test.describe('visual parity with the archived site', () => {
         // Numeric geometry, independent of pixels: the seat layout is a pure
         // function of the same fixture counts.
         if (target.path === '/members') {
-          expect(await page.locator('svg circle').count())
-            .toBe(await archive.locator('svg circle').count())
+          expect(await page.locator('.parliament-chart-container svg circle').count())
+            .toBe(await archive.locator('.parliament-chart-container svg circle').count())
         }
         await archive.close()
       })

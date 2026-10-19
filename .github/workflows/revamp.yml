@@ -41,7 +41,8 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 20
+    # Fresh-server E2E batches preserve the real production rate limiter.
+    timeout-minutes: 60
     env:
       NUXT_SESSION_PASSWORD: ${{ secrets.REVAMP_TEST_SESSION_PASSWORD }}
     steps:
@@ -115,5 +116,7 @@ jobs:
           path: |
             web/playwright-report/
             web/test-results/
+            web/.e2e-isolated/
             web/.lighthouseci/
+          include-hidden-files: true
           retention-days: 7

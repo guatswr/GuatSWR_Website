@@ -1,6 +1,18 @@
 {
   "routes": [
-    { "name": "foundation home checkpoint", "path": "/", "mainContent": "桂航绯想天" },
-    { "name": "shared layout checkpoint", "path": "/__revamp/layout", "mainContent": "查看社群信息" }
+    { "name": "home", "path": "/", "mainContent": "桂航绯想天" },
+    { "name": "activities", "path": "/activities", "mainContent": "社团活动记录" },
+    { "name": "activity detail", "path": "/activity/1", "mainContent": "秋季例会" },
+    { "name": "members", "path": "/members", "mainContent": "绯想天住民名录" },
+    { "name": "history", "path": "/history", "mainContent": "绯想天群史" },
+    { "name": "logs", "path": "/logs", "mainContent": "日志档案" },
+    { "name": "social", "path": "/social", "mainContent": "绯想天 · 外界通讯" },
+    { "name": "join", "path": "/join", "mainContent": "加入桂航绯想天" },
+    { "name": "events entry redirect", "path": "/events", "mainContent": "悬赏令" },
+    { "name": "bounty", "path": "/events/bounty", "mainContent": "悬赏令" },
+    { "name": "betting", "path": "/events/betting", "mainContent": "对赌协议" },
+    { "name": "STG", "path": "/events/stg", "mainContent": "欢迎STGer报名参加" },
+    { "name": "zetime", "path": "/events/zetime", "mainContent": "则批大本营" },
+    { "name": "party", "path": "/events/party", "mainContent": "小聚、大聚、饭聚" }
   ]
 }

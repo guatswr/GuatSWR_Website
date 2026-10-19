@@ -1,5 +1,5 @@
 import type { PublicEvent, PublicEventContent } from '@guatswr/shared'
-import { eventStatusLabel } from '@guatswr/shared'
+import { eventStatusLabel } from '@guatswr/shared/event-labels'
 import { getThumbUrl } from './image-url'
 // Frozen Beijing-time helper from the homepage batch: deadlines are authored in
 // Beijing time, so they must not be parsed with the visitor's browser locale.

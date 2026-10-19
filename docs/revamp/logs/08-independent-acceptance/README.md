@@ -58,3 +58,66 @@ work; they are not whole-migration acceptance.
   private config keys will not be restored to satisfy screenshots.
 
 Further acceptance evidence will be added after those checks execute.
+
+## Public visual protocol and route JavaScript correction
+
+The first independently rerun 20-case prose visual selection, after waiting for
+real progressive-image states and completed progress indicators and aligning
+region captures above unrelated fixed navigation, passed 14/20. All member
+images and charts matched exactly without changing `ProgressiveImage`.
+Remaining failures were four raw-versus-redacted log comparisons and two real
+mobile article heading mismatches (36 px line height instead of 37.5 px).
+The heading now explicitly preserves 1.25 line height on mobile and 1 on desktop.
+
+The log deviation is intentional: public IPs, credentials and private config
+keys stay removed. Each log comparison retains the unsafe raw archive PNG,
+asserts the exact privacy difference and then compares the archived renderer
+using independently specified safe public strings. It does **not** claim that
+the unsafe raw archive and safe new page have identical pixels. The subsequent
+8-case residual selection passed 8/8, 0 flaky/skipped. No masks, antialias
+settings, pixel thresholds or whole-device-pixel crop rules were relaxed.
+
+Public JS changes:
+
+- Default route prefetch now requires pointer/focus intent.
+- Event display labels have a schema-free shared subpath, keeping validators
+  behind the forms that consume them.
+- The old head hook's unconditional `load`-event prefetch downloaded private
+  middleware, auth/Zod and error chunks on anonymous pages. Those speculative
+  hints are removed; actual dynamic imports and intent prefetch still work.
+- Artifact scanning enforces zero maps and reports all-chunk inventory. The
+  unchanged 153,600 B initial-route budget is enforced separately using the
+  actual SSR dependency graph and observed cold-browser requests, now covering
+  all 14 public routes including the `/events` redirect.
+
+`node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json`
+passed on the rebuilt artifact: home **129,542 B** (previously 177,477 B);
+all public routes **116,609–129,542 B** gzip; 0 source maps. Full graphs are
+in `route-budget.json`. Total lazy/private/public chunk inventory is not the
+initial-route measurement. One earlier collector process exited with Windows
+native status -1073740791 without producing measurements; it is an invalid
+attempt, not a pass. The next valid run still failed at 171,085 B; only after
+the unconditional private prefetch was removed did the 14-route run pass.
+
+Commands and raw ignored evidence:
+
+```
+pnpm -r typecheck/lint/test/build  # four separate sequential commands
+node scripts/revamp/check-artifacts.mjs
+node --test scripts/revamp/route-budget.test.mjs
+node --test web/scripts/e2e-isolated.test.mjs
+E2E_PORT_BASE=4100 node web/scripts/e2e-isolated.mjs tests/e2e/public-pages.spec.ts --grep '/logs matches|/activity/1 matches' --work-dir .e2e-isolated/codex-public-residual --max-per-batch 2
+```
+
+Recursive gates: exit 0, still 604 units and 33 lint warnings / 0 errors.
+The subsequent head-prefetch change was rebuilt separately (exit 0).
+Tooling tests 34/34; isolation tests 22/22. Changed E2E files also passed
+direct ESLint after removing login's artificial cross-project duplicate skips.
+The default E2E script now uses the isolated runner; CI's functional-job timeout
+allows the full fresh-server suite without changing production rate limits.
+
+Full **170-case** isolated production E2E is in progress. This is 166 old
+declarations minus two never-executed cross-project login variants plus six
+new warm-reload cases. Both actual desktop/mobile login comparisons remain.
+No skip policy exceptions remain. Full report and Lighthouse acceptance are
+still outstanding; no whole-site or migration-success claim is made.

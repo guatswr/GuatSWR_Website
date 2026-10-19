@@ -14,6 +14,11 @@ resolved next; admin/SEO/full-site acceptance remain open. Detailed scope and
 limits: [independent acceptance log](logs/08-independent-acceptance/README.md).
 The historical entries below retain their original checkpoint-specific status.
 
+Public follow-up: all 14 public initial-route graphs now pass the fixed 150 KiB
+budget (116,609–129,542 B gzip; home down from 177,477 B). The eight residual
+article/log visual cases pass; log privacy is an explicit, evidenced deviation.
+Full 170-case isolated E2E is running; no full-site performance acceptance yet.
+
 ## Boundaries
 
 - New code: `web/`, `packages/shared/`, root tooling, and `docs/revamp/`.

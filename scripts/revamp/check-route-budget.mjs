@@ -267,7 +267,6 @@ async function main() {
           output,
           origin,
         })
-        assertWithinBudget(budget)
         report.routes.push({
           name: route.name,
           path: route.path,
@@ -276,6 +275,9 @@ async function main() {
           ...identity,
           ...budget,
         })
+        // Keep the measured graph even when the budget fails: reviewers need
+        // the actual chunk inventory to diagnose a failure, not just its sum.
+        assertWithinBudget(budget)
       } finally {
         await context.close()
       }

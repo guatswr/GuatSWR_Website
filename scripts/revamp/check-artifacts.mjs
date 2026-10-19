@@ -14,10 +14,10 @@ async function walk(directory) {
 await walk(root)
 const maps = files.filter(path => /\.map(?:\.(?:br|gz))?$/.test(path))
 if (maps.length) throw new Error(`Production contains ${maps.length} source maps`)
-// Conservative foundation budget: all public JS, not only the initial route.
-// Replace with manifest/route traversal when other routes are introduced.
+// Inventory all chunks (including private/admin and lazy interaction chunks).
+// The fixed 150 KiB *initial-route* gate is enforced by check-route-budget.mjs,
+// using both the SSR import graph and actual cold-browser script requests.
 const scripts = files.filter(path => path.includes(`${join('public', '_nuxt')}`) && path.endsWith('.js'))
 let bytes = 0
 for (const file of scripts) bytes += gzipSync(await readFile(file)).byteLength
-if (bytes > 150 * 1024) throw new Error(`Public JS budget exceeded: ${bytes} gzip bytes`)
-console.log(JSON.stringify({ sourceMaps: maps.length, publicJavaScriptGzipBytes: bytes, budgetBytes: 150 * 1024 }))
+console.log(JSON.stringify({ sourceMaps: maps.length, allClientJavaScriptGzipBytes: bytes, initialRouteBudgetBytes: 150 * 1024, initialRouteGate: 'check:routes' }))

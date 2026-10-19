@@ -46,24 +46,10 @@ export const MAX_TESTS_PER_BATCH = 2
  * run, so an unconfigured feature/flag cannot be reported as a completed
  * migration. Each entry is `{ identity, reason }` with a non-empty reason.
  *
- * The two entries below are the only legitimate case: `login.spec.ts` defines
- * its archived-visual comparison once per project inside a loop and skips the
- * copy that does not belong to the running project, so each project skips
- * exactly the other project's variant. The running variant still compares real
- * pixels; nothing is being hidden.
+ * There are currently no exceptions. The login comparison runs once in each
+ * Playwright project, without declaring unused cross-product variants.
  */
-export const DECLARED_SKIP_POLICY = [
-  {
-    identity:
-      'desktop::login.spec.ts::192:5::login.spec.ts > login and client session boundary > matches the archived login visuals on mobile',
-    reason: 'the mobile variant of the archived-visual loop is skipped on the desktop project by design',
-  },
-  {
-    identity:
-      'mobile::login.spec.ts::192:5::login.spec.ts > login and client session boundary > matches the archived login visuals on desktop',
-    reason: 'the desktop variant of the archived-visual loop is skipped on the mobile project by design',
-  },
-]
+export const DECLARED_SKIP_POLICY = []
 
 export class E2EIsolationError extends Error {
   constructor(message, details) {

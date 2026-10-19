@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { PUBLIC_EVENT_STATUSES } from './public.js'
+export { EVENT_STATUS_LABELS, eventStatusLabel } from './event-labels.js'
 
 /**
  * Shared, framework-free event rules.
@@ -17,16 +18,6 @@ export type EventType = (typeof EVENT_TYPES)[number]
 
 /** The frozen backend only accepts signups (`/signup`) for these types. */
 export const SIGNUP_EVENT_TYPES = ['STG', '则则'] as const
-
-export const EVENT_STATUS_LABELS: Readonly<Record<string, string>> = {
-  draft: '草稿',
-  pending: '待审核',
-  published: '已发布',
-  ongoing: '进行中',
-  ended: '已结束',
-  settled: '已验收',
-  rejected: '已驳回'
-}
 
 export type EventFieldKind =
   | 'text'
@@ -139,14 +130,6 @@ export const supportsSignup = (type: unknown): boolean =>
 export const isPublicEventStatus = (status: unknown): boolean =>
   typeof status === 'string' &&
   (PUBLIC_EVENT_STATUSES as readonly string[]).includes(status)
-
-/** The archived card label rules, including the per-type overrides. */
-export function eventStatusLabel(type: unknown, status: unknown): string {
-  const value = typeof status === 'string' ? status : ''
-  if ((type === 'STG' || type === '则则') && value === 'published') return '报名中'
-  if (type === '线下聚会' && value === 'published') return '倒计时'
-  return EVENT_STATUS_LABELS[value] ?? value
-}
 
 export function getEventTypes(
   allowedTypes: readonly string[] = EVENT_TYPES
