@@ -1,5 +1,9 @@
-/** Resolve only a private, administrator-set origin; browsers never supply it. */
-const privateOrigin = (origin: string): URL => {
+/**
+ * Resolve and validate one private, administrator-set origin; browsers never
+ * supply it. Exported so cache composition can fail closed *before* a warm
+ * cache entry is consulted.
+ */
+export const assertUpstreamOrigin = (origin: string): URL => {
   const base = new URL(origin)
   if (!['http:', 'https:'].includes(base.protocol) || base.username || base.password
     || base.pathname !== '/' || base.search || base.hash) {
@@ -10,7 +14,7 @@ const privateOrigin = (origin: string): URL => {
 
 /** Resolve only fixed API paths against a private, administrator-set origin. */
 export function upstreamUrl(origin: string, path: string): string {
-  const base = privateOrigin(origin)
+  const base = assertUpstreamOrigin(origin)
   if (!/^\/api\/[a-z0-9/-]+$/i.test(path) || path.includes('//')) {
     throw new Error('Upstream path must be a fixed v1 API path')
   }
@@ -47,7 +51,7 @@ const decodeUploadSegment = (segment: string): string => {
  * ever read the legacy upload tree it is meant to expose.
  */
 export function uploadAssetUrl(origin: string, requestPath: string): string {
-  const base = privateOrigin(origin)
+  const base = assertUpstreamOrigin(origin)
   if (requestPath.length > MAX_UPLOAD_PATH_LENGTH) throw new Error('Uploads path is too long')
   const match = /^\/uploads\/(.+)$/.exec(requestPath)
   if (!match) throw new Error('Uploads path must start with /uploads/')

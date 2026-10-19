@@ -1,9 +1,10 @@
 import type { PublicLogStat } from '@guatswr/shared'
 import { defineEventHandler, getQuery } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { parseStatsLimit, readLogStats } from '../../utils/public-read'
+import { readCachedLogStats } from '../../utils/public-data'
+import { parseStatsLimit } from '../../utils/public-read'
 
 export default defineEventHandler(async (event): Promise<PublicLogStat[]> => {
   const { apiBase } = useRuntimeConfig(event)
-  return readLogStats({ apiBase }, parseStatsLimit(getQuery(event)))
+  return readCachedLogStats({ apiBase }, parseStatsLimit(getQuery(event)))
 })

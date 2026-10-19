@@ -20,6 +20,7 @@ import {
   isTerminalRequest,
   normalizeAssetPath,
   nuxtPayloadBytes,
+  parseImportMap,
   parseServeTarget,
   serverEntryFor,
   settleScriptRequests,
@@ -594,4 +595,169 @@ test('static specifier extraction ignores dynamic and import.meta entries', asyn
     "import './a.js'; export { x } from '../b.js'; const lazy = () => import('./lazy.js'); import.meta.url",
   )
   assert.deepEqual(specifiers, ['./a.js', '../b.js'])
+})
+
+const importMapHtml = imports => `<script type="importmap">${JSON.stringify({ imports })}</script>`
+
+test('resolves a Nuxt SSR importmap alias and its transitive static imports once', async (t) => {
+  const root = await withOutput(t, {
+    'shim.js': "import '#entry'\nexport const shim = 1\n",
+    'entry.js': "import './shared.js'\nexport const entry = 1\n",
+    'shared.js': 'export const shared = 1\n',
+  })
+  const output = await inspectOutput(root)
+  const html = `${htmlWithSeeds('/_nuxt/shim.js')}${importMapHtml({ '#entry': '/_nuxt/entry.js' })}`
+  const result = await accountInitialRoute({ html, output, origin: ORIGIN })
+
+  assert.deepEqual(result.assets.map(asset => asset.path), [
+    '/_nuxt/entry.js', '/_nuxt/shared.js', '/_nuxt/shim.js',
+  ])
+  assert.equal(result.assetCount, 3)
+  assert.equal(result.assets.find(asset => asset.path === '/_nuxt/entry.js').source, 'importmap')
+  assert.equal(result.assets.find(asset => asset.path === '/_nuxt/shared.js').source, 'static-import')
+  assert.deepEqual(result.staticGraphPaths, ['/_nuxt/entry.js', '/_nuxt/shared.js', '/_nuxt/shim.js'])
+  assert.deepEqual(result.observedRequestPaths, [])
+})
+
+test('counts a mapped chunk once when the browser also requested it', async (t) => {
+  const root = await withOutput(t, {
+    'shim.js': "import '#entry'\nexport const shim = 1\n",
+    'entry.js': "import './shared.js'\nexport const entry = 1\n",
+    'shared.js': 'export const shared = 1\n',
+  })
+  const output = await inspectOutput(root)
+  const html = `${htmlWithSeeds('/_nuxt/shim.js')}${importMapHtml({ '#entry': '/_nuxt/entry.js' })}`
+  const result = await accountInitialRoute({
+    html,
+    output,
+    origin: ORIGIN,
+    requests: [request('/_nuxt/entry.js'), request('/_nuxt/entry.js?v=1')],
+  })
+
+  assert.equal(result.assetCount, 3)
+  assert.deepEqual(result.assets.map(asset => asset.path), [
+    '/_nuxt/entry.js', '/_nuxt/shared.js', '/_nuxt/shim.js',
+  ])
+  assert.deepEqual(result.observedRequestPaths, ['/_nuxt/entry.js'])
+  assert.deepEqual(result.staticGraphPaths, ['/_nuxt/entry.js', '/_nuxt/shared.js', '/_nuxt/shim.js'])
+})
+
+test('rejects relative importmap targets and non-exact bindings', async (t) => {
+  const root = await withOutput(t, {
+    'shim.js': "import '#entry'\nexport const shim = 1\n",
+    'entry.js': 'export const entry = 1\n',
+  })
+  const output = await inspectOutput(root)
+
+  // Nuxt emits an absolute /_nuxt/<hash>.js target with this app config; a
+  // relative target would depend on the page URL and is refused.
+  await assert.rejects(
+    accountInitialRoute({
+      html: `${htmlWithSeeds('/_nuxt/shim.js')}${importMapHtml({ '#entry': './_nuxt/entry.js' })}`,
+      output,
+      origin: ORIGIN,
+    }),
+    { message: /absolute own-origin path/ },
+  )
+
+  await assert.rejects(
+    accountInitialRoute({
+      html: `${htmlWithSeeds('/_nuxt/shim.js')}${importMapHtml({ '#ent': '/_nuxt/entry.js' })}`,
+      output,
+      origin: ORIGIN,
+    }),
+    { name: 'RouteBudgetError', message: /Non-relative static import "#entry"/ },
+  )
+})
+
+test('rejects unsafe, external, missing or non-JavaScript importmap targets', async (t) => {
+  const root = await withOutput(t, {
+    'shim.js': "import '#entry'\nexport const shim = 1\n",
+    'entry.js': 'export const entry = 1\n',
+    'style.css': 'body { color: red }\n',
+  })
+  const output = await inspectOutput(root)
+  const account = target => accountInitialRoute({
+    html: `${htmlWithSeeds('/_nuxt/shim.js')}${importMapHtml({ '#entry': target })}`,
+    output,
+    origin: ORIGIN,
+  })
+
+  await assert.rejects(account('https://cdn.example.com/entry.js'), { message: /outside the app origin/ })
+  await assert.rejects(account('//cdn.example.com/entry.js'), { message: /outside the app origin/ })
+  // URL normalization collapses `..` before the prefix check, so the target
+  // fails as an outside-prefix asset rather than as a dot segment.
+  await assert.rejects(account('/_nuxt/../secret.js'), { message: /Asset outside/ })
+  await assert.rejects(account(`/_nuxt/sub${BACKSLASH}entry.js`), { message: /must not contain a backslash/ })
+  await assert.rejects(account('/_nuxt/%2e%2e/entry.js'), { message: /must not be percent-encoded/ })
+  await assert.rejects(account('/elsewhere/entry.js'), { message: /Asset outside/ })
+  await assert.rejects(account('/_nuxt/style.css'), { message: /Not a JavaScript asset/ })
+  await assert.rejects(account('/_nuxt/entry.js?x=1'), { message: /must not carry a query or fragment/ })
+  await assert.rejects(account('/_nuxt/entry.js#top'), { message: /must not carry a query or fragment/ })
+  await assert.rejects(account('/_nuxt/missing.js'), { message: /Missing production asset/ })
+})
+
+test('still rejects bare specifiers with no binding and ignores inherited keys', async (t) => {
+  const root = await withOutput(t, {
+    'shim.js': "import 'vue'\nexport const shim = 1\n",
+    'entry.js': 'export const entry = 1\n',
+  })
+  const output = await inspectOutput(root)
+
+  await assert.rejects(
+    accountInitialRoute({
+      html: `${htmlWithSeeds('/_nuxt/shim.js')}${importMapHtml({ '#entry': '/_nuxt/entry.js' })}`,
+      output,
+      origin: ORIGIN,
+    }),
+    { message: /Non-relative static import "vue"/ },
+  )
+
+  const prototypeMap = '<script type="importmap">{"imports":{"__proto__":"/_nuxt/entry.js"}}</script>'
+  const prototypeShim = await withOutput(t, { 'shim.js': "import 'constructor'\n" })
+  const prototypeOutput = await inspectOutput(prototypeShim)
+  await assert.rejects(
+    accountInitialRoute({
+      html: `${htmlWithSeeds('/_nuxt/shim.js')}${prototypeMap}`,
+      output: prototypeOutput,
+      origin: ORIGIN,
+    }),
+    { message: /Non-relative static import "constructor"/ },
+  )
+
+  const parsed = parseImportMap(prototypeMap)
+  assert.equal(parsed.present, true)
+  assert.equal(parsed.imports.has('constructor'), false)
+  assert.equal(parsed.imports.has('toString'), false)
+  assert.equal(parsed.imports.get('__proto__'), '/_nuxt/entry.js')
+})
+
+test('fails closed on malformed, scoped, prefixed or repeated importmaps', () => {
+  const parse = body => parseImportMap(`<script type="importmap">${body}</script>`)
+  assert.throws(() => parse('{ not json'), { name: 'RouteBudgetError', message: /not valid JSON/ })
+  assert.throws(() => parse('[1,2]'), { message: /must be a JSON object/ })
+  assert.throws(() => parse('{"imports":[]}'), { message: /"imports" must be an object/ })
+  assert.throws(() => parse('{"imports":{"#entry":42}}'), { message: /needs a non-empty URL string/ })
+  assert.throws(() => parse('{"imports":{"":"/_nuxt/entry.js"}}'), { message: /empty binding key/ })
+  assert.throws(() => parse('{"imports":{"#/":"/_nuxt/"}}'), { message: /prefix mapping/ })
+  assert.throws(() => parse('{"imports":{},"scopes":{"/app/":{"#entry":"/_nuxt/entry.js"}}}'), { message: /"scopes" are not supported/ })
+  assert.throws(
+    () => parseImportMap(`${importMapHtml({ '#entry': '/_nuxt/entry.js' })}${importMapHtml({ '#entry': '/_nuxt/entry.js' })}`),
+    { message: /Multiple SSR importmap scripts/ },
+  )
+  assert.deepEqual(parse('{"imports":{},"scopes":{}}').imports.size, 0)
+  assert.equal(parse('{"imports":{}}').present, true)
+  assert.equal(parseImportMap('<div>no map</div>').present, false)
+})
+
+test('never counts the importmap JSON as JavaScript or as the Nuxt payload', async (t) => {
+  const root = await withOutput(t, { 'entry.js': 'export const entry = 1\n' })
+  const output = await inspectOutput(root)
+  const html = `${htmlWithSeeds('/_nuxt/entry.js')}${importMapHtml({ '#entry': '/_nuxt/entry.js' })}`
+
+  assert.deepEqual(initialAssetSeeds(html), ['/_nuxt/entry.js'])
+  assert.equal(nuxtPayloadBytes(html), 0)
+  const result = await accountInitialRoute({ html, output, origin: ORIGIN })
+  assert.equal(result.payloadBytes, 0)
+  assert.equal(result.assetCount, 1)
 })

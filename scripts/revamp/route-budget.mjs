@@ -9,7 +9,8 @@
 // The graph comes from es-module-lexer, not a regular expression over
 // `import(`: dynamic imports are only counted when the browser really asked for
 // them, and static imports are always counted even if the request observation
-// raced a paint.
+// raced a paint. Nuxt 4's SSR importmap (`#entry` and friends) is resolved for
+// the narrow subset of exact own-URL bindings; see parseImportMap().
 import { readFile, stat } from 'node:fs/promises'
 import { join, posix, sep } from 'node:path'
 import { init, parse, ImportType } from 'es-module-lexer'
@@ -334,6 +335,7 @@ export async function collectInitialRouteAssets({
   origin,
   assetPrefix = OWN_ASSET_PREFIX,
 }) {
+  const importMap = parseImportMap(html)
   const nodes = new Map()
   const requested = new Set()
   const work = []
@@ -388,7 +390,14 @@ export async function collectInitialRouteAssets({
     for (const specifier of await staticImportSpecifiers(source, path)) {
       const resolved = resolveRelativeSpecifier(path, specifier)
       if (resolved === null) {
-        throw new RouteBudgetError(`Non-relative static import "${specifier}" in ${path}`)
+        // Nuxt's entry shim imports a bare specifier that the SSR importmap
+        // binds to an own chunk. Unmapped bare specifiers still fail closed.
+        const mapped = resolveImportMapSpecifier(importMap, specifier, { origin, assetPrefix })
+        if (mapped === null) {
+          throw new RouteBudgetError(`Non-relative static import "${specifier}" in ${path}`)
+        }
+        add(mapped, 'importmap', staticReachable)
+        continue
       }
       add(normalizeAssetPath(resolved, { assetPrefix }), 'static-import', staticReachable)
     }
@@ -781,4 +790,106 @@ export function parseServeTarget(base, { serve = true } = {}) {
     hostname,
     port: url.port || (url.protocol === 'http:' ? '80' : '443'),
   }
+}
+
+/**
+ * Nuxt's SSR importmap: an inline `<script type="importmap">` JSON document
+ * that maps bare specifiers (for example `#entry`) to own build chunks. Only a
+ * narrow, documented subset is supported: a single map with exact-string
+ * `imports` bindings. Scopes, prefix mappings and multiple maps are rejected
+ * rather than approximated.
+ */
+export function parseImportMap(html) {
+  const bodies = []
+  for (const match of String(html).matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) {
+    const type = (attribute(match[0], 'type') ?? '').split(';')[0].trim().toLowerCase()
+    if (type === 'importmap') bodies.push(match[1])
+  }
+  if (bodies.length === 0) return { present: false, imports: new Map() }
+  if (bodies.length > 1) {
+    throw new RouteBudgetError(
+      'Multiple SSR importmap scripts are not supported; refusing to guess browser merge semantics',
+    )
+  }
+  let document
+  try {
+    document = JSON.parse(bodies[0])
+  } catch (error) {
+    throw new RouteBudgetError(`SSR importmap is not valid JSON: ${error.message}`)
+  }
+  if (!document || typeof document !== 'object' || Array.isArray(document)) {
+    throw new RouteBudgetError('SSR importmap must be a JSON object')
+  }
+  const imports = new Map()
+  if (document.imports !== undefined) {
+    const bindings = document.imports
+    if (!bindings || typeof bindings !== 'object' || Array.isArray(bindings)) {
+      throw new RouteBudgetError('SSR importmap "imports" must be an object of string bindings')
+    }
+    for (const key of Object.keys(bindings)) {
+      if (key.length === 0) throw new RouteBudgetError('SSR importmap has an empty binding key')
+      if (key.endsWith('/')) {
+        throw new RouteBudgetError(`Importmap prefix mapping "${key}" is not supported; refusing to approximate it`)
+      }
+      const target = bindings[key]
+      if (typeof target !== 'string' || target.length === 0) {
+        throw new RouteBudgetError(`Importmap binding "${key}" needs a non-empty URL string`)
+      }
+      imports.set(key, target)
+    }
+  }
+  if (document.scopes !== undefined) {
+    const scopes = document.scopes
+    const keys = scopes && typeof scopes === 'object' && !Array.isArray(scopes) ? Object.keys(scopes) : null
+    if (keys === null || keys.length > 0) {
+      throw new RouteBudgetError('SSR importmap "scopes" are not supported; refusing to approximate them')
+    }
+  }
+  return { present: true, imports }
+}
+
+/**
+ * Resolve one bare static specifier through exact importmap bindings. Returns
+ * null when no binding exists (the caller keeps failing closed), and throws
+ * when a binding exists but is unsafe or is not an own JavaScript asset.
+ * Lookups use a Map, so inherited object keys can never act as bindings.
+ */
+export function resolveImportMapSpecifier(importMap, specifier, { origin, assetPrefix = OWN_ASSET_PREFIX } = {}) {
+  if (!importMap || !importMap.imports || !importMap.imports.has(specifier)) return null
+  const target = importMap.imports.get(specifier)
+  // Check the raw target before URL parsing: for special schemes the URL
+  // parser silently turns a backslash into a path separator, which would let a
+  // dangerous mapping masquerade as a different, harmless path.
+  if (target.includes(String.fromCharCode(92))) {
+    throw new RouteBudgetError(`Importmap binding "${specifier}" must not contain a backslash: ${target}`)
+  }
+  if (target.includes('%')) {
+    throw new RouteBudgetError(`Importmap binding "${specifier}" must not be percent-encoded: ${target}`)
+  }
+  if (CONTROL_CHARS.test(target) || target.trim().length !== target.length) {
+    throw new RouteBudgetError(
+      `Importmap binding "${specifier}" must not contain control or whitespace characters: ${target}`,
+    )
+  }
+  let url
+  try {
+    url = new URL(target, origin)
+  } catch {
+    throw new RouteBudgetError(`Importmap binding "${specifier}" is not a valid URL: ${target}`)
+  }
+  if (url.origin !== new URL(origin).origin) {
+    throw new RouteBudgetError(`Importmap binding "${specifier}" points outside the app origin: ${target}`)
+  }
+  if (url.search || url.hash) {
+    throw new RouteBudgetError(`Importmap binding "${specifier}" must not carry a query or fragment: ${target}`)
+  }
+  // Only absolute own-origin paths are supported. A relative target would be
+  // resolved by the browser against the page URL, which this accounting does
+  // not model, so it is rejected instead of being guessed from the origin.
+  if (!target.startsWith('/') || target.startsWith('//')) {
+    throw new RouteBudgetError(
+      `Importmap binding "${specifier}" must be an absolute own-origin path, not a relative target: ${target}`,
+    )
+  }
+  return normalizeAssetPath(url.pathname, { assetPrefix })
 }

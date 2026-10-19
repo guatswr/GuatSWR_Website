@@ -26,8 +26,9 @@ and archived `frontend/` sources are untouched references.
 | `GET /api/logs/umami?startAt&endAt&unit&limit&envType` | same | `PublicUmamiStats` |
 | `GET /uploads/<path>` | the same private origin's `/uploads/<path>` | image bytes |
 
-`GET /api/config` keeps its existing explicit allowlist projection and is not
-changed by this batch.
+`GET /api/config` keeps its explicit allowlist projection; its reader now has
+the same credential-free upstream boundary and composes the projected-data
+cache described in [CACHE.md](CACHE.md).
 
 The upstream origin is only ever `runtimeConfig.apiBase` (administrator
 configured). Paths are fixed literals; only validated query values and numeric
@@ -88,7 +89,11 @@ JWT-like, credential-labelled or long token-shaped strings with `[redacted]`.
 That redaction is a *bounded heuristic*, not a guarantee: it cannot sanitize
 arbitrary text, so it is deliberately not the primary control. The primary
 control is the fixed per-action text above, and the frozen backend and archived
-frontend are unchanged.
+frontend are unchanged. Audit-log descriptions are additionally bounded at 4096
+UTF-16 code units before parsing/redaction; an over-bound description becomes
+the fixed placeholder `日志详情过长，已省略`, never a partial copy. That bound
+applies only to log details — article/activity `content` and other public text
+are preserved in full.
 
 **Activity Markdown:** list/home payloads (`/api/activities`) return
 `content: ''`; only `/api/activities/:id` returns the raw Markdown, for a
@@ -110,6 +115,7 @@ than a silently guessed zero.
 | upstream missing row, or non-public row reported as upstream `403` | `404` (existence is never disclosed) |
 | public signup list for a type that never supported signups | `400` |
 | upstream `5xx`, timeout, redirect, malformed JSON/row/shape, byte cap exceeded, Umami `503` | `502` |
+| server-side public-data cache has all fill slots busy (new key, no usable stale entry) | `503` (fixed public "busy" text; never an empty DTO) |
 | upstream image missing | `404` |
 | upstream image broken, type-spoofed or over the cap | `502` |
 
@@ -140,10 +146,14 @@ messages are fixed strings owned by the BFF. There is no retry (`retry: 0`).
   unknown extensions and over-long paths are rejected with `404` before any
   upstream request is made. A query string is ignored, exactly like the frozen
   `express.static` mount; `missing`-prefixed fixtures answer `404` on purpose.
-* Caching: `nuxt.config.ts` already sets `Cache-Control: no-store` for
-  `/api/**`; this batch adds no public-data cache. Proxied images are
-  `public, max-age=3600`. User-specific reads must never enter shared HTML
-  caches, and no auth data is read here.
+* Caching: `/api/**` stays `Cache-Control: no-store` in the browser. The server
+  keeps a bounded SWR cache of projected public DTOs only (TTLs, keys, bounds,
+  failure/404 semantics and the internal invalidation contract are documented in
+  [CACHE.md](CACHE.md)). Public HTML is rendered fresh with a per-response CSP
+  nonce and `private, no-cache, max-age=0, must-revalidate`; it is not cached as
+  a document and emits no validator, so a nonce-bearing body cannot be replayed
+  through a 304. Proxied images remain `public, max-age=3600`. User-specific
+  reads must never enter shared HTML caches, and no auth data is read here.
 
 ## Fixtures and tests
 

@@ -1,5 +1,14 @@
 import tailwindcss from '@tailwindcss/vite'
 
+// Public HTML is rendered fresh for every GET/HEAD so each response carries a
+// new CSP nonce. `private, no-cache` (rather than `no-store`) keeps it eligible
+// for the HTML compression middleware while forbidding shared reuse without a
+// validator; no ETag/304 may replay a nonce-bearing body. Browser JSON API
+// responses remain no-store; only the server-side projected-data cache is SWR.
+const publicHtmlHeaders = {
+  'Cache-Control': 'private, no-cache, max-age=0, must-revalidate',
+}
+
 export default defineNuxtConfig({
   compatibilityDate: '2026-10-18',
   devtools: { enabled: false },
@@ -9,8 +18,8 @@ export default defineNuxtConfig({
   build: { transpile: ['@guatswr/shared'] },
   sourcemap: { server: false, client: false },
   features: { inlineStyles: true },
-  // Cached public pages do not need a session. Admin middleware will explicitly
-  // fetch its BFF session when that stage is implemented.
+  // Public pages do not need a session; only projected public reads are cached.
+  // Admin middleware will explicitly fetch its BFF session when implemented.
   auth: { loadStrategy: 'none' },
   typescript: {
     strict: true,
@@ -42,16 +51,18 @@ export default defineNuxtConfig({
   aiReady: { enabled: false },
   skewProtection: { enabled: false },
   routeRules: {
-    '/': { swr: 60 },
-    '/activities': { swr: 120 },
-    '/activity/**': { swr: 120 },
-    '/events': { swr: 60 },
-    '/events/**': { swr: 60 },
-    '/members': { swr: 300 },
-    '/history': { swr: 300 },
-    '/social': { swr: 300 },
+    // Fresh SSR for every public page: data SWR lives in the server adapters,
+    // never in a rendered-HTML cache that would repeat a CSP nonce.
+    '/': { headers: { ...publicHtmlHeaders } },
+    '/activities': { headers: { ...publicHtmlHeaders } },
+    '/activity/**': { headers: { ...publicHtmlHeaders } },
+    '/events': { headers: { ...publicHtmlHeaders } },
+    '/events/**': { headers: { ...publicHtmlHeaders } },
+    '/members': { headers: { ...publicHtmlHeaders } },
+    '/history': { headers: { ...publicHtmlHeaders } },
+    '/social': { headers: { ...publicHtmlHeaders } },
+    '/logs': { headers: { ...publicHtmlHeaders } },
     '/join': { headers: { 'Cache-Control': 'no-store' } },
-    '/logs': { swr: 30 },
     '/admin': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
     '/admin/**': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
     '/api/**': { headers: { 'Cache-Control': 'no-store' } },

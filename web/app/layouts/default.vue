@@ -1,14 +1,13 @@
 <script setup lang="ts">
-import { defaultPublicConfig } from '@guatswr/shared/config'
-import { useSiteConfigStore } from '~/stores/site-config'
 import { useUiStore } from '~/stores/ui'
 import { THEME_BOOT_SCRIPT } from '~/utils/theme'
 
 const route = useRoute()
-const site = useSiteConfigStore(usePinia())
 const ui = useUiStore(usePinia())
-const { data } = await useFetch('/api/config', { key: 'public-site-config', default: () => ({ ...defaultPublicConfig }) })
-site.replace(data.value)
+// The one shared public-config request for the whole application: it publishes
+// the result into the Pinia store that the navbar, footer and pages read.
+const { ready } = usePublicConfig()
+await ready
 useHead({ script: [{ key: 'theme-boot', innerHTML: THEME_BOOT_SCRIPT, tagPriority: 'critical' }] })
 onMounted(ui.start)
 onBeforeUnmount(ui.stop)

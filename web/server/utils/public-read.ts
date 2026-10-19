@@ -10,6 +10,7 @@ import {
   memberRowSchema,
   publicActivitiesPageSchema,
   publicActivitySchema,
+  publicConfigSchema,
   publicEventParticipantsSchema,
   publicEventSchema,
   publicEventsPageSchema,
@@ -42,11 +43,12 @@ import type {
   PublicLogsPage,
   PublicMember,
   PublicSchoolStat,
+  PublicSiteConfig,
   PublicUmamiStats,
   SchoolStatRow,
 } from '@guatswr/shared'
 import { createError } from 'h3'
-import { upstreamUrl } from './upstream'
+import { assertUpstreamOrigin, upstreamUrl } from './upstream'
 
 /**
  * Read-only public adapters for the frozen v1 API.
@@ -66,6 +68,14 @@ const MAX_QUERY_DIGITS = 9
 const MAX_TIMESTAMP_DIGITS = 15
 const MAX_FILTER_LENGTH = 50
 const MAX_TYPE_LENGTH = 32
+/**
+ * Public audit-log descriptions are bounded before any redaction regex runs.
+ * Every frozen `addLog` call site is a short sentence; 4096 UTF-16 code units
+ * is far above legitimate data while keeping defensive scanning predictable.
+ */
+export const MAX_PUBLIC_LOG_DETAILS_LENGTH = 4_096
+/** Fixed replacement for an over-bound log description (never a partial copy). */
+export const PUBLIC_LOG_DETAILS_OMITTED = '日志详情过长，已省略'
 /** Corruption guard only: legitimate lists are preserved in full. */
 const MAX_JSON_BYTES = 8 * 1024 * 1024
 const UPSTREAM_TIMEOUT_MS = 8_000
@@ -591,21 +601,21 @@ const projectParticipant = (row: EventParticipantRow): PublicEventParticipant =>
  * `登录成功 (IP: ${clientIp})` and `IP ${clientIp} 锁定`). Public readers get
  * fixed safe text instead; ordinary content actions keep their title/name.
  */
-const PUBLIC_LOG_DETAILS: Record<string, string> = {
-  LOGIN: '登录成功',
-  LOGIN_LOCK: '登录尝试过多，已临时锁定',
-  BAN_IP: '封禁了一个访问来源',
-  UNBAN_IP: '解除了一个访问来源的封禁',
-  RESET_PWD: '重置了管理员密码',
-  RESET_2FA: '重置了管理员二步验证',
-  REFRESH_TOKEN_VERSION: '强制刷新了登录凭证',
-  UPDATE_BACKUP_SETTINGS: '更新了自动备份设置',
-  DOWNLOAD_BACKUP: '下载了一次备份',
-  DELETE_BACKUP: '删除了一次备份',
-  AUTO_BACKUP: '执行了自动备份',
-  AUTO_BACKUP_FAILED: '自动备份失败',
-  DELETE_EVENT_FILE_FAIL: '清理事件文件失败',
-}
+const PUBLIC_LOG_DETAILS = new Map<string, string>([
+  ['LOGIN', '登录成功'],
+  ['LOGIN_LOCK', '登录尝试过多，已临时锁定'],
+  ['BAN_IP', '封禁了一个访问来源'],
+  ['UNBAN_IP', '解除了一个访问来源的封禁'],
+  ['RESET_PWD', '重置了管理员密码'],
+  ['RESET_2FA', '重置了管理员二步验证'],
+  ['REFRESH_TOKEN_VERSION', '强制刷新了登录凭证'],
+  ['UPDATE_BACKUP_SETTINGS', '更新了自动备份设置'],
+  ['DOWNLOAD_BACKUP', '下载了一次备份'],
+  ['DELETE_BACKUP', '删除了一次备份'],
+  ['AUTO_BACKUP', '执行了自动备份'],
+  ['AUTO_BACKUP_FAILED', '自动备份失败'],
+  ['DELETE_EVENT_FILE_FAIL', '清理事件文件失败'],
+])
 
 /** `site_config` keys that are already public through `/api/config`. */
 const PUBLIC_CONFIG_KEYS = new Set([
@@ -623,9 +633,57 @@ const PUBLIC_CONFIG_KEYS = new Set([
 
 const JWT_PATTERN = /\beyJ[A-Za-z0-9_-]{4,}\.[A-Za-z0-9_-]{4,}(?:\.[A-Za-z0-9_-]+)?/g
 const LABELLED_CREDENTIAL_PATTERN = /(?<![a-z0-9])(?:password|passwd|pwd|secret|token(?:_version)?|api[_-]?key|authorization|bearer|credential|jwt)\b\s*[:=]\s*\S+/gi
-const LONG_TOKEN_PATTERN = /(?<![A-Za-z0-9+/])[A-Za-z0-9+/]{40,}={0,2}(?![A-Za-z0-9+/=])|\b[0-9a-f]{32,}\b/gi
 const IPV4_PATTERN = /\b\d{1,3}(?:\.\d{1,3}){3}\b/g
 const IPV6_PATTERN = /(?:[0-9a-f]{0,4}:){3,7}[0-9a-f]{0,4}(?![:0-9a-f])|(?:[0-9a-f]{0,4}:){0,3}[0-9a-f]{0,4}::(?:[0-9a-f]{0,4}:){0,3}[0-9a-f]{0,4}/gi
+
+const isTokenCharacter = (code: number): boolean =>
+  (code >= 48 && code <= 57)
+  || (code >= 65 && code <= 90)
+  || (code >= 97 && code <= 122)
+  || code === 43 // '+'
+  || code === 47 // '/'
+
+const isHexCharacter = (code: number): boolean =>
+  (code >= 48 && code <= 57)
+  || (code >= 65 && code <= 70)
+  || (code >= 97 && code <= 102)
+
+/**
+ * Linear replacement for the previous long-token regex. A single pass over
+ * maximal `[A-Za-z0-9+/]+` runs redacts base64-shaped runs (>= 40 chars) and
+ * hex runs (>= 32 chars) including any `=` padding. That avoids the regex's
+ * super-linear backtracking on a long token ending in `===` while redacting a
+ * superset of the old matches (only ever safer).
+ */
+const redactLongTokens = (details: string): string => {
+  let result = ''
+  let index = 0
+  while (index < details.length) {
+    if (!isTokenCharacter(details.charCodeAt(index))) {
+      result += details.charAt(index)
+      index += 1
+      continue
+    }
+    const start = index
+    let end = index + 1
+    while (end < details.length && isTokenCharacter(details.charCodeAt(end))) end += 1
+    let paddingEnd = end
+    while (paddingEnd < details.length && details.charCodeAt(paddingEnd) === 61) paddingEnd += 1
+
+    let hex = end - start >= 32
+    if (hex) {
+      for (let cursor = start; cursor < end; cursor += 1) {
+        if (!isHexCharacter(details.charCodeAt(cursor))) {
+          hex = false
+          break
+        }
+      }
+    }
+    result += (end - start >= 40 || hex) ? '[redacted]' : details.slice(start, paddingEnd)
+    index = paddingEnd
+  }
+  return result
+}
 
 /**
  * Bounded defence in depth for descriptions that are retained verbatim. This is
@@ -634,17 +692,26 @@ const IPV6_PATTERN = /(?:[0-9a-f]{0,4}:){3,7}[0-9a-f]{0,4}(?![:0-9a-f])|(?:[0-9a
  * address or credential shape is replaced wholesale so a decoy value cannot
  * leak through a retained title.
  */
-const redactLogDetails = (details: string): string => details
-  .replace(JWT_PATTERN, '[redacted]')
-  .replace(LABELLED_CREDENTIAL_PATTERN, '[redacted]')
-  .replace(LONG_TOKEN_PATTERN, '[redacted]')
-  .replace(IPV4_PATTERN, '[ip]')
-  .replace(IPV6_PATTERN, '[ip]')
+const redactLogDetails = (details: string): string =>
+  redactLongTokens(
+    details
+      .replace(JWT_PATTERN, '[redacted]')
+      .replace(LABELLED_CREDENTIAL_PATTERN, '[redacted]'),
+  )
+    .replace(IPV4_PATTERN, '[ip]')
+    .replace(IPV6_PATTERN, '[ip]')
 
-/** Security actions get fixed text; public config keys survive, others do not. */
+/**
+ * Security actions get fixed text; public config keys survive, others do not.
+ * The Map is an own-key lookup: actions named `constructor`, `__proto__` or
+ * `toString` cannot inherit a response from `Object.prototype`.
+ */
 const projectLogDetails = (action: string, details: string): string => {
-  const fixed = PUBLIC_LOG_DETAILS[action]
+  const fixed = PUBLIC_LOG_DETAILS.get(action)
   if (fixed !== undefined) return fixed
+  // Bound before parsing/redaction; over-bound text becomes a fixed placeholder
+  // rather than a truncated fragment that could look like real content.
+  if (details.length > MAX_PUBLIC_LOG_DETAILS_LENGTH) return PUBLIC_LOG_DETAILS_OMITTED
   if (action === 'UPDATE_CONFIG') {
     const separator = details.lastIndexOf(': ')
     const key = separator === -1 ? '' : details.slice(separator + 2).trim()
@@ -680,6 +747,71 @@ const umamiPoints = (value: unknown): unknown[] => Array.isArray(value) ? value 
 // ---------------------------------------------------------------------------
 // Readers
 // ---------------------------------------------------------------------------
+
+const configUnavailable = () => createError({
+  statusCode: 502,
+  statusMessage: 'Site configuration unavailable',
+})
+
+/**
+ * Validate the administrator-configured origin before any cache lookup, so a
+ * warm cache entry can never bypass the fail-closed origin check (credentials,
+ * path, query, fragment, non-HTTP are all rejected). Returns the normalized
+ * origin used as the cache key; the loader validates again on a cache miss.
+ * The error is the same 502 a cache miss would produce.
+ */
+export const resolvePublicReadOrigin = (ctx: PublicReadContext): string => {
+  try {
+    return assertUpstreamOrigin(ctx.apiBase).origin
+  }
+  catch {
+    throw upstreamUnavailable()
+  }
+}
+
+/** Same fail-closed origin check with the configuration route's 502 shape. */
+export const resolvePublicConfigOrigin = (ctx: PublicReadContext): string => {
+  try {
+    return assertUpstreamOrigin(ctx.apiBase).origin
+  }
+  catch {
+    throw configUnavailable()
+  }
+}
+
+/**
+ * Projected site configuration through the same credential-free upstream
+ * boundary as every other public read. Valid payloads keep their exact public
+ * DTO; every upstream, transport or shape failure maps to the frozen route's
+ * 502 with no internal detail.
+ */
+export const readPublicConfig = async (ctx: PublicReadContext): Promise<PublicSiteConfig> => {
+  let response: Response
+  try {
+    response = await fetch(upstreamUrl(ctx.apiBase, '/api/config'), {
+      headers: { accept: 'application/json' },
+      signal: AbortSignal.timeout(resolveUpstreamTimeout(ctx)),
+      redirect: 'error',
+    })
+  }
+  catch {
+    throw configUnavailable()
+  }
+  if (!response.ok) {
+    cancelUpstreamBody(response)
+    throw configUnavailable()
+  }
+  let payload: unknown
+  try {
+    payload = JSON.parse(await readCappedText(response))
+  }
+  catch {
+    throw configUnavailable()
+  }
+  const parsed = publicConfigSchema.safeParse(payload)
+  if (!parsed.success) throw configUnavailable()
+  return parsed.data
+}
 
 export const readActivitiesPage = async (
   ctx: PublicReadContext,

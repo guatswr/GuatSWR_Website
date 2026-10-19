@@ -57,6 +57,10 @@ Rules that keep the number honest:
 - A relative `../` static import that stays inside `/_nuxt/` (for example
   `/_nuxt/chunks/a.js` importing `../shared.js`) is counted normally; only a
   specifier that resolves outside the prefix fails.
+- A bare static import (for example Nuxt's `#entry` entry shim) is resolved
+  through the SSR importmap when an exact own-URL binding exists, so the mapped
+  chunk and its transitive imports are counted — never ignored, never charged as
+  the shim alone. Any other non-relative specifier still fails.
 - The Nuxt `__NUXT_DATA__` payload is JSON, not JavaScript. Its byte size is
   reported separately as `payloadBytes` and is never added to the JS total.
 - CSS, images, fonts and the favicon are not part of this budget.
@@ -69,6 +73,47 @@ static ones — over-counting lazy admin chunks, or (worse) missing static
 imports. The lexer distinguishes `ImportType.Static`/`StaticSourcePhase`/
 `StaticDeferPhase` from `Dynamic*` and `ImportMeta`, so the eager graph and the
 lazy graph cannot be conflated.
+
+### Nuxt SSR importmap
+
+Nuxt 4 renders an inline `<script type="importmap">` that binds bare specifiers
+such as `#entry` to own build chunks, and the entry shim imports those bare
+specifiers. The accounting parses that map and resolves a bare static import
+through it, so the mapped chunk and its transitive static imports are counted
+exactly once and unioned with the observed browser requests and preloads.
+
+Supported subset (deliberately narrow, matching what Nuxt emits):
+
+- a single `<script type="importmap">` document whose `imports` object holds
+  exact string bindings (Nuxt renders `{ imports: { "#entry": path } }` from
+  `entryImportMapPath()` in the installed
+  `nuxt/dist/runtime/server/renderer/index.js`);
+- a binding target that is an **absolute own-origin path** normalizing to an own
+  `/_nuxt/*.js` asset which exists in the production output. With this app's
+  default `buildAssetsURL` (no CDN, `baseURL: '/'`) Nuxt emits exactly that
+  form.
+
+Fail-closed diagnostics (no approximation, no silent normalization):
+
+- multiple importmap scripts — browser merge order is not guessed;
+- non-empty `scopes` and prefix mappings (`"key/": ...`) — unsupported;
+- malformed JSON, a non-object document, a non-object `imports`, empty keys or
+  non-string targets;
+- a target that is external, carries a query/fragment, contains a backslash or
+  percent-encoding, or leaves `/_nuxt/`. Backslash and percent-encoding are
+  rejected on the raw target *before* URL parsing, because the URL parser would
+  otherwise silently fold `\` and `%2e%2e` into a different, harmless-looking
+  path;
+- a relative target (`./_nuxt/x.js`, `../_nuxt/x.js`): the browser resolves it
+  against the page URL, which this accounting does not model, so it is refused
+  instead of being guessed from the origin root;
+- a bare specifier with no binding — including inherited object keys such as
+  `constructor`, since bindings live in a `Map` — which still fails as a
+  non-relative static import;
+- a mapped target missing from the production output.
+
+The importmap JSON itself is not JavaScript: it is not seeded as a script and is
+not part of `payloadBytes`, which stays reserved for `__NUXT_DATA__`.
 
 ## Gzip policy
 
@@ -186,13 +231,18 @@ automatic prefetch and duplicate query variants counted once, empty-graph
 refusal, external/missing/`../`-escape assets, stalled/incomplete/failed
 requests, the bounded completion window, exact budget edge, documented level-9
 fallback, source-map refusal, the `#__nuxt` main-content contract, route-fixture
-path/query/marker validation, serve-target validation and the module lexer.
+path/query/marker validation, serve-target validation, the module lexer and the
+SSR importmap (alias resolution with transitive imports, counted once when also
+requested, relative and exact-binding targets, external/unsafe/missing/
+percent-encoded/backslash targets, unknown and inherited-key bare specifiers,
+malformed/scoped/prefixed/repeated maps, and the importmap JSON never counting
+as JavaScript or payload).
 
 Verified on Node `v24.15.0` against the installed `es-module-lexer@2.3.2`:
 
 ```
 node --test scripts/revamp/route-budget.test.mjs
-# tests 27, pass 27, fail 0
+# tests 34, pass 34, fail 0
 ```
 
 ## Wiring (proposed, not applied in the tooling batch)
@@ -231,6 +281,11 @@ revisited.
   in the counted asset set; the accounting is order-independent.
 - The route fixture list is only as complete as the pages that exist, and it is
   declared centrally; this tooling validates it but does not own it.
+- SSR importmap support is the documented narrow subset: one map, exact
+  `imports` bindings, absolute own `/_nuxt/*.js` targets. Scopes, prefix
+  mappings, multiple maps and relative or CDN targets fail the run with a
+  diagnostic instead of being approximated. A future `cdnURL` or non-root
+  `baseURL` would need this policy revisited deliberately.
 
 ## Central integration checkpoint (2026-10-19)
 

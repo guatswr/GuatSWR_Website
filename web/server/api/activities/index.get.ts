@@ -1,7 +1,8 @@
 import type { PublicActivitiesPage } from '@guatswr/shared'
 import { defineEventHandler, getQuery } from 'h3'
 import { useRuntimeConfig } from '#imports'
-import { parsePageQuery, readActivitiesPage } from '../../utils/public-read'
+import { readCachedActivitiesPage } from '../../utils/public-data'
+import { parsePageQuery } from '../../utils/public-read'
 
 /**
  * Frozen v1 `/api/activities` for public pages. `all`, `includeDeleted` and any
@@ -9,5 +10,5 @@ import { parsePageQuery, readActivitiesPage } from '../../utils/public-read'
  */
 export default defineEventHandler(async (event): Promise<PublicActivitiesPage> => {
   const { apiBase } = useRuntimeConfig(event)
-  return readActivitiesPage({ apiBase }, parsePageQuery(getQuery(event)))
+  return readCachedActivitiesPage({ apiBase }, parsePageQuery(getQuery(event)))
 })
