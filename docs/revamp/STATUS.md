@@ -292,3 +292,20 @@ cases) and the event E2E (a form/hydration defect plus visual differences) are b
 parallel. The route-level JavaScript budget is measured at 177,477 B gzip against a 153,600 B ceiling
 — a real overage in client code, unrelated to the BFF, which ships no browser bytes. The admin BFF
 API, the eleven admin pages, the SEO outputs and all of stages 06–07 remain outstanding.
+
+### E2E infrastructure: the fixture leak that blocked whole-suite runs (2026-10-19, `046fcab`)
+
+The full isolated suite kept aborting at batch 2 with "did not write report.json".
+The cause was not the batch under test: Playwright's `webServer` does not reliably
+reap the fixture servers, so batch 1's legacy fixture kept its port and batch 2's
+`webServer` — configured with `reuseExistingServer: false` — could not start. It
+surfaced as a missing report rather than a port conflict, which is why it read as a
+runner defect. Each fixture command now calls `exitWithParent()`, which polls its
+parent and exits when the parent is gone; it is only installed from a fixture's
+command-line entry point, so an importing test never starts it. Verified with a
+five-batch run: 10/10 passed and zero listeners remained on any fixture port.
+
+`web/scripts/e2e-isolated.mjs` also accepts a subset again. The shipped skip policy
+is validated strictly only for a whole-suite run; with a forwarded selector, entries
+outside the selection are reported as unexercised, while the runtime check still
+fails any skip the selection actually produces and does not declare.
