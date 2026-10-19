@@ -1,0 +1,421 @@
+{
+  "generatedAt": "2026-10-19T16:33:11.382Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-admin-modern-final",
+  "totalShards": 14,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    },
+    {
+      "index": 12,
+      "exitCode": 0
+    },
+    {
+      "index": 13,
+      "exitCode": 0
+    },
+    {
+      "index": 14,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 14,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 28,
+  "counts": {
+    "passed": 28,
+    "expected": 28,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 28
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::admin-interface.spec.ts::20:1::admin-interface.spec.ts > workspace navigation, theme, keyboard focus and member search work without hover",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::94:1::admin-interface.spec.ts > ordinary administrators see permitted navigation and cannot enter super-admin pages",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::109:1::admin-workflows.spec.ts > configuration validates before writing and refreshes a previously cached public read",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::125:1::admin-workflows.spec.ts > a confirmed credential change revokes the opaque session and accepts only the new password",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::143:1::admin-workflows.spec.ts > home link editing validates destinations and updates the public projection",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::160:1::admin-workflows.spec.ts > private log selection and confirmed deletion update the actual admin list",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::171:1::admin-workflows.spec.ts > account and IPv6 ban workflows stay on protected fixed endpoints",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::205:1::admin-workflows.spec.ts > backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::233:1::admin-workflows.spec.ts > cancelled backpressured binary downloads release both BFF concurrency slots",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::25:1::admin-workflows.spec.ts > member upload, create, edit, sort, delete and restore cross the real BFF and invalidate public data",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::64:1::admin-workflows.spec.ts > private writes reject missing CSRF and fresh role denials without browser tokens",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::80:1::admin-workflows.spec.ts > history edits retain the archived HTML controls and sanitize both previews and public output",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::20:1::admin-interface.spec.ts > workspace navigation, theme, keyboard focus and member search work without hover",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::94:1::admin-interface.spec.ts > ordinary administrators see permitted navigation and cannot enter super-admin pages",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::109:1::admin-workflows.spec.ts > configuration validates before writing and refreshes a previously cached public read",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::125:1::admin-workflows.spec.ts > a confirmed credential change revokes the opaque session and accepts only the new password",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::143:1::admin-workflows.spec.ts > home link editing validates destinations and updates the public projection",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::160:1::admin-workflows.spec.ts > private log selection and confirmed deletion update the actual admin list",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::171:1::admin-workflows.spec.ts > account and IPv6 ban workflows stay on protected fixed endpoints",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::205:1::admin-workflows.spec.ts > backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::233:1::admin-workflows.spec.ts > cancelled backpressured binary downloads release both BFF concurrency slots",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::25:1::admin-workflows.spec.ts > member upload, create, edit, sort, delete and restore cross the real BFF and invalidate public data",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::64:1::admin-workflows.spec.ts > private writes reject missing CSRF and fresh role denials without browser tokens",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::80:1::admin-workflows.spec.ts > history edits retain the archived HTML controls and sanitize both previews and public output",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    }
+  ]
+}

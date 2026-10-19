@@ -57,6 +57,7 @@ export interface UseBffSessionReturn {
   performMutation: <T>(options: BffMutationFacadeOptions<T>) => Promise<T>
   registerPrivateCleanup: (cleanup: () => void) => () => void
   clearPrivateState: () => void
+  currentRevision: () => number
 }
 
 function initialSnapshot(): BffSessionSnapshot {
@@ -152,5 +153,6 @@ export function useBffSession(): UseBffSessionReturn {
     clearPrivateState() {
       core.clearPrivateState()
     },
+    currentRevision: () => core.currentRevision(),
   }
 }

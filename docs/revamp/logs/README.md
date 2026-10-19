@@ -34,3 +34,4 @@ accepted; these logs are the evidence behind them.
 | Independent blocker review | [`08-independent-acceptance/`](08-independent-acceptance/README.md) | Warm reload fixed; all 14 route JS graphs pass; 170 unique E2E cases passed across full + exact repair selections |
 | Public SEO and portable validation | [`09-seo/`](09-seo/README.md) | Local output validation passes; full-site performance and new remote CI still open |
 | Genuine guest workflow integration | [`10-guest-integration/`](10-guest-integration/README.md) | Real workflow 6/6; 643 units, four recursive gates; full 188/188 E2E, zero skip/flaky/retry |
+| Private administration integration | [`11-admin-integration/`](11-admin-integration/README.md) | In progress; first four-page functional selection 10/10; eight-page workflows/visuals under review |

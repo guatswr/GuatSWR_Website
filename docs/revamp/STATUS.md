@@ -1,6 +1,17 @@
 # GuatSWR frontend revamp status
 
-Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
+Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
+
+Latest user decision (2026-10-20): the administration UI may be redesigned and
+regrouped for modern, simple operation. Public visual parity stays in force;
+private archive pixel parity is superseded by workflow/permission, responsive,
+keyboard and new screenshot review. The modern workspace and eight resource
+pages pass the local foundation selection: four recursive gates, 686 units,
+28/28 desktop/mobile E2E (zero retry/flaky/skip), 36 retained interface screenshots,
+zero sourcemaps, and all 14 public-route JS budgets (119347–132231 B gzip).
+This accepts the workspace foundation/core workflows, not the full admin stage:
+article/event pages and secondary workflow/security checks remain open. See
+[the UI decision](ADMIN-UI.md) and [evidence](logs/11-admin-integration/README.md).
 
 ## Current independent review (Codex, after `bf18a36`)
 
@@ -8,9 +19,10 @@ Latest local follow-up (2026-10-19): public metadata/JSON-LD, bounded RSS and
 the sole sitemap source are implemented. Actual production-output SEO/event/log
 selection passes 20/20; preview indexability-flag probe passes 4/4; local release
 XML rehearsal passes four scenarios. Default preview still forbids indexing.
-Linux Docker build/runtime smoke passed locally. Remote run 39208767023 was red
-(Docker fixture input, empty Windows batch report, two Linux visual comparisons);
-corrections await a new remote run. See [SEO](SEO.md) and
+Linux Docker build/runtime smoke passed locally. Remote run 39240208835 passed
+the Windows job (complete 188-case suite) and the Linux container job; Ubuntu
+finished 187/188, with one differing pixel in mobile dark public logs, reproduced
+locally using the exact `cf17273` Linux output. See [SEO](SEO.md) and
 [workflow evidence](logs/09-seo/README.md).
 
 Homepage performance is still open: first mobile median LCP 2149.3 ms / score
@@ -23,11 +35,27 @@ recursive gates pass (643 units), tooling 56/56, no maps, all 14 initial route
 graphs pass (117275–130126 B gzip). The complete 188-case E2E passed on the
 same `cf17273` artifact in 94 batches, 0 skip/flaky/retry, all reports merged.
 See [guest integration evidence](logs/10-guest-integration/README.md). Remote
-run 39240208835 has passed Linux container build/runtime; the Windows/Linux
-browser suites are still running. Admin source integration is now in progress
-and is not included in these public-artifact acceptance numbers.
+run 39240208835 therefore remains red overall. Admin source integration is now
+in progress and is not included in these public-artifact acceptance numbers.
 Administration and full-site acceptance remain incomplete. No deployment or QQ
 success notification has occurred. Older checkpoint evidence below is historical.
+
+Private-workflow follow-up (local working tree): closed admin/account BFF routes,
+server-owned JWT/address binding, successful-write public cache invalidation,
+fresh role enforcement, bounded JSON/multipart/binary transports and private
+query cleanup are integrated. Members/history/config/profile functional selection
+passed **10/10** on desktop/mobile, no skip/retry/flaky. It includes genuine
+Nuxt BFF uploads/CRUD/restore, previously warmed public reads, CSRF/role/session
+denials, HTML preview sanitization and password-change session revocation. The
+then-current four gates passed (676 units, lint 0 errors, build 0). This is
+functional evidence for that artifact, not acceptance of later layout/page edits.
+The fourth artifact subsequently passed all four recursive gates (686 units =
+73 shared + 613 web); it preceded the newly authorized modern layout. The
+administration workspace now has its own sidebar/topbar and responsive forms.
+Logs/home-links/users/backups, the explicit backup HEAD route and the new
+interface now pass the 28-case local selection. Article editing,
+event administration, full private screenshot/functional acceptance and final full-site
+gates remain open. Details: [private integration log](logs/11-admin-integration/README.md).
 
 User steering: continue directly, without Claude/subagent delegation; local
 testing only. The warm-cache `#entry` 500 was independently reproduced in

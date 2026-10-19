@@ -230,6 +230,59 @@ describe('identity and role changes clear private data first', () => {
 })
 
 describe('logout failure and facade retry bounds', () => {
+  it.each(['login', 'logout'] as const)('blocks new scoped requests and invalidates old writes as soon as %s starts', async operation => {
+    const harness = createHarness()
+    const transition = deferred<Response>()
+    const oldReply = deferred<string>()
+    const core = createBffSessionCore({ fetchImpl: harness.fetchImpl })
+    await core.login({ username: 'alice', password: 'x' })
+    harness.handlers.set(operation === 'login' ? BFF_AUTH_PATHS.login : BFF_AUTH_PATHS.logout, () => transition.promise)
+    const oldSend = vi.fn(() => oldReply.promise)
+    const old = core.performMutation({ send: oldSend })
+    const stale = expect(old).rejects.toMatchObject({ code: 'aborted' })
+    await vi.waitFor(() => expect(oldSend).toHaveBeenCalledTimes(1))
+    const changing = operation === 'login' ? core.login({ username: 'bob', password: 'x' }) : core.logout()
+    const newSend = vi.fn().mockResolvedValue('must not send')
+    try {
+      await expect(core.performMutation({ send: newSend })).rejects.toMatchObject({ code: 'aborted' })
+      expect(newSend).not.toHaveBeenCalled()
+      oldReply.resolve('an already accepted write cannot be undone')
+      await stale
+      transition.resolve(operation === 'login' ? json({ user: BOB, csrfToken: 'csrf-b' }) : json({ loggedOut: true }))
+      await changing
+      await expect(core.performMutation({ send: async () => 'new generation' })).resolves.toBe('new generation')
+    } finally {
+      oldReply.resolve('cleanup')
+      transition.resolve(operation === 'login' ? json({ user: BOB, csrfToken: 'csrf-b' }) : json({ loggedOut: true }))
+      await Promise.allSettled([old, changing, stale])
+    }
+  })
+
+  it('clears private state on a current 401 and keeps it on an ordinary 403', async () => {
+    const harness = createHarness()
+    const cleanup = vi.fn()
+    const core = createBffSessionCore({ fetchImpl: harness.fetchImpl, onSessionLost: cleanup })
+    await core.login({ username: 'alice', password: 'x' })
+    await expect(core.performMutation({ send: async () => { throw new BffRequestError(403, 'forbidden', 'denied') } })).rejects.toMatchObject({ status: 403 })
+    expect(core.getSnapshot().user).toEqual(ALICE)
+    expect(cleanup).not.toHaveBeenCalled()
+    await expect(core.performMutation({ send: async () => { throw new BffRequestError(401, 'session_expired', 'expired') } })).rejects.toMatchObject({ status: 401 })
+    expect(core.getSnapshot().user).toBeNull()
+    expect(core.csrf.token()).toBe('')
+    expect(cleanup).toHaveBeenCalledTimes(1)
+  })
+  it('clears a session that expires on the one permitted CSRF recovery attempt', async () => {
+    const harness = createHarness()
+    const cleanup = vi.fn()
+    const core = createBffSessionCore({ fetchImpl: harness.fetchImpl, onSessionLost: cleanup })
+    await core.login({ username: 'alice', password: 'x' })
+    const send = vi.fn().mockRejectedValueOnce(new BffRequestError(403, 'csrf_invalid', 'rejected before write'))
+      .mockRejectedValueOnce(new BffRequestError(401, 'session_expired', 'expired'))
+    await expect(core.performMutation({ send })).rejects.toMatchObject({ status: 401 })
+    expect(send).toHaveBeenCalledTimes(2)
+    expect(core.getSnapshot().user).toBeNull()
+    expect(cleanup).toHaveBeenCalledTimes(1)
+  })
   it('never sends a queued write after its CSRF wait crosses logout or disposal', async () => {
     for (const dispose of [false, true]) {
       const harness = createHarness()

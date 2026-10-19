@@ -45,3 +45,6 @@ backend/data/
 
 # Backups
 backups/
+# API source shares the feature name; keep only these controllers in Git.
+!web/server/api/bff/admin/backups/
+!web/server/api/bff/admin/backups/*.ts

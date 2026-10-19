@@ -30,4 +30,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
   if (to.meta.requiresSuperAdmin && snapshot.user.role !== 'super_admin') {
     throw createError({ statusCode: 403, statusMessage: '权限不足' })
   }
+
+  const app = useNuxtApp()
+  const { installAdminRuntime } = await import('~/utils/admin-runtime')
+  installAdminRuntime(app, session)
 })

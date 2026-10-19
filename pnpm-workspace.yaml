@@ -5,6 +5,9 @@ packages:
 saveExact: true
 nodeLinker: hoisted
 injectWorkspacePackages: true
+syncInjectedDepsAfterScripts:
+  - build
+  - test
 # Install explicitly (frozen in CI); script invocations must not mutate modules
 # or race an implicit reinstall when multiple quality checks run together.
 verifyDepsBeforeRun: false

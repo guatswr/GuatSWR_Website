@@ -13,6 +13,8 @@ export interface UpstreamRouteDefinition {
   query?: readonly string[]
   maxRequestBytes?: number
   maxResponseBytes?: number
+  /** Only explicitly allowlisted upload routes accept a server-built form. */
+  multipart?: boolean
 }
 
 export type UpstreamRouteTable = Record<string, UpstreamRouteDefinition>
@@ -250,18 +252,26 @@ export function createFixedUpstreamClient<Routes extends UpstreamRouteTable, Rou
       const path = buildPath(route.path, request.params)
       const url = upstreamUrl(origin, path) + buildQuery(route, request.query)
 
-      let payload: string | undefined
+      let payload: string | FormData | undefined
       if (request.body !== undefined) {
-        payload = JSON.stringify(request.body)
-        if (payload === undefined) throw new UpstreamFailure('bad_response', 'Request body is not serializable')
         const maxRequestBytes = Math.min(route.maxRequestBytes ?? globalMaxRequestBytes, globalMaxRequestBytes)
-        if (Buffer.byteLength(payload, 'utf8') > maxRequestBytes) {
+        let bytes = 0
+        if (request.body instanceof FormData) {
+          if (!route.multipart) throw new BffConfigError('Multipart is not allowed for this route')
+          payload = request.body
+          for (const [name, value] of payload) bytes += Buffer.byteLength(name) + (typeof value === 'string' ? Buffer.byteLength(value) : value.size)
+        } else {
+          payload = JSON.stringify(request.body)
+          if (payload === undefined) throw new UpstreamFailure('bad_response', 'Request body is not serializable')
+          bytes = Buffer.byteLength(payload, 'utf8')
+        }
+        if (bytes > maxRequestBytes) {
           throw new UpstreamFailure('request_too_large', 'Request body exceeds the configured limit')
         }
       }
 
       const headers = new Headers({ accept: 'application/json' })
-      if (payload !== undefined) headers.set('content-type', 'application/json')
+      if (typeof payload === 'string') headers.set('content-type', 'application/json')
       if (request.bearerToken) headers.set('authorization', `Bearer ${request.bearerToken}`)
       if (request.clientIp) headers.set('x-forwarded-for', request.clientIp)
 

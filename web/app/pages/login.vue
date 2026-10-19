@@ -10,6 +10,7 @@ import {
 import { bffErrorMessage, safeLocalReturnPath } from '~/utils/bff-client'
 import { pickLoginBackground } from '~/utils/login-background'
 import { focusFirstInvalidField, validationErrorText } from '~/utils/login-form'
+import { clearLegacyAuthStorage } from '~/utils/legacy-auth-cleanup'
 
 // The archived router renders Login inside App.vue, so the navbar and footer
 // are part of the archived login visuals: keep the default layout rather than
@@ -18,6 +19,9 @@ useSeoMeta({ title: '登录', robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const session = useBffSession()
+onMounted(() => {
+  try { clearLegacyAuthStorage(localStorage, document) } catch { /* Storage can be disabled. */ }
+})
 
 const formElement = ref<HTMLFormElement | null>(null)
 const confirmDialog = ref<{ show: () => void } | null>(null)

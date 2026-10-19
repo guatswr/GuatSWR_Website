@@ -58,6 +58,11 @@ export default defineNuxtConfig({
       upstreamTimeoutMs: 8_000,
       maxUpstreamResponseBytes: 64 * 1024,
     },
+    bffAdmin: {
+      backupDownloadMaxBytes: 20 * 1024 ** 3,
+      backupDownloadTimeoutMs: 900_000,
+      maxConcurrentDownloads: 2,
+    },
     public: {},
   },
   site: {
@@ -115,6 +120,9 @@ export default defineNuxtConfig({
       // Match the frozen 50 MiB file allowance plus multipart overhead. The
       // stream parser still enforces exact file/total byte and time limits;
       // nuxt-security's default 8 MB would reject legitimate uploads first.
+      security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
+    },
+    '/api/bff/admin/upload': {
       security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
     },
     '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },

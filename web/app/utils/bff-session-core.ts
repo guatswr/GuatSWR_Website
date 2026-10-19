@@ -59,6 +59,7 @@ export interface BffMutationFacadeOptions<T> {
 
 export interface BffSessionCore {
   getSnapshot: () => BffSessionSnapshot
+  currentRevision: () => number
   subscribe: (listener: (snapshot: BffSessionSnapshot) => void) => () => void
   refresh: () => Promise<BffSessionSnapshot>
   login: (input: LoginInput) => Promise<BffSessionSnapshot>
@@ -127,6 +128,7 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
   let csrf = ''
   let generation = 0
   let disposed = false
+  let identityTransition: number | null = null
   let inFlightRefresh: Promise<BffSessionSnapshot> | undefined
   let inFlightCsrf: Promise<string> | undefined
   let csrfRequestSeq = 0
@@ -142,6 +144,17 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
   const isCurrent = (epoch: number) => !disposed && epoch === generation
   const assertCurrent = (epoch: number) => {
     if (!isCurrent(epoch)) throw new BffRequestError(0, 'aborted', '登录状态已变化，请重新发起操作')
+  }
+  const assertScopedRequest = (epoch: number) => {
+    assertCurrent(epoch)
+    if (identityTransition !== null) throw new BffRequestError(0, 'aborted', '身份切换中，请稍后重新操作')
+  }
+  const beginIdentityTransition = () => {
+    generation += 1
+    inFlightCsrf = undefined
+    inFlightRefresh = undefined
+    identityTransition = generation
+    return generation
   }
   const runPrivateCleanup = () => {
     deps.onSessionLost?.()
@@ -221,23 +234,29 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
 
   const performMutation = async <T>(options: BffMutationFacadeOptions<T>): Promise<T> => {
     const epoch = generation
-    assertCurrent(epoch)
+    assertScopedRequest(epoch)
     const token = await ensureCsrf()
-    assertCurrent(epoch)
+    assertScopedRequest(epoch)
     const isRejected = options.isCsrfRejection ?? isCsrfRejection
-    try {
-      const result = await options.send(token)
-      assertCurrent(epoch)
-      return result
+    const send = async (value: string): Promise<T> => {
+      assertScopedRequest(epoch)
+      try {
+        const result = await options.send(value)
+        assertScopedRequest(epoch)
+        return result
+      } catch (error) {
+        assertScopedRequest(epoch)
+        if (typeof error === 'object' && error !== null && 'status' in error && error.status === 401) clearPrivateState()
+        throw error
+      }
     }
+    try { return await send(token) }
     catch (error) {
-      assertCurrent(epoch)
       if (!isRejected(error)) throw error
+      assertScopedRequest(epoch)
       const refreshed = await fetchCsrf()
-      assertCurrent(epoch)
-      const result = await options.send(refreshed)
-      assertCurrent(epoch)
-      return result
+      assertScopedRequest(epoch)
+      return send(refreshed)
     }
   }
 
@@ -252,6 +271,7 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
 
     refresh() {
       if (disposed) return Promise.resolve(snapshot)
+      if (identityTransition !== null) return Promise.resolve(snapshot)
       if (inFlightRefresh) return inFlightRefresh
       const epoch = generation
       const run = (async () => {
@@ -311,7 +331,8 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
     async login(input) {
       if (disposed) return snapshot
       if (snapshot.submitting) return snapshot
-      const epoch = generation
+      assertScopedRequest(generation)
+      const epoch = beginIdentityTransition()
       update({ submitting: true, lastErrorCode: null })
       try {
         await ensureCsrf()
@@ -356,12 +377,14 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
       }
       finally {
         if (isCurrent(epoch)) update({ submitting: false })
+        if (identityTransition === epoch) identityTransition = null
       }
     },
 
     async logout() {
       if (disposed) return
-      const epoch = generation
+      assertScopedRequest(generation)
+      const epoch = beginIdentityTransition()
       try {
         await ensureCsrf()
         if (!isCurrent(epoch)) return
@@ -387,6 +410,9 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
         }
         throw error
       }
+      finally {
+        if (identityTransition === epoch) identityTransition = null
+      }
       // A newer login superseded this logout; keep the newer session.
       if (!isCurrent(epoch)) return
       clearPrivateState()
@@ -395,15 +421,16 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
     ensureCsrf,
     async mutate(path, body) {
       const epoch = generation
+      assertScopedRequest(epoch)
       await ensureCsrf()
-      assertCurrent(epoch)
+      assertScopedRequest(epoch)
       const { data, csrfToken } = await bffMutation(path, {
         body,
         fetchImpl: deps.fetchImpl,
         timeoutMs: deps.timeoutMs,
         csrfToken: () => csrf,
         refreshCsrf: fetchCsrf,
-        assertCurrent: () => assertCurrent(epoch),
+        assertCurrent: () => assertScopedRequest(epoch),
       })
       // Do not let an older mutation's rotated token overwrite a newer one.
       if (isCurrent(epoch)) storeCsrf(csrfToken)
@@ -419,6 +446,7 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
     },
     performMutation,
     csrfToken: () => csrf,
+    currentRevision: () => generation,
     clearPrivateState,
     dispose() {
       disposed = true

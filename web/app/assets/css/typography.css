@@ -1,0 +1,21 @@
+@theme {
+  --color-sky-brand: #38bdf8;
+  --color-sky-dark: #0284c7;
+
+  /* Tailwind 3 compiled these scales to fixed line lengths
+     (frontend/dist/assets/index-daf3db2b.css: .text-xs{...line-height:1rem}
+     ... .text-4xl{...line-height:2.5rem}). Tailwind 4 ships unitless ratios
+     instead, so an element that overrides only its font-size inherits a
+     different line box: the 9px .nav-number inside a text-base menu row went
+     from a 24px to a 13.5px line and rasterized differently on Linux. Restore
+     the archived metrics centrally so every scale keeps 1:1 typography.
+     text-5xl is line-height: 1 in both generations and stays untouched. */
+  --text-xs--line-height: 1rem;
+  --text-sm--line-height: 1.25rem;
+  --text-base--line-height: 1.5rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl--line-height: 1.75rem;
+  --text-2xl--line-height: 2rem;
+  --text-3xl--line-height: 2.25rem;
+  --text-4xl--line-height: 2.5rem;
+}

@@ -1,3 +1,5 @@
+import { isIP } from 'node:net'
+
 /**
  * Resolve and validate one private, administrator-set origin; browsers never
  * supply it. Exported so cache composition can fail closed *before* a warm
@@ -15,7 +17,14 @@ export const assertUpstreamOrigin = (origin: string): URL => {
 /** Resolve only fixed API paths against a private, administrator-set origin. */
 export function upstreamUrl(origin: string, path: string): string {
   const base = assertUpstreamOrigin(origin)
-  if (!/^\/api\/[a-z0-9/_-]+$/i.test(path) || path.includes('//')) {
+  const banPrefix = '/api/admin/bans/'
+  const encodedIp = path.startsWith(banPrefix) ? path.slice(banPrefix.length) : ''
+  let fixedBan = false
+  try {
+    const ip = decodeURIComponent(encodedIp)
+    fixedBan = isIP(ip) !== 0 && encodeURIComponent(ip) === encodedIp
+  } catch { /* Invalid encoding never names a frozen route. */ }
+  if ((!/^\/api\/[a-z0-9/_-]+$/i.test(path) && !fixedBan) || path.includes('//')) {
     throw new Error('Upstream path must be a fixed v1 API path')
   }
   return new URL(path, base).href

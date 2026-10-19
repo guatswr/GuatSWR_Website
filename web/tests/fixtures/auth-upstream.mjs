@@ -1,6 +1,7 @@
 import { createServer } from 'node:http'
 import { pathToFileURL } from 'node:url'
-import { handlePublicFixture } from './public-data.mjs'
+import { handlePublicFixture, publicActivitiesFixture, publicMembersFixture, publicHistoryFixture, publicConfigFixture } from './public-data.mjs'
+import { createAdminUpstreamFixture } from './admin-upstream.mjs'
 import { exitWithParent } from './parent-watch.mjs'
 import { createGuestUpstreamFixture } from './guest-upstream.mjs'
 
@@ -62,6 +63,12 @@ function send(response, status, body, headers = {}) {
 
 export function createAuthUpstreamFixture() {
   const guest = createGuestUpstreamFixture()
+  const admin = createAdminUpstreamFixture()
+  admin.state.activities = structuredClone(publicActivitiesFixture)
+  admin.state.members = structuredClone(publicMembersFixture)
+  admin.state.history = structuredClone(publicHistoryFixture)
+  admin.state.config = publicConfigFixture()
+  let adminEnabled = false
   const state = {
     requests: [],
     loginAttempts: 0,
@@ -104,6 +111,18 @@ export function createAuthUpstreamFixture() {
     // Any browser credential or origin reaching this fixture is a BFF bug.
     const leaked = Boolean(headers.cookie || headers.origin || headers['x-real-ip'] || headers['cf-connecting-ip'] || headers.forwarded)
 
+    // Opt-in mutable integration dataset. Existing archive/public acceptance
+    // runs retain the same immutable fixture until a private workflow enables it.
+    if (url.pathname === '/__fixture/admin') {
+      if (request.method === 'POST') {
+        const body = await readJsonBody(request); adminEnabled = true
+        if (body.stalledBackup && !admin.state.backups.some(item => item.name === 'full_stall.tar.gz'))
+          admin.state.backups.push({ type: 'full', name: 'full_stall.tar.gz', size: 100 * 1024 * 1024, mtime: 1_792_310_400_000 })
+      }
+      return send(response, 200, { enabled: adminEnabled, requests: admin.state.requests, members: admin.state.members,
+        history: admin.state.history, config: admin.state.config, uploads: admin.state.uploads, bans: admin.state.bans, backups: admin.state.backups, activeBackupStreams: admin.state.activeBackupStreams, backupStreams: admin.state.backupStreams })
+    }
+
     if (request.method === 'POST' && url.pathname === '/__fixture/control') {
       try {
         const body = await readJsonBody(request)
@@ -118,6 +137,10 @@ export function createAuthUpstreamFixture() {
         if (typeof body.username === 'string' && typeof body.role === 'string') {
           const user = state.users.get(body.username)
           if (user) user.role = body.role
+        }
+        if (typeof body.username === 'string' && typeof body.disabled === 'boolean') {
+          const user = state.users.get(body.username)
+          if (user) user.disabled = body.disabled
         }
         return send(response, 200, { ok: true })
       }
@@ -185,6 +208,7 @@ export function createAuthUpstreamFixture() {
       }
       const user = [...state.users.values()].find(candidate => candidate.id === payload.id)
       if (!user) return send(response, 404, { message: '用户不存在' })
+      if (user.disabled) return send(response, 401, { message: '账号不可用' })
       return send(response, 200, {
         id: user.id,
         username: user.username,
@@ -199,6 +223,35 @@ export function createAuthUpstreamFixture() {
     // `NUXT_API_BASE` does not have to switch between two fixtures. The
     // credential-leak check above stays scoped to `/api/auth/login`, so public
     // reads cannot pollute it.
+    if (adminEnabled) {
+      const mutableResource = /^\/api\/(?:activities|members|history)(?:\/|$)/.test(url.pathname)
+        || url.pathname === '/api/config' || url.pathname.startsWith('/api/admin/')
+        || url.pathname === '/api/auth/profile' || url.pathname === '/api/auth/register' || url.pathname === '/api/upload'
+      if (mutableResource) {
+        admin.state.users = [...state.users.values()].map(user => ({ ...user, twofa_enabled: user.twofaEnabled }))
+        await admin.handle(request, response, { publicRead: request.method === 'GET' && !headers.authorization })
+        if (response.statusCode === 200 && (url.pathname === '/api/auth/register' || url.pathname.startsWith('/api/admin/users'))) {
+          const ids = new Set(admin.state.users.map(user => user.id))
+          for (const [username, user] of state.users) if (!ids.has(user.id)) state.users.delete(username)
+          for (const user of admin.state.users) {
+            state.users.set(user.username, { ...user, twofaEnabled: user.twofa_enabled })
+          }
+        }
+        if (url.pathname === '/api/auth/profile' && response.statusCode === 200) {
+          const body = admin.state.profileBodies.at(-1)
+          const authorization = headers.authorization ?? ''
+          const payload = JSON.parse(Buffer.from(authorization.slice(7).split('.')[1], 'base64url').toString('utf8'))
+          const user = [...state.users.values()].find(candidate => candidate.id === payload.id)
+          if (user && body) {
+            if ('avatar' in body) user.avatar = body.avatar
+            if ('password' in body) user.password = body.password
+            if ('twofa_password' in body) user.twofa = body.twofa_password
+            if ('twofa_enabled' in body) user.twofaEnabled = body.twofa_enabled ? 1 : 0
+          }
+        }
+        return
+      }
+    }
     if (await guest.handle(request, response)) return
     if (handlePublicFixture(request, response)) return
 
