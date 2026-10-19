@@ -62,3 +62,25 @@ All work remains local. The estimated launch date is 2026-11-11. Server, DNS,
 Cloudflare and traffic changes are deferred until separately approved. Optional
 enhancements are not required for the migration-success notification. That
 notification must distinguish local migration completion from actual deployment.
+
+## Round 1 under Claude Code lead (2026-10-19)
+
+Codex handed the migration to Claude Code, which now owns architecture, integration, gates and the
+ledgers, and runs implementer agents in parallel. Three workstreams run concurrently in the primary
+checkout with disjoint file ownership and per-workstream Playwright port bases:
+
+| Workstream | Log | Scope | Port base |
+| --- | --- | --- | --- |
+| Homepage E2E fixes | [`logs/01-homepage-e2e`](logs/01-homepage-e2e/README.md) | The 14 failing `homepage*`/`social-join` cases on both projects | 3200 |
+| Public prose pages | [`logs/02-public-pages`](logs/02-public-pages/README.md) | The 56-file batch from `revamp-public-pages`, content routes on the cached wrappers | 3400 |
+| Events and guest BFF | [`logs/03-events-guest`](logs/03-events-guest/README.md) | The 39-file batch from `revamp-events`, shared event rules, guest draft/upload/signup | 3500 |
+
+The shared files (`package.json`, the lockfile, `packages/shared/src/index.ts`,
+`web/nuxt.config.ts`, `web/playwright.config.ts`) belong to the lead, and builds and Playwright runs
+are serialized through `.tools/build.lock` because `.nuxt/`, `.output/` and `test-results/` are
+shared. Each workstream must leave a report a second agent can re-verify from; the protocol is
+`.tools/agent-protocol.md`. Authentication/BFF and the SEO outputs wait for the next round so they do
+not contend for those shared files.
+
+The working-tree loss and its recovery are recorded in
+[`logs/00-recovery-2026-10-19`](logs/00-recovery-2026-10-19/README.md).

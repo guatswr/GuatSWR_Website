@@ -1,6 +1,6 @@
 # GuatSWR frontend revamp status
 
-Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
+Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation` at `0954b8a`.
 
 ## Boundaries
 
@@ -20,7 +20,7 @@ Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 | 00 Legacy checkpoint | Done locally | `f1215d4`; annotated `v1-archive`; Vite production build passed; 55 frontend tests passed. |
 | 01 Workspace / Nuxt foundation | Local gates passed | `f587518`, pushed only to `revamp/nuxt-foundation`; all local gates passed. Deployment deferred by user. |
 | 02 Design system | Codex local acceptance passed; CI instrumentation correction pending | Shared tokens/layout/navigation/theme/dialog ported. Windows four gates, 15 unit tests, 20 E2E, 10 zero-difference archive comparisons and fixed performance budgets pass (1509.1 / 1656.3 ms). Independent Linux container gates and runtime smoke also pass. See [acceptance report](ACCEPTANCE-2026-10-19.md). This is shared-layout acceptance, not whole-site acceptance. |
-| 03 Public pages | Data candidate passed first full local gates; UI candidates under review | Preserve existing URLs (including singular `/activity/:id`), SSR/data SWR, content SEO, images, sitemap/RSS. Homepage source is ready for integration; remaining pages still need parity fixes and real gates. See [COORDINATION.md](COORDINATION.md). |
+| 03 Public pages | Homepage/`/social`/`/join` and the data cache integrated (`beb85c0`); 14 new E2E cases failing; prose pages in a parallel workstream | Preserve existing URLs (including singular `/activity/:id`), SSR/data SWR, content SEO, images, sitemap/RSS. Four recursive gates are green; the isolated E2E suite is 56/70 with every failure inside the new specs. See [COORDINATION.md](COORDINATION.md) and [logs](logs/README.md). |
 | 04 Interactive forms | Event UI/shared rules implementation started in isolation | Existing guest upload/submission/signup contracts; shared Zod 4 with a native Standard Schema form integration to be verified; Query only where interactive data needs it. Guest BFF still required. |
 | 05 Administration | Auth server source candidate delivered; login/client work started; admin pending | Server candidate has not passed integrated tests. Element Plus remains planned only in admin chunks; opaque HttpOnly session id with the backend JWT stored only on the server; current backend identity checks and CSRF. |
 | 06 Performance / security | Pending | Mobile Lighthouse ≥95, LCP ≤1.8s, initial JS ≤150KB gzip, a11y, monitoring, full E2E/visual gates. |
@@ -186,3 +186,46 @@ already accepted scaffold and internal shared-layout route, while their all-JS g
 Real browser accounting on CI is still pending; checklist 82 remains open. Migrated homepage candidates
 have passed four recursive gates (136 unit tests) but their first E2E run failed, with real UI/test issues
 and later production-rate-limit saturation; they are not accepted or included in this tooling commit.
+
+### Working-tree loss, recovery and the parallel workstream round (2026-10-19, Claude Code as lead)
+
+**Incident.** While freeing a full `E:` volume (749 MB free), a scratch cleanup removed
+`.tools/stale-*`; the cleanup followed a directory link out of `.tools/` and deleted `web/**` and
+`packages/shared/**` from the working tree — 70 tracked files plus every untracked file of the two
+uncommitted batches. `frontend/`, `backend/`, `docs/`, `scripts/`, `node_modules/` and `.tools/` were
+untouched; no commit, branch, remote, DNS or server state changed. Both batches also existed in their
+own worktrees and the two primary-only files were recoverable from the worker transcript, so nothing
+was lost permanently. Full account, recovery sources and re-derived fixes:
+[logs/00-recovery-2026-10-19](logs/00-recovery-2026-10-19/README.md). About 18 GB was freed from the
+same explicitly-stale scratch.
+
+**Recovered and committed.**
+
+- `beb85c0` — the migrated homepage, `/social` and `/join` (worker H batch) plus the projected-public
+  data SWR cache and fresh per-response HTML CSP nonces (worker C batch), and the isolated E2E runner.
+  Tracked files were restored byte-identically from a clean checkout of the same commit; the
+  primary-only strict-TypeScript and cache-C3 corrections were re-derived and are each covered by a
+  passing gate. Gates on this tree: typecheck 0, lint 0 (15 pre-existing warnings), test 0
+  (shared 23/23 + web 147/147), build 0, `check:artifacts` 0 source maps,
+  `node --test web/scripts/e2e-isolated.test.mjs` 22/22, isolated-runner dry run 70 tests / 35 shards.
+- `0954b8a` — the page/event dependencies (`pinyin-pro` 3.28.0, `shiki` 4.5.0,
+  `@tanstack/vue-form` 1.33.5, `compressorjs` 1.2.1) and a configurable `E2E_PORT_BASE` for the three
+  Playwright servers, defaulting to the previous fixed ports 3100 / 3181 / 5174.
+
+**Open, and not accepted by these commits.** The full isolated E2E suite is 56/70. All 14 failures are
+in the newly added specs (`homepage-visual`, `homepage`, `social-join`), on both projects: two visual
+parity cases, two unscoped navigation locators, the thumbnail fallback, the archive retry state, the
+join page without JavaScript and the QR retry. The previously accepted foundation, cache and
+shared-layout suites still pass, so this is unfinished new work rather than a regression. Checklist 03
+therefore remains open.
+
+**Parallel round.** Three workstreams are running concurrently in the primary checkout with disjoint
+file ownership and per-workstream port bases, each required to write a re-verifiable report under
+`docs/revamp/logs/<workstream>/` (convention: [logs/README.md](logs/README.md); protocol:
+`.tools/agent-protocol.md`): homepage/social/join E2E fixes (`logs/01-homepage-e2e`), public prose
+pages integration (`logs/02-public-pages`), and event UI plus the guest BFF (`logs/03-events-guest`).
+The lead owns `package.json`, the lockfile, `packages/shared/src/index.ts`, `web/nuxt.config.ts`,
+`web/playwright.config.ts`, the recursive gates, the performance harness and the ledgers; builds and
+Playwright runs are serialized through `.tools/build.lock` because `.nuxt/`, `.output/` and
+`test-results/` are shared. Authentication/BFF and the SEO outputs are deliberately deferred to the
+next round so that they do not contend for the shared configuration files.
