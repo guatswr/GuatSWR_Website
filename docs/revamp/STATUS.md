@@ -229,3 +229,27 @@ The lead owns `package.json`, the lockfile, `packages/shared/src/index.ts`, `web
 Playwright runs are serialized through `.tools/build.lock` because `.nuxt/`, `.output/` and
 `test-results/` are shared. Authentication/BFF and the SEO outputs are deliberately deferred to the
 next round so that they do not contend for the shared configuration files.
+
+### Round 1 progress — events batch partially integrated, guest BFF parked (2026-10-19)
+
+The event workstream integrated its UI, shared rules and transport and found four real defects in the
+process (an unexecuted TTL check in `guest-drafts.ts` that let an expired cookie be reused instead of
+rotated; two hardcoded Playwright port sets; a real `TS2345` in the event form schema; several lint
+errors). 33 of its 45 unit cases now execute and pass.
+
+Its guest BFF cannot be integrated in this round: `web/server/utils/guest-bff.ts` imports
+`./bff-auth-context`, `./bff-identity`, `./bff-errors` and `./bff-write` (the authentication round's
+files, not in the tree) and `guest-upload.ts` additionally needs `busboy`. The workstream correctly
+refused to stub that contract. Those eleven paths are parked in `.tools/parked/03-events-guest/`
+rather than deleted, and the decision, the restore list and the two real gaps it leaves open — save
+locking is neither implemented nor tested, and upload oversize has no test at all — are recorded in
+[logs/03-events-guest/LEAD-NOTE.md](logs/03-events-guest/LEAD-NOTE.md).
+
+Authentication/BFF is therefore promoted from a later stage to the critical path: it is what unblocks
+the guest draft/upload/signup flows and the event signup UI. Its brief is `.tools/brief-auth.md`; the
+SEO outputs follow it (`.tools/brief-seo.md`).
+
+Lead-owned integration fixes applied this round: `web/vitest.config.ts` now aliases `#shared` and `~`
+(any module importing either could not previously load under Vitest), and five type errors in the
+event files were fixed after that workstream closed. Unit tests across the workspace are 35 shared +
+232 web, all passing.
