@@ -31,7 +31,27 @@ export default defineNuxtConfig({
       password: '',
       name: 'guatswr-next',
       maxAge: 60 * 60 * 24,
+      // Cookie-only transport: never accept a sealed session through a header.
+      sessionHeader: false,
       cookie: { httpOnly: true, sameSite: 'lax', secure: !import.meta.dev },
+    },
+    // Private BFF auth defaults. Everything fails closed: no write origin is
+    // trusted and no proxy is trusted until explicitly configured.
+    // Override with NUXT_BFF_AUTH_* env values (arrays as JSON).
+    bffAuth: {
+      allowedOrigins: [] as string[],
+      trustedProxyCidrs: [] as string[],
+      allowInsecureLoopbackCookies: false,
+      sessionMaxAgeSeconds: 60 * 60 * 24,
+      csrfMaxAgeSeconds: 60 * 60 * 2,
+      maxJsonBytes: 16 * 1024,
+      maxLogoutBytes: 1024,
+      memorySessionLimit: 10_000,
+      loginRateLimitMax: 10,
+      loginRateLimitWindowMs: 60 * 1000,
+      bodyTimeoutMs: 5_000,
+      upstreamTimeoutMs: 8_000,
+      maxUpstreamResponseBytes: 64 * 1024,
     },
     public: {},
   },
