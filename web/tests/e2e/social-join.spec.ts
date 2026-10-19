@@ -53,7 +53,11 @@ test.describe('join page', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(/一起，把热爱/)
     await expect(page.getByRole('heading', { level: 2, name: '加入桂航绯想天' })).toBeVisible()
     if (config.qq_group_number) {
-      await expect(page.getByText(String(config.qq_group_number), { exact: true })).toBeVisible()
+      // The footer also prints the group number, so assert on the join page's own
+      // content rather than on the whole document.
+      await expect(
+        page.getByRole('main').getByText(String(config.qq_group_number), { exact: true })
+      ).toBeVisible()
     }
     if (config.join_question) {
       await expect(page.getByText(String(config.join_question))).toBeVisible()

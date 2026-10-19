@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { normalizedGroupNumber, safeHttpUrl } from '~/utils/site-config'
 import { vReveal } from '~/utils/motion'
 
@@ -11,6 +11,7 @@ usePublicSeo({ title: '加入我们', path: '/join' })
 const qrFailed = ref(false)
 const qrLoaded = ref(false)
 const qrAttempt = ref(0)
+const qrImage = ref<HTMLImageElement | null>(null)
 const copying = ref(false)
 const copyMessage = ref('')
 
@@ -54,6 +55,21 @@ watch(qrCode, () => {
 })
 watch(groupNumber, () => {
   copyMessage.value = ''
+})
+
+/**
+ * The server renders the QR image from the configuration it already fetched, so
+ * the request can finish (successfully or not) before hydration attaches the
+ * `load`/`error` handlers; the event is then never delivered and the archived
+ * failure state never appears. Adopt the element's own state once the client
+ * owns it. The archived page never hit this because it only rendered the image
+ * after its client-side configuration fetch.
+ */
+onMounted(() => {
+  const element = qrImage.value
+  if (!element || !element.complete) return
+  if (element.naturalWidth > 0) qrLoaded.value = true
+  else qrFailed.value = true
 })
 </script>
 
@@ -149,6 +165,7 @@ watch(groupNumber, () => {
           >
             <img
               v-if="qrCode && !qrFailed"
+              ref="qrImage"
               :key="qrSrc"
               :src="qrSrc"
               alt="桂航绯想天 QQ 群二维码，请使用 QQ 扫码加入"

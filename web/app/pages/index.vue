@@ -192,8 +192,13 @@ usePublicSeo({
         >
           <div>
             <p class="club-eyebrow">YOUR NEXT CHAPTER</p>
+            <!-- `sm:leading-9` reproduces the archived rendering: Tailwind 3's
+                 `sm:text-3xl` carried its own `line-height: 2.25rem` and won the
+                 cascade, while Tailwind 4 routes the line height through
+                 `--tw-leading`, so `leading-relaxed` would otherwise win above
+                 `sm` (48.75px instead of the archived 36px). -->
             <h2
-              class="club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl"
+              class="club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl sm:leading-9"
             >
               幻想乡的下一页，和我们一起写。
             </h2>

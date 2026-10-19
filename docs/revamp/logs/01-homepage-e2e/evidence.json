@@ -1,0 +1,118 @@
+{
+  "workstream": "01-homepage-e2e",
+  "checkout": "E:/Taropoi/workspace/GuatSWR_Website",
+  "branch": "revamp/nuxt-foundation",
+  "base_commit": "0954b8a",
+  "head_at_work_time": "45b0e51",
+  "port_base": 3200,
+  "runtime": { "node": "24.15.0", "pnpm": "11.25.0" },
+  "files_modified": [
+    "web/tests/e2e/support/public-parity.ts",
+    "web/tests/e2e/homepage.spec.ts",
+    "web/tests/e2e/social-join.spec.ts",
+    "web/app/components/ProgressiveImage.vue",
+    "web/app/pages/join.vue"
+  ],
+  "files_created": [
+    "docs/revamp/logs/01-homepage-e2e/README.md",
+    "docs/revamp/logs/01-homepage-e2e/evidence.json",
+    "docs/revamp/logs/01-homepage-e2e/isolated-run-after.log",
+    "docs/revamp/logs/01-homepage-e2e/bare-playwright-before.log",
+    "docs/revamp/logs/01-homepage-e2e/visual-community-diff.txt"
+  ],
+  "gates": [
+    {
+      "command": "cd web && ../node_modules/.bin/vitest run tests/progressive-image.test.ts tests/image-loader.test.ts tests/public-home.test.ts",
+      "exit": 0,
+      "result": "34/34 passed (3 files)"
+    },
+    {
+      "command": "cd web && ../node_modules/.bin/eslint <owned files>",
+      "exit": 0,
+      "result": "0 errors, 15 pre-existing vue/html-self-closing warnings (repo baseline)"
+    },
+    {
+      "command": "E2E_PORT_BASE=3200 node web/scripts/e2e-isolated.mjs tests/e2e/homepage.spec.ts tests/e2e/homepage-visual.spec.ts tests/e2e/social-join.spec.ts --max-per-batch 2",
+      "exit": 1,
+      "result": "passed 38/40, flaky 0, failed 2, skipped 0 (20 shards)",
+      "failed": [
+        "desktop::homepage-visual.spec.ts::19:3::homepage matches the archived light layout",
+        "desktop::homepage-visual.spec.ts::19:3::homepage matches the archived dark layout"
+      ]
+    },
+    {
+      "command": "pnpm -r build (under .tools/build.lock)",
+      "exit": 0,
+      "result": "attempts 1 and 2 failed on peer workstream files; attempt 3 succeeded",
+      "notes": [
+        "attempt 1: RollupError: Could not resolve ../../../../utils/bff-auth-context from server/api/bff/guest/events/draft.post.ts (03-events-guest batch)",
+        "attempt 2: RollupError: Could not resolve ../../../../../web/shared/markdown.ts from .nuxt usePublicPageSeo (02-public-pages batch)"
+      ]
+    }
+  ],
+  "not_run": ["nuxt typecheck", "pnpm -r typecheck", "pnpm -r lint", "pnpm -r test"],
+  "recorded_failures_before": 14,
+  "recorded_failures_after": 2,
+  "per_test": [
+    { "test": "homepage-visual.spec.ts > homepage matches the archived light layout", "project": "desktop", "before": "fail", "after": "fail", "cause_after": "community region bounds differ (blocked, see blockers)" },
+    { "test": "homepage-visual.spec.ts > homepage matches the archived dark layout", "project": "desktop", "before": "fail", "after": "fail", "cause_after": "community region bounds differ (blocked, see blockers)" },
+    { "test": "homepage-visual.spec.ts > homepage matches the archived light layout", "project": "mobile", "before": "fail", "after": "pass" },
+    { "test": "homepage-visual.spec.ts > homepage matches the archived dark layout", "project": "mobile", "before": "fail", "after": "pass" },
+    { "test": "homepage.spec.ts > fetches the hero image exactly once and keeps its source stable", "project": "desktop", "before": "fail", "after": "pass" },
+    { "test": "homepage.spec.ts > fetches the hero image exactly once and keeps its source stable", "project": "mobile", "before": "fail", "after": "pass" },
+    { "test": "homepage.spec.ts > falls back to the original when the archived thumbnail is missing", "project": "desktop", "before": "fail", "after": "pass" },
+    { "test": "homepage.spec.ts > falls back to the original when the archived thumbnail is missing", "project": "mobile", "before": "fail", "after": "pass" },
+    { "test": "homepage.spec.ts > keeps the archived archive retry state and recovers", "project": "desktop", "before": "fail", "after": "pass" },
+    { "test": "homepage.spec.ts > keeps the archived archive retry state and recovers", "project": "mobile", "before": "fail", "after": "pass" },
+    { "test": "social-join.spec.ts > join page > renders group details without JavaScript", "project": "desktop", "before": "fail", "after": "pass" },
+    { "test": "social-join.spec.ts > join page > renders group details without JavaScript", "project": "mobile", "before": "fail", "after": "pass" },
+    { "test": "social-join.spec.ts > join page > shows the archived QR failure state and retries it", "project": "desktop", "before": "fail", "after": "pass" },
+    { "test": "social-join.spec.ts > join page > shows the archived QR failure state and retries it", "project": "mobile", "before": "fail", "after": "pass" }
+  ],
+  "extra_tests_fixed_not_in_recorded_list": [
+    { "test": "homepage.spec.ts > is readable and shows a real hero image with JavaScript disabled", "project": "desktop+mobile", "before": "fail (ECONNREFUSED 127.0.0.1:3181)", "after": "pass" },
+    { "test": "homepage.spec.ts > reduced motion keeps the freeze static and dismisses it quickly", "project": "desktop", "before": "fail (flaky, 1 of 3 runs)", "after": "pass in isolated run" }
+  ],
+  "blockers": [
+    {
+      "title": "desktop homepage-visual community region: archived-vs-new line-height difference",
+      "file_needed": "web/app/pages/index.vue (explicitly outside this workstream's ownership)",
+      "element": "<h2 class=\"club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl\">幻想乡的下一页，和我们一起写。</h2>",
+      "archive": { "stylesheet": "frontend/dist Tailwind 3", "fontSize": "30px", "lineHeight": "36px", "boxHeight": 36 },
+      "nuxt": { "stylesheet": "Tailwind 4", "fontSize": "30px", "lineHeight": "48.75px", "boxHeight": 48.75 },
+      "effect": "community section 579.609px (archive) vs 592.359px (nuxt) on desktop; identical below the sm breakpoint, which is why mobile passes",
+      "mechanism": "Tailwind 3 emits the sm:text-3xl variant block after .leading-relaxed so the variant line-height wins; Tailwind 4 routes the line height through --tw-leading which leading-relaxed sets, so leading-relaxed wins at every breakpoint",
+      "candidate_fixes": [
+        "systemic: make sm:-variant text-* utilities reset --tw-leading (design system / legacy-palette.css)",
+        "minimal: add sm:leading-9 to that one h2"
+      ],
+      "fix_verification": {
+        "method": "live element, line-height forced to 2.25rem at >=640px (no file edited)",
+        "before": { "section": 592.359375, "h2": 48.75, "lineHeight": "48.75px" },
+        "after": { "section": 579.609375, "h2": 36, "lineHeight": "36px" },
+        "below_sm_unchanged": { "section": 592.359375, "h2": 48.75, "lineHeight": "48.75px" },
+        "archived_target": { "section": 579.609375, "h2": 36, "lineHeight": "36px" }
+      },
+      "scope_warning": "any element combining sm:text-* with leading-* has the same TW3->TW4 behaviour; the public-pages and events batches should be checked"
+    }
+  ],
+  "capture_protocol": {
+    "file": "web/tests/e2e/support/public-parity.ts",
+    "change": "compareRegion now pins both regions to the viewport origin (position fixed, top 0, left 0, width 100%, z-index 9999) like layout.spec.ts does for the footer, asserts equal rounded bounds and at most one fractional device pixel excluded per axis, and compares a floor(rect*dpr) crop of the raw capture kept as <region>-archive-raw.png / <region>-nuxt-raw.png",
+    "evidence": {
+      "about_differing_pixels_before": 1,
+      "about_capture_px": "1280x706",
+      "about_box": "1280x704.625 at y=1285.890625 on both sides",
+      "locator_row0_document_y": 1285,
+      "differing_rows": "row 1 only; the fixed navbar composited at the page scroll offset, and the two pages scroll differently (scrollHeight 3659 archive vs 3672 nuxt)",
+      "fullpage_capture_at_document_y_1276_1295": "byte-identical between archive and nuxt"
+    }
+  },
+  "ownership_violations": [],
+  "unverified": [
+    "nuxt typecheck / pnpm -r gates (lead-owned)",
+    "the 2 desktop visual tests (blocked by the index.vue line-height difference)",
+    "behaviour of the capture protocol on a region taller than the viewport in a project other than the two configured here",
+    "the full 70-test isolated suite (this workstream only ran its three specs)"
+  ]
+}

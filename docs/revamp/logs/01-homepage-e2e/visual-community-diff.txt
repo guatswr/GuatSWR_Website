@@ -1,0 +1,52 @@
+Measured 2026-10-19 on the running build (E2E_PORT_BASE=3200), desktop project
+viewport 1280x720, theme light, reducedMotion reduce, after settleImages.
+
+Community section subtree heights (web/app/pages/index.vue markup, identical on
+both sides; only the computed line-height differs):
+
+### ARCHIVE community section h=579.609
+  DIV.club-container h=419.609 w=1216
+    DIV.grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20 h=218 w=1216
+      DIV.club-entrance h=218 w=482.797
+        P.club-eyebrow h=15.609 w=482.797
+        H2.club-section-title mt-3 h=46.391 w=482.797
+        P.mt-4 text-sm leading-8 ... h=64 w=482.797
+        A.club-text-link mt-5 h=44 w=109.594
+      DIV.grid gap-x-8 sm:grid-cols-2 h=218 w=653.203
+        A.group grid min-w-0 grid-cols-[2.5rem_minmax(0,1fr)_1rem] ... h=218 w=310.594
+    DIV.mt-14 grid gap-8 border-t ... pt-10 sm:grid-cols-[1fr_auto] ... h=145.609 w=1216
+      DIV. h=104.609 w=1014.813
+        P.club-eyebrow h=15.609 w=1014.813
+        H2.club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl h=36 w=1014.813
+        P.mt-3 text-sm leading-7 ... h=29 w=1014.813
+      A.club-button club-button-primary shrink-0 h=48 w=169.188
+
+### APP community section h=592.359
+  (identical except the last block)
+    DIV.mt-14 ... h=158.359 w=1216
+      DIV. h=117.359 w=1014.813
+        P.club-eyebrow h=15.609 w=1014.813
+        H2.club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl h=48.75 w=1014.813
+        P.mt-3 text-sm leading-7 ... h=29 w=1014.813
+      A.club-button club-button-primary shrink-0 h=48 w=169.188
+
+Computed style of that h2 (same className string on both sides):
+  ARCHIVE {"className":"club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl","fontSize":"30px","lineHeight":"36px","height":36}
+  APP     {"className":"club-display mt-3 text-2xl font-semibold leading-relaxed sm:text-3xl","fontSize":"30px","lineHeight":"48.75px","height":48.75}
+
+Stylesheet rules:
+  archive (frontend/dist/assets/index-*.css):
+    .leading-relaxed{line-height:1.625}
+    .text-3xl{font-size:1.875rem;line-height:2.25rem}
+    (sm: variant block emitted after the base utilities -> 2.25rem wins at >=640px)
+  app (Tailwind 4):
+    leading-relaxed sets --tw-leading; text-3xl uses line-height:var(--tw-leading, <default>)
+    -> leading-relaxed wins at every breakpoint
+
+Section bounds seen by the visual spec after the capture-protocol port:
+  archive: {x:0,y:0,width:1280,height:579.609}
+  nuxt:    {x:0,y:0,width:1280,height:592.359}
+  -> "region bounds differ from the archived site" (public-parity.ts:145)
+
+Other four regions compare at zero differing pixels on desktop and mobile
+after the port.

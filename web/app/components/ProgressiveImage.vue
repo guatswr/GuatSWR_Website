@@ -92,12 +92,17 @@ onMounted(() => {
   const element = imageRef.value
   // Never hide an image the browser already painted from the server HTML.
   const painted = !!element && element.complete && element.naturalWidth > 0
+  // The browser may also have already finished the server-rendered source with a
+  // failure (a missing thumbnail) before this observer existed. That element
+  // never fires `error` again and the observer's margin may never reach it, so
+  // adopt the settled failure now and let the loader fall back to the original.
+  const broken = !!element && element.complete && !element.naturalWidth
   loader = createImageLoader(browserEnvironment(), (state) => {
     image.value = state
   })
   managed.value = !painted
   loader.configure(config.value)
-  if (props.eager || painted) enter()
+  if (props.eager || painted || broken) enter()
   else if ('IntersectionObserver' in window) {
     try {
       observer = new IntersectionObserver(

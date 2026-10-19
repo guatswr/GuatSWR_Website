@@ -1,0 +1,85 @@
+inventory: playwright test --list --reporter=json
+inventory: 40 declared test(s) in 2 project(s)
+plan: 20 shard(s), max 2 test(s) per batch
+batch 1/20: 2 test(s)
+batch 2/20: 2 test(s)
+batch 3/20: 2 test(s)
+batch 4/20: 2 test(s)
+batch 5/20: 2 test(s)
+batch 6/20: 2 test(s)
+batch 7/20: 2 test(s)
+batch 8/20: 2 test(s)
+batch 9/20: 2 test(s)
+batch 10/20: 2 test(s)
+batch 11/20: 2 test(s)
+batch 12/20: 2 test(s)
+batch 13/20: 2 test(s)
+batch 14/20: 2 test(s)
+batch 15/20: 2 test(s)
+batch 16/20: 2 test(s)
+batch 17/20: 2 test(s)
+batch 18/20: 2 test(s)
+batch 19/20: 2 test(s)
+batch 20/20: 2 test(s)
+passed 38/40, flaky 0, failed 2, skipped 0
+  batch 1: exit 1
+  batch 2: exit 0
+  batch 3: exit 0
+  batch 4: exit 0
+  batch 5: exit 0
+  batch 6: exit 0
+  batch 7: exit 0
+  batch 8: exit 0
+  batch 9: exit 0
+  batch 10: exit 0
+  batch 11: exit 0
+  batch 12: exit 0
+  batch 13: exit 0
+  batch 14: exit 0
+  batch 15: exit 0
+  batch 16: exit 0
+  batch 17: exit 0
+  batch 18: exit 0
+  batch 19: exit 0
+  batch 20: exit 0
+merge: ok
+  unexpected desktop::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived dark layout
+  unexpected desktop::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived light layout
+  expected desktop::homepage.spec.ts::109:3::homepage.spec.ts > homepage > never hides an already painted hero when hydration is delayed
+  expected desktop::homepage.spec.ts::128:3::homepage.spec.ts > homepage > fetches the hero image exactly once and keeps its source stable
+  expected desktop::homepage.spec.ts::155:3::homepage.spec.ts > homepage > hydrates without errors and never refetches the shared data
+  expected desktop::homepage.spec.ts::18:3::homepage.spec.ts > homepage > is readable and shows a real hero image with JavaScript disabled
+  expected desktop::homepage.spec.ts::194:3::homepage.spec.ts > homepage > falls back to the original when the archived thumbnail is missing
+  expected desktop::homepage.spec.ts::211:3::homepage.spec.ts > homepage > reports a permanently broken image and stops after bounded retries
+  expected desktop::homepage.spec.ts::230:3::homepage.spec.ts > homepage > nine clicks freeze the page and native scrolling thaws it
+  expected desktop::homepage.spec.ts::255:3::homepage.spec.ts > homepage > reduced motion keeps the freeze static and dismisses it quickly
+  expected desktop::homepage.spec.ts::266:3::homepage.spec.ts > homepage > keeps the archived archive retry state and recovers
+  expected desktop::homepage.spec.ts::280:3::homepage.spec.ts > homepage > publishes a share image that actually resolves to an image
+  expected desktop::homepage.spec.ts::65:3::homepage.spec.ts > homepage > keeps the eager hero visible with scripts blocked and stylesheets intact
+  expected desktop::social-join.spec.ts::24:3::social-join.spec.ts > social channels > opens curated channels in a new, isolated tab
+  expected desktop::social-join.spec.ts::32:3::social-join.spec.ts > social channels > does not refetch the shared configuration when navigating to join
+  expected desktop::social-join.spec.ts::48:3::social-join.spec.ts > join page > renders group details without JavaScript
+  expected desktop::social-join.spec.ts::5:3::social-join.spec.ts > social channels > renders the archived channel index without JavaScript
+  expected desktop::social-join.spec.ts::71:3::social-join.spec.ts > join page > falls back to the archived copy message when the clipboard is denied
+  expected desktop::social-join.spec.ts::89:3::social-join.spec.ts > join page > confirms a successful copy
+  expected desktop::social-join.spec.ts::99:3::social-join.spec.ts > join page > shows the archived QR failure state and retries it
+  expected mobile::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived dark layout
+  expected mobile::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived light layout
+  expected mobile::homepage.spec.ts::109:3::homepage.spec.ts > homepage > never hides an already painted hero when hydration is delayed
+  expected mobile::homepage.spec.ts::128:3::homepage.spec.ts > homepage > fetches the hero image exactly once and keeps its source stable
+  expected mobile::homepage.spec.ts::155:3::homepage.spec.ts > homepage > hydrates without errors and never refetches the shared data
+  expected mobile::homepage.spec.ts::18:3::homepage.spec.ts > homepage > is readable and shows a real hero image with JavaScript disabled
+  expected mobile::homepage.spec.ts::194:3::homepage.spec.ts > homepage > falls back to the original when the archived thumbnail is missing
+  expected mobile::homepage.spec.ts::211:3::homepage.spec.ts > homepage > reports a permanently broken image and stops after bounded retries
+  expected mobile::homepage.spec.ts::230:3::homepage.spec.ts > homepage > nine clicks freeze the page and native scrolling thaws it
+  expected mobile::homepage.spec.ts::255:3::homepage.spec.ts > homepage > reduced motion keeps the freeze static and dismisses it quickly
+  expected mobile::homepage.spec.ts::266:3::homepage.spec.ts > homepage > keeps the archived archive retry state and recovers
+  expected mobile::homepage.spec.ts::280:3::homepage.spec.ts > homepage > publishes a share image that actually resolves to an image
+  expected mobile::homepage.spec.ts::65:3::homepage.spec.ts > homepage > keeps the eager hero visible with scripts blocked and stylesheets intact
+  expected mobile::social-join.spec.ts::24:3::social-join.spec.ts > social channels > opens curated channels in a new, isolated tab
+  expected mobile::social-join.spec.ts::32:3::social-join.spec.ts > social channels > does not refetch the shared configuration when navigating to join
+  expected mobile::social-join.spec.ts::48:3::social-join.spec.ts > join page > renders group details without JavaScript
+  expected mobile::social-join.spec.ts::5:3::social-join.spec.ts > social channels > renders the archived channel index without JavaScript
+  expected mobile::social-join.spec.ts::71:3::social-join.spec.ts > join page > falls back to the archived copy message when the clipboard is denied
+  expected mobile::social-join.spec.ts::89:3::social-join.spec.ts > join page > confirms a successful copy
+  expected mobile::social-join.spec.ts::99:3::social-join.spec.ts > join page > shows the archived QR failure state and retries it

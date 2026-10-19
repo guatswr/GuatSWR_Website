@@ -4,7 +4,14 @@ import { configFixture, settleImages, upstreamActivitiesPage } from './support/p
 
 async function openNavLink(page: Page, isMobile: boolean, name: string): Promise<void> {
   if (isMobile) await page.getByRole('button', { name: '打开导航菜单' }).click()
-  await page.getByRole('link', { name }).click()
+  // The same destination is legitimately rendered by the primary navigation, the
+  // footer and the wordmark (whose accessible name merely *contains* "首页").
+  // Scope to the primary navigation and match the name exactly, so the helper
+  // selects the one link it means instead of three.
+  await page
+    .getByRole('navigation', { name: '主导航' })
+    .getByRole('link', { name, exact: true })
+    .click()
 }
 
 test.describe('homepage', () => {
@@ -185,7 +192,10 @@ test.describe('homepage', () => {
   })
 
   test('falls back to the original when the archived thumbnail is missing', async ({ page }) => {
-    await page.route('**/uploads/*-thumb.webp', (route) =>
+    // Archived covers live in nested upload directories, so the thumbnail glob
+    // needs `**` for the directories: a single `*` cannot cross a `/` and the
+    // pattern silently matched nothing, leaving the thumbnail present.
+    await page.route('**/uploads/**/*-thumb.webp', (route) =>
       route.fulfill({ status: 404, body: 'missing' })
     )
     await page.goto('/')

@@ -1,0 +1,539 @@
+
+Running 40 tests using 8 workers
+
+  x   1 [desktop] › tests\e2e\homepage.spec.ts:11:3 › homepage › is readable and shows a real hero image with JavaScript disabled (367ms)
+  x   2 [desktop] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived dark layout (842ms)
+  x   8 [desktop] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived light layout (537ms)
+  ok  3 [desktop] › tests\e2e\homepage.spec.ts:58:3 › homepage › keeps the eager hero visible with scripts blocked and stylesheets intact (1.9s)
+  ok  6 [desktop] › tests\e2e\homepage.spec.ts:148:3 › homepage › hydrates without errors and never refetches the shared data (2.1s)
+  ok 12 [desktop] › tests\e2e\homepage.spec.ts:270:3 › homepage › publishes a share image that actually resolves to an image (272ms)
+  x   9 [desktop] › tests\e2e\homepage.spec.ts:256:3 › homepage › keeps the archived archive retry state and recovers (938ms)
+  x   5 [desktop] › tests\e2e\homepage.spec.ts:121:3 › homepage › fetches the hero image exactly once and keeps its source stable (2.0s)
+  ok 13 [desktop] › tests\e2e\social-join.spec.ts:5:3 › social channels › renders the archived channel index without JavaScript (865ms)
+  x   7 [desktop] › tests\e2e\homepage.spec.ts:187:3 › homepage › falls back to the original when the archived thumbnail is missing (2.7s)
+  x  15 [desktop] › tests\e2e\social-join.spec.ts:48:3 › join page › renders group details without JavaScript (606ms)
+  ok 16 [desktop] › tests\e2e\social-join.spec.ts:24:3 › social channels › opens curated channels in a new, isolated tab (855ms)
+  ok 17 [desktop] › tests\e2e\social-join.spec.ts:32:3 › social channels › does not refetch the shared configuration when navigating to join (1.0s)
+  ok 14 [desktop] › tests\e2e\homepage.spec.ts:245:3 › homepage › reduced motion keeps the freeze static and dismisses it quickly (2.8s)
+  ok 19 [desktop] › tests\e2e\social-join.spec.ts:67:3 › join page › falls back to the archived copy message when the clipboard is denied (940ms)
+  ok  4 [desktop] › tests\e2e\homepage.spec.ts:102:3 › homepage › never hides an already painted hero when hydration is delayed (7.5s)
+  ok 20 [desktop] › tests\e2e\social-join.spec.ts:85:3 › join page › confirms a successful copy (987ms)
+  x  21 [mobile] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived light layout (686ms)
+  x  22 [mobile] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived dark layout (715ms)
+  x  23 [mobile] › tests\e2e\homepage.spec.ts:11:3 › homepage › is readable and shows a real hero image with JavaScript disabled (270ms)
+  ok 25 [mobile] › tests\e2e\homepage.spec.ts:58:3 › homepage › keeps the eager hero visible with scripts blocked and stylesheets intact (1.0s)
+  ok 11 [desktop] › tests\e2e\homepage.spec.ts:220:3 › homepage › nine clicks freeze the page and native scrolling thaws it (7.8s)
+  ok 27 [mobile] › tests\e2e\homepage.spec.ts:148:3 › homepage › hydrates without errors and never refetches the shared data (1.6s)
+  x  26 [mobile] › tests\e2e\homepage.spec.ts:121:3 › homepage › fetches the hero image exactly once and keeps its source stable (1.8s)
+  x  28 [mobile] › tests\e2e\homepage.spec.ts:187:3 › homepage › falls back to the original when the archived thumbnail is missing (1.2s)
+  ok 10 [desktop] › tests\e2e\homepage.spec.ts:201:3 › homepage › reports a permanently broken image and stops after bounded retries (10.6s)
+  ok 33 [mobile] › tests\e2e\homepage.spec.ts:270:3 › homepage › publishes a share image that actually resolves to an image (155ms)
+  ok 31 [mobile] › tests\e2e\homepage.spec.ts:245:3 › homepage › reduced motion keeps the freeze static and dismisses it quickly (1.6s)
+  ok 35 [mobile] › tests\e2e\social-join.spec.ts:32:3 › social channels › does not refetch the shared configuration when navigating to join (831ms)
+  ok 34 [mobile] › tests\e2e\social-join.spec.ts:24:3 › social channels › opens curated channels in a new, isolated tab (768ms)
+  x  32 [mobile] › tests\e2e\homepage.spec.ts:256:3 › homepage › keeps the archived archive retry state and recovers (936ms)
+  ok 38 [mobile] › tests\e2e\social-join.spec.ts:67:3 › join page › falls back to the archived copy message when the clipboard is denied (723ms)
+  ok 36 [mobile] › tests\e2e\social-join.spec.ts:5:3 › social channels › renders the archived channel index without JavaScript (803ms)
+  x  37 [mobile] › tests\e2e\social-join.spec.ts:48:3 › join page › renders group details without JavaScript (607ms)
+  ok 24 [mobile] › tests\e2e\homepage.spec.ts:102:3 › homepage › never hides an already painted hero when hydration is delayed (6.9s)
+  ok 40 [mobile] › tests\e2e\social-join.spec.ts:85:3 › join page › confirms a successful copy (667ms)
+  ok 30 [mobile] › tests\e2e\homepage.spec.ts:220:3 › homepage › nine clicks freeze the page and native scrolling thaws it (7.1s)
+  ok 29 [mobile] › tests\e2e\homepage.spec.ts:201:3 › homepage › reports a permanently broken image and stops after bounded retries (10.3s)
+  x  18 [desktop] › tests\e2e\social-join.spec.ts:95:3 › join page › shows the archived QR failure state and retries it (15.7s)
+  x  39 [mobile] › tests\e2e\social-join.spec.ts:95:3 › join page › shows the archived QR failure state and retries it (15.6s)
+
+
+  1) [desktop] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived light layout 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5174/
+    Call log:
+      - navigating to "http://127.0.0.1:5174/", waiting until "load"
+
+
+      33 |     await page.emulateMedia({ reducedMotion: 'reduce' })
+      34 |
+    > 35 |     await archive.goto(`${ARCHIVE_ORIGIN}/`)
+         |                   ^
+      36 |     await waitForArchiveReady(archive)
+      37 |     await settleImages(archive)
+      38 |
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage-visual.spec.ts:35:19
+
+    Error Context: test-results\homepage-visual-homepage-matches-the-archived-light-layout-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-visual-homepage-matches-the-archived-light-layout-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-visual-homepage-matches-the-archived-light-layout-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived dark layout 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5174/
+    Call log:
+      - navigating to "http://127.0.0.1:5174/", waiting until "load"
+
+
+      33 |     await page.emulateMedia({ reducedMotion: 'reduce' })
+      34 |
+    > 35 |     await archive.goto(`${ARCHIVE_ORIGIN}/`)
+         |                   ^
+      36 |     await waitForArchiveReady(archive)
+      37 |     await settleImages(archive)
+      38 |
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage-visual.spec.ts:35:19
+
+    Error Context: test-results\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) [desktop] › tests\e2e\homepage.spec.ts:11:3 › homepage › is readable and shows a real hero image with JavaScript disabled 
+
+    Error: apiRequestContext.get: connect ECONNREFUSED 127.0.0.1:3181
+    Call log:
+      - → GET http://127.0.0.1:3181/api/activities?page=1&limit=3
+        - user-agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+
+
+       at support\public-parity.ts:40
+
+      38 |   query = 'page=1&limit=3'
+      39 | ): Promise<ActivitiesPage> {
+    > 40 |   const response = await request.get(`${UPSTREAM_ORIGIN}/api/activities?${query}`)
+         |                                  ^
+      41 |   if (!response.ok())
+      42 |     throw new Error(`upstream activities fixture responded ${response.status()}`)
+      43 |   return (await response.json()) as ActivitiesPage
+        at upstreamActivitiesPage (E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\support\public-parity.ts:40:34)
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:19:30
+
+    Error Context: test-results\homepage-homepage-is-reada-7746a-ge-with-JavaScript-disabled-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-is-reada-7746a-ge-with-JavaScript-disabled-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-is-reada-7746a-ge-with-JavaScript-disabled-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  4) [desktop] › tests\e2e\homepage.spec.ts:121:3 › homepage › fetches the hero image exactly once and keeps its source stable 
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: '社群链接' }) resolved to 2 elements:
+        1) <a title="博丽大结界" href="/social" class="nav-link" data-v-0a8c4d75="">…</a> aka getByRole('link', { name: '社群链接', description: '博丽大结界' })
+        2) <a href="/social" data-v-c7d1109e="" class="club-footer-link">社群链接</a> aka getByText('社群链接', { exact: true })
+
+    Call log:
+      - waiting for getByRole('link', { name: '社群链接' })
+
+
+       5 | async function openNavLink(page: Page, isMobile: boolean, name: string): Promise<void> {
+       6 |   if (isMobile) await page.getByRole('button', { name: '打开导航菜单' }).click()
+    >  7 |   await page.getByRole('link', { name }).click()
+         |                                          ^
+       8 | }
+       9 |
+      10 | test.describe('homepage', () => {
+        at openNavLink (E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:7:42)
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:137:11
+
+    Error Context: test-results\homepage-homepage-fetches--d3188-and-keeps-its-source-stable-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-fetches--d3188-and-keeps-its-source-stable-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-fetches--d3188-and-keeps-its-source-stable-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  5) [desktop] › tests\e2e\homepage.spec.ts:187:3 › homepage › falls back to the original when the archived thumbnail is missing 
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "-thumb.webp"
+    Received string:        "/uploads/img/activity/3/cover-thumb.webp"
+
+      196 |     const source = await card.locator('img.pi-full').getAttribute('src')
+      197 |     expect(source).toBeTruthy()
+    > 198 |     expect(source).not.toContain('-thumb.webp')
+          |                        ^
+      199 |   })
+      200 |
+      201 |   test('reports a permanently broken image and stops after bounded retries', async ({ page }) => {
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:198:24
+
+    Error Context: test-results\homepage-homepage-falls-ba-188cb-chived-thumbnail-is-missing-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-falls-ba-188cb-chived-thumbnail-is-missing-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-falls-ba-188cb-chived-thumbnail-is-missing-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  6) [desktop] › tests\e2e\homepage.spec.ts:256:3 › homepage › keeps the archived archive retry state and recovers 
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: '首页' }) resolved to 3 elements:
+        1) <a href="/" data-v-0a8c4d75="" aria-label="桂航绯想天同好会首页" class="club-wordmark flex min-h-11 shrink-0 items-center gap-2.5">…</a> aka getByRole('link', { name: '桂航绯想天同好会首页' })
+        2) <a href="/" class="nav-link" data-v-0a8c4d75="">…</a> aka getByRole('navigation', { name: '主导航' }).getByRole('link', { name: '首页', exact: true })
+        3) <a href="/" data-v-c7d1109e="" class="club-footer-link">首页</a> aka getByText('首页', { exact: true })
+
+    Call log:
+      - waiting for getByRole('link', { name: '首页' })
+
+
+       5 | async function openNavLink(page: Page, isMobile: boolean, name: string): Promise<void> {
+       6 |   if (isMobile) await page.getByRole('button', { name: '打开导航菜单' }).click()
+    >  7 |   await page.getByRole('link', { name }).click()
+         |                                          ^
+       8 | }
+       9 |
+      10 | test.describe('homepage', () => {
+        at openNavLink (E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:7:42)
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:261:11
+
+    Error Context: test-results\homepage-homepage-keeps-th-79afc-ve-retry-state-and-recovers-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-keeps-th-79afc-ve-retry-state-and-recovers-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-keeps-th-79afc-ve-retry-state-and-recovers-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  7) [desktop] › tests\e2e\social-join.spec.ts:48:3 › join page › renders group details without JavaScript 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('123456789', { exact: true })
+    Expected: visible
+    Error: strict mode violation: getByText('123456789', { exact: true }) resolved to 2 elements:
+        1) <span data-v-eb53652c="" class="join-text select-all break-all font-mono text-xl font-semibold">123456789</span> aka locator('#main-content').getByText('123456789')
+        2) <p data-v-c7d1109e="" class="mt-1 font-mono text-lg tracking-wide text-slate-100">123456789</p> aka getByRole('contentinfo').getByText('123456789')
+
+    Call log:
+      - Expect "toBeVisible" getByText('123456789', { exact: true }) with timeout 5000ms
+      - waiting for getByText('123456789', { exact: true })
+
+
+      54 |     await expect(page.getByRole('heading', { level: 2, name: '加入桂航绯想天' })).toBeVisible()
+      55 |     if (config.qq_group_number) {
+    > 56 |       await expect(page.getByText(String(config.qq_group_number), { exact: true })).toBeVisible()
+         |                                                                                     ^
+      57 |     }
+      58 |     if (config.join_question) {
+      59 |       await expect(page.getByText(String(config.join_question))).toBeVisible()
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\social-join.spec.ts:56:85
+
+    Error Context: test-results\social-join-join-page-rend-5e6a8--details-without-JavaScript-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\social-join-join-page-rend-5e6a8--details-without-JavaScript-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\social-join-join-page-rend-5e6a8--details-without-JavaScript-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  8) [desktop] › tests\e2e\social-join.spec.ts:95:3 › join page › shows the archived QR failure state and retries it 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('二维码暂时未能显示')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('二维码暂时未能显示') with timeout 15000ms
+      - waiting for getByText('二维码暂时未能显示')
+
+
+       99 |     await page.route(pattern, (route) => route.fulfill({ status: 404, body: 'missing' }))
+      100 |     await page.goto('/join')
+    > 101 |     await expect(page.getByText('二维码暂时未能显示')).toBeVisible({ timeout: 15_000 })
+          |                                               ^
+      102 |     await page.unroute(pattern)
+      103 |     await page.getByRole('button', { name: '重新加载二维码' }).click()
+      104 |     await expect(page.getByAltText('桂航绯想天 QQ 群二维码，请使用 QQ 扫码加入')).toBeVisible()
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\social-join.spec.ts:101:47
+
+    Error Context: test-results\social-join-join-page-show-abe18-ailure-state-and-retries-it-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\social-join-join-page-show-abe18-ailure-state-and-retries-it-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\social-join-join-page-show-abe18-ailure-state-and-retries-it-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  9) [mobile] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived light layout 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5174/
+    Call log:
+      - navigating to "http://127.0.0.1:5174/", waiting until "load"
+
+
+      33 |     await page.emulateMedia({ reducedMotion: 'reduce' })
+      34 |
+    > 35 |     await archive.goto(`${ARCHIVE_ORIGIN}/`)
+         |                   ^
+      36 |     await waitForArchiveReady(archive)
+      37 |     await settleImages(archive)
+      38 |
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage-visual.spec.ts:35:19
+
+    Error Context: test-results\homepage-visual-homepage-matches-the-archived-light-layout-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-visual-homepage-matches-the-archived-light-layout-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-visual-homepage-matches-the-archived-light-layout-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  10) [mobile] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived dark layout 
+
+    Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:5174/
+    Call log:
+      - navigating to "http://127.0.0.1:5174/", waiting until "load"
+
+
+      33 |     await page.emulateMedia({ reducedMotion: 'reduce' })
+      34 |
+    > 35 |     await archive.goto(`${ARCHIVE_ORIGIN}/`)
+         |                   ^
+      36 |     await waitForArchiveReady(archive)
+      37 |     await settleImages(archive)
+      38 |
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage-visual.spec.ts:35:19
+
+    Error Context: test-results\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  11) [mobile] › tests\e2e\homepage.spec.ts:11:3 › homepage › is readable and shows a real hero image with JavaScript disabled 
+
+    Error: apiRequestContext.get: connect ECONNREFUSED 127.0.0.1:3181
+    Call log:
+      - → GET http://127.0.0.1:3181/api/activities?page=1&limit=3
+        - user-agent: Mozilla/5.0 (Linux; Android 14; Pixel 7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/156.0.8078.4 Mobile Safari/537.36
+        - accept: */*
+        - accept-encoding: gzip,deflate,br
+
+
+       at support\public-parity.ts:40
+
+      38 |   query = 'page=1&limit=3'
+      39 | ): Promise<ActivitiesPage> {
+    > 40 |   const response = await request.get(`${UPSTREAM_ORIGIN}/api/activities?${query}`)
+         |                                  ^
+      41 |   if (!response.ok())
+      42 |     throw new Error(`upstream activities fixture responded ${response.status()}`)
+      43 |   return (await response.json()) as ActivitiesPage
+        at upstreamActivitiesPage (E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\support\public-parity.ts:40:34)
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:19:30
+
+    Error Context: test-results\homepage-homepage-is-reada-7746a-ge-with-JavaScript-disabled-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-is-reada-7746a-ge-with-JavaScript-disabled-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-is-reada-7746a-ge-with-JavaScript-disabled-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  12) [mobile] › tests\e2e\homepage.spec.ts:121:3 › homepage › fetches the hero image exactly once and keeps its source stable 
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: '社群链接' }) resolved to 2 elements:
+        1) <a title="博丽大结界" href="/social" data-v-0a8c4d75="" class="mobile-nav-link">…</a> aka getByRole('link', { name: '社群链接', description: '博丽大结界' })
+        2) <a href="/social" data-v-c7d1109e="" class="club-footer-link">社群链接</a> aka getByText('社群链接', { exact: true })
+
+    Call log:
+      - waiting for getByRole('link', { name: '社群链接' })
+
+
+       5 | async function openNavLink(page: Page, isMobile: boolean, name: string): Promise<void> {
+       6 |   if (isMobile) await page.getByRole('button', { name: '打开导航菜单' }).click()
+    >  7 |   await page.getByRole('link', { name }).click()
+         |                                          ^
+       8 | }
+       9 |
+      10 | test.describe('homepage', () => {
+        at openNavLink (E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:7:42)
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:137:5
+
+    Error Context: test-results\homepage-homepage-fetches--d3188-and-keeps-its-source-stable-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-fetches--d3188-and-keeps-its-source-stable-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-fetches--d3188-and-keeps-its-source-stable-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  13) [mobile] › tests\e2e\homepage.spec.ts:187:3 › homepage › falls back to the original when the archived thumbnail is missing 
+
+    Error: expect(received).not.toContain(expected) // indexOf
+
+    Expected substring: not "-thumb.webp"
+    Received string:        "/uploads/img/activity/3/cover-thumb.webp"
+
+      196 |     const source = await card.locator('img.pi-full').getAttribute('src')
+      197 |     expect(source).toBeTruthy()
+    > 198 |     expect(source).not.toContain('-thumb.webp')
+          |                        ^
+      199 |   })
+      200 |
+      201 |   test('reports a permanently broken image and stops after bounded retries', async ({ page }) => {
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:198:24
+
+    Error Context: test-results\homepage-homepage-falls-ba-188cb-chived-thumbnail-is-missing-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-falls-ba-188cb-chived-thumbnail-is-missing-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-falls-ba-188cb-chived-thumbnail-is-missing-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  14) [mobile] › tests\e2e\homepage.spec.ts:256:3 › homepage › keeps the archived archive retry state and recovers 
+
+    Error: locator.click: Error: strict mode violation: getByRole('link', { name: '首页' }) resolved to 3 elements:
+        1) <a href="/" data-v-0a8c4d75="" aria-label="桂航绯想天同好会首页" class="club-wordmark flex min-h-11 shrink-0 items-center gap-2.5">…</a> aka getByRole('link', { name: '桂航绯想天同好会首页' })
+        2) <a href="/" data-v-0a8c4d75="" class="mobile-nav-link">…</a> aka getByRole('navigation', { name: '主导航' }).getByRole('link', { name: '首页', exact: true })
+        3) <a href="/" data-v-c7d1109e="" class="club-footer-link">首页</a> aka getByText('首页', { exact: true })
+
+    Call log:
+      - waiting for getByRole('link', { name: '首页' })
+
+
+       5 | async function openNavLink(page: Page, isMobile: boolean, name: string): Promise<void> {
+       6 |   if (isMobile) await page.getByRole('button', { name: '打开导航菜单' }).click()
+    >  7 |   await page.getByRole('link', { name }).click()
+         |                                          ^
+       8 | }
+       9 |
+      10 | test.describe('homepage', () => {
+        at openNavLink (E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:7:42)
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\homepage.spec.ts:261:5
+
+    Error Context: test-results\homepage-homepage-keeps-th-79afc-ve-retry-state-and-recovers-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\homepage-homepage-keeps-th-79afc-ve-retry-state-and-recovers-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\homepage-homepage-keeps-th-79afc-ve-retry-state-and-recovers-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  15) [mobile] › tests\e2e\social-join.spec.ts:48:3 › join page › renders group details without JavaScript 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('123456789', { exact: true })
+    Expected: visible
+    Error: strict mode violation: getByText('123456789', { exact: true }) resolved to 2 elements:
+        1) <span data-v-eb53652c="" class="join-text select-all break-all font-mono text-xl font-semibold">123456789</span> aka locator('#main-content').getByText('123456789')
+        2) <p data-v-c7d1109e="" class="mt-1 font-mono text-lg tracking-wide text-slate-100">123456789</p> aka getByRole('contentinfo').getByText('123456789')
+
+    Call log:
+      - Expect "toBeVisible" getByText('123456789', { exact: true }) with timeout 5000ms
+      - waiting for getByText('123456789', { exact: true })
+
+
+      54 |     await expect(page.getByRole('heading', { level: 2, name: '加入桂航绯想天' })).toBeVisible()
+      55 |     if (config.qq_group_number) {
+    > 56 |       await expect(page.getByText(String(config.qq_group_number), { exact: true })).toBeVisible()
+         |                                                                                     ^
+      57 |     }
+      58 |     if (config.join_question) {
+      59 |       await expect(page.getByText(String(config.join_question))).toBeVisible()
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\social-join.spec.ts:56:85
+
+    Error Context: test-results\social-join-join-page-rend-5e6a8--details-without-JavaScript-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\social-join-join-page-rend-5e6a8--details-without-JavaScript-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\social-join-join-page-rend-5e6a8--details-without-JavaScript-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16) [mobile] › tests\e2e\social-join.spec.ts:95:3 › join page › shows the archived QR failure state and retries it 
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByText('二维码暂时未能显示')
+    Expected: visible
+    Timeout: 15000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByText('二维码暂时未能显示') with timeout 15000ms
+      - waiting for getByText('二维码暂时未能显示')
+
+
+       99 |     await page.route(pattern, (route) => route.fulfill({ status: 404, body: 'missing' }))
+      100 |     await page.goto('/join')
+    > 101 |     await expect(page.getByText('二维码暂时未能显示')).toBeVisible({ timeout: 15_000 })
+          |                                               ^
+      102 |     await page.unroute(pattern)
+      103 |     await page.getByRole('button', { name: '重新加载二维码' }).click()
+      104 |     await expect(page.getByAltText('桂航绯想天 QQ 群二维码，请使用 QQ 扫码加入')).toBeVisible()
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\social-join.spec.ts:101:47
+
+    Error Context: test-results\social-join-join-page-show-abe18-ailure-state-and-retries-it-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results\social-join-join-page-show-abe18-ailure-state-and-retries-it-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace test-results\social-join-join-page-show-abe18-ailure-state-and-retries-it-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  16 failed
+    [desktop] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived light layout 
+    [desktop] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived dark layout ─
+    [desktop] › tests\e2e\homepage.spec.ts:11:3 › homepage › is readable and shows a real hero image with JavaScript disabled 
+    [desktop] › tests\e2e\homepage.spec.ts:121:3 › homepage › fetches the hero image exactly once and keeps its source stable 
+    [desktop] › tests\e2e\homepage.spec.ts:187:3 › homepage › falls back to the original when the archived thumbnail is missing 
+    [desktop] › tests\e2e\homepage.spec.ts:256:3 › homepage › keeps the archived archive retry state and recovers 
+    [desktop] › tests\e2e\social-join.spec.ts:48:3 › join page › renders group details without JavaScript 
+    [desktop] › tests\e2e\social-join.spec.ts:95:3 › join page › shows the archived QR failure state and retries it 
+    [mobile] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived light layout ─
+    [mobile] › tests\e2e\homepage-visual.spec.ts:19:3 › homepage matches the archived dark layout ──
+    [mobile] › tests\e2e\homepage.spec.ts:11:3 › homepage › is readable and shows a real hero image with JavaScript disabled 
+    [mobile] › tests\e2e\homepage.spec.ts:121:3 › homepage › fetches the hero image exactly once and keeps its source stable 
+    [mobile] › tests\e2e\homepage.spec.ts:187:3 › homepage › falls back to the original when the archived thumbnail is missing 
+    [mobile] › tests\e2e\homepage.spec.ts:256:3 › homepage › keeps the archived archive retry state and recovers 
+    [mobile] › tests\e2e\social-join.spec.ts:48:3 › join page › renders group details without JavaScript 
+    [mobile] › tests\e2e\social-join.spec.ts:95:3 › join page › shows the archived QR failure state and retries it 
+  24 passed (42.5s)
