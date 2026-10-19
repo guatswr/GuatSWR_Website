@@ -3,6 +3,7 @@ import type { Locator, TestInfo } from '@playwright/test'
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { writeFileSync } from 'node:fs'
+import { ARCHIVE_ORIGIN, UPSTREAM_ORIGIN } from './support/public-parity'
 
 // Fixture images that are laid out must be loaded and decoded before a crop is
 // taken; a hidden lazy image is skipped rather than awaited forever, and a
@@ -221,11 +222,11 @@ for (const theme of ['light', 'dark'] as const) {
     // of 404ing into a different brand fallback.
     await archive.route('**/uploads/**', async (route) => {
       const { pathname } = new URL(route.request().url())
-      await route.fulfill({ response: await request.get(`http://127.0.0.1:3181${pathname}`) })
+      await route.fulfill({ response: await request.get(`${UPSTREAM_ORIGIN}${pathname}`) })
     })
     await archive.emulateMedia({ reducedMotion: 'reduce' })
     await page.emulateMedia({ reducedMotion: 'reduce' })
-    await archive.goto('http://127.0.0.1:5174/join')
+    await archive.goto(`${ARCHIVE_ORIGIN}/join`)
     await page.goto('/__revamp/layout')
     await expect(archive.locator('.route-progress__bar')).toHaveCSS('opacity', '0', { timeout: 12_000 })
     await expect(page.getByRole('navigation', { name: '主导航' })).toBeVisible()

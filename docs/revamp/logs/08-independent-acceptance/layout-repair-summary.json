@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-10-19T06:10:47.511Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-layout-port",
+  "totalShards": 2,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 2,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 4,
+  "counts": {
+    "passed": 4,
+    "expected": 4,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 4
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    }
+  ]
+}

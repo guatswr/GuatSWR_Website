@@ -19,6 +19,13 @@ budget (116,609–129,542 B gzip; home down from 177,477 B). The eight residual
 article/log visual cases pass; log privacy is an explicit, evidenced deviation.
 Full 170-case isolated E2E is running; no full-site performance acceptance yet.
 
+That run finished 166/170 (0 flaky/skipped); the four failures were hardcoded
+layout fixture ports. The same artifact passed the exact four-case repair
+selection after using derived origins. All 170 unique cases have now passed
+across those two runs; a single complete green run remains owed. Genuine guest
+BFF browser integration, administration and complete SEO/performance acceptance
+remain open.
+
 ## Boundaries
 
 - New code: `web/`, `packages/shared/`, root tooling, and `docs/revamp/`.

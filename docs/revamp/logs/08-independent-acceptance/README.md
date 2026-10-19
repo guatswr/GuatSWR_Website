@@ -121,3 +121,31 @@ declarations minus two never-executed cross-project login variants plus six
 new warm-reload cases. Both actual desktop/mobile login comparisons remain.
 No skip policy exceptions remain. Full report and Lighthouse acceptance are
 still outstanding; no whole-site or migration-success claim is made.
+
+## Full-suite result and previously missed layout fixture ports
+
+The complete 170-case run finished: **166 passed / 4 failed / 0 flaky /
+0 skipped**, 85 fresh-server batches, merged report succeeded. All four failures
+were the archived light/dark navbar/footer comparisons on desktop/mobile:
+`layout.spec.ts` still used hardcoded legacy `5174` and upstream `3181`, while
+the run correctly owned base `4100` (legacy `6174`, upstream `4181`). This was a
+test wiring defect, not a page comparison pass. Both origins now use the same
+derived constants as the other specs.
+
+Against the **same immutable production artifact**, the exact repair selection
+passed **4/4**, no retry or skip:
+
+```
+E2E_PORT_BASE=4100 node web/scripts/e2e-isolated.mjs tests/e2e/layout.spec.ts --grep 'navigation and footer match archived' --work-dir .e2e-isolated/codex-layout-port --max-per-batch 2
+```
+
+Thus all 170 unique cases were exercised successfully across the full run and
+the repair selection; this is **not** a claim that one complete 170-case run
+was green. A final complete run after SEO/guest/admin integration is still owed.
+The existing guest UI specs intercept the BFF: genuine browser → built Nuxt BFF
+→ frozen-contract upstream guest flows still need coverage. Auth landing on the
+not-yet-migrated admin route is also not accepted as a complete admin workflow.
+
+Raw ignored reports: `web/.e2e-isolated/codex-full-public/` and
+`web/.e2e-isolated/codex-layout-port/`. Gate summaries are preserved below as
+`full-suite-summary.json` and `layout-repair-summary.json`.
