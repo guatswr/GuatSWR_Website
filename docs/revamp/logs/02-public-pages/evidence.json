@@ -1,0 +1,220 @@
+{
+  "workstream": "02-public-pages",
+  "scope": "integrate + verify the public prose pages batch (/activities, /activity/:id, /members, /history, /logs)",
+  "checkout": {
+    "primary": "E:/Taropoi/workspace/GuatSWR_Website",
+    "branch": "revamp/nuxt-foundation",
+    "base_commit": "0954b8a",
+    "batch_worktree": "C:/Users/water/.codex/worktrees/revamp-public-pages/GuatSWR_Website",
+    "batch_worktree_commit": "c4d6694",
+    "runtime": ".tools/env.sh (Node 24.15.0, pnpm 11.25.0)",
+    "e2e_port_base": 3400
+  },
+  "inventory": {
+    "files_copied": 56,
+    "files_copied_verbatim": 37,
+    "files_copied_then_edited": 19,
+    "collisions_with_existing_primary_files": 0,
+    "copied_byte_identical_to_source": 56,
+    "existing_primary_files_modified": 0,
+    "edited_after_copy": [
+      "web/app/pages/activities.vue",
+      "web/app/pages/activity/[id].vue",
+      "web/app/pages/history.vue",
+      "web/app/pages/logs.vue",
+      "web/app/pages/members.vue",
+      "web/app/utils/members.ts",
+      "web/app/utils/public-image.ts",
+      "web/app/utils/public-query.ts",
+      "web/app/utils/safe-markdown-render.ts",
+      "web/server/api/content/activity/[id].get.ts",
+      "web/server/api/content/history.get.ts",
+      "web/server/api/content/members.get.ts",
+      "web/server/utils/markdown.ts",
+      "web/shared/markdown.ts",
+      "web/tests/e2e/public-pages.spec.ts",
+      "web/tests/e2e/support/public-pages.ts",
+      "web/tests/public-markdown-highlight.test.ts",
+      "web/tests/public-pages.test.ts",
+      "web/tests/public-render.test.ts"
+    ],
+    "created_by_workstream": [
+      "docs/revamp/logs/02-public-pages/README.md",
+      "docs/revamp/logs/02-public-pages/evidence.json",
+      "docs/revamp/logs/02-public-pages/build.log",
+      "docs/revamp/logs/02-public-pages/e2e-isolated.log",
+      "docs/revamp/logs/02-public-pages/e2e-public-pages.log",
+      "docs/revamp/logs/02-public-pages/vitest-scoped-before-fixes.log",
+      "docs/revamp/logs/02-public-pages/vitest-scoped-after-fixes.log",
+      "docs/revamp/logs/02-public-pages/eslint-scoped-before-fixes.log"
+    ]
+  },
+  "gates": {
+    "scoped_unit": {
+      "command": "cd web && ../node_modules/.bin/vitest run tests/public-pages.test.ts tests/public-render.test.ts tests/public-clipboard.test.ts tests/public-markdown-highlight.test.ts tests/public-markdown-server.test.ts tests/public-members-sort.test.ts",
+      "before_fixes": { "exit_code": 1, "test_files": "4 failed | 2 passed (6)", "tests": "8 failed | 56 passed (64)" },
+      "after_fixes": { "exit_code": 0, "test_files": "6 passed (6)", "tests": "64 passed (64)" },
+      "status": "passed"
+    },
+    "wider_public_unit_set": {
+      "command": "cd web && ../node_modules/.bin/vitest run (12 tests/public-*.test.ts files)",
+      "exit_code": 0,
+      "test_files": "12 passed (12)",
+      "tests": "156 passed (156)",
+      "status": "passed"
+    },
+    "scoped_lint": {
+      "command": "cd web && ../node_modules/.bin/eslint <39 owned files>",
+      "before_fixes": { "exit_code": 1, "errors": 4, "warnings": 28 },
+      "after_fixes": { "exit_code": 0, "errors": 0, "warnings": 0 },
+      "status": "passed"
+    },
+    "build": {
+      "command": "pnpm -r build (under .tools/build.lock)",
+      "first_attempt": {
+        "exit_code": 1,
+        "error": "RollupError: Could not resolve \"../../../../utils/bff-auth-context\" from \"server/api/bff/guest/upload/avatar.post.ts\"",
+        "cause": "another workstream's incomplete guest BFF routes (documented in docs/revamp/logs/03-events-guest/README.md)"
+      },
+      "second_attempt": {
+        "exit_code": 1,
+        "error": "RollupError: Could not resolve \"../../../../../web/shared/markdown.ts\" from node_modules/.cache/nuxt/.nuxt/dist/server/_nuxt/usePublicPageSeo-*.js",
+        "cause": "this batch's relative imports of web/shared, fixed in 3f"
+      },
+      "final_attempt": {
+        "exit_code": 0,
+        "output": "web/.output/server/index.mjs emitted; build complete in 1m 08s",
+        "lock_taken": "09:04:54",
+        "lock_released": "09:07:35"
+      },
+      "status": "passed"
+    },
+    "typecheck": {
+      "nuxt_typecheck": "not run here (lead-owned); the lead reported 9 call-site errors and 2 assignment errors, all fixed in 3g",
+      "standalone_probe": {
+        "command": "node_modules/.bin/tsc --noEmit --strict --noUncheckedIndexedAccess --skipLibCheck --target es2022 --lib es2022,dom --module esnext --moduleResolution bundler web/shared/markdown.ts web/app/utils/public-query.ts .tools/tmp/query-value-probe.ts",
+        "exit_code": 0,
+        "covers": "both fixed modules compile, and the widened QueryValue accepts vue-router's `LocationQueryValue | LocationQueryValue[] | undefined` at all six entry points with no cast",
+        "does_not_cover": "the .vue call sites (logs.vue / members.vue / activities.vue), which need the Nuxt context"
+      },
+      "status": "partially_verified"
+    },
+    "e2e_public_pages": {
+      "authoritative_run": {
+        "command": "E2E_PORT_BASE=3400 node web/scripts/e2e-isolated.mjs tests/e2e/public-pages.spec.ts --max-per-batch 2",
+        "passed": 26,
+        "failed": 20,
+        "skipped": 2,
+        "total": 48,
+        "by_project": { "desktop": "14 passed / 9 failed / 1 skipped", "mobile": "12 passed / 11 failed / 1 skipped" },
+        "runner_exit": "non-zero: DECLARED_SKIP_POLICY is empty and both skips are undeclared",
+        "artifacts": "web/.e2e-isolated/2026-10-19T01-12-56-807Z/ (per-batch report.json + summary.json)",
+        "raw_log": "docs/revamp/logs/02-public-pages/e2e-isolated.log",
+        "status": "executed_with_failures"
+      },
+      "skips": [
+        {
+          "test": "code block copy > reports the real outcome for a denied clipboard and for a working one",
+          "projects": ["desktop", "mobile"],
+          "reason": "self-skip: the deterministic fixture activity has no fenced code block, so `.md-code` cannot be observed; the fixture belongs to the data workstream. The clipboard outcomes are covered by tests/public-clipboard.test.ts (6 passing)."
+        }
+      ],
+      "fixes_applied_after_the_first_run": [
+        "support/public-pages.ts: readFile imported from node:fs (callback API) -> node:fs/promises",
+        "spec: member assertions scoped to the page body (the layout footer renders 'Designed by Taropoi', which broke 5 assertions)",
+        "spec: SSR member assertions scoped to the <main> slice via mainOf(html)",
+        "spec: typography expectations rounded (16.8 * 1.5 is 25.200000000000003 in binary float, '25.2px' in the DOM)",
+        "spec: the members chart is asserted on /members, not on /members?school=不存在学院, where neither page renders it"
+      ],
+      "remaining_failures": {
+        "visual_parity": {
+          "count": 18,
+          "measurements": [
+            "/activity/1 article (light+dark, desktop+mobile): height 1571.031 (archive) vs 1532.109 (new)",
+            "/history timeline (light+dark, desktop+mobile): height 1368 vs 1364.469",
+            "/members grid (light, desktop+mobile): 11085 differing pixels",
+            "/members chart (dark, desktop+mobile): 4584 differing pixels",
+            "/logs table (light, desktop+mobile): 4010 differing pixels; mobile also fails rect parity (width differs)",
+            "/logs statistics (dark, desktop+mobile): differing pixels",
+            "/activities grid (dark, mobile): differing pixels"
+          ],
+          "diagnosed": false,
+          "note": "genuine layout differences; the fixture, theme, timezone and reduced-motion setting are identical on both sides, and the nine replaced environment icons are served as the same bytes to the archived page, so they do not explain the deltas"
+        },
+        "members_chart_desktop": {
+          "count": 1,
+          "test": "server-rendered public lists > members school filtering is encoded in the URL and isolated (desktop only, deterministic - failed twice)",
+          "symptom": "svg[role='img'] is found and its aria-label matches, but its first `circle` is not found; a curl of the SSR HTML for /members shows exactly one role=img element and two <circle> seat marks",
+          "diagnosed": false
+        },
+        "mobile_navigation_timeout": {
+          "count": 1,
+          "test": "filter and page reactivity > member school navigation updates the body and the canonical URL (mobile only)",
+          "symptom": "Test timeout of 30000ms exceeded during the client-side filter -> all -> other navigation",
+          "diagnosed": false
+        }
+      },
+      "invalid_run_kept_as_record": {
+        "command": "E2E_PORT_BASE=3400 ../node_modules/.bin/playwright test tests/e2e/public-pages.spec.ts (8 workers)",
+        "result": "19 passed, 27 failed, 2 skipped",
+        "why_invalid": "8 workers against one production server saturates nuxt-security's rate limiter (the pattern the lead flagged); every conclusion above comes from the isolated runner",
+        "raw_log": "docs/revamp/logs/02-public-pages/e2e-public-pages.log"
+      }
+    },
+    "lead_owned_not_run": [
+      "nuxt prepare",
+      "nuxt typecheck",
+      "pnpm -r typecheck",
+      "pnpm -r lint",
+      "pnpm -r test",
+      "performance script"
+    ]
+  },
+  "changes_after_copy": {
+    "contract_fix_cached_wrappers": [
+      "web/server/api/content/activity/[id].get.ts: readActivity -> readCachedActivity",
+      "web/server/api/content/history.get.ts: readHistory -> readCachedHistory",
+      "web/server/api/content/members.get.ts: readMembers -> readCachedMembers"
+    ],
+    "shared_alias_fix": [
+      "web/app/utils/safe-markdown-render.ts, web/app/utils/public-image.ts, web/app/utils/members.ts, web/server/utils/markdown.ts, web/tests/public-markdown-highlight.test.ts: relative '../../shared/...' / '../shared/...' -> '#shared/...'",
+      "reason: web/shared sits outside Vite's app root, so a relative import is emitted into the Nitro chunk as an unresolvable path"
+    ],
+    "type_fixes": [
+      "web/app/utils/public-query.ts: QueryValue widened to 'string | null | undefined | (string | null)[]' to match vue-router 5's route.query value type; type-only, runtime validation unchanged, no call-site casts",
+      "web/shared/markdown.ts: SafeCheckboxProps changed from an interface to an object type alias so it has an implicit index signature and satisfies SafeMarkdownProps"
+    ],
+    "implementation_bug_fixes": [
+      "web/shared/markdown.ts: an <img> whose src is rejected is now dropped instead of emitted as an attribute-less element",
+      "web/app/utils/public-query.ts: parsePageParam accepts leading zeros (?page=02 -> 2); 0, negatives, fractions, exponents and non-digits still return null"
+    ],
+    "test_corrections": [
+      "tests/public-markdown-highlight.test.ts: assert flattened text, not a substring of the serialized tree (Shiki splits the source across one span per token)",
+      "tests/public-pages.test.ts: isSafeMarkdownTag('input') is false post-P4 (the closed checkbox branch handles input)",
+      "tests/public-pages.test.ts: environmentIconUrl('Android','device') -> generic-device-64748b.svg (the archived deviceIconList has no android keyword)",
+      "tests/public-pages.test.ts: the 'never emits an external icon' test asserts a same-origin /icons/env/*.svg path instead of null",
+      "tests/public-render.test.ts: a refused tag serializes as '<!---->' (Vue's null placeholder), not ''",
+      "tests/e2e/public-pages.spec.ts: readFile/typography/footer-scoping/chart-placement fixes listed under gates.e2e_public_pages.fixes_applied_after_the_first_run"
+    ],
+    "lint_fixes": [
+      "3 control-character regexes replaced by an equivalent code-point predicate (no eslint-disable needed)",
+      "1 dead assignment in shared/markdown.ts",
+      "27 vue/html-self-closing + 1 vue/attributes-order warnings fixed with scoped eslint --fix on the five page templates"
+    ],
+    "e2e_wiring_fix": "tests/e2e/support/public-pages.ts derives ARCHIVE_ORIGIN/FIXTURE_ORIGIN from E2E_PORT_BASE (portBase+2074 / portBase+81) instead of hardcoding 5174/3181"
+  },
+  "open_deviations": [
+    "18 visual-parity failures are undiagnosed real layout/pixel differences against the archived SPA; the page geometry is measurably different (activity article 38.9px shorter, history timeline 3.5px shorter) and several regions differ by thousands of pixels",
+    "one deterministic desktop-only failure: the members chart's seat circles are present in SSR but not found in the desktop client",
+    "one mobile-only 30s timeout during client-side member filter navigation",
+    "the code-block copy E2E test self-skips (no fenced block in the fixture) and the isolated runner's skip policy is empty, so the run exits non-zero",
+    "parsePageParam accepts leading zeros - a judgement call; the alternative reading is that ?page=02 stays a 400",
+    "the <img> drop changes security-relevant sanitizer code (narrow, covered by a new positive assertion)",
+    "highlight colours are github-light only; the archived preview used md-editor-v3 themes",
+    "nine archived icon URLs are dead upstream and use locally authored generic marks - a functional replacement, not the archived artwork",
+    "two SEO helpers coexist (web/app/composables/usePublicPageSeo.ts and the primary web/app/composables/usePublicSeo.ts); SITE_NAME/DEFAULT_DESCRIPTION are duplicated",
+    "three test files still import the shared directory relatively (tests/public-pages.test.ts, tests/public-render.test.ts, tests/public-markdown-server.test.ts); not build offenders, left out of the lead's five-file scope",
+    "the page-level type fixes (.vue call sites) are verified only by a standalone probe, not by nuxt typecheck"
+  ],
+  "acceptance_claim": "none - the lead owns acceptance"
+}

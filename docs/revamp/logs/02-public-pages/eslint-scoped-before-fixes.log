@@ -1,0 +1,42 @@
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\pages\activities.vue
+  126:14  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\pages\activity\[id].vue
+  102:103  warning  Require self-closing on HTML elements (<div>)   vue/html-self-closing
+  103:114  warning  Require self-closing on HTML elements (<div>)   vue/html-self-closing
+  139:53   warning  Require self-closing on HTML elements (<div>)   vue/html-self-closing
+  146:75   warning  Require self-closing on HTML elements (<span>)  vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\pages\history.vue
+  138:111  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  139:116  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  140:114  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  141:137  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  142:145  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  143:148  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  153:68   warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  166:129  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  172:13   warning  Attribute ":id" should go before ":key"        vue/attributes-order
+  181:14   warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  183:76   warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  225:120  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  226:124  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  243:121  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  259:16   warning  Require self-closing on HTML elements (<a>)    vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\pages\logs.vue
+  642:116  warning  Require self-closing on HTML elements (<span>)  vue/html-self-closing
+  709:52   warning  Require self-closing on HTML elements (<div>)   vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\pages\members.vue
+   74:122  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+   75:123  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+   88:102  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+   92:102  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+   96:100  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+  205:140  warning  Require self-closing on HTML elements (<div>)  vue/html-self-closing
+
+✖ 28 problems (0 errors, 28 warnings)
+  0 errors and 28 warnings potentially fixable with the `--fix` option.
+

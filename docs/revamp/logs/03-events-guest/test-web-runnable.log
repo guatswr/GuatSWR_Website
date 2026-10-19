@@ -1,0 +1,9 @@
+
+ RUN  v5.0.5 E:/Taropoi/workspace/GuatSWR_Website/web
+
+
+ Test Files  3 passed (3)
+      Tests  21 passed (21)
+   Start at  08:54:22
+   Duration  250ms (import 56%, transform 21%, tests 19%, worker 4%)
+

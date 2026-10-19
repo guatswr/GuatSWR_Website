@@ -1,0 +1,194 @@
+
+ RUN  v5.0.5 E:/Taropoi/workspace/GuatSWR_Website/web
+
+ ❯ tests/public-pages.test.ts (36 tests | 5 failed) 57ms
+   ❯ markdown sanitizer: links, images and URLs (5)
+     × drops images and links whose sources are unsafe 9ms
+   ❯ markdown sanitizer: headings, fragments and completeness (5)
+     × exposes the same tag allowlist to the browser renderer 1ms
+   ❯ pagination and query (3)
+     × accepts only real page values 1ms
+   ❯ logs helpers (10)
+     × uses self-hosted pinned icons and never an external origin 2ms
+     × never emits an external environment icon under the self-only image policy 1ms
+ ❯ tests/public-render.test.ts (6 tests | 1 failed) 17ms
+   ❯ sanitized node rendering (6)
+     × refuses active or unknown tags and keeps readable text escaped 6ms
+ ❯ tests/public-markdown-highlight.test.ts (4 tests | 1 failed) 195ms
+   ❯ server code highlighting (4)
+     × colours a supported language and keeps only safe tokens 193ms
+stderr | tests/public-markdown-server.test.ts > server markdown pipeline > renders raw HTML links and images through the allowlist
+[@nuxtjs/mdc] removing unsafe attribute: href="javascript:alert(1)"
+[@nuxtjs/mdc] removing unsafe attribute: onError="steal()"
+
+ ❯ tests/public-markdown-server.test.ts (7 tests | 1 failed) 279ms
+   ❯ server markdown pipeline (7)
+     × renders raw HTML links and images through the allowlist 11ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 8 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/public-markdown-highlight.test.ts > server code highlighting > colours a supported language and keeps only safe tokens
+AssertionError: expected '[{"type":"element","tag":"pre","props…' to contain 'const answer'
+
+Expected: "const answer"
+Received: "[{"type":"element","tag":"pre","props":{"class":"language-javascript"},"children":[{"type":"element","tag":"code","props":{},"children":[{"type":"element","tag":"span","props":{},"children":[{"type":"element","tag":"span","props":{"style":"color: #d73a49"},"children":[{"type":"text","value":"const"}]},{"type":"element","tag":"span","props":{"style":"color: #005cc5"},"children":[{"type":"text","value":" answer"}]},{"type":"element","tag":"span","props":{"style":"color: #d73a49"},"children":[{"type":"text","value":" ="}]},{"type":"element","tag":"span","props":{"style":"color: #005cc5"},"children":[{"type":"text","value":" 42"}]},{"type":"element","tag":"span","props":{"style":"color: #6a737d"},"children":[{"type":"text","value":" // comment"}]}]},{"type":"text","value":"\n"},{"type":"element","tag":"span","props":{},"children":[]}]}]}]"
+
+ ❯ tests/public-markdown-highlight.test.ts:39:24
+     37|
+     38|     const serialized = JSON.stringify(result.nodes)
+     39|     expect(serialized).toContain('const answer')
+       |                        ^
+     40|     // Theme chrome must not survive: no background, no tabindex, no c…
+     41|     expect(serialized).not.toContain('background-color')
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/8]⎯
+
+ FAIL  tests/public-markdown-server.test.ts > server markdown pipeline > renders raw HTML links and images through the allowlist
+AssertionError: expected [ { type: 'element', …(3) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "children": [],
++     "props": {},
++     "tag": "img",
++     "type": "element",
++   },
++ ]
+
+ ❯ tests/public-markdown-server.test.ts:57:39
+     55|     const result = await renderSafeMarkdown('[x](javascript:alert(1))\…
+     56|     expect(find(result.nodes, 'a').every(node => node.props.href === u…
+     57|     expect(find(result.nodes, 'img')).toEqual([])
+       |                                       ^
+     58|     expect(JSON.stringify(result.nodes)).not.toContain('onerror')
+     59|   })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/8]⎯
+
+ FAIL  tests/public-pages.test.ts > markdown sanitizer: links, images and URLs > drops images and links whose sources are unsafe
+AssertionError: expected [ { type: 'element', …(3) } ] to deeply equal []
+
+- Expected
++ Received
+
+- []
++ [
++   {
++     "children": [],
++     "props": {},
++     "tag": "img",
++     "type": "element",
++   },
++ ]
+
+ ❯ tests/public-pages.test.ts:225:47
+    223|       ]),
+    224|     ])
+    225|     expect(findElements(result.nodes, 'img')).toEqual([])
+       |                                               ^
+    226|     const [link] = findElements(result.nodes, 'a')
+    227|     expect(link?.props.href).toBeUndefined()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/8]⎯
+
+ FAIL  tests/public-pages.test.ts > markdown sanitizer: headings, fragments and completeness > exposes the same tag allowlist to the browser renderer
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ tests/public-pages.test.ts:324:40
+    322|     expect(isSafeMarkdownTag('script')).toBe(false)
+    323|     expect(isSafeMarkdownTag('iframe')).toBe(false)
+    324|     expect(isSafeMarkdownTag('input')).toBe(true)
+       |                                        ^
+    325|   })
+    326| })
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[4/8]⎯
+
+ FAIL  tests/public-pages.test.ts > pagination and query > accepts only real page values
+AssertionError: expected null to be 2 // Object.is equality
+
+- Expected:
+2
+
++ Received:
+null
+
+ ❯ tests/public-pages.test.ts:344:34
+    342|     expect(parsePageParam('')).toBe(1)
+    343|     expect(parsePageParam('2')).toBe(2)
+    344|     expect(parsePageParam('02')).toBe(2)
+       |                                  ^
+    345|     for (const invalid of ['0', '-1', '1.5', 'abc', '1e3', ' ', 'page=…
+    346|       expect(parsePageParam(invalid), invalid).toBeNull()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[5/8]⎯
+
+ FAIL  tests/public-pages.test.ts > logs helpers > uses self-hosted pinned icons and never an external origin
+AssertionError: expected '/icons/env/generic-device-64748b.svg' to be '/icons/env/android-22c55e.svg' // Object.is equality
+
+Expected: "/icons/env/android-22c55e.svg"
+Received: "/icons/env/generic-device-64748b.svg"
+
+ ❯ tests/public-pages.test.ts:583:53
+    581|     expect(environmentIconUrl('Firefox', 'browser')).toBe('/icons/env/…
+    582|     expect(environmentIconUrl('Windows 11', 'os')).toBe('/icons/env/ge…
+    583|     expect(environmentIconUrl('Android', 'device')).toBe('/icons/env/a…
+       |                                                     ^
+    584|     // Archived CDN slugs that no longer exist resolve to the document…
+    585|     expect(environmentIconUrl('Edge', 'browser')).toBe('/icons/env/gen…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[6/8]⎯
+
+ FAIL  tests/public-pages.test.ts > logs helpers > never emits an external environment icon under the self-only image policy
+AssertionError: expected '/icons/env/googlechrome-4285f4.svg' to be null
+
+- Expected:
+null
+
++ Received:
+"/icons/env/googlechrome-4285f4.svg"
+
+ ❯ tests/public-pages.test.ts:642:50
+    640|   it('never emits an external environment icon under the self-only ima…
+    641|     for (const type of ['browser', 'os', 'device']) {
+    642|       expect(environmentIconUrl('Chrome', type)).toBeNull()
+       |                                                  ^
+    643|       expect(environmentIconUrl('Windows 11', type)).toBeNull()
+    644|       expect(environmentIconUrl('', type)).toBeNull()
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[7/8]⎯
+
+ FAIL  tests/public-render.test.ts > sanitized node rendering > refuses active or unknown tags and keeps readable text escaped
+AssertionError: script: expected '<!---->' to be '' // Object.is equality
+
+- Expected
++ Received
+
++ <!---->
+
+ ❯ tests/public-render.test.ts:82:80
+     80|   it('refuses active or unknown tags and keeps readable text escaped',…
+     81|     for (const tag of ['script', 'iframe', 'svg', 'form', 'button', 's…
+     82|       expect(await render(element(tag, { src: 'x' }, [text('payload')]…
+       |                                                                                ^
+     83|     }
+     84|     expect(await render(text('<script>alert(1)</script>'))).toBe('&lt;…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[8/8]⎯
+
+
+ Test Files  4 failed | 2 passed (6)
+      Tests  8 failed | 56 passed (64)
+   Start at  08:41:38
+   Duration  798ms (import 48%, tests 44%, transform 6%, worker 2%)
+

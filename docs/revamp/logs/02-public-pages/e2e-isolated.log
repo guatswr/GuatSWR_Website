@@ -1,0 +1,30 @@
+inventory: playwright test --list --reporter=json
+inventory: 48 declared test(s) in 2 project(s)
+plan: 24 shard(s), max 2 test(s) per batch
+batch 1/24: 2 test(s)
+batch 2/24: 2 test(s)
+batch 3/24: 2 test(s)
+batch 4/24: 2 test(s)
+batch 5/24: 2 test(s)
+batch 6/24: 2 test(s)
+batch 7/24: 2 test(s)
+batch 8/24: 2 test(s)
+batch 9/24: 2 test(s)
+batch 10/24: 2 test(s)
+batch 11/24: 2 test(s)
+batch 12/24: 2 test(s)
+batch 13/24: 2 test(s)
+batch 14/24: 2 test(s)
+batch 15/24: 2 test(s)
+batch 16/24: 2 test(s)
+batch 17/24: 2 test(s)
+batch 18/24: 2 test(s)
+batch 19/24: 2 test(s)
+batch 20/24: 2 test(s)
+batch 21/24: 2 test(s)
+batch 22/24: 2 test(s)
+batch 23/24: 2 test(s)
+batch 24/24: 2 test(s)
+e2e-isolated: Undeclared skip(s) in the run:
+skipped without a declared policy reason: desktop::public-pages.spec.ts::301:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one
+skipped without a declared policy reason: mobile::public-pages.spec.ts::301:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one

@@ -1,0 +1,169 @@
+{
+  "workstream": "03-events-guest",
+  "title": "event UI, shared event rules and the guest BFF (integration)",
+  "checkout": "E:/Taropoi/workspace/GuatSWR_Website",
+  "branch": "revamp/nuxt-foundation",
+  "baseCommit": "0954b8a",
+  "sourceWorktree": "C:/Users/water/.codex/worktrees/revamp-events/GuatSWR_Website",
+  "sourceBaseCommit": "1cfe6b8",
+  "runtime": { "node": "24.15.0", "pnpm": "11.25.0", "e2ePortBase": 3500 },
+  "acceptance": "not claimed; the lead owns acceptance",
+
+  "copy": {
+    "pathsCopied": 39,
+    "byteIdenticalAfterCopy": 39,
+    "trackedFilesModifiedByCopy": 0,
+    "changedAfterCopy": 10,
+    "changedAfterCopyPaths": [
+      "packages/shared/src/events.ts",
+      "web/server/utils/guest-drafts.ts",
+      "web/server/utils/guest-bff.ts",
+      "web/app/components/events/EventForm.vue",
+      "web/app/components/events/EventSignup.vue",
+      "web/app/components/events/EventModal.vue",
+      "web/app/pages/events.vue",
+      "web/tests/guest-upload.test.ts",
+      "web/tests/e2e/support/events-parity.ts",
+      "web/tests/e2e/events.spec.ts"
+    ],
+    "reasonByPath": {
+      "packages/shared/src/events.ts": "real TS2345 in createEventFormSchema superRefine; typed the callback model",
+      "web/server/utils/guest-drafts.ts": "real bug: issue() never checked the record TTL, so an expired cookie was reused instead of rotated",
+      "web/server/utils/guest-bff.ts": "removed unused imports digestGuestPayload / GuestSubmissionState (eslint)",
+      "web/app/components/events/EventForm.vue": "merged three @guatswr/shared imports (import/no-duplicates)",
+      "web/app/components/events/EventSignup.vue": "merged three @guatswr/shared imports (import/no-duplicates)",
+      "web/app/components/events/EventModal.vue": "unassigned defineProps (no-unused-vars); verified template bindings unchanged",
+      "web/app/pages/events.vue": "moved template comment inside root (vue/no-multiple-template-root)",
+      "web/tests/guest-upload.test.ts": "merged node:http imports; dropped unused MAX_UPLOAD_BYTES / MAX_UPLOAD_TOTAL_BYTES",
+      "web/tests/e2e/support/events-parity.ts": "ARCHIVE_ORIGIN/UPSTREAM_ORIGIN now derive from E2E_PORT_BASE (were hardcoded 5174/3181)",
+      "web/tests/e2e/events.spec.ts": "BASE_URL now derives from E2E_PORT_BASE (was hardcoded 3100)"
+    }
+  },
+
+  "barrelLine": {
+    "path": "packages/shared/src/index.ts",
+    "change": "+export * from './events.js'",
+    "nameCollisions": "none"
+  },
+
+  "commands": [
+    { "cmd": "git status --porcelain -uall (source worktree)", "result": "39 untracked, 0 tracked modified" },
+    { "cmd": "sha256sum compare, all 39 files", "result": "ALL 39 FILES IDENTICAL" },
+    { "cmd": "git status --porcelain -uall (primary after copy)", "result": "additions only" },
+    { "cmd": "cd packages/shared && ../../node_modules/.bin/tsc -p tsconfig.build.json (before fix)", "result": "error TS2345 events.ts(227,39)", "exit": 0 },
+    { "cmd": "cd packages/shared && ../../node_modules/.bin/tsc -p tsconfig.build.json (after fix)", "result": "clean", "exit": 0 },
+    { "cmd": "cd web && vitest run tests/event-transport.test.ts tests/event-display.test.ts (stale dist)", "result": "4 failed | 8 passed (12)" },
+    { "cmd": "cd web && vitest run tests/event-transport.test.ts tests/event-display.test.ts", "result": "12 passed (12)", "exit": 0 },
+    { "cmd": "cd web && vitest run tests/event-transport.test.ts tests/event-display.test.ts tests/guest-bff.test.ts tests/guest-drafts.test.ts tests/guest-upload.test.ts", "result": "2 suites failed to load, 1 failed | 20 passed (21)", "exit": 1 },
+    { "cmd": "cd packages/shared && vitest run src/events.test.ts", "result": "12 passed (12)", "exit": 0 },
+    { "cmd": "cd web && vitest run tests/guest-drafts.test.ts (after TTL fix)", "result": "9 passed (9)", "exit": 0 },
+    { "cmd": "cd web && vitest run tests/event-transport.test.ts tests/event-display.test.ts tests/guest-drafts.test.ts", "result": "21 passed (21)", "exit": 0 },
+    { "cmd": "cd web && vitest run tests/guest-bff.test.ts tests/guest-upload.test.ts", "result": "2 failed (2), no tests", "exit": 1 },
+    { "cmd": "cd web && eslint <20 owned paths> (before fixes)", "result": "30 problems (12 errors, 18 warnings)" },
+    { "cmd": "cd web && eslint <20 owned paths> (after fixes)", "result": "18 problems (0 errors, 18 warnings)", "exit": 0 },
+    { "cmd": "pnpm -r build (under .tools/build.lock, batch present)", "result": "RollupError: Could not resolve \"../../../../utils/bff-errors\" from server/api/bff/guest/upload/content.post.ts", "exit": 1 },
+    { "cmd": "node -e require.resolve('busboy') from web/", "result": "UNRESOLVED busboy: MODULE_NOT_FOUND" },
+    { "cmd": "node -e require.resolve('@types/busboy/package.json') from web/", "result": "UNRESOLVED @types/busboy: MODULE_NOT_FOUND" },
+    { "cmd": "pnpm -r build (guest server paths parked; run 1)", "result": "Could not resolve \"../../../../../web/shared/markdown.ts\" from usePublicPageSeo-*.js (public-pages batch, not mine)", "exit": 1 },
+    { "cmd": "pnpm -r build (guest server paths parked; run 2)", "result": "same error, reproducible", "exit": 1 }
+  ],
+
+  "tests": {
+    "batchTotal": 45,
+    "executedPassing": 33,
+    "unrun": 23,
+    "suites": [
+      { "file": "packages/shared/src/events.test.ts", "cases": 12, "status": "pass", "exit": 0, "log": "test-shared-events.log" },
+      { "file": "web/tests/event-transport.test.ts", "cases": 7, "status": "pass", "exit": 0, "log": "test-web-runnable.log" },
+      { "file": "web/tests/event-display.test.ts", "cases": 5, "status": "pass", "exit": 0, "log": "test-web-runnable.log" },
+      { "file": "web/tests/guest-drafts.test.ts", "cases": 9, "status": "pass", "exit": 0, "log": "test-web-runnable.log", "note": "one case failed before the TTL fix" },
+      { "file": "web/tests/guest-bff.test.ts", "cases": 16, "status": "unrun", "exit": 1, "blocker": "Cannot find module '#imports' from web/server/utils/guest-bff.ts; ./bff-auth-context, ./bff-identity, ./bff-errors, ./bff-write do not exist in the primary", "log": "test-web-blocked.log" },
+      { "file": "web/tests/guest-upload.test.ts", "cases": 7, "status": "unrun", "exit": 1, "blocker": "Cannot find package 'busboy' from web/server/utils/guest-upload.ts; also ./bff-errors", "log": "test-web-blocked.log" },
+      { "file": "web/tests/e2e/events.spec.ts", "cases": 10, "status": "unrun", "blocker": "no successful build; no web/.output" },
+      { "file": "web/tests/e2e/events-visual.spec.ts", "cases": "2 projects x 2 themes", "status": "unrun", "blocker": "no successful build; no web/.output" }
+    ]
+  },
+
+  "guestBffQuestions": [
+    {
+      "question": "no cookie intent record: the alias must be stored only under the cookie key",
+      "answeredByRealTest": true,
+      "test": "web/tests/guest-drafts.test.ts > guest draft intents > rejects malformed cookie ids and never stores the raw id",
+      "result": "pass",
+      "evidence": "record.key === hashGuestCookieId(key, cookieId) and record.key does not contain the raw cookie id"
+    },
+    {
+      "question": "an expired cookie must be checked against its TTL, not merely present",
+      "answeredByRealTest": true,
+      "test": "web/tests/guest-drafts.test.ts > guest draft intents > rotates a foreign or expired cookie instead of reassigning the record",
+      "result": "failed before the fix (expected 100 not to be 100), passes after",
+      "fix": "web/server/utils/guest-drafts.ts issue() now treats a record past ttlMs as absent"
+    },
+    {
+      "question": "the pending key must separate callers by IP",
+      "answeredByRealTest": true,
+      "test": "web/tests/guest-drafts.test.ts > guest draft intents > separates distinct visitors, distinct intent keys and distinct IPs; plus the foreign-IP rotation case",
+      "result": "pass"
+    },
+    {
+      "question": "the replay receipt and beginSubmission conflict semantics, and the save locking, need real tests",
+      "answeredByRealTest": "partially",
+      "answered": {
+        "replay receipt": "web/tests/guest-drafts.test.ts > guest draft ownership and receipts > retires submitted drafts and replays only an identical confirmed payload (pass)",
+        "beginSubmission conflict": "same test: a conflicting payload returns {kind:'new'} and the draft is no longer owned (pass)",
+        "in-flight bound / release on failure": "web/tests/guest-drafts.test.ts > caps in-flight work and releases the slot even when creation fails (pass)"
+      },
+      "notAnswered": {
+        "save locking": "no test exists, and events/[id]/index.put.ts has no per-draft lock: owns() stays true until confirmSubmission(), so two concurrent identical saves both return {kind:'new'} and both reach the frozen backend"
+      }
+    }
+  ],
+
+  "gatesRun": {
+    "scopedUnitTests": "pass (33/33 executed)",
+    "scopedLint": "pass (0 errors, 18 pre-existing html-self-closing warnings)",
+    "sharedPackageBuild": "pass (tsc exit 0)",
+    "workspaceBuild": "FAIL - not mine to fix in this round",
+    "playwright": "not run"
+  },
+
+  "unverified": [
+    "web/tests/guest-bff.test.ts (16) and web/tests/guest-upload.test.ts (7) never executed",
+    "web/tests/e2e/events.spec.ts and events-visual.spec.ts never executed",
+    "no zero-diff visual result for any event page",
+    "the archived 50 MB/format upload guard and the GIF/SVG no-re-encode rule are preserved verbatim but never executed",
+    "upload oversize has no test at all (the batch left two dead limit imports)",
+    "save locking is neither implemented nor tested",
+    "initial-route JavaScript budget not re-measured",
+    "the device-pixel crop protocol was not ported to events-visual.spec.ts"
+  ],
+
+  "blockers": [
+    {
+      "owner": "auth batch / lead",
+      "detail": "web/server/utils/bff-auth-context.ts, bff-identity.ts, bff-errors.ts, bff-write.ts do not exist in the primary (they live only in the unintegrated revamp-auth worktree). guest-bff.ts, guest-upload.ts and all 7 guest routes import them."
+    },
+    {
+      "owner": "lead (package.json / pnpm-lock.yaml)",
+      "detail": "busboy is not installed in the web workspace; it exists only at backend/node_modules/busboy@1.6.0. @types/busboy is absent everywhere."
+    },
+    {
+      "owner": "lead (web/vitest.config.ts)",
+      "detail": "no vitest alias for '#imports' or '~/utils/*', so guest-bff.test.ts cannot load even once the auth helpers exist."
+    },
+    {
+      "owner": "public-pages batch",
+      "detail": "pnpm -r build also fails resolving web/shared/markdown.ts from usePublicPageSeo.ts; reproduced twice, unrelated to this workstream."
+    }
+  ],
+
+  "logs": [
+    "build.log",
+    "build-without-guest-server.log",
+    "build-without-guest-server-retry.log",
+    "test-shared-events.log",
+    "test-web-runnable.log",
+    "test-web-blocked.log",
+    "lint-scoped.log"
+  ]
+}

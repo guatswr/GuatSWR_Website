@@ -1,0 +1,40 @@
+
+ RUN  v5.0.5 E:/Taropoi/workspace/GuatSWR_Website/web
+
+ ❯ tests/guest-upload.test.ts (0 test)
+ ❯ tests/guest-bff.test.ts (0 test)
+
+⎯⎯⎯⎯⎯⎯ Failed Suites 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/guest-bff.test.ts [ tests/guest-bff.test.ts ]
+Error: Cannot find module '#imports' imported from E:/Taropoi/workspace/GuatSWR_Website/web/server/utils/guest-bff.ts
+ ❯ server/utils/guest-bff.ts:4:1
+      2| import { getCookie, getHeader, setCookie } from 'h3'
+      3| import type { H3Event } from 'h3'
+      4| import { useRuntimeConfig } from '#imports'
+       | ^
+      5| import {
+      6|   EVENT_FIELDS,
+ ❯ tests/guest-bff.test.ts:3:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/guest-upload.test.ts [ tests/guest-upload.test.ts ]
+Error: Cannot find package 'busboy' imported from E:/Taropoi/workspace/GuatSWR_Website/web/server/utils/guest-upload.ts
+ ❯ server/utils/guest-upload.ts:8:1
+      6| import { pipeline } from 'node:stream/promises'
+      7| import type { Readable } from 'node:stream'
+      8| import Busboy from 'busboy'
+       | ^
+      9| import type { H3Event } from 'h3'
+     10| import { BffError } from './bff-errors'
+ ❯ tests/guest-upload.test.ts:7:1
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  no tests
+   Start at  08:54:23
+   Duration  257ms (worker 96%, environment 4%)
+

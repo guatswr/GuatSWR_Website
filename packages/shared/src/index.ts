@@ -29,3 +29,4 @@ export type PublicSiteConfig = z.infer<typeof publicConfigSchema>
 
 // Public read DTOs and frozen v1 row shapes for the BFF and type-only UI use.
 export * from './public.js'
+export * from './events.js'

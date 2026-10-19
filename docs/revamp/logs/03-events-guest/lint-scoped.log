@@ -1,0 +1,30 @@
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\components\events\EventBoard.vue
+  235:15  warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\components\events\EventCard.vue
+   85:9   warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+  115:15  warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+  160:15  warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+  179:17  warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+  193:17  warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+  268:17  warning  Disallow self-closing on HTML void elements (<img/>)  vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\components\events\EventForm.vue
+  279:13  warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  301:15  warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  315:15  warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  333:17  warning  Disallow self-closing on HTML void elements (<img/>)    vue/html-self-closing
+  412:15  warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  435:5   warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\components\events\EventSignup.vue
+  193:9   warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  202:9   warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  233:9   warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+  274:88  warning  Disallow self-closing on HTML void elements (<img/>)    vue/html-self-closing
+  313:5   warning  Disallow self-closing on HTML void elements (<input/>)  vue/html-self-closing
+
+✖ 18 problems (0 errors, 18 warnings)
+  0 errors and 18 warnings potentially fixable with the `--fix` option.
+
