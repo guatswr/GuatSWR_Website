@@ -20,8 +20,12 @@ missing per-app CSRF hookup and stale-identity mutation races. These are fixed:
 genuine browser → Nuxt BFF → in-memory frozen upstream workflow passes 6/6 on
 desktop/mobile, including 9 MiB accepted / above-50 MiB rejected uploads. Four
 recursive gates pass (643 units), tooling 56/56, no maps, all 14 initial route
-graphs pass (117275–130126 B gzip). The complete 188-case E2E is running on the
-same artifact. See [guest integration evidence](logs/10-guest-integration/README.md).
+graphs pass (117275–130126 B gzip). The complete 188-case E2E passed on the
+same `cf17273` artifact in 94 batches, 0 skip/flaky/retry, all reports merged.
+See [guest integration evidence](logs/10-guest-integration/README.md). Remote
+run 39240208835 has passed Linux container build/runtime; the Windows/Linux
+browser suites are still running. Admin source integration is now in progress
+and is not included in these public-artifact acceptance numbers.
 Administration and full-site acceptance remain incomplete. No deployment or QQ
 success notification has occurred. Older checkpoint evidence below is historical.
 

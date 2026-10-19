@@ -42,8 +42,25 @@
     "routes": 14
   },
   "fullE2E": {
+    "artifactCommit": "cf17273",
     "declared": 188,
-    "state": "running"
+    "state": "passed",
+    "counts": {
+      "passed": 188,
+      "expected": 188,
+      "flaky": 0,
+      "failed": 0,
+      "skipped": 0,
+      "allDeclared": 188
+    },
+    "merge": {
+      "ok": true,
+      "exitCode": 0,
+      "error": null,
+      "blobCount": 94,
+      "missingBlobs": []
+    },
+    "batches": 94
   },
   "performance": {
     "scoreBudget": 95,

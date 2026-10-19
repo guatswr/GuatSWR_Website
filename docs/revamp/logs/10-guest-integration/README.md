@@ -72,7 +72,9 @@ confirmed replay, foreign-cookie isolation, signup avatar/save/reopen/read/delet
 assert server-built address forwarding and no browser Cookie/Origin/Authorization
 on anonymous upstream writes. No real database/backend/notifications are used.
 
-Full 188-case public/auth/guest E2E is running on the same artifact; the six-case
-result is not a full green run. Mobile LCP remains over 1800 ms (latest candidate
+Full public/auth/guest E2E on the same `cf17273` artifact passed **188/188** in
+94 isolated batches, 0 skip/flaky/retry and all 94 blob reports merged. Raw local
+log: `.tools/codex-public-guest-full.log`; compact committed evidence:
+[full-e2e.json](full-e2e.json). Mobile LCP remains over 1800 ms (latest candidate
 1960.7 ms / score 99). Administration, full security/performance and new remote
 CI remain open. No deployment or QQ success notification occurred.
