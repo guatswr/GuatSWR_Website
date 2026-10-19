@@ -1,5 +1,16 @@
 import { defineConfig, devices } from '@playwright/test'
 
+/**
+ * The three fixture/app ports are derived from one base so that parallel
+ * workers on the same machine never collide. The defaults reproduce the
+ * original fixed ports exactly (3100 / 3181 / 5174).
+ */
+const portBase = Number(process.env.E2E_PORT_BASE ?? 3100)
+const appPort = portBase
+const upstreamPort = portBase + 81
+const legacyPort = portBase + 2074
+const origin = (port: number) => `http://127.0.0.1:${port}`
+
 export default defineConfig({
   testDir: './tests/e2e',
   fullyParallel: true,
@@ -7,7 +18,7 @@ export default defineConfig({
   retries: process.env.CI ? 1 : 0,
   reporter: [['list'], ['html', { open: 'never' }]],
   use: {
-    baseURL: 'http://127.0.0.1:3100', trace: 'retain-on-failure',
+    baseURL: origin(appPort), trace: 'retain-on-failure',
     launchOptions: { args: ['--disable-lcd-text', '--font-render-hinting=none'] },
   },
   projects: [
@@ -17,19 +28,21 @@ export default defineConfig({
   webServer: [
     {
       command: 'node tests/fixtures/legacy.mjs',
-      url: 'http://127.0.0.1:5174/social',
+      url: `${origin(legacyPort)}/social`,
       reuseExistingServer: false,
+      env: { PORT: String(legacyPort) },
     },
     {
       command: 'node tests/fixtures/upstream.mjs',
-      url: 'http://127.0.0.1:3181/health',
+      url: `${origin(upstreamPort)}/health`,
       reuseExistingServer: false,
+      env: { PORT: String(upstreamPort) },
     },
     {
       command: 'node .output/server/index.mjs',
-      url: 'http://127.0.0.1:3100/api/health',
+      url: `${origin(appPort)}/api/health`,
       reuseExistingServer: false,
-      env: { PORT: '3100', HOST: '127.0.0.1', NUXT_API_BASE: 'http://127.0.0.1:3181' },
+      env: { PORT: String(appPort), HOST: '127.0.0.1', NUXT_API_BASE: origin(upstreamPort) },
     },
   ],
 })

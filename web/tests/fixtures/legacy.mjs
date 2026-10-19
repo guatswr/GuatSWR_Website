@@ -20,4 +20,4 @@ createServer(async (request, response) => {
     response.end(await readFile(file))
   }
   catch { response.writeHead(500).end('Legacy fixture unavailable; build frontend first') }
-}).listen(5174, '127.0.0.1')
+}).listen(Number(process.env.PORT ?? 5174), '127.0.0.1')
