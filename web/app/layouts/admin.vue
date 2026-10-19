@@ -23,6 +23,7 @@ interface MenuItem { path: string; label: string; icon: string; description: str
 const sections: { title: string; items: MenuItem[] }[] = [
   { title: '工作空间', items: [
     { path: '/admin', label: '工作台', icon: 'sparkles', description: '常用管理入口与快捷操作' },
+    { path: '/admin/activities', label: '文章管理', icon: 'pen', description: '编写活动记录、管理正文与照片' },
     { path: '/admin/members', label: '住民管理', icon: 'users', description: '维护成员资料、学校与展示顺序' },
     { path: '/admin/history', label: '群史管理', icon: 'book', description: '记录社群里值得记住的时刻' },
   ] },

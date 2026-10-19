@@ -41,6 +41,21 @@ const isRecord = (value: unknown): value is Record<string, unknown> =>
   typeof value === 'object' && value !== null && !Array.isArray(value)
 
 /**
+ * MDC 0.23.2's compiler drops every root text node, including genuine prose
+ * following a raw HTML void tag. Wrap non-whitespace root text in a native
+ * inline span after rehype-raw and before compilation. Keep it as text; never
+ * reinterpret it as HTML/MDC. The usual sanitizer still checks the whole tree.
+ */
+function preserveRootProse() {
+  return (tree: unknown) => {
+    if (!isRecord(tree) || tree.type !== 'root' || !Array.isArray(tree.children)) return
+    tree.children = tree.children.map(child => isRecord(child) && child.type === 'text'
+      && typeof child.value === 'string' && child.value.trim()
+      ? { type: 'element', tagName: 'span', properties: {}, children: [child] } : child)
+  }
+}
+
+/**
  * Iterative (non-recursive) budget check: returns `false` as soon as the tree
  * is deeper or larger than the render path is willing to walk.
  */
@@ -120,7 +135,9 @@ export async function renderSafeMarkdown(markdown: string): Promise<SafeMarkdown
   try {
     // MDC's own highlight plugin stays off (it is disabled in this project's
     // module defaults anyway); `./highlight` colours the fences explicitly.
-    const parsed = await parseMarkdown(source, { highlight: false })
+    const parsed = await parseMarkdown(source, { highlight: false, configs: [{
+      unified: { post: processor => processor.use(preserveRootProse) },
+    }] })
     // `parsed.data` (frontmatter) is intentionally ignored: it is parser output
     // from user content, never render configuration.
     // Refuse to walk a pathological tree: the whole article is returned as

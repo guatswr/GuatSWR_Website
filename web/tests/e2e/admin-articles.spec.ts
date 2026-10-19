@@ -1,0 +1,170 @@
+import { expect, test } from '@playwright/test'
+import type { Page } from '@playwright/test'
+import { publicImageFixtures } from '../fixtures/public-data.mjs'
+
+const base = Number(process.env.E2E_PORT_BASE ?? 3100), fixture = `http://127.0.0.1:${base + 82}`
+async function login(page: Page) {
+  await page.goto('/login?redirect=%2Fadmin%2Factivities')
+  await page.getByLabel('Username').fill('admin')
+  await page.getByLabel('Password', { exact: true }).fill('adminpass')
+  await page.getByRole('button', { name: '登录系统', exact: true }).click()
+  await page.getByRole('button', { name: '进入管理端', exact: true }).click()
+  await expect(page.getByRole('heading', { name: '文章列表', exact: true })).toBeVisible()
+}
+test.beforeEach(async ({ request, page }) => {
+  expect((await request.post(`${fixture}/__fixture/admin`, { data: { enable: true } })).ok()).toBe(true)
+  await page.addInitScript(() => localStorage.setItem('theme-preference', 'light'))
+})
+
+test('article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing', async ({ page, request }, info) => {
+  test.setTimeout(60_000)
+  const external: string[] = [], violations: string[] = []
+  let testingAuthoredAttack = false
+  page.on('request', call => { if (['script', 'stylesheet', 'font'].includes(call.resourceType()) && new URL(call.url()).origin !== `http://127.0.0.1:${base}`) external.push(call.url()) })
+  page.on('console', message => {
+    if (!/violates.*Content Security Policy|Refused to (load|execute|apply)/i.test(message.text())) return
+    // Chromium reports handler compilation during DOMPurify's attribute
+    // teardown even in an inert document. A standalone probe also verifies
+    // no execution with CSP absent; only this deliberate payload may log it.
+    if (testingAuthoredAttack && message.text().startsWith('Executing inline event handler violates')
+      && message.text().includes("script-src-attr 'none'")) return
+    violations.push(message.text())
+  })
+  await request.get('/api/activities')
+  await login(page)
+  const initial = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  const existingIds = new Set(initial.activities.map((row: { id: number }) => row.id))
+  await page.getByRole('button', { name: '新建文章', exact: true }).click()
+  const title = `迁移文章-${info.project.name}`
+  await page.getByLabel('标题', { exact: true }).fill(title)
+  await page.getByLabel('标签', { exact: true }).fill('迁移')
+  await page.getByLabel('日期', { exact: true }).fill('2026-10-20')
+  await page.getByLabel('简短介绍', { exact: true }).fill('真实管理端文章工作流')
+  const png = { name: 'image.png', mimeType: 'image/png', buffer: publicImageFixtures['.png'].body() }
+  await page.getByLabel('封面图片', { exact: true }).setInputFiles(png)
+  await expect(page.getByAltText('封面预览')).toBeVisible()
+  await page.getByLabel('活动照片', { exact: true }).setInputFiles([png, { ...png, name: 'photo-2.png' }])
+  await expect(page.locator('.admin-gallery figure')).toHaveCount(2)
+  const state = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  const drafts = state.activities.filter((row: { id: number }) => !existingIds.has(row.id))
+  expect(drafts).toHaveLength(1)
+  const id = drafts[0].id as number
+  expect((await request.get(`/activity/${id}`)).status()).toBe(404)
+  const source = '# 安全文章正文\n\n段落与 **强调**。\n\n$x^2 + 1$\n\n```mermaid\n%%{init: {"securityLevel":"loose","htmlLabels":true,"flowchart":{"htmlLabels":true}}}%%\ngraph TD\nA[开始] --> B[完成]\n```\n\n<img src=x onerror="window.articlePwned=1">'
+  testingAuthoredAttack = true
+  await page.getByLabel('导入 Markdown 文件', { exact: true }).setInputFiles({ name: 'article.md', mimeType: 'text/markdown', buffer: Buffer.from(source) })
+  await expect(page.locator('.md-editor-preview h1')).toHaveText('安全文章正文')
+  await expect(page.locator('.md-editor-preview .katex').first()).toBeVisible()
+  await expect(page.locator('.md-editor-preview .md-editor-mermaid svg').first()).toBeVisible()
+  const diagram = page.locator('.md-editor-preview .md-editor-mermaid svg').first()
+  await expect(diagram).toContainText('开始')
+  await expect(diagram).toContainText('完成')
+  const bounds = await diagram.boundingBox()
+  expect(bounds!.width, 'diagram keeps its readable intrinsic size').toBeGreaterThan(60)
+  expect(bounds!.height, 'diagram is not treated as a 20px toolbar icon').toBeGreaterThan(60)
+  await expect(diagram.locator('foreignObject')).toHaveCount(0)
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
+  if (info.project.name === 'mobile') {
+    const inputPane = await page.locator('.md-editor-input-wrapper').boundingBox()
+    const previewPane = await page.locator('.md-editor-preview-wrapper').boundingBox()
+    expect(inputPane!.width).toBeGreaterThan(250)
+    expect(previewPane!.width).toBeGreaterThan(250)
+    expect(previewPane!.y).toBeGreaterThanOrEqual(inputPane!.y + inputPane!.height - 1)
+  }
+  await expect(page.locator('.md-editor-preview [onerror]')).toHaveCount(0)
+  expect(await page.evaluate(() => 'articlePwned' in window)).toBe(false)
+  // The editor's own native multi-file chooser must invoke our protected image
+  // callback, not its built-in external upload behavior.
+  await page.locator('.md-editor input[type="file"][multiple]').setInputFiles(png)
+  await expect(page.locator(`.md-editor-preview img[src*="/uploads/admin-${initial.uploads.length + 4}."]`)).toBeVisible()
+  await expect(page.getByRole('textbox', { name: '文章正文', exact: true })).toBeVisible()
+  const editor = page.getByRole('textbox', { name: '文章正文', exact: true })
+  await editor.press('ControlOrMeta+End'); await editor.press('Enter')
+  await editor.pressSequentially('编辑器回写验证')
+  await expect(page.locator('.el-message')).toHaveCount(0)
+  // Cached diagrams go through the HTML sanitizer again on every edit. A
+  // first-render-only check misses diagrams disappearing after image/typing.
+  await expect(diagram).toContainText('开始')
+  await expect(diagram).toContainText('完成')
+  await expect(diagram.locator('style, foreignObject, [onerror]')).toHaveCount(0)
+  const cachedBounds = await diagram.boundingBox()
+  expect(cachedBounds!.width).toBeGreaterThan(60)
+  expect(cachedBounds!.height).toBeGreaterThan(60)
+  await page.evaluate(() => window.scrollTo(0, 0))
+  await info.attach('article-editor', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' })
+  await page.getByRole('button', { name: '切换为夜间模式' }).click()
+  await expect(page.locator('html')).toHaveClass(/dark/)
+  await expect(diagram).toContainText('开始')
+  await expect(diagram).toContainText('完成')
+  await expect(diagram.locator('foreignObject')).toHaveCount(0)
+  await info.attach('article-editor-dark', { body: await page.screenshot({ fullPage: true, animations: 'disabled' }), contentType: 'image/png' })
+  await page.getByRole('button', { name: '发布文章', exact: true }).click()
+  await expect(page.getByTestId('admin-article-card').filter({ hasText: title })).toBeVisible()
+  const published = await request.get(`/activity/${id}`)
+  expect(published.status()).toBe(200)
+  const html = await published.text()
+  expect(html.includes('安全文章正文'), 'SSR contains the imported heading').toBe(true)
+  expect(html.includes('编辑器回写验证'), 'SSR contains the final typed prose').toBe(true)
+  expect(html.includes('onerror='), 'SSR excludes active image attributes').toBe(false)
+  expect(await (await request.get('/api/activities')).text()).toContain(title)
+  const after = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  const calls = after.requests.slice(initial.requests.length)
+  expect(calls.filter((call: { path: string }) => call.path === '/api/activities/draft')).toHaveLength(1)
+  expect(after.uploads.length - initial.uploads.length).toBe(4)
+  const uploadCalls = calls.filter((call: { path: string }) => call.path === '/api/upload')
+  expect(uploadCalls).toHaveLength(4)
+  expect(uploadCalls.every((call: { query: string }) => new URLSearchParams(call.query).get('activityId') === String(id))).toBe(true)
+  expect(await page.evaluate(() => 'articlePwned' in window)).toBe(false)
+  expect(external).toEqual([])
+  expect(violations).toEqual([])
+})
+
+test('article editing protects unsaved changes and updates public reads on edit, deletion and restoration', async ({ page, request }) => {
+  await request.get('/activity/1'); await request.get('/api/activities')
+  await login(page)
+  const card = page.getByTestId('admin-article-card').filter({ hasText: '秋季例会' })
+  await card.getByRole('button', { name: '编辑', exact: true }).click()
+  await page.getByLabel('标题', { exact: true }).fill('秋季例会迁移修订')
+  await page.getByRole('button', { name: 'Markdown 源码', exact: true }).click()
+  await page.getByLabel('文章正文', { exact: true }).fill('# 修订后的正文\n\n内容已更新。')
+  await page.getByRole('button', { name: '返回列表', exact: true }).click()
+  await page.getByRole('button', { name: '继续编辑', exact: true }).click()
+  await expect(page.getByLabel('标题', { exact: true })).toHaveValue('秋季例会迁移修订')
+  await page.getByRole('button', { name: '保存并发布', exact: true }).click()
+  await expect(card).toContainText('秋季例会迁移修订')
+  expect(await (await request.get('/activity/1')).text()).toContain('修订后的正文')
+  await card.getByRole('button', { name: '删除', exact: true }).click()
+  await page.getByRole('button', { name: '移入回收站', exact: true }).click()
+  await expect(card).toHaveCount(0)
+  expect((await request.get('/activity/1')).status()).toBe(404)
+  await page.getByRole('button', { name: '显示已删除', exact: true }).click()
+  await expect(card).toContainText('已删除')
+  await card.getByRole('button', { name: '恢复', exact: true }).click()
+  await expect(card).toContainText('已发布')
+  expect((await request.get('/activity/1')).status()).toBe(200)
+})
+
+test('invalid articles never write and an upstream failure leaves content available for explicit manual retry', async ({ page, request }) => {
+  await login(page)
+  const initial = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  await page.getByRole('button', { name: '新建文章', exact: true }).click()
+  await page.getByLabel('标题', { exact: true }).fill('失败后保留正文')
+  await page.getByRole('button', { name: '发布文章', exact: true }).click()
+  await expect(page.getByText('标签不能为空', { exact: true })).toBeVisible()
+  let state = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  expect(state.requests.slice(initial.requests.length).filter((call: { method: string }) => call.method !== 'GET')).toHaveLength(0)
+  await page.getByLabel('标签', { exact: true }).fill('测试')
+  await page.getByLabel('日期', { exact: true }).fill('2026-10-20')
+  await page.getByRole('button', { name: 'Markdown 源码', exact: true }).click()
+  await page.getByLabel('文章正文', { exact: true }).fill('不会丢失的正文')
+  await request.post(`${fixture}/__fixture/admin`, { data: { failNext: { status: 500, body: { stack: 'private-stack', message: 'SQLITE_ERROR' } } } })
+  await page.getByRole('button', { name: '发布文章', exact: true }).click()
+  await expect(page.getByText('发布未完成，请检查列表后再决定是否重试', { exact: true })).toBeVisible()
+  await expect(page.getByLabel('文章正文', { exact: true })).toHaveValue('不会丢失的正文')
+  state = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  expect(state.requests.slice(initial.requests.length).filter((call: { path: string; method: string }) => call.path === '/api/activities' && call.method === 'POST')).toHaveLength(1)
+  await page.getByRole('button', { name: '发布文章', exact: true }).click()
+  await expect(page.getByTestId('admin-article-card').filter({ hasText: '失败后保留正文' })).toBeVisible()
+  state = await (await request.get(`${fixture}/__fixture/admin`)).json()
+  expect(state.requests.slice(initial.requests.length).filter((call: { path: string; method: string }) => call.path === '/api/activities' && call.method === 'POST')).toHaveLength(2)
+})

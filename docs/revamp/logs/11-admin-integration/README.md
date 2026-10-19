@@ -102,6 +102,15 @@ UI, or native large-file download handoff. Those secondary workflows need final
 integration checks. The original 188-case public/guest suite must be rerun on the
 complete migrated artifact; the old public run is not relabeled as a new run.
 
+Remote follow-up for the exact `0d7f22d435d9070a1d5712654f5b45c49880166e`
+checkpoint: [run 39286792392](https://github.com/guatswr/GuatSWR_Website/actions/runs/39286792392).
+Windows job 118175587447 passed **216/216**, zero flaky/failure/skip; the Linux
+container job 118175586865 passed. Ubuntu job 118175587267 passed **215/216**,
+with only mobile `/logs matches the archive (dark)` unexpected. Its result is
+not a new approval for that existing public visual blocker. The decoded job logs
+confirm the counts. This remote artifact includes the 28 new private tests but
+does not include the later local article/editor work.
+
 All 14 public cold-route JS budgets still passed on the earlier private-page
 artifact: **118981–131857 B gzip**, cap 153600, no sourcemaps. Private Element
 Plus/query/styles are dynamically loaded on verified admin routes. Raw report:

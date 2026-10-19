@@ -33,7 +33,7 @@ html.dark .admin-shell {
 .admin-shell button, .admin-shell input, .admin-shell select, .admin-shell textarea { font: inherit; }
 .admin-shell button { cursor: pointer; }
 .admin-shell button:disabled { cursor: not-allowed; opacity: .5; }
-.admin-shell svg { width: 20px; height: 20px; flex-shrink: 0; }
+.admin-icon-button > svg, .admin-button > svg, .admin-quick-icon > svg, .admin-mobile-nav a > svg { width: 20px; height: 20px; flex-shrink: 0; }
 .admin-skip { position: fixed; top: -100px; left: 20px; z-index: 100; background: var(--admin-surface); padding: 12px 20px; border: 1px solid var(--admin-primary); border-radius: 8px; }
 .admin-skip:focus { top: 12px; }
 .admin-sidebar { position: fixed; inset: 0 auto 0 0; z-index: 40; width: 232px; display: flex; flex-direction: column; background: var(--admin-surface); border-right: 1px solid var(--admin-border); }
@@ -168,6 +168,13 @@ html.dark .admin-shell {
 .admin-download-status progress { width: 100%; margin-top: 10px; accent-color: #1d4ed8; }
 .admin-color-field, .admin-color-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; font-size: 12px; }
 .admin-color-field input { width: 42px; height: 36px; padding: 3px; border: 1px solid var(--admin-border); border-radius: 6px; }
+.admin-editor-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; margin-bottom: 16px; }
+.admin-article-editor { min-width: 0; }
+.admin-article-editor .md-editor { border-radius: 8px; border: 1px solid var(--admin-border); max-width: 100%; }
+.admin-gallery { display: flex; flex-wrap: wrap; gap: 12px; }
+.admin-gallery figure { width: 100px; }
+.admin-gallery img { width: 100%; height: 76px; object-fit: cover; border-radius: 7px; margin-bottom: 6px; }
+.admin-gallery button { width: 100%; }
 @media (max-width: 1199px) { .admin-quick-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .admin-main { padding: 28px; } .admin-topbar { padding-inline: 28px; } }
 @media (max-width: 1023px) {
   .admin-split, .admin-split--balanced { grid-template-columns: 1fr; }
@@ -183,6 +190,12 @@ html.dark .admin-shell {
   .admin-mobile-nav a[aria-current='page'] { color: var(--admin-primary); background: var(--admin-active); }
 }
 @media (max-width: 639px) {
+  /* Keep both panes readable on phones; a 50/50 horizontal split leaves
+     roughly 120px per pane after the workspace padding. */
+  .admin-article-editor .md-editor-content-wrapper { flex-direction: column; }
+  .admin-article-editor .md-editor-content-wrapper > .md-editor-custom-scrollbar { width: 100% !important; height: 0; flex: 1; min-height: 0; }
+  .admin-article-editor .md-editor-content-wrapper > .md-editor-custom-scrollbar:not(:has(> .md-editor-input-wrapper, > .md-editor-preview-wrapper)) { display: none; }
+  .admin-article-editor .md-editor-resize-operate { display: none !important; }
   .admin-settings-grid, .admin-link-fields { grid-template-columns: 1fr; gap: 24px; }
   .admin-config-image { grid-template-columns: 1fr; }
   .admin-panel-heading { flex-wrap: wrap; }

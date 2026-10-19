@@ -2,6 +2,28 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
+Latest accepted local feature: protected article administration, lazy local
+Markdown editor/import/images and safe private formula/diagram preview. A real
+public prose-loss bug and first-render/cached-diagram defects are fixed. Four
+recursive gates pass (692 units, lint 0 errors/34 existing warnings), **82/82
+unique E2E** on the corrected production output (6 articles, 28 other private,
+48 public正文/visual; zero retry/flaky/skip), actual screenshots reviewed,
+14 public cold-route graphs **119792–132684 B gzip**, zero maps.
+See [article evidence](logs/12-admin-articles/README.md). A Windows native process
+startup failure remains retained; successful regression scopes cap only local
+Node background threads and retain all browser/assertion/security policies.
+
+Next correction in progress: source review found that guest upload BFF/fixtures
+used the unmounted underscore namespace. The frozen backend mounts
+`/api/upload/visitor`. An independent read-only mount/verb guard fails those
+two paths before correction (53/55 pass), then passes with the boundary tests
+(74/74). Fresh build and real browser upload verification are pending; the old
+guest acceptance does not establish correctness against those actual mounts.
+This later correction is not included in the article artifact above.
+Activity review/settlement/ranking UI is drafted and awaits integration/testing.
+Public article formula/diagram parity, LCP, the Linux dark-log pixel and final
+full-site/security acceptance remain open. No deployment or QQ success notice.
+
 Latest user decision (2026-10-20): the administration UI may be redesigned and
 regrouped for modern, simple operation. Public visual parity stays in force;
 private archive pixel parity is superseded by workflow/permission, responsive,
@@ -10,8 +32,15 @@ pages pass the local foundation selection: four recursive gates, 686 units,
 28/28 desktop/mobile E2E (zero retry/flaky/skip), 36 retained interface screenshots,
 zero sourcemaps, and all 14 public-route JS budgets (119347–132231 B gzip).
 This accepts the workspace foundation/core workflows, not the full admin stage:
-article/event pages and secondary workflow/security checks remain open. See
+event pages and secondary workflow/security checks remain open; article
+administration is covered by the newer evidence above. See
 [the UI decision](ADMIN-UI.md) and [evidence](logs/11-admin-integration/README.md).
+
+Remote follow-up: [0d7f22d run 39286792392](https://github.com/guatswr/GuatSWR_Website/actions/runs/39286792392)
+passes Windows 216/216 and the Linux container job. Ubuntu is 215/216; only the
+same mobile public dark-log archive comparison fails. No public threshold was
+relaxed. Local article/editor work after that checkpoint is in progress and is
+not covered by those counts; see [log 12](logs/12-admin-articles/README.md).
 
 ## Current independent review (Codex, after `bf18a36`)
 

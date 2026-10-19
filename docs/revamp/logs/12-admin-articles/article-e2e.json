@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-10-19T21:07:51.848Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-admin-article-cache",
+  "totalShards": 3,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 3,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 6,
+  "counts": {
+    "passed": 6,
+    "expected": 6,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 6
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::admin-articles.spec.ts::122:1::admin-articles.spec.ts > article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-articles.spec.ts::147:1::admin-articles.spec.ts > invalid articles never write and an upstream failure leaves content available for explicit manual retry",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-articles.spec.ts::19:1::admin-articles.spec.ts > article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-articles.spec.ts::122:1::admin-articles.spec.ts > article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-articles.spec.ts::147:1::admin-articles.spec.ts > invalid articles never write and an upstream failure leaves content available for explicit manual retry",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-articles.spec.ts::19:1::admin-articles.spec.ts > article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    }
+  ]
+}

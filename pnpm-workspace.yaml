@@ -3,6 +3,10 @@ packages:
   - packages/*
 
 saveExact: true
+# Mermaid's math adapter uses the same renderToString API. Keep its transitive
+# copy on the prototype-pollution fix too, rather than patching only our import.
+overrides:
+  mermaid>katex: 0.18.2
 nodeLinker: hoisted
 injectWorkspacePackages: true
 syncInjectedDepsAfterScripts:

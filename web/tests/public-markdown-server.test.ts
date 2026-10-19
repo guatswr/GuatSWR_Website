@@ -58,6 +58,20 @@ describe('server markdown pipeline', () => {
     expect(JSON.stringify(result.nodes)).not.toContain('onerror')
   })
 
+  it.each([
+    '<img src="/uploads/fixture.png" onerror="steal()">',
+    '<img src=x onerror="steal()">', '<br>', '<hr>',
+    '<input type="checkbox" disabled>', '<input type="text">',
+  ])('keeps authored text following a raw HTML void element: %s', async tag => {
+    const result = await renderSafeMarkdown(`正文之前\n\n${tag}\n正文之后`)
+    expect(result.complete).toBe(true)
+    expect(flatten(result.nodes)).toContain('正文之前')
+    expect(flatten(result.nodes)).toContain('正文之后')
+    expect(JSON.stringify(result.nodes)).not.toContain('onerror')
+    expect(find(result.nodes, 'input').every(node => node.props.disabled === true && node.props.type === 'checkbox')).toBe(true)
+    expect(find(result.nodes, 'img').every(node => node.children.length === 0)).toBe(true)
+  })
+
   it('falls back to the whole article when nesting exceeds the walk budget', async () => {
     const nested = `${'>'.repeat(80)} SENTINEL-DEEP`
     const result = await renderSafeMarkdown(nested)

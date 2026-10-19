@@ -2,6 +2,7 @@
 definePageMeta({ layout: 'admin', middleware: 'admin' })
 const session = useBffSession()
 const actions = computed(() => [
+  { title: '编写活动文章', description: '发布记录，编辑正文、封面与活动照片。', path: '/admin/activities', icon: 'pen' },
   { title: '维护住民资料', description: '新增成员，更新头像、学校和成分标签。', path: '/admin/members', icon: 'users' },
   { title: '记录社群群史', description: '把新动态整理到公开时间轴。', path: '/admin/history', icon: 'book' },
   { title: '更新站点设置', description: '调整网站资源、介绍和入群信息。', path: '/admin/config', icon: 'sparkles' },

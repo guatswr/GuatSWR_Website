@@ -118,8 +118,9 @@ export function createAuthUpstreamFixture() {
         const body = await readJsonBody(request); adminEnabled = true
         if (body.stalledBackup && !admin.state.backups.some(item => item.name === 'full_stall.tar.gz'))
           admin.state.backups.push({ type: 'full', name: 'full_stall.tar.gz', size: 100 * 1024 * 1024, mtime: 1_792_310_400_000 })
+        if (body.failNext && Number.isInteger(body.failNext.status)) admin.state.failNext = body.failNext
       }
-      return send(response, 200, { enabled: adminEnabled, requests: admin.state.requests, members: admin.state.members,
+      return send(response, 200, { enabled: adminEnabled, requests: admin.state.requests, activities: admin.state.activities, members: admin.state.members,
         history: admin.state.history, config: admin.state.config, uploads: admin.state.uploads, bans: admin.state.bans, backups: admin.state.backups, activeBackupStreams: admin.state.activeBackupStreams, backupStreams: admin.state.backupStreams })
     }
 

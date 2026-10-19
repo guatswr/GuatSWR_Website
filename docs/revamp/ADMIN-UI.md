@@ -42,7 +42,12 @@ the route verifies authentication.
 
 ## Still required
 
-Article editing and activity administration must join this same workspace.
+Article editing now joins the same workspace, with a focused client-only editor,
+safe formula/diagram preview, image binding to one unpublished draft, import,
+unsaved-edit protection, publish/delete/restore and full-width stacked phone
+panes. Article-specific checks pass 6/6 and the corrected output's broader
+selection passes 82/82; see [article evidence](logs/12-admin-articles/README.md).
+Advanced public Markdown and activity administration remain open.
 The foundation passes 28/28 actual BFF/interface checks on desktop/mobile,
 including 320px containment, named controls, keyboard navigation, role denials
 and the previously failing populated-table/dialog operations. Thirty-six actual
