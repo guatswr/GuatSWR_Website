@@ -1,0 +1,412 @@
+{
+  "generatedAt": "2026-10-19T03:35:00.710Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\events-e2e",
+  "totalShards": 13,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 1
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 1
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    },
+    {
+      "index": 12,
+      "exitCode": 0
+    },
+    {
+      "index": 13,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 13,
+    "missingBlobs": []
+  },
+  "ok": false,
+  "declared": 26,
+  "counts": {
+    "passed": 24,
+    "expected": 24,
+    "flaky": 0,
+    "failed": 2,
+    "skipped": 0,
+    "allDeclared": 26
+  },
+  "failedBatches": [
+    {
+      "index": 1,
+      "exitCode": 1
+    },
+    {
+      "index": 8,
+      "exitCode": 1
+    }
+  ],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\events-e2e\\batch-01\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\events-e2e\\batch-01\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\trace.zip"
+      ],
+      "errors": [
+        "Error: signup-modal-dark-desktop: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m222636\u001b[39m\n\n   at support\\events-parity.ts:193\n\n  191 |     )\n  192 |   )\n> 193 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  194 | }\n  195 |\n  196 | /** The archived preloader is removed on mount; wait before capturing. */\n    at compareRegion (E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\support\\events-parity.ts:193:70)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events-visual.spec.ts:72:7"
+      ],
+      "batch": 1,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 1
+    },
+    {
+      "identity": "desktop::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::173:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::206:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::238:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::274:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "failed",
+      "attachments": [
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\events-e2e\\batch-08\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\error-context.md",
+        "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\events-e2e\\batch-08\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\trace.zip"
+      ],
+      "errors": [
+        "Error: signup-modal-dark-mobile: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1196436\u001b[39m\n\n   at support\\events-parity.ts:193\n\n  191 |     )\n  192 |   )\n> 193 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  194 | }\n  195 |\n  196 | /** The archived preloader is removed on mount; wait before capturing. */\n    at compareRegion (E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\support\\events-parity.ts:193:70)\n    at E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\tests\\e2e\\events-visual.spec.ts:72:7"
+      ],
+      "batch": 8,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 1
+    },
+    {
+      "identity": "mobile::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::173:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::206:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::238:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::274:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    }
+  ]
+}

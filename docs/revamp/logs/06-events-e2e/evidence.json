@@ -1,0 +1,201 @@
+{
+  "workstream": "06-events-e2e",
+  "checkout": "E:/Taropoi/workspace/GuatSWR_Website",
+  "branch": "revamp/nuxt-foundation",
+  "baseCommit": "319e295",
+  "portBase": 3900,
+  "runner": ".tools/tmp/e2e-probe/events-isolated.mjs (imports runIsolated/createSpawnExec from web/scripts/e2e-isolated.mjs, policy: [])",
+  "before": {
+    "run": "docs/revamp/logs/04-auth-bff/e2e-evidence/summary.json",
+    "portBase": 3700,
+    "passed": 16,
+    "failed": 10,
+    "skipped": 0,
+    "declared": 26
+  },
+  "runs": [
+    {
+      "log": "docs/revamp/logs/06-events-e2e/isolated-run-1.log",
+      "passed": 20,
+      "failed": 6,
+      "skipped": 0
+    },
+    {
+      "log": "docs/revamp/logs/06-events-e2e/isolated-run-2.log",
+      "passed": 22,
+      "failed": 4,
+      "skipped": 0
+    },
+    {
+      "log": "docs/revamp/logs/06-events-e2e/isolated-run-3.log",
+      "passed": 24,
+      "failed": 2,
+      "skipped": 0,
+      "authoritative": true,
+      "summary": "docs/revamp/logs/06-events-e2e/summary-run-3.json"
+    }
+  ],
+  "perTest": [
+    {
+      "test": "events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "before": "fail",
+      "after": "pass",
+      "rootCause": "EventForm.vue read the form model through `computed(() => form.state.values)`, which never invalidates in @tanstack/vue-form 1.33.5; the pre-submit validateEventForm saw the empty defaults. Plus two test defects (file input set without pressing the upload button; the success copy is unobservable because the board closes the dialog)."
+    },
+    {
+      "test": "events.spec.ts > event board interactions > distinguishes permission errors from an expired session",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "before": "fail",
+      "after": "pass",
+      "rootCause": "The archived signup requires an avatar before saving, so the test never reached the network; and stubGuestBff's saveStatus did not govern the signup POST."
+    },
+    {
+      "test": "events.spec.ts > event board interactions > shows the participant preview and retries after a failure",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "before": "fail",
+      "after": "pass",
+      "rootCause": "ofetch retries a failed GET once with retryDelay 0, hiding the stubbed 502; the archived axios did not retry."
+    },
+    {
+      "test": "events-visual.spec.ts > event pages match the archived light layout",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "before": "fail",
+      "after": "pass",
+      "rootCause": "Board h1 Tailwind 3->4 --tw-leading cascade (40px vs 58.5px at md+), the modal body box (Element Plus's 16px dialog padding and 15vh margin), and the EventSignup row geometry (space-y-1 semantics, min-h-11 additions, rows moved into the grid)."
+    },
+    {
+      "test": "events-visual.spec.ts > event pages match the archived dark layout",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "before": "fail",
+      "after": "fail",
+      "remaining": "signup-modal-dark-desktop 222636 differing pixels; signup-modal-dark-mobile 1196436 differing pixels (size now matches: 608x383 / 914x1486)",
+      "rootCause": "The archived modal chrome is a light island in dark mode (its `[data-v-bd090f2b] .dark .touhou-dialog` rules never match the teleported dialog): dialog background rgb(255,255,255) and body text rgb(96,98,102) against the port's rgb(15,23,42) and rgb(226,232,240). Injecting a white panel drops the mobile diff to 2739 px, confined to the capture's first three rows (the archived header's sky-100 border). Closing it requires reproducing the archived unreadable dark modal; left to the lead.",
+      "fixedSubRegions": [
+        "board-* and card-* now report 0 differing pixels in both themes and both projects",
+        "dark board colour: html.dark .border-gray-200 { border-color:#334155 !important } exists in the archive's style.css but not in web/app/assets/css/main.css"
+      ]
+    }
+  ],
+  "commands": [
+    {
+      "cmd": "pnpm -r build (under .tools/build.lock)",
+      "result": "exit 0, 1m17s / 1m10s"
+    },
+    {
+      "cmd": "E2E_PORT_BASE=3900 node .tools/tmp/e2e-probe/events-isolated.mjs tests/e2e/events.spec.ts tests/e2e/events-visual.spec.ts",
+      "result": "24 passed / 2 failed / 0 skipped of 26"
+    },
+    {
+      "cmd": "vitest run tests/event-transport.test.ts tests/event-display.test.ts tests/compress-image.test.ts tests/public-pages.test.ts",
+      "result": "4 files / 50 tests passed"
+    },
+    {
+      "cmd": "eslint <owned files>",
+      "result": "0 errors, 18 baseline warnings"
+    },
+    {
+      "cmd": "node .tools/tmp/e2e-probe/hydration.mjs",
+      "result": "no console error on /events/bounty, /events/stg, /events/zetime"
+    }
+  ],
+  "computedStyleEvidence": {
+    "boardH1": {
+      "property": "line-height",
+      "archive": "40px",
+      "before": "58.5px",
+      "after": "40px",
+      "fix": "md:leading-10"
+    },
+    "modalPanel": {
+      "property": "padding / border-width / margin",
+      "archive": "16px / 0px / 15vh auto 50px",
+      "before": "0px / 1px / auto",
+      "after": "16px / 0px / 15vh auto 50px"
+    },
+    "modalHeader": {
+      "property": "height",
+      "archive": "58px",
+      "before": "59.39px",
+      "after": "58px"
+    },
+    "modalBody": {
+      "property": "box (mobile)",
+      "archive": "347.03125x565 at x=32.484375,y=199.84375",
+      "before": "377.03125x573 at x=20,y=155.546875",
+      "after": "347.03125x565 at x=32.484375,y=199.84375"
+    },
+    "mobileChipBorder": {
+      "property": "border-color (dark)",
+      "archive": "rgb(51,65,85)",
+      "before": "rgb(30,31,34)",
+      "after": "rgb(51,65,85)"
+    },
+    "signupLabel": {
+      "property": "height",
+      "archive": "70px",
+      "before": "66px",
+      "after": "70px",
+      "cause": "Tailwind 4 space-y-1 emits margin-block-end on the inline span"
+    }
+  },
+  "openItems": [
+    "signup-modal-dark-{desktop,mobile}: needs the lead's decision (reproduce the archived light chrome in dark mode, or amend the spec).",
+    "web/app/assets/css/main.css is missing the archived html.dark .border-gray-* overrides (lead/homepage owner).",
+    "space-y-* semantics changed in Tailwind 4 wherever the preceding sibling is inline (may affect other batches).",
+    "web/scripts/e2e-isolated.mjs cannot run a subset because DECLARED_SKIP_POLICY is validated against the forwarded inventory."
+  ],
+  "finalTestStatus": {
+    "desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout": "failed",
+    "desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout": "passed",
+    "desktop::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category": "passed",
+    "desktop::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field": "passed",
+    "desktop::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id": "passed",
+    "desktop::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows": "passed",
+    "desktop::events.spec.ts::173:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup": "passed",
+    "desktop::events.spec.ts::206:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session": "passed",
+    "desktop::events.spec.ts::238:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure": "passed",
+    "desktop::events.spec.ts::274:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline": "passed",
+    "desktop::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance": "passed",
+    "desktop::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state": "passed",
+    "desktop::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it": "passed",
+    "mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout": "failed",
+    "mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout": "passed",
+    "mobile::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category": "passed",
+    "mobile::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field": "passed",
+    "mobile::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id": "passed",
+    "mobile::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows": "passed",
+    "mobile::events.spec.ts::173:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup": "passed",
+    "mobile::events.spec.ts::206:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session": "passed",
+    "mobile::events.spec.ts::238:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure": "passed",
+    "mobile::events.spec.ts::274:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline": "passed",
+    "mobile::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance": "passed",
+    "mobile::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state": "passed",
+    "mobile::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it": "passed"
+  },
+  "filesChanged": [
+    "web/app/components/events/EventForm.vue",
+    "web/app/components/events/EventBoard.vue",
+    "web/app/components/events/EventCard.vue",
+    "web/app/components/events/EventModal.vue",
+    "web/app/components/events/EventSignup.vue",
+    "web/app/pages/events.vue",
+    "web/tests/e2e/events.spec.ts",
+    "web/tests/e2e/support/events-parity.ts"
+  ]
+}

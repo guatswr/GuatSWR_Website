@@ -14,6 +14,15 @@ const menus = [
 ]
 
 const isActive = (path: string): boolean => route.path.includes(path)
+
+/**
+ * The dark border colour is the archived *rendered* one, not the class literal:
+ * the archived `style.css` carries `html.dark .border-gray-200 { border-color:
+ * #334155 !important }`, which beats the `dark:border-[#1e1f22]` utility that
+ * sits on the same elements. `web/app/assets/css/main.css` (not owned by this
+ * workstream) restores the archived `bg-*` / `text-gray-*` overrides but not the
+ * `border-gray-*` ones, so the three elements below pin the archived value.
+ */
 </script>
 
 <template>
@@ -25,7 +34,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
       :class="isCollapsed ? 'w-20' : 'w-64'"
     >
       <div
-        class="h-16 flex items-center border-b border-gray-200 dark:border-[#1e1f22] overflow-hidden whitespace-nowrap shrink-0"
+        class="h-16 flex items-center border-b border-gray-200 dark:border-[#334155] overflow-hidden whitespace-nowrap shrink-0"
         :class="isCollapsed ? 'justify-center' : 'justify-between px-4'"
       >
         <Transition name="fade">
@@ -39,7 +48,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
 
         <button
           type="button"
-          class="min-h-11 min-w-11 p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#35373c] text-gray-500 dark:text-gray-400 transition-colors focus:outline-none"
+          class="p-2 rounded-lg hover:bg-gray-200 dark:hover:bg-[#35373c] text-gray-500 dark:text-gray-400 transition-colors focus:outline-none"
           :title="isCollapsed ? '展开侧边栏' : '收起侧边栏'"
           :aria-expanded="!isCollapsed"
           aria-controls="desktop-events-rail"
@@ -107,7 +116,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
 
     <!-- 移动端顶部导航 (Mobile Top Nav) -->
     <div
-      class="md:hidden bg-white dark:bg-[#2b2d31] border-b border-gray-200 dark:border-[#1e1f22] sticky top-16 z-40 overflow-x-auto"
+      class="md:hidden bg-white dark:bg-[#2b2d31] border-b border-gray-200 dark:border-[#334155] sticky top-16 z-40 overflow-x-auto"
     >
       <nav class="flex px-4 py-3 space-x-3 min-w-max" aria-label="活动种类">
         <NuxtLink
@@ -118,7 +127,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
           :class="[
             isActive(menu.path)
               ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50'
-              : 'bg-gray-50 dark:bg-[#35373c] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-[#1e1f22]'
+              : 'bg-gray-50 dark:bg-[#35373c] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-[#334155]'
           ]"
         >
           <span class="mr-1.5" aria-hidden="true">{{ menu.icon }}</span>

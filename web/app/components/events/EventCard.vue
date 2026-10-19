@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import type { PublicEvent } from '@guatswr/shared'
 import {
   eventCountdown,
@@ -21,6 +21,20 @@ const emit = defineEmits<{ preview: [] }>()
 const handleClick = (): void => {
   if (props.clickable) emit('preview')
 }
+
+/**
+ * The archived card formats the stored schedule with `Date#toLocaleString()`,
+ * i.e. with the *visitor's* locale and time zone. The server has neither, so the
+ * same expression renders `2026/11/11 20:00:00` on the Node process (zh-CN here)
+ * and `11/11/2026, 8:00:00 PM` in the browser, and Vue reports
+ * "Hydration completed but contains mismatches" for every card with a schedule.
+ * The row is therefore rendered only after mount, which is what the archived
+ * (client-only) card did anyway.
+ */
+const mounted = ref(false)
+onMounted(() => {
+  mounted.value = true
+})
 
 const content = computed(() => props.event.content)
 const type = computed(() => props.event.type || 'general')
@@ -88,7 +102,7 @@ const topResults = computed(() => eventTopResults(content.value))
       <div
         class="grid gap-2 text-sm text-slate-600 leading-relaxed dark:text-slate-300"
       >
-        <div v-if="deadlineText" class="flex items-start gap-2">
+        <div v-if="mounted && deadlineText" class="flex items-start gap-2">
           <span
             class="text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300"
             >时间</span

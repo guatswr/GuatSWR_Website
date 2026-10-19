@@ -70,8 +70,13 @@ async function openPreview(event: PublicEvent): Promise<void> {
   previewError.value = ''
   previewItems.value = []
   try {
+    // `retry: 0` — ofetch (Nuxt's `$fetch`) retries a failed GET once by default,
+    // and with the default `retryDelay` of 0 that retry is immediate. The archived
+    // page used axios and surfaced the first failure so the visitor could retry by
+    // hand; a transparent retry hides it and drops the archived error state.
     const response = await $fetch<PublicEventParticipant[]>(
-      `/api/event/${event.id}/participants/public`
+      `/api/event/${event.id}/participants/public`,
+      { retry: 0 }
     )
     if (version !== previewVersion) return
     previewItems.value = Array.isArray(response) ? response : []
@@ -92,7 +97,15 @@ onBeforeUnmount(() => {
     <!-- 顶部横幅：琪露诺(Cirno) 冰雪主题风格 -->
     <header class="border-b border-slate-200 pb-8 dark:border-slate-800">
       <p class="club-eyebrow">LET'S MEET</p>
-      <h1 class="mt-4 font-serif text-3xl font-semibold leading-relaxed md:text-4xl">
+      <!--
+        `md:leading-10` reproduces the archived cascade: Tailwind 3 emitted
+        `md:text-4xl{font-size:2.25rem;line-height:2.5rem}` after `.leading-relaxed`
+        so the variant's own line-height won from `md` up. Tailwind 4 routes the
+        line height through `--tw-leading`, which `leading-relaxed` sets, so
+        `leading-relaxed` would otherwise win at every breakpoint (1.625 x 2.25rem
+        = 58.5px instead of 40px) and shift the whole board.
+      -->
+      <h1 class="mt-4 font-serif text-3xl font-semibold leading-relaxed md:text-4xl md:leading-10">
         {{ title }}
       </h1>
       <p class="mt-4 max-w-2xl text-sm leading-8 text-slate-500 dark:text-slate-400">

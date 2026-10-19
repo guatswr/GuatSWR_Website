@@ -165,7 +165,7 @@ onBeforeUnmount(() => {
       </div>
       <button
         type="button"
-        class="min-h-11 text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300"
+        class="text-xs text-rose-500 hover:text-rose-600 dark:text-rose-400 dark:hover:text-rose-300"
         :disabled="deleting || disabled"
         @click="handleDelete"
       >
@@ -182,13 +182,20 @@ onBeforeUnmount(() => {
     </p>
 
     <form class="grid md:grid-cols-2 gap-3 sm:gap-4 text-sm" novalidate @submit.prevent="handleSubmit">
+      <!--
+        `space-y-1` is kept for the archived class list, but Tailwind 4 implements
+        it as `margin-block-end` on the inline <span>, and a vertical margin on an
+        inline box has no effect. Tailwind 3 put the same 4px on the *control*
+        (`> :not([hidden]) ~ :not([hidden])` -> `margin-top`), so the explicit
+        `mt-1` restores the archived 70px label box.
+      -->
       <label class="space-y-1">
         <span class="text-xs text-slate-500 dark:text-slate-400">常用ID</span>
         <input
           v-model="form.common_id"
           name="common_id"
           :aria-invalid="invalidField === 'common_id'"
-          class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         />
       </label>
@@ -197,7 +204,7 @@ onBeforeUnmount(() => {
         <input
           v-model="form.machine_sign"
           name="machine_sign"
-          class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         />
       </label>
@@ -206,7 +213,7 @@ onBeforeUnmount(() => {
         <select
           v-model="form.pilot_source"
           name="pilot_source"
-          class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         >
           <option value="">请选择</option>
@@ -228,64 +235,74 @@ onBeforeUnmount(() => {
           v-model="form.qq"
           name="qq"
           :aria-invalid="invalidField === 'qq'"
-          class="w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         />
       </label>
-
-      <div
-        class="md:col-span-2 mt-1 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 text-xs text-slate-500 dark:text-slate-400"
-      >
-        <button
-          type="button"
-          class="min-h-11 w-full sm:w-auto px-3 py-2 rounded-full bg-slate-900 text-white text-xs dark:bg-slate-100 dark:text-slate-900"
-          :disabled="uploading || uploadLocked"
-          @click="chooseAvatar"
-        >
-          {{ uploading ? '上传中...' : '上传头像' }}
-        </button>
-        <span
-          v-if="form.avatar"
-          class="break-all sm:break-normal sm:truncate sm:flex-1"
-          :aria-invalid="invalidField === 'avatar'"
-          >{{ form.avatar }}</span
-        >
-        <span v-else class="break-all sm:break-normal sm:truncate sm:flex-1" :aria-invalid="invalidField === 'avatar'"
-          >未上传</span
-        >
-      </div>
-
-      <div
-        v-if="uploading"
-        class="md:col-span-2 h-1.5 rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800"
-        role="progressbar"
-        :aria-valuenow="uploadPercent"
-        aria-valuemin="0"
-        aria-valuemax="100"
-        aria-label="头像上传进度"
-      >
-        <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }" />
-      </div>
-
-      <div
-        v-if="form.avatar"
-        class="md:col-span-2 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-500 dark:text-slate-400"
-      >
-        <img :src="form.avatar" alt="头像预览" class="w-10 h-10 rounded-full object-cover" />
-        <span>已上传头像</span>
-      </div>
-
-      <div class="md:col-span-2 flex flex-wrap gap-3">
-        <button
-          type="submit"
-          class="min-h-11 w-full sm:w-auto px-4 py-2 rounded-full bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
-          :disabled="loading || uploadLocked"
-          :aria-busy="loading"
-        >
-          {{ loading ? '提交中...' : '保存报名' }}
-        </button>
-      </div>
     </form>
+
+    <!--
+      The avatar / progress / preview / submit rows sit outside the field grid,
+      exactly as in the archived component: the archive spaced them with
+      `mt-3` / `mt-2` / `mt-3` / `mt-4`, and the visual parity spec compares this
+      body box pixel for pixel.
+    -->
+    <div
+      class="mt-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3 text-xs text-slate-500 dark:text-slate-400"
+    >
+      <button
+        type="button"
+        class="w-full sm:w-auto px-3 py-2 rounded-full bg-slate-900 text-white text-xs dark:bg-slate-100 dark:text-slate-900"
+        :disabled="uploading || uploadLocked"
+        @click="chooseAvatar"
+      >
+        {{ uploading ? '上传中...' : '上传头像' }}
+      </button>
+      <span
+        v-if="form.avatar"
+        class="break-all sm:break-normal sm:truncate sm:flex-1"
+        :aria-invalid="invalidField === 'avatar'"
+        >{{ form.avatar }}</span
+      >
+      <span
+        v-else
+        class="break-all sm:break-normal sm:truncate sm:flex-1"
+        :aria-invalid="invalidField === 'avatar'"
+        >未上传</span
+      >
+    </div>
+
+    <div
+      v-if="uploading"
+      class="mt-2 h-1.5 rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800"
+      role="progressbar"
+      :aria-valuenow="uploadPercent"
+      aria-valuemin="0"
+      aria-valuemax="100"
+      aria-label="头像上传进度"
+    >
+      <div class="h-full bg-emerald-500 transition-all" :style="{ width: uploadPercent + '%' }" />
+    </div>
+
+    <div
+      v-if="form.avatar"
+      class="mt-3 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-500 dark:text-slate-400"
+    >
+      <img :src="form.avatar" alt="头像预览" class="w-10 h-10 rounded-full object-cover" />
+      <span>已上传头像</span>
+    </div>
+
+    <div class="mt-4 flex flex-wrap gap-3">
+      <button
+        type="button"
+        class="w-full sm:w-auto px-4 py-2 rounded-full bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+        :disabled="loading || uploadLocked"
+        :aria-busy="loading"
+        @click="handleSubmit"
+      >
+        {{ loading ? '提交中...' : '保存报名' }}
+      </button>
+    </div>
 
     <p
       v-if="message"

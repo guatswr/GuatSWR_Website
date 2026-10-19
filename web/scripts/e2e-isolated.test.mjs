@@ -364,14 +364,27 @@ test('allows skips only when the declared policy names the exact test', () => {
 test('validates the declared skip policy against the inventory', () => {
   const inventory = flattenInventory(listReport(inventorySpecs))
   const alpha = inventory[0].identity
-  assert.deepEqual(assertPolicyMatchesInventory([{ identity: alpha, reason: 'known' }], inventory).length, 1)
+  const checked = assertPolicyMatchesInventory([{ identity: alpha, reason: 'known' }], inventory)
+  assert.equal(checked.policy.length, 1)
+  assert.deepEqual(checked.unexercised, [])
   assert.throws(() => assertPolicyMatchesInventory([{ identity: alpha }], inventory), { message: /no reason/ })
   assert.throws(() => assertPolicyMatchesInventory([{ reason: 'why' }], inventory), { message: /no identity/ })
   assert.throws(
     () => assertPolicyMatchesInventory([{ identity: 'desktop::ghost.spec.ts::1:1::ghost', reason: 'stale' }], inventory),
     { message: /matches no declared test/ },
   )
-  assert.deepEqual(DECLARED_SKIP_POLICY, [])
+  const outside = [{ identity: 'desktop::ghost.spec.ts::1:1::ghost', reason: 'stale' }]
+  const partial = assertPolicyMatchesInventory(outside, inventory, { strict: false })
+  assert.deepEqual(partial.unexercised, ['desktop::ghost.spec.ts::1:1::ghost'])
+  assert.throws(
+    () => assertPolicyMatchesInventory([{ identity: 'desktop::ghost.spec.ts::1:1::ghost' }], inventory, { strict: false }),
+    { message: /no reason/ },
+  )
+  // Every shipped entry must still be a complete declaration.
+  for (const entry of DECLARED_SKIP_POLICY) {
+    assert.ok(typeof entry.identity === 'string' && entry.identity.length > 0)
+    assert.ok(typeof entry.reason === 'string' && entry.reason.trim().length > 0)
+  }
 })
 
 test('summarizes counts and refuses to hide a failure behind passing batches', () => {
@@ -471,6 +484,7 @@ test('runs every declared test exactly once across sequential fresh-server batch
     webRoot: 'web',
     workDir,
     exec,
+    policy: [],
     log: message => logs.push(message),
   })
 
@@ -506,7 +520,7 @@ test('keeps executing and reports a failing batch instead of hiding it', async (
     runReportFor(inventorySpecs.slice(2), { 0: 'unexpected' }),
   ]
   const { exec, calls } = fakeExec({ inventory: listReport(inventorySpecs), shards, runs, runExit: shard => (shard === 2 ? 1 : 0) })
-  const result = await runIsolated({ webRoot: 'web', workDir, exec })
+  const result = await runIsolated({ webRoot: 'web', workDir, exec, policy: [] })
 
   assert.equal(result.summary.ok, false)
   assert.equal(result.summary.counts.failed, 1)
@@ -521,7 +535,7 @@ test('fails closed on undeclared skips and missing batch reports', async (t) => 
   const skippedRuns = [runReportFor(inventorySpecs.slice(0, 2), { 0: 'skipped' }), runReportFor(inventorySpecs.slice(2))]
   const skipped = fakeExec({ inventory: listReport(inventorySpecs), shards, runs: skippedRuns })
   await assert.rejects(
-    runIsolated({ webRoot: 'web', workDir, exec: skipped.exec }),
+    runIsolated({ webRoot: 'web', workDir, exec: skipped.exec, policy: [] }),
     { message: /skipped without a declared policy reason/ },
   )
 
@@ -536,7 +550,7 @@ test('fails closed on undeclared skips and missing batch reports', async (t) => 
     return { code: 0, stdout: '', stderr: '' }
   }
   await assert.rejects(
-    runIsolated({ webRoot: 'web', workDir: workDirTwo, exec: broken }),
+    runIsolated({ webRoot: 'web', workDir: workDirTwo, exec: broken, policy: [] }),
     { message: /did not write/ },
   )
 })
@@ -545,7 +559,7 @@ test('dry run verifies the plan without executing any test', async (t) => {
   const workDir = await withTempDir(t)
   const shards = [listReport(inventorySpecs.slice(0, 2)), listReport(inventorySpecs.slice(2))]
   const { exec, calls } = fakeExec({ inventory: listReport(inventorySpecs), shards, runs: [] })
-  const result = await runIsolated({ webRoot: 'web', workDir, exec, dryRun: true })
+  const result = await runIsolated({ webRoot: 'web', workDir, exec, dryRun: true, policy: [] })
 
   assert.equal(result.dryRun, true)
   assert.equal(result.plan.length, 2)

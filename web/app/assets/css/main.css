@@ -36,8 +36,15 @@ html.dark .bg-white { background-color: #0f172a !important; }
 html.dark .bg-gray-50 { background-color: #0b1220 !important; }
 html.dark .bg-gray-100 { background-color: #111827 !important; }
 html.dark .bg-gray-200 { background-color: #1f2937 !important; }
+html.dark .bg-gray-800 { background-color: #0b1220 !important; }
 html.dark .text-gray-900 { color: #f9fafb !important; }
 html.dark .text-gray-800 { color: #f3f4f6 !important; }
 html.dark .text-gray-700 { color: #e5e7eb !important; }
 html.dark .text-gray-600 { color: #d1d5db !important; }
 html.dark .text-gray-500 { color: #9ca3af !important; }
+/* The archived `style.css` overrides these borders in dark mode; without them a
+   `dark:border-*` utility loses to the light `border-gray-*` value it replaces. */
+html.dark .border-gray-100 { border-color: #334155 !important; }
+html.dark .border-gray-200 { border-color: #334155 !important; }
+html.dark .border-gray-300 { border-color: #475569 !important; }
+html.dark .border-gray-700 { border-color: #1f2937 !important; }

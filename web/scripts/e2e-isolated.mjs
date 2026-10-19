@@ -388,10 +388,19 @@ export function parseRunReport(report, { expected, batch = 'batch' }) {
   return { tests, stats: report.stats ?? null }
 }
 
-/** A declared policy entry must have a reason and must match a declared test. */
-export function assertPolicyMatchesInventory(policy, inventory) {
+/**
+ * A declared policy entry must have a reason, and — when the whole suite is
+ * being run — must match a declared test, so a stale entry cannot linger.
+ *
+ * A selection that forwards a Playwright selector only sees part of the suite,
+ * so an entry for a spec outside the selection is reported as unexercised
+ * rather than invalid; the runtime check below still fails any skip that the
+ * selection actually produces and does not declare.
+ */
+export function assertPolicyMatchesInventory(policy, inventory, { strict = true } = {}) {
   const declared = new Set(inventory.map(test => test.identity))
   const problems = []
+  const unexercised = []
   for (const entry of policy) {
     if (!entry || typeof entry.identity !== 'string' || entry.identity.length === 0) {
       problems.push('a declared skip policy entry has no identity')
@@ -401,7 +410,8 @@ export function assertPolicyMatchesInventory(policy, inventory) {
       problems.push(`declared skip policy entry has no reason: ${entry.identity}`)
     }
     if (!declared.has(entry.identity)) {
-      problems.push(`declared skip policy entry matches no declared test: ${entry.identity}`)
+      if (strict) problems.push(`declared skip policy entry matches no declared test: ${entry.identity}`)
+      else unexercised.push(entry.identity)
     }
   }
   if (problems.length > 0) {
@@ -410,7 +420,7 @@ export function assertPolicyMatchesInventory(policy, inventory) {
       { problems },
     )
   }
-  return policy
+  return { policy, unexercised }
 }
 
 /**
@@ -615,8 +625,13 @@ export async function runIsolated({
     throw new E2EIsolationError(`Inventory stdout is not valid JSON: ${error.message}`)
   }
   const inventory = flattenInventory(inventoryReport)
-  assertPolicyMatchesInventory(policy, inventory)
+  const policyCheck = assertPolicyMatchesInventory(policy, inventory, {
+    strict: forwarded.length === 0,
+  })
   log(`inventory: ${inventory.length} declared test(s) in ${new Set(inventory.map(t => t.project)).size} project(s)`)
+  if (policyCheck.unexercised.length > 0) {
+    log(`policy: ${policyCheck.unexercised.length} declared skip(s) outside this selection`)
+  }
 
   const { totalShards, batches } = planBatches(inventory.length, maxPerBatch)
   const shards = []

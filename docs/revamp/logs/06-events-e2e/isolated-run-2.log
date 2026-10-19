@@ -1,0 +1,57 @@
+inventory: playwright test --list --reporter=json
+inventory: 26 declared test(s) in 2 project(s)
+plan: 13 shard(s), max 2 test(s) per batch
+batch 1/13: 2 test(s)
+batch 2/13: 2 test(s)
+batch 3/13: 2 test(s)
+batch 4/13: 2 test(s)
+batch 5/13: 2 test(s)
+batch 6/13: 2 test(s)
+batch 7/13: 2 test(s)
+batch 8/13: 2 test(s)
+batch 9/13: 2 test(s)
+batch 10/13: 2 test(s)
+batch 11/13: 2 test(s)
+batch 12/13: 2 test(s)
+batch 13/13: 2 test(s)
+passed 22/26, flaky 0, failed 4, skipped 0
+  batch 1: exit 1
+  batch 2: exit 0
+  batch 3: exit 0
+  batch 4: exit 0
+  batch 5: exit 1
+  batch 6: exit 0
+  batch 7: exit 0
+  batch 8: exit 1
+  batch 9: exit 0
+  batch 10: exit 0
+  batch 11: exit 1
+  batch 12: exit 0
+  batch 13: exit 0
+merge: ok
+  unexpected desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout
+  expected desktop::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout
+  expected desktop::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category
+  expected desktop::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field
+  unexpected desktop::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id
+  expected desktop::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows
+  expected desktop::events.spec.ts::169:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup
+  expected desktop::events.spec.ts::202:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session
+  expected desktop::events.spec.ts::234:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure
+  expected desktop::events.spec.ts::270:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline
+  expected desktop::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance
+  expected desktop::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state
+  expected desktop::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it
+  unexpected mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived dark layout
+  expected mobile::events-visual.spec.ts::15:3::events-visual.spec.ts > event pages match the archived light layout
+  expected mobile::events.spec.ts::10:3::events.spec.ts > event routes > redirects /events to the archived default category
+  expected mobile::events.spec.ts::107:3::events.spec.ts > event board interactions > validates the form and focuses the first invalid field
+  unexpected mobile::events.spec.ts::120:3::events.spec.ts > event board interactions > shares one draft between upload and submission and retries with the same id
+  expected mobile::events.spec.ts::16:3::events.spec.ts > event routes > renders all five categories with their archived copy and public rows
+  expected mobile::events.spec.ts::169:3::events.spec.ts > event board interactions > reads, saves and cancels the visitor signup
+  expected mobile::events.spec.ts::202:3::events.spec.ts > event board interactions > distinguishes permission errors from an expired session
+  expected mobile::events.spec.ts::234:3::events.spec.ts > event board interactions > shows the participant preview and retries after a failure
+  expected mobile::events.spec.ts::270:3::events.spec.ts > event board interactions > stops accepting signups after the Beijing deadline
+  expected mobile::events.spec.ts::34:3::events.spec.ts > event routes > is readable without JavaScript including statuses and signup affordance
+  expected mobile::events.spec.ts::67:3::events.spec.ts > event board interactions > keeps the archived empty state
+  expected mobile::events.spec.ts::76:3::events.spec.ts > event board interactions > opens the signup modal from mouse and keyboard, traps focus and returns it

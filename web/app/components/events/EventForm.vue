@@ -65,7 +65,12 @@ const form = useForm({
   }
 })
 
-const values = computed(() => form.state.values as EventFormModel)
+// `form.state` is a plain snapshot in @tanstack/vue-form 1.33.5, so a `computed`
+// over it never invalidates: the pre-submit `validateEventForm` and the field
+// catalogue would keep reading the initial defaults while the inputs (bound to
+// the reactive `field.state`) show what the visitor typed. `useSelector` is the
+// adapter's reactive read of the same store.
+const values = form.useSelector((state) => state.values as EventFormModel)
 const fields = computed<EventFormField[]>(() => getEventFields(values.value))
 const busy = computed(
   () => loading.value || loadingInitial.value || Boolean(uploadingTarget.value)
