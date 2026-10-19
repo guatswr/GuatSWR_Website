@@ -124,7 +124,7 @@ const description = computed(() => {
   letter-spacing: -3px;
 }
 
-:global(.dark) .total-number {
+:global(.dark .total-number) {
   fill: #fff;
 }
 
@@ -135,7 +135,7 @@ const description = computed(() => {
   letter-spacing: 2px;
 }
 
-:global(.dark) .chart-title {
+:global(.dark .chart-title) {
   fill: #ddd;
 }
 
@@ -146,7 +146,7 @@ const description = computed(() => {
   letter-spacing: 1px;
 }
 
-:global(.dark) .chart-subtitle {
+:global(.dark .chart-subtitle) {
   fill: #999;
 }
 

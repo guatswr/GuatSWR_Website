@@ -1,0 +1,49 @@
+inventory: playwright test --list --reporter=json
+inventory: 22 declared test(s) in 2 project(s)
+plan: 11 shard(s), max 2 test(s) per batch
+batch 1/11: 2 test(s)
+batch 2/11: 2 test(s)
+batch 3/11: 2 test(s)
+batch 4/11: 2 test(s)
+batch 5/11: 2 test(s)
+batch 6/11: 2 test(s)
+batch 7/11: 2 test(s)
+batch 8/11: 2 test(s)
+batch 9/11: 2 test(s)
+batch 10/11: 2 test(s)
+batch 11/11: 2 test(s)
+passed 15/22, flaky 0, failed 5, skipped 2
+  batch 1: exit 0
+  batch 2: exit 1
+  batch 3: exit 0
+  batch 4: exit 0
+  batch 5: exit 1
+  batch 6: exit 0
+  batch 7: exit 0
+  batch 8: exit 1
+  batch 9: exit 0
+  batch 10: exit 1
+  batch 11: exit 0
+merge: ok
+  expected desktop::login.spec.ts::109:3::login.spec.ts > login and client session boundary > requires CSRF for logout and clears the server record before claiming success
+  expected desktop::login.spec.ts::134:3::login.spec.ts > login and client session boundary > keeps the upstream token out of storage, HTML, payload, URLs, headers and console
+  expected desktop::login.spec.ts::168:3::login.spec.ts > login and client session boundary > keeps keyboard access, focus and the native confirmation modal
+  unexpected desktop::login.spec.ts::181:3::login.spec.ts > login and client session boundary > focuses the first invalid field when client validation fails
+  unexpected desktop::login.spec.ts::192:5::login.spec.ts > login and client session boundary > matches the archived login visuals on desktop
+  skipped desktop::login.spec.ts::192:5::login.spec.ts > login and client session boundary > matches the archived login visuals on mobile
+  expected desktop::login.spec.ts::49:3::login.spec.ts > login and client session boundary > shows the sanitized credential error without navigating
+  expected desktop::login.spec.ts::56:3::login.spec.ts > login and client session boundary > asks for the second password, then completes login after confirmation
+  expected desktop::login.spec.ts::66:3::login.spec.ts > login and client session boundary > blocks duplicate submits while the first login is in flight
+  unexpected desktop::login.spec.ts::83:3::login.spec.ts > login and client session boundary > redirects a reloaded login page when a valid BFF session already exists
+  expected desktop::login.spec.ts::90:3::login.spec.ts > login and client session boundary > keeps the session server-authoritative for expiry and role changes
+  expected mobile::login.spec.ts::109:3::login.spec.ts > login and client session boundary > requires CSRF for logout and clears the server record before claiming success
+  expected mobile::login.spec.ts::134:3::login.spec.ts > login and client session boundary > keeps the upstream token out of storage, HTML, payload, URLs, headers and console
+  expected mobile::login.spec.ts::168:3::login.spec.ts > login and client session boundary > keeps keyboard access, focus and the native confirmation modal
+  unexpected mobile::login.spec.ts::181:3::login.spec.ts > login and client session boundary > focuses the first invalid field when client validation fails
+  skipped mobile::login.spec.ts::192:5::login.spec.ts > login and client session boundary > matches the archived login visuals on desktop
+  expected mobile::login.spec.ts::192:5::login.spec.ts > login and client session boundary > matches the archived login visuals on mobile
+  expected mobile::login.spec.ts::49:3::login.spec.ts > login and client session boundary > shows the sanitized credential error without navigating
+  expected mobile::login.spec.ts::56:3::login.spec.ts > login and client session boundary > asks for the second password, then completes login after confirmation
+  expected mobile::login.spec.ts::66:3::login.spec.ts > login and client session boundary > blocks duplicate submits while the first login is in flight
+  unexpected mobile::login.spec.ts::83:3::login.spec.ts > login and client session boundary > redirects a reloaded login page when a valid BFF session already exists
+  expected mobile::login.spec.ts::90:3::login.spec.ts > login and client session boundary > keeps the session server-authoritative for expiry and role changes

@@ -1,0 +1,17 @@
+inventory: playwright test --list --reporter=json
+inventory: 48 declared test(s) in 2 project(s)
+plan: 24 shard(s), max 2 test(s) per batch
+batch 1/24: 2 test(s)
+batch 2/24: 2 test(s)
+batch 3/24: 2 test(s)
+batch 4/24: 2 test(s)
+batch 5/24: 2 test(s)
+batch 6/24: 2 test(s)
+batch 7/24: 2 test(s)
+batch 8/24: 2 test(s)
+batch 9/24: 2 test(s)
+batch 10/24: 2 test(s)
+batch 11/24: 2 test(s)
+batch 12/24: 2 test(s)
+batch 13/24: 2 test(s)
+e2e-isolated: Batch 13 report contains 1 run error(s)

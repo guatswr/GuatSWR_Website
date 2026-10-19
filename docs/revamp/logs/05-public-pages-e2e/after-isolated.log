@@ -1,0 +1,102 @@
+inventory: playwright test --list --reporter=json
+inventory: 48 declared test(s) in 2 project(s)
+policy: 2 declared skip(s) outside this selection
+plan: 24 shard(s), max 2 test(s) per batch
+batch 1/24: 2 test(s)
+batch 2/24: 2 test(s)
+batch 3/24: 2 test(s)
+batch 4/24: 2 test(s)
+batch 5/24: 2 test(s)
+batch 6/24: 2 test(s)
+batch 7/24: 2 test(s)
+batch 8/24: 2 test(s)
+batch 9/24: 2 test(s)
+batch 10/24: 2 test(s)
+batch 11/24: 2 test(s)
+batch 12/24: 2 test(s)
+batch 13/24: 2 test(s)
+batch 14/24: 2 test(s)
+batch 15/24: 2 test(s)
+batch 16/24: 2 test(s)
+batch 17/24: 2 test(s)
+batch 18/24: 2 test(s)
+batch 19/24: 2 test(s)
+batch 20/24: 2 test(s)
+batch 21/24: 2 test(s)
+batch 22/24: 2 test(s)
+batch 23/24: 2 test(s)
+batch 24/24: 2 test(s)
+passed 32/48, flaky 0, failed 16, skipped 0
+  batch 1: exit 0
+  batch 2: exit 1
+  batch 3: exit 0
+  batch 4: exit 0
+  batch 5: exit 0
+  batch 6: exit 1
+  batch 7: exit 0
+  batch 8: exit 1
+  batch 9: exit 1
+  batch 10: exit 1
+  batch 11: exit 1
+  batch 12: exit 1
+  batch 13: exit 0
+  batch 14: exit 0
+  batch 15: exit 0
+  batch 16: exit 0
+  batch 17: exit 0
+  batch 18: exit 0
+  batch 19: exit 0
+  batch 20: exit 1
+  batch 21: exit 1
+  batch 22: exit 1
+  batch 23: exit 1
+  batch 24: exit 1
+merge: ok
+  expected desktop::public-pages.spec.ts::100:3::public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline
+  expected desktop::public-pages.spec.ts::134:3::public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response
+  expected desktop::public-pages.spec.ts::156:3::public-pages.spec.ts > activity detail > missing and non-public records answer 404
+  expected desktop::public-pages.spec.ts::161:3::public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing
+  expected desktop::public-pages.spec.ts::172:3::public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background
+  expected desktop::public-pages.spec.ts::199:3::public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped
+  expected desktop::public-pages.spec.ts::247:3::public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL
+  unexpected desktop::public-pages.spec.ts::277:3::public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL
+  expected desktop::public-pages.spec.ts::296:3::public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical
+  expected desktop::public-pages.spec.ts::317:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one
+  expected desktop::public-pages.spec.ts::32:3::public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links
+  expected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (dark)
+  expected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (light)
+  expected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (dark)
+  unexpected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (light)
+  unexpected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)
+  expected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)
+  unexpected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (dark)
+  unexpected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (light)
+  unexpected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (dark)
+  unexpected desktop::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (light)
+  expected desktop::public-pages.spec.ts::55:3::public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes
+  unexpected desktop::public-pages.spec.ts::60:3::public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated
+  expected desktop::public-pages.spec.ts::85:3::public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript
+  expected mobile::public-pages.spec.ts::100:3::public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline
+  expected mobile::public-pages.spec.ts::134:3::public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response
+  expected mobile::public-pages.spec.ts::156:3::public-pages.spec.ts > activity detail > missing and non-public records answer 404
+  expected mobile::public-pages.spec.ts::161:3::public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing
+  expected mobile::public-pages.spec.ts::172:3::public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background
+  expected mobile::public-pages.spec.ts::199:3::public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped
+  expected mobile::public-pages.spec.ts::247:3::public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL
+  expected mobile::public-pages.spec.ts::277:3::public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL
+  expected mobile::public-pages.spec.ts::296:3::public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical
+  expected mobile::public-pages.spec.ts::317:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one
+  expected mobile::public-pages.spec.ts::32:3::public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (dark)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (light)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (dark)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (light)
+  expected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)
+  expected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (dark)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (light)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (dark)
+  unexpected mobile::public-pages.spec.ts::430:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (light)
+  expected mobile::public-pages.spec.ts::55:3::public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes
+  expected mobile::public-pages.spec.ts::60:3::public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated
+  expected mobile::public-pages.spec.ts::85:3::public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript

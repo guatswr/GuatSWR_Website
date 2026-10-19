@@ -56,6 +56,12 @@ async function submit() {
   finally {
     // Validation failures never reach onSubmit; on success there is no
     // aria-invalid control, so this cannot steal focus from the modal.
+    //
+    // The `aria-invalid` attributes are rendered from the field state TanStack
+    // Form just updated, and Vue applies that patch asynchronously: querying
+    // the DOM before the flush finds no invalid control and focus stays where
+    // the click left it. Wait for the render, then move focus.
+    await nextTick()
     focusFirstInvalidField(formElement.value)
   }
 }
@@ -192,10 +198,19 @@ onMounted(async () => {
           {{ verifyMsg }}
         </div>
 
-        <form.Subscribe v-slot="{ canSubmit, isSubmitting }">
+        <!--
+          Enabled while the form is invalid, like the archived
+          `:disabled="loading || verifying"`: the per-field errors and the focus
+          of the first invalid field replace native validation bubbles, so a
+          submit must be attemptable with invalid input. Gating on TanStack's
+          `canSubmit` disabled the button as soon as a field was blurred with
+          invalid input, which made that path unreachable. Duplicate submits are
+          still prevented by `isSubmitting` (and the button's own label).
+        -->
+        <form.Subscribe v-slot="{ isSubmitting }">
           <button
             type="submit"
-            :disabled="!canSubmit || isSubmitting || verifying"
+            :disabled="isSubmitting || verifying"
             :aria-busy="isSubmitting"
             class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center shadow-lg shadow-red-900/50"
           >

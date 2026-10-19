@@ -9,13 +9,25 @@
  */
 import type { SafeMarkdownNode } from '#shared/markdown'
 
-defineProps<{
+withDefaults(defineProps<{
   nodes: readonly SafeMarkdownNode[]
-}>()
+  /**
+   * The archived history card injected the stored description straight into a
+   * div that already carried the card's own `text-[15px] md:text-base` /
+   * `leading-7 md:leading-8`; the prose wrapper must not impose its own
+   * paragraph metrics there.
+   */
+  inheritTypography?: boolean
+}>(), {
+  inheritTypography: false,
+})
 </script>
 
 <template>
-  <div class="safe-markdown">
+  <div
+    class="safe-markdown"
+    :class="{ 'is-inherit-typography': inheritTypography }"
+  >
     <SafeMarkdownNode
       v-for="(node, index) in nodes"
       :key="index"
@@ -31,10 +43,13 @@ defineProps<{
    itself stays scoped. */
 .safe-markdown {
   font-family: inherit;
-  font-size: 1.05rem;
-  line-height: 1.8;
   color: #374151;
   background: transparent;
+  /* md-editor-v3 `.md-editor-preview { font-size:16px; word-break:break-all;
+     overflow:hidden }`. The clipping matters: it is what keeps the first and
+     last child's margins inside the measured preview box. */
+  overflow: hidden;
+  word-break: break-all;
 }
 
 .dark .safe-markdown {
@@ -75,7 +90,12 @@ defineProps<{
 .safe-markdown :deep(h6) { font-size: 0.85em; }
 
 .safe-markdown :deep(p) {
-  margin-bottom: 1.2em;
+  /* md-editor-v3 `div.default-theme p`. Inside the archived preview this rule
+     has the same specificity as the page's own `[data-v] p` rule and comes
+     later in the cascade, so it - not the page's 1.2em - is what the browser
+     actually applied to a paragraph. */
+  margin: 0.5rem 0;
+  line-height: 1.6;
 }
 
 .safe-markdown :deep(ul),
@@ -112,6 +132,25 @@ defineProps<{
 
 .safe-markdown :deep(img) {
   max-width: 100%;
+}
+
+/* md-editor-v3 renders an image that is alone in its paragraph as
+   `figure > img` and gives that figure and image their own chrome
+   (`.md-editor-preview figure` + `div.default-theme img`). The tree here keeps
+   the paragraph, so the identical box is produced from `p:has(> img:only-child)`. */
+.safe-markdown :deep(p:has(> img:only-child)) {
+  display: inline-flex;
+  flex-direction: column;
+  margin: 0 0 1em;
+  text-align: center;
+}
+
+.safe-markdown :deep(p:has(> img:only-child) > img) {
+  box-sizing: border-box;
+  margin: 0 auto;
+  padding: 5px;
+  border: 1px solid #e6e6e6;
+  border-radius: 3px;
 }
 
 .safe-markdown :deep(hr) {
@@ -186,10 +225,16 @@ defineProps<{
   background-color: #111827;
 }
 
-@media (max-width: 768px) {
-  .safe-markdown {
-    font-size: 1rem;
-    line-height: 1.6;
-  }
+/* The archived history card injected the sanitized description into a div that
+   already carried the card's own typography, so the wrapper adds no metrics of
+   its own there. */
+.safe-markdown.is-inherit-typography {
+  word-break: normal;
+  overflow: visible;
+}
+
+.safe-markdown.is-inherit-typography :deep(p) {
+  margin: 0;
+  line-height: inherit;
 }
 </style>

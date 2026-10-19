@@ -1,0 +1,7 @@
+
+Running 2 tests using 1 worker, shard 5 of 11
+
+  ok 1 [desktop] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails (1.0s)
+  ok 2 [desktop] › tests\e2e\login.spec.ts:192:5 › login and client session boundary › matches the archived login visuals on desktop (2.5s)
+
+  2 passed (18.1s)

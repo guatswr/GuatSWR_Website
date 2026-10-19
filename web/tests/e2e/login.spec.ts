@@ -206,6 +206,17 @@ test.describe('login and client session boundary', () => {
       const configResponse = await page.request.get('/api/config')
       const config = configResponse.ok() ? await configResponse.json() : {}
       await archive.route('**/api/**', route => route.fulfill({ json: config }))
+      // The config points at `/uploads/img/config/badge.svg`, which the archived
+      // bundle cannot serve (it is not part of `frontend/dist`): the archive's
+      // ClubAvatar would 404 and fall back to its bundled
+      // `/brand/group-avatar.webp`, while the new app renders the configured
+      // badge. Serve the archive's uploads from the same origin the new app
+      // reads them from, exactly as `support/public-parity.ts` does for every
+      // other archived comparison, so both navbars render the same bytes.
+      await archive.route('**/uploads/**', async (route) => {
+        const path = new URL(route.request().url()).pathname
+        await route.fulfill({ response: await route.fetch({ url: `${ORIGIN}${path}` }) })
+      })
 
       await archive.goto(`${ARCHIVE_ORIGIN}/login`)
       await page.goto('/login')

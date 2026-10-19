@@ -214,6 +214,7 @@ test.describe('markdown rendering contract', () => {
         heading: style(heading)?.fontSize ?? '',
         headingMargin: style(heading)?.marginTop ?? '',
         paragraphMargin: style(paragraph)?.marginBottom ?? '',
+        paragraphLineHeight: style(paragraph)?.lineHeight ?? '',
       }
     })
     // 1.05rem base on desktop, 1rem under the mobile breakpoint; the nested
@@ -226,7 +227,14 @@ test.describe('markdown rendering contract', () => {
     expect(typography.base).toBe(`${base}px`)
     expect(typography.heading).toBe(px(base * 1.5))
     expect(typography.headingMargin).toBe(px(base * 1.5 * 1.5))
-    expect(typography.paragraphMargin).toBe(px(base * 1.2))
+    // The archived preview resolved the paragraph's box from md-editor-v3's own
+    // `div.default-theme p { line-height: 1.6; margin: .5rem 0 }`: that rule and
+    // the page's `[data-v] p { margin-bottom: 1.2em }` have the same
+    // specificity and the preview stylesheet came later in the cascade, so the
+    // 0.5rem margin and the 1.6 line height are the values the archived page
+    // actually rendered (verified against `frontend/dist` computed styles).
+    expect(typography.paragraphMargin).toBe('8px')
+    expect(typography.paragraphLineHeight).toBe(px(base * 1.6))
 
     for (const url of scripts) {
       expect(url).not.toMatch(/mdc|md-editor|shiki|remark|rehype|unified|element-plus/i)
@@ -251,7 +259,11 @@ test.describe('filter and page reactivity', () => {
     await expect(canonical).toHaveAttribute('href', /\/members\?school=/)
     await expect(ogUrl).toHaveAttribute('content', /\/members\?school=/)
 
-    await page.locator('a[href="/members"]').first().click()
+    // The layout navbar also links to `/members`; below `lg` those links are
+    // collapsed to zero size, so an unscoped `.first()` resolves to a hidden
+    // element and the click never becomes actionable. The member controls are
+    // scoped to the page body, like the other member assertions here.
+    await memberBody(page).locator('a[href="/members"]').first().click()
     await expect(canonical).toHaveAttribute('href', /\/members$/)
     await expect(memberBody(page).getByText(FIXTURE_MEMBER_OTHER)).toBeVisible()
 
@@ -303,13 +315,14 @@ test.describe('filter and page reactivity', () => {
 
 test.describe('code block copy', () => {
   test('reports the real outcome for a denied clipboard and for a working one', async ({ page }) => {
-    await page.goto('/activity/1')
+    // Fixture activity 3 is the one whose content carries a fenced block.
+    // `/activity/1` must stay fence-free: it is the page the prose parity
+    // comparison renders, and the archived md-editor-v3 preview colours a fence
+    // with its own palette, which the server-side Shiki `github-light` tokens
+    // deliberately do not reproduce.
+    await page.goto('/activity/3')
     const block = page.locator('.md-code').first()
-    if (await block.count() === 0) {
-      // The deterministic fixture activity has no fenced block yet (requested
-      // from worker D); the unit suite covers the same outcomes directly.
-      test.skip(true, 'fixture activity content has no fenced code block')
-    }
+    expect(await block.count()).toBeGreaterThan(0)
     const button = block.getByRole('button', { name: /复制/ })
     const status = block.getByRole('status')
 

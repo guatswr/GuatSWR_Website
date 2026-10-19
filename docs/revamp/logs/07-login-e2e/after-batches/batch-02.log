@@ -1,0 +1,45 @@
+
+Running 2 tests using 1 worker, shard 2 of 11
+
+  ok 1 [desktop] › tests\e2e\login.spec.ts:66:3 › login and client session boundary › blocks duplicate submits while the first login is in flight (1.9s)
+  x  2 [desktop] › tests\e2e\login.spec.ts:83:3 › login and client session boundary › redirects a reloaded login page when a valid BFF session already exists (6.1s)
+
+
+  1) [desktop] › tests\e2e\login.spec.ts:83:3 › login and client session boundary › redirects a reloaded login page when a valid BFF session already exists 
+
+    Error: expect(page).toHaveURL(expected) failed
+
+    Expected pattern: /\/admin$/
+    Received string:  "http://127.0.0.1:3970/login"
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toHaveURL" with timeout 5000ms
+        - waiting for navigation to finish...
+        - navigated to "http://127.0.0.1:3970/login"
+        13 × locator resolved to <html lang="zh-CN" data-theme="light">…</html>
+           - unexpected value "http://127.0.0.1:3970/login"
+
+
+      85 |     await confirmEntry(page)
+      86 |     await page.goto('/login')
+    > 87 |     await expect(page).toHaveURL(/\/admin$/)
+         |                        ^
+      88 |   })
+      89 |
+      90 |   test('keeps the session server-authoritative for expiry and role changes', async ({ page, request }) => {
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\login.spec.ts:87:24
+
+    Error Context: .e2e-isolated\2026-10-19T04-07-50-602Z\batch-02\test-results\login-login-and-client-ses-3a74c--BFF-session-already-exists-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .e2e-isolated\2026-10-19T04-07-50-602Z\batch-02\test-results\login-login-and-client-ses-3a74c--BFF-session-already-exists-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace .e2e-isolated\2026-10-19T04-07-50-602Z\batch-02\test-results\login-login-and-client-ses-3a74c--BFF-session-already-exists-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [desktop] › tests\e2e\login.spec.ts:83:3 › login and client session boundary › redirects a reloaded login page when a valid BFF session already exists 
+  1 passed (23.2s)

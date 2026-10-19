@@ -151,7 +151,7 @@ useHead({
                     {{ activity.tag || '未标注' }}
                   </span>
                 </div>
-                <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold !text-white font-serif tracking-wide leading-tight drop-shadow-lg">
+                <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold !text-white font-serif tracking-wide drop-shadow-lg">
                   {{ activity.title }}
                 </h1>
               </div>
@@ -225,7 +225,7 @@ useHead({
 
           <div
             v-if="activity.description"
-            class="bg-gray-50/80 dark:bg-slate-800/80 border-l-4 border-red-500 p-5 md:p-8 mb-10 text-gray-600 dark:text-gray-200 italic rounded-r-xl shadow-sm leading-relaxed text-sm md:text-base backdrop-blur-sm"
+            class="bg-gray-50/80 dark:bg-slate-800/80 border-l-4 border-red-500 p-5 md:p-8 mb-10 text-gray-600 dark:text-gray-200 italic rounded-r-xl shadow-sm leading-relaxed text-sm md:text-base md:leading-6 backdrop-blur-sm"
           >
             {{ activity.description }}
           </div>
@@ -287,6 +287,63 @@ useHead({
 <style scoped>
 .markdown-body {
   border-radius: 0.75rem;
+}
+
+/* The archived `ActivityDetail.vue` scoped overrides compiled to `[data-v-x] p`
+   and friends, i.e. they applied to every matching element of the whole page -
+   the hero heading, the publisher row and the gallery heading included - not
+   just to the Markdown body. They are reproduced here at the same reach. */
+:deep(h1),
+:deep(h2),
+:deep(h3) {
+  margin-top: 1.5em;
+  margin-bottom: 0.8em;
+  font-weight: 700;
+  color: #1f2937;
+}
+
+:deep(html.dark h1),
+:deep(html.dark h2),
+:deep(html.dark h3) {
+  color: #f3f4f6;
+}
+
+:deep(p) {
+  margin-bottom: 1.2em;
+}
+
+:deep(ul),
+:deep(ol) {
+  margin-bottom: 1.2em;
+  padding-left: 1.5em;
+}
+
+:deep(blockquote) {
+  border-left-color: #ef4444;
+  background-color: #f9fafb;
+  padding: 0.5em 1em;
+  color: #6b7280;
+}
+
+:deep(html.dark blockquote) {
+  background-color: #0f172a;
+  color: #cbd5f5;
+}
+
+/* The archived page also carried `[data-v-x] .md-editor-preview { font-family:
+   inherit; font-size: 1.05rem; line-height: 1.8 }` with a `max-width: 768px`
+   step down to `1rem` / `1.6`. That is page-level typography, so it lives here
+   rather than in the shared prose component. */
+.markdown-body :deep(.safe-markdown) {
+  font-size: 1.05rem;
+  line-height: 1.8;
+}
+
+@media (max-width: 768px) {
+  .markdown-body :deep(.safe-markdown) {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
 }
 
 .dot-1 { animation: ping-pong-dot-1 2.4s step-end infinite; }

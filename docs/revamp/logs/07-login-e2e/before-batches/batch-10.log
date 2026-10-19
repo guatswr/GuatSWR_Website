@@ -1,0 +1,59 @@
+
+Running 2 tests using 1 worker, shard 10 of 11
+
+  ok 1 [mobile] › tests\e2e\login.spec.ts:168:3 › login and client session boundary › keeps keyboard access, focus and the native confirmation modal (785ms)
+  x  2 [mobile] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails (30.2s)
+
+
+  1) [mobile] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails 
+
+    Test timeout of 30000ms exceeded.
+
+    Error: locator.click: Test timeout of 30000ms exceeded.
+    Browser logs:
+
+    <launching> E:\Taropoi\workspace\GuatSWR_Website\.tools\browsers\chromium_headless_shell-1248\chrome-headless-shell-win64\chrome-headless-shell.exe --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-edgeupdater --disable-extensions --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,BlockOriginHeaderModificationOnRedirect,AvoidCorsURLLoaderRestartOnRedirect,Translate,AutoDeElevate,OptimizationHints,NetworkTimeServiceQuerying,AimEnabled,msForceBrowserSignIn,msEdgeUpdateLaunchServicesPreferredVersion --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --disable-updater-scheduler --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --enable-unsafe-swiftshader --headless --hide-scrollbars --mute-audio --blink-settings=primaryHoverType=2,availableHoverTypes=2,primaryPointerType=4,availablePointerTypes=4 --no-sandbox --disable-lcd-text --font-render-hinting=none --user-data-dir=E:\Taropoi\workspace\GuatSWR_Website\.tools\tmp\playwright_chromiumdev_profile-dbHywm --remote-debugging-pipe --no-startup-window
+    <launched> pid=25032
+    [pid=25032][err] [1019/111813.796:INFO:CONSOLE:1] "[NUXT_E1005]", source: http://127.0.0.1:3950/_nuxt/DSxPWMmo.js (1)
+    [pid=25032] <gracefully close start>
+    Call log:
+      - waiting for getByRole('button', { name: '登录系统' })
+        - locator resolved to <button disabled type="submit" aria-busy="false" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center shadow-lg shadow-red-900/50">…</button>
+      - attempting click action
+        2 × waiting for element to be visible, enabled and stable
+          - element is not stable
+        - retrying click action
+        - waiting 20ms
+        2 × waiting for element to be visible, enabled and stable
+          - element is not stable
+        - retrying click action
+          - waiting 100ms
+        57 × waiting for element to be visible, enabled and stable
+           - element is not enabled
+         - retrying click action
+           - waiting 500ms
+        - waiting for element to be visible, enabled and stable
+
+
+      183 |     await page.getByLabel('Username').fill('bad user')
+      184 |     await page.getByLabel('Password').fill('x')
+    > 185 |     await page.getByRole('button', { name: '登录系统' }).click()
+          |                                                      ^
+      186 |     await expect(page.getByLabel('Username')).toBeFocused()
+      187 |     await expect(page.getByLabel('Username')).toHaveAttribute('aria-invalid', 'true')
+      188 |     await expect(page.locator('#login-username-error')).toContainText('用户名')
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\login.spec.ts:185:54
+
+    Error Context: .e2e-isolated\2026-10-19T03-14-31-643Z\batch-10\test-results\login-login-and-client-ses-d500e-hen-client-validation-fails-mobile\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .e2e-isolated\2026-10-19T03-14-31-643Z\batch-10\test-results\login-login-and-client-ses-d500e-hen-client-validation-fails-mobile\trace.zip
+    Usage:
+
+        npx playwright show-trace .e2e-isolated\2026-10-19T03-14-31-643Z\batch-10\test-results\login-login-and-client-ses-d500e-hen-client-validation-fails-mobile\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  1 failed
+    [mobile] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails 
+  1 passed (45.4s)

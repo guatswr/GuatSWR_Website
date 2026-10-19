@@ -1,0 +1,398 @@
+{
+  "workstream": "05-public-pages-e2e",
+  "checkout": "E:/Taropoi/workspace/GuatSWR_Website",
+  "branch": "revamp/nuxt-foundation",
+  "baseRevision": "6be6e8e",
+  "portBase": 3600,
+  "spec": "web/tests/e2e/public-pages.spec.ts",
+  "before": {
+    "source": "docs/revamp/logs/02-public-pages/README.md section 5 and web/.e2e-isolated/2026-10-19T01-12-56-807Z/batch-*/report.json",
+    "revision": "0954b8a",
+    "portBase": 3400,
+    "counts": {
+      "passed": 26,
+      "failed": 20,
+      "skipped": 2
+    },
+    "failures": [
+      {
+        "project": "desktop",
+        "test": "server-rendered public lists > members school filtering is encoded in the URL and isolated"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /activity/1 matches the archive (light)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /history matches the archive (light)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /members matches the archive (light)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /logs matches the archive (light)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /activity/1 matches the archive (dark)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /history matches the archive (dark)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /members matches the archive (dark)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity with the archived site > /logs matches the archive (dark)"
+      },
+      {
+        "project": "mobile",
+        "test": "server-rendered public lists > members school filtering is encoded in the URL and isolated"
+      },
+      {
+        "project": "mobile",
+        "test": "filter and page reactivity > member school navigation updates the body and the canonical URL"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /activity/1 matches the archive (light)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /history matches the archive (light)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /members matches the archive (light)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /logs matches the archive (light)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /activities matches the archive (dark)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /activity/1 matches the archive (dark)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /history matches the archive (dark)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /members matches the archive (dark)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity with the archived site > /logs matches the archive (dark)"
+      }
+    ],
+    "skipped": [
+      {
+        "project": "desktop",
+        "test": "code block copy > reports the real outcome for a denied clipboard and for a working one"
+      },
+      {
+        "project": "mobile",
+        "test": "code block copy > reports the real outcome for a denied clipboard and for a working one"
+      }
+    ],
+    "note": "The recorded run contains 17 visual-parity failures, not the 18 named in the brief: /activities only fails on dark mobile."
+  },
+  "after": {
+    "source": "docs/revamp/logs/05-public-pages-e2e/after-isolated.log (committed runner driven directly, see README section 4.4)",
+    "portBase": 3600,
+    "counts": {
+      "passed": 33,
+      "failed": 15,
+      "skipped": 0
+    },
+    "newlyPassing": [
+      "desktop||public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links",
+      "desktop||public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes",
+      "desktop||public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript",
+      "desktop||public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline",
+      "desktop||public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response",
+      "desktop||public-pages.spec.ts > activity detail > missing and non-public records answer 404",
+      "desktop||public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing",
+      "desktop||public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background",
+      "desktop||public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+      "desktop||public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL",
+      "desktop||public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL",
+      "desktop||public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical",
+      "desktop||public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one",
+      "desktop||public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (light)",
+      "desktop||public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (light)",
+      "desktop||public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)",
+      "desktop||public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (dark)",
+      "mobile||public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links",
+      "mobile||public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes",
+      "mobile||public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated",
+      "mobile||public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript",
+      "mobile||public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline",
+      "mobile||public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response",
+      "mobile||public-pages.spec.ts > activity detail > missing and non-public records answer 404",
+      "mobile||public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing",
+      "mobile||public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background",
+      "mobile||public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+      "mobile||public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL",
+      "mobile||public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical",
+      "mobile||public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one",
+      "mobile||public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (light)",
+      "mobile||public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)",
+      "mobile||public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)"
+    ],
+    "note": "first full after-run was 31/17/0; the member school navigation selector fix and the page-and-range flakiness moved between the two runs",
+    "failures": [
+      {
+        "project": "desktop",
+        "test": "server-rendered public lists > members school filtering is encoded in the URL and isolated",
+        "cause": "#entry second-navigation defect (flaky, see README 5b)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity > /activity/1 (dark)",
+        "cause": "archived RouteProgressBar inside the crop"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity > /history (dark)",
+        "cause": "archived RouteProgressBar inside the crop"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity > /members (light)",
+        "cause": "ProgressiveImage managed=!painted (grid pixels)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity > /members (dark)",
+        "cause": "ProgressiveImage managed=!painted (grid pixels)"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity > /logs (light)",
+        "cause": "raw vs redacted log details"
+      },
+      {
+        "project": "desktop",
+        "test": "visual parity > /logs (dark)",
+        "cause": "missing html.dark .border-* remaps in main.css"
+      },
+      {
+        "project": "mobile",
+        "test": "filter and page reactivity > page and range navigation",
+        "cause": "#entry second-navigation defect (flaky)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /activities (dark)",
+        "cause": "fixed navbar rows inside the tall mobile crop"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /activity/1 (light)",
+        "cause": "fixed navbar rows inside the tall mobile crop"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /activity/1 (dark)",
+        "cause": "fixed navbar rows inside the tall mobile crop"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /members (light)",
+        "cause": "ProgressiveImage managed=!painted (grid pixels)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /members (dark)",
+        "cause": "ProgressiveImage managed=!painted (grid pixels)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /logs (light)",
+        "cause": "raw vs redacted log details (rect parity: width)"
+      },
+      {
+        "project": "mobile",
+        "test": "visual parity > /logs (dark)",
+        "cause": "missing html.dark .border-* remaps in main.css"
+      }
+    ]
+  },
+  "localParityHarness": {
+    "script": ".tools/tmp/ppe2e/all.mjs (scratch, not committed)",
+    "note": "imports the spec's own compareToArchive; one long-lived server rather than a fresh server per batch; iteration signal only",
+    "before": {
+      "identicalRegions": 6,
+      "totalRegions": 34
+    },
+    "after": {
+      "identicalRegions": 13,
+      "totalRegions": 34
+    }
+  },
+  "fixes": [
+    {
+      "regions": [
+        "/activity/1 article",
+        "/activity/1 prose"
+      ],
+      "files": [
+        "web/app/components/SafeMarkdown.vue",
+        "web/app/pages/activity/[id].vue"
+      ],
+      "properties": [
+        "overflow: the archived .md-editor-preview is overflow:hidden (block formatting context), the migrated .safe-markdown was overflow:visible, so the first child's margin-top and the last child's margin-bottom escaped the measured box",
+        "p { line-height: 1.6; margin: .5rem 0 } from md-editor-v3 div.default-theme p, which outranks the page's [data-v] p { margin-bottom: 1.2em } at equal specificity",
+        "figure/img chrome for a standalone image (inline-flex column, centred, padding 5px, border 1px #e6e6e6, radius 3px)",
+        "the archived ActivityDetail.vue :deep() rules applied page-wide (h1/h2/h3 margins, p, ul/ol, blockquote)",
+        "hero h1: leading-tight is inert in Tailwind 3 (the responsive text-* block carries its own line length) but wins in Tailwind 4 through --tw-leading",
+        "description block: md:text-base line-height 24px vs leading-relaxed 26px"
+      ]
+    },
+    {
+      "regions": [
+        "/history timeline"
+      ],
+      "files": [
+        "web/app/pages/history.vue",
+        "web/app/components/SafeMarkdown.vue"
+      ],
+      "properties": [
+        "the archived v-html paragraph inherited the card's 16px / 32px; the migrated prose wrapper imposed 1.05rem / 1.8 (16.8px / 30.24px)"
+      ]
+    },
+    {
+      "regions": [
+        "/members chart (dark)"
+      ],
+      "files": [
+        "web/app/components/ParliamentChart.vue"
+      ],
+      "properties": [
+        "scoped-CSS form: :global(.dark) .total-number compiled to nothing (a stray .dark{fill:#999}); :global(.dark .total-number) restores the archived #fff / #ddd / #999 fills"
+      ]
+    }
+  ],
+  "blockedOutsideOwnership": [
+    {
+      "regions": [
+        "/logs statistics (dark)"
+      ],
+      "file": "web/app/assets/css/main.css",
+      "evidence": "every differing pixel is a 1px border, #334155 in the archive and #1e293b in the new app; frontend/src/style.css lines 27 and 35-38 carry html.dark .bg-gray-800 and html.dark .border-gray-100/.border-gray-200/.border-gray-300/.border-gray-700; main.css lines 35-43 omit exactly those five"
+    },
+    {
+      "regions": [
+        "/logs table (light + mobile rect parity)"
+      ],
+      "file": "web/server/utils/public-read.ts",
+      "evidence": "projectLogDetails/redactLogDetails replace the archived raw details (IPs, config keys) with a redacted sentence; 4010 differing pixels are nine table rows of text and the shorter text changes the mobile table's intrinsic width"
+    },
+    {
+      "regions": [
+        "/members grid (light + dark)"
+      ],
+      "file": "web/app/components/ProgressiveImage.vue",
+      "evidence": "managed = !painted at mount renders the server-rendered img, while the archived component keeps its pi-placeholder/pi-poster until its IntersectionObserver fires; every differing pixel is inside an 88x88 avatar box"
+    },
+    {
+      "regions": [
+        "/history (desktop)",
+        "/activity/1 (dark desktop)",
+        "/activities (mobile)"
+      ],
+      "file": "frontend/src/components/RouteProgressBar.vue (not ported)",
+      "evidence": "the archived page paints div.route-progress (position:fixed, top:0, height:3px, sky gradient) while loading; the migrated app has no such element"
+    }
+  ],
+  "testChanges": [
+    {
+      "test": "markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+      "change": "paragraphMargin expectation 20.16px -> 8px and a new paragraphLineHeight assertion",
+      "justification": "20.16px was what the migrated page rendered, not what the archive rendered; the archived computed margin-bottom is 8px"
+    },
+    {
+      "test": "code block copy > reports the real outcome for a denied clipboard and for a working one",
+      "change": "self-skip removed, target changed from /activity/1 to /activity/3, .md-code count asserted",
+      "justification": "fixture activity 3 content now carries a fenced js block; /activity/1 must stay fence-free because it is the page the prose parity comparison renders"
+    },
+    {
+      "test": "filter and page reactivity > member school navigation updates the body and the canonical URL",
+      "change": "the a[href=\"/members\"] click is scoped to the page body",
+      "justification": "the layout navbar also links to /members and below lg that link is a 0x0 box, so the unscoped .first() never became actionable and the mobile test timed out after 30s; verified with a targeted --grep run (2/2 passed)"
+    }
+  ],
+  "gatesRun": [
+    {
+      "command": "vitest run tests/public-render.test.ts tests/public-pages.test.ts tests/public-markdown-highlight.test.ts tests/public-markdown-server.test.ts tests/public-members-sort.test.ts tests/public-clipboard.test.ts",
+      "result": "exit 0, 6 files / 64 tests passed"
+    },
+    {
+      "command": "eslint <six changed files>",
+      "result": "exit 0, no output"
+    },
+    {
+      "command": "node --check web/tests/fixtures/public-data.mjs",
+      "result": "exit 0"
+    },
+    {
+      "command": "pnpm -r build (under .tools/build.lock, three times)",
+      "result": "exit 0 each time"
+    },
+    {
+      "command": "node web/scripts/e2e-isolated.mjs tests/e2e/public-pages.spec.ts --max-per-batch 2",
+      "result": "aborted: declared skip policy matches no declared test (another agent's in-flight edit)"
+    },
+    {
+      "command": "node .tools/tmp/ppe2e/run-committed.mjs tests/e2e/public-pages.spec.ts",
+      "result": "see after"
+    }
+  ],
+  "notRun": [
+    "nuxt typecheck",
+    "pnpm -r typecheck",
+    "pnpm -r lint",
+    "pnpm -r test",
+    "node scripts/performance.mjs",
+    "the homepage and social-join specs (not re-run against the changed fixture)"
+  ],
+  "controlExperiment": {
+    "question": "is the #entry second-navigation 500 page caused by this workstream?",
+    "method": "the six changed files were reverted to HEAD, pnpm -r build re-run, and a two-navigation probe executed, then the files were restored and rebuilt",
+    "result": "the identical 500 page reproduced without the changes",
+    "note": "still valid: the #entry second-navigation 500 page reproduced with the six changed files reverted and a fresh build"
+  },
+  "afterLeadFixes": {
+    "runner": "the brief's own command (assertPolicyMatchesInventory is non-strict for a forwarded selector)",
+    "workDir": "web/.e2e-isolated/2026-10-19T03-55-17-655Z",
+    "counts": {
+      "passed": 32,
+      "failed": 16,
+      "skipped": 0
+    },
+    "regionLevel": {
+      "identical": 17,
+      "total": 28
+    },
+    "note": "run-to-run count moves between 32 and 33; region level is the stable signal",
+    "leadFix1DarkBorders": {
+      "effect": "logs-statistics-dark desktop 11154 -> 0 differing pixels; logs-statistics-dark mobile 43624 (recorded) -> 7803, and the residual is a 3 CSS-px progress-bar band, not a border",
+      "otherRegions": "no other region in this spec was border-driven: the pages' other border utilities carry opacity modifiers (border-gray-100/80, border-gray-200/60), which the archived html.dark .border-gray-100 rule never matched"
+    },
+    "leadFix2Leading": "explains nothing still failing: both /activity/1 instances (hero h1 leading-tight, description md:leading-6) were already fixed here, and the /activity/1 prose regions are 0 in all four theme/profile combinations",
+    "leadFix3SpaceY": "explains nothing in this spec: the one space-y-12 that matters (/history) has block-level flex children, so TW4 margin-block-end on the preceding sibling and TW3 margin-top on the following one give the same 48px; /history timeline is 0 on light desktop and both mobile profiles",
+    "residual": "two capture races dominate: (a) the archived lazy images have not entered at capture time (members-grid-light desktop 6592 / mobile 20491 while members-grid-dark is 0; activities-grid-light mobile 310406; activity-1-article-light desktop 107271), (b) the archived RouteProgressBar 3px band (history-timeline-dark desktop 3379, logs-statistics-dark mobile 7803, activities-grid-dark mobile 7111)"
+  }
+}

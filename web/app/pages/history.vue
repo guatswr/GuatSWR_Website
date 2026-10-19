@@ -225,7 +225,7 @@ usePublicPageSeo({
                 <div class="absolute -top-8 -right-8 w-24 h-24 rounded-full bg-red-200/30 dark:bg-red-500/20 blur-2xl"/>
                 <div class="absolute -bottom-10 -left-10 w-28 h-28 rounded-full bg-red-100/40 dark:bg-red-600/20 blur-2xl"/>
                 <div class="history-description relative text-gray-700 dark:text-gray-200 leading-7 md:leading-8 text-[15px] md:text-base whitespace-pre-line break-words">
-                  <SafeMarkdown :nodes="event.description" />
+                  <SafeMarkdown :nodes="event.description" inherit-typography />
                 </div>
               </div>
             </div>
@@ -279,14 +279,6 @@ usePublicPageSeo({
     />
   </div>
 </template>
-
-<style scoped>
-/* The archived div held inline HTML directly; a single sanitized paragraph
-   must not add trailing space inside the padded card. */
-.history-description :deep(.safe-markdown > :last-child) {
-  margin-bottom: 0;
-}
-</style>
 
 <style>
 .history-bg::before {

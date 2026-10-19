@@ -1,0 +1,7 @@
+
+Running 2 tests using 1 worker, shard 10 of 11
+
+  ok 1 [mobile] › tests\e2e\login.spec.ts:168:3 › login and client session boundary › keeps keyboard access, focus and the native confirmation modal (830ms)
+  ok 2 [mobile] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails (790ms)
+
+  2 passed (17.3s)

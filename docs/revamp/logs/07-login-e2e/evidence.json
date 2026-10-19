@@ -1,0 +1,120 @@
+{
+  "workstream": "07-login-e2e",
+  "checkout": "E:/Taropoi/workspace/GuatSWR_Website",
+  "branch": "revamp/nuxt-foundation",
+  "baseCommit": "4ed54a8",
+  "portBase": 3970,
+  "recordedBefore": {
+    "passed": 15,
+    "failed": 5,
+    "skipped": 2,
+    "of": 22,
+    "log": "before-isolated.log"
+  },
+  "filesModified": [
+    "web/app/pages/login.vue",
+    "web/tests/e2e/login.spec.ts",
+    "web/tests/login-form.test.ts"
+  ],
+  "filesCreated": [
+    "docs/revamp/logs/07-login-e2e/README.md",
+    "docs/revamp/logs/07-login-e2e/evidence.json",
+    "docs/revamp/logs/07-login-e2e/before-isolated.log",
+    "docs/revamp/logs/07-login-e2e/before-batches/batch-02.log",
+    "docs/revamp/logs/07-login-e2e/before-batches/batch-05.log",
+    "docs/revamp/logs/07-login-e2e/before-batches/batch-08.log",
+    "docs/revamp/logs/07-login-e2e/before-batches/batch-10.log",
+    "docs/revamp/logs/07-login-e2e/before-evidence/reload-desktop-error-context.md",
+    "docs/revamp/logs/07-login-e2e/before-evidence/reload-mobile-error-context.md",
+    "docs/revamp/logs/07-login-e2e/before-evidence/focus-desktop-error-context.md",
+    "docs/revamp/logs/07-login-e2e/before-evidence/focus-mobile-error-context.md",
+    "docs/revamp/logs/07-login-e2e/before-evidence/visual-desktop-diff.png",
+    "docs/revamp/logs/07-login-e2e/before-evidence/visual-desktop-crop-archive.png",
+    "docs/revamp/logs/07-login-e2e/before-evidence/visual-desktop-crop-nuxt.png",
+    "docs/revamp/logs/07-login-e2e/after-isolated.log",
+    "docs/revamp/logs/07-login-e2e/after-batches/batch-02.log",
+    "docs/revamp/logs/07-login-e2e/after-batches/batch-05.log",
+    "docs/revamp/logs/07-login-e2e/after-batches/batch-08.log",
+    "docs/revamp/logs/07-login-e2e/after-batches/batch-10.log",
+    "docs/revamp/logs/07-login-e2e/after-evidence/reload-desktop-error-context.md",
+    "docs/revamp/logs/07-login-e2e/after-evidence/reload-mobile-error-context.md",
+    "docs/revamp/logs/07-login-e2e/build-after.log",
+    "docs/revamp/logs/07-login-e2e/entry-race-probe.log"
+  ],
+  "failures": [
+    {
+      "test": "login.spec.ts:83 redirects a reloaded login page when a valid BFF session already exists",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "rootCause": "pre-existing global app defect: on a warm HTTP cache the second document load of any route resolves the modulepreload graph before the inline import map registers, so '#entry' cannot resolve; Nuxt renders its 500 error page and onMounted never runs (no session fetch, no redirect)",
+      "owner": "build/config (lead) — not fixable in this workstream's files",
+      "before": "fail (500 error page)",
+      "after": "fail (unchanged: 500 page, Failed to resolve module specifier \"#entry\")"
+    },
+    {
+      "test": "login.spec.ts:181 focuses the first invalid field when client validation fails",
+      "projects": [
+        "desktop",
+        "mobile"
+      ],
+      "rootCause": "the submit button was bound to TanStack canSubmit, which is false as soon as a blurred field is invalid; the click retried against a disabled button for 30s and never submitted. Second defect: focusFirstInvalidField ran before Vue flushed the aria-invalid patch",
+      "fix": ":disabled=\"isSubmitting || verifying\" (archive parity) + await nextTick() before focusing",
+      "before": "fail (click timeout, button disabled)",
+      "after": "pass (desktop batch-05 2 passed; mobile batch-10 2 passed)"
+    },
+    {
+      "test": "login.spec.ts:192 matches the archived login visuals on desktop",
+      "projects": [
+        "desktop"
+      ],
+      "rootCause": "the archived origin (frozen frontend/dist) cannot serve /uploads/img/config/badge.svg (404) so its ClubAvatar falls back to /brand/group-avatar.webp, while the app renders the configured badge_image; the desktop-only ClubAvatar (hidden lg:block) is why mobile passes",
+      "fix": "route the archive's **/uploads/** to the app origin, as support/public-parity.ts#useUpstreamFixtures does",
+      "before": "fail (863 differing pixels, bbox x[33..66] y[14..48] = the navbar avatar)",
+      "after": "pass (desktop batch-05 2 passed)"
+    }
+  ],
+  "probes": {
+    "warmReload": "fail on /login, / and /members (headless-shell and full Chromium)",
+    "cacheDisabledReload": "pass on all three",
+    "cacheDisabledSecondGoto": "pass",
+    "routeInterceptedDocument": "pass (the race is won when the document is delivered instantly)",
+    "importMapPresentAndUsableOnErrorPage": true
+  },
+  "commands": [
+    {
+      "cmd": "vitest run tests/login-form.test.ts tests/login-form-utils.test.ts tests/login-background.test.ts tests/bff-client.test.ts tests/bff-session-core.test.ts tests/bff-private-cleanups.test.ts tests/bff-session-race.test.ts",
+      "result": "7 files / 100 tests passed"
+    },
+    {
+      "cmd": "eslint app/pages/login.vue app/components/login tests/login-form.test.ts tests/login-form-utils.test.ts tests/login-background.test.ts tests/e2e/login.spec.ts",
+      "result": "clean"
+    },
+    {
+      "cmd": "pnpm -r build && E2E_PORT_BASE=3970 node web/scripts/e2e-isolated.mjs tests/e2e/login.spec.ts --max-per-batch 2",
+      "result": "build exit 0; passed 18/22, flaky 0, failed 2, skipped 2"
+    },
+    {
+      "cmd": "node .tools/tmp/login-repro/entry-probe.mjs",
+      "result": "warm-cache reload fails on /login, /, /members (headless-shell and full Chromium); cache-disabled reload passes on all three"
+    }
+  ],
+  "notRun": [
+    "nuxt typecheck / pnpm -r typecheck / pnpm -r lint / pnpm -r test (lead-owned)"
+  ],
+  "recordedAfter": {
+    "passed": 18,
+    "failed": 2,
+    "skipped": 2,
+    "of": 22,
+    "flaky": 0,
+    "log": "after-isolated.log",
+    "batchExits": {
+      "2": 1,
+      "8": 1,
+      "others": 0
+    },
+    "build": "exit 0, 1m11s (build-after.log)"
+  }
+}

@@ -1,0 +1,52 @@
+
+Running 2 tests using 1 worker, shard 5 of 11
+
+  x  1 [desktop] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails (30.2s)
+  x  2 [desktop] › tests\e2e\login.spec.ts:192:5 › login and client session boundary › matches the archived login visuals on desktop (2.7s)
+
+
+  1) [desktop] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails 
+
+    Test timeout of 30000ms exceeded.
+
+    Error Context: .e2e-isolated\2026-10-19T03-14-31-643Z\batch-05\test-results\login-login-and-client-ses-d500e-hen-client-validation-fails-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .e2e-isolated\2026-10-19T03-14-31-643Z\batch-05\test-results\login-login-and-client-ses-d500e-hen-client-validation-fails-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace .e2e-isolated\2026-10-19T03-14-31-643Z\batch-05\test-results\login-login-and-client-ses-d500e-hen-client-validation-fails-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) [desktop] › tests\e2e\login.spec.ts:192:5 › login and client session boundary › matches the archived login visuals on desktop 
+
+    Error: login desktop: pixels different from the archived login page
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 0
+    Received: 863
+
+      226 |       const pixels = pixelmatch(oldImage.data, newImage.data, diff.data, oldImage.width, oldImage.height, { threshold: 0.1 })
+      227 |       writeFileSync(info.outputPath(`login-${project}-diff.png`), PNG.sync.write(diff))
+    > 228 |       expect(pixels, `login ${project}: pixels different from the archived login page`).toBe(0)
+          |                                                                                         ^
+      229 |
+      230 |       await archive.close()
+      231 |     })
+        at E:\Taropoi\workspace\GuatSWR_Website\web\tests\e2e\login.spec.ts:228:89
+
+    Error Context: .e2e-isolated\2026-10-19T03-14-31-643Z\batch-05\test-results\login-login-and-client-ses-9a2d5-ed-login-visuals-on-desktop-desktop\error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    .e2e-isolated\2026-10-19T03-14-31-643Z\batch-05\test-results\login-login-and-client-ses-9a2d5-ed-login-visuals-on-desktop-desktop\trace.zip
+    Usage:
+
+        npx playwright show-trace .e2e-isolated\2026-10-19T03-14-31-643Z\batch-05\test-results\login-login-and-client-ses-9a2d5-ed-login-visuals-on-desktop-desktop\trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2 failed
+    [desktop] › tests\e2e\login.spec.ts:181:3 › login and client session boundary › focuses the first invalid field when client validation fails 
+    [desktop] › tests\e2e\login.spec.ts:192:5 › login and client session boundary › matches the archived login visuals on desktop 

@@ -145,8 +145,29 @@ describe('login form contract (real TanStack Form)', () => {
     expect(withoutTwofa).not.toHaveProperty('twofa')
   })
 
-  it('resets values and dirty state back to the empty login form', async () => {
-    const { form } = await mountLoginForm(() => {})
+  // Characterizes the TanStack state that made the archived "submit, then focus
+  // the first invalid field" path unreachable when the page gated its submit
+  // button on `canSubmit`: a blurred field with a schema violation already
+  // makes the form non-submittable, without any submit having been attempted.
+  it('reports canSubmit false after a blur validation failure, before any submit', async () => {
+    const submitted = vi.fn()
+    const { form, captured } = await mountLoginForm(submitted)
+
+    form.setFieldValue('username', 'bad user')
+    form.setFieldValue('password', 'x')
+    captured.username?.handleBlur()
+    captured.password?.handleBlur()
+    await form.validateAllFields('blur')
+
+    expect(form.getFieldMeta('username')?.errors.length).toBeGreaterThan(0)
+    expect(form.getFieldMeta('username')?.isTouched).toBe(true)
+    expect(form.state.isSubmitting).toBe(false)
+    expect(form.state.submissionAttempts).toBe(0)
+    expect(form.state.canSubmit).toBe(false)
+    expect(submitted).not.toHaveBeenCalled()
+  })
+
+  it('resets values and dirty state back to the empty login form', async () => {    const { form } = await mountLoginForm(() => {})
     form.setFieldValue('username', 'admin')
     form.setFieldValue('password', 'secret')
     expect(form.state.isDirty).toBe(true)
