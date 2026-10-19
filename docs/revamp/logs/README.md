@@ -36,3 +36,4 @@ accepted; these logs are the evidence behind them.
 | Genuine guest workflow integration | [`10-guest-integration/`](10-guest-integration/README.md) | Real workflow 6/6; 643 units, four recursive gates; full 188/188 E2E, zero skip/flaky/retry |
 | Private administration integration | [`11-admin-integration/`](11-admin-integration/README.md) | Foundation accepted at 0d7f22d: 686 units, 28/28 E2E, 36 retained screenshots, 14 public JS budgets; full admin stage open |
 | Article administration | [`12-admin-articles/`](12-admin-articles/README.md) | Local feature accepted: 692 units, 82 unique E2E, 14 route budgets, zero maps; public advanced Markdown and full migration open |
+| Frozen API upload contract | [`13-frozen-api-contract/`](13-frozen-api-contract/README.md) | Canonical paths fixed; independent mounted-route guard, 747 units, 6/6 real guest E2E, 14 route budgets, zero maps |

@@ -1,0 +1,335 @@
+{
+  "mountedRoutes": 70,
+  "adminChecks": [
+    {
+      "operation": "activity.list",
+      "method": "GET",
+      "path": "/api/activities",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "activity.detail",
+      "method": "GET",
+      "path": "/api/activities/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "activity.draft",
+      "method": "POST",
+      "path": "/api/activities/draft",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "activity.create",
+      "method": "POST",
+      "path": "/api/activities",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "activity.update",
+      "method": "PUT",
+      "path": "/api/activities/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "activity.delete",
+      "method": "DELETE",
+      "path": "/api/activities/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "activity.restore",
+      "method": "POST",
+      "path": "/api/activities/:id/restore",
+      "matched": true,
+      "source": "backend\\src\\routes\\activities.js"
+    },
+    {
+      "operation": "member.list",
+      "method": "GET",
+      "path": "/api/members",
+      "matched": true,
+      "source": "backend\\src\\routes\\members.js"
+    },
+    {
+      "operation": "member.create",
+      "method": "POST",
+      "path": "/api/members",
+      "matched": true,
+      "source": "backend\\src\\routes\\members.js"
+    },
+    {
+      "operation": "member.update",
+      "method": "PUT",
+      "path": "/api/members/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\members.js"
+    },
+    {
+      "operation": "member.delete",
+      "method": "DELETE",
+      "path": "/api/members/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\members.js"
+    },
+    {
+      "operation": "member.restore",
+      "method": "POST",
+      "path": "/api/members/:id/restore",
+      "matched": true,
+      "source": "backend\\src\\routes\\members.js"
+    },
+    {
+      "operation": "history.list",
+      "method": "GET",
+      "path": "/api/history",
+      "matched": true,
+      "source": "backend\\src\\routes\\history.js"
+    },
+    {
+      "operation": "history.create",
+      "method": "POST",
+      "path": "/api/history",
+      "matched": true,
+      "source": "backend\\src\\routes\\history.js"
+    },
+    {
+      "operation": "history.update",
+      "method": "PUT",
+      "path": "/api/history/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\history.js"
+    },
+    {
+      "operation": "history.delete",
+      "method": "DELETE",
+      "path": "/api/history/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\history.js"
+    },
+    {
+      "operation": "history.restore",
+      "method": "POST",
+      "path": "/api/history/:id/restore",
+      "matched": true,
+      "source": "backend\\src\\routes\\history.js"
+    },
+    {
+      "operation": "config.read",
+      "method": "GET",
+      "path": "/api/config",
+      "matched": true,
+      "source": "backend\\src\\routes\\config.js"
+    },
+    {
+      "operation": "config.write",
+      "method": "POST",
+      "path": "/api/config",
+      "matched": true,
+      "source": "backend\\src\\routes\\config.js"
+    },
+    {
+      "operation": "log.list",
+      "method": "GET",
+      "path": "/api/admin/logs",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "log.delete",
+      "method": "DELETE",
+      "path": "/api/admin/logs/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "user.list",
+      "method": "GET",
+      "path": "/api/admin/users",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "user.delete",
+      "method": "DELETE",
+      "path": "/api/admin/users/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "user.resetPassword",
+      "method": "PUT",
+      "path": "/api/admin/users/:id/password",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "user.resetTwofa",
+      "method": "PUT",
+      "path": "/api/admin/users/:id/twofa/reset",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "tokenVersion.refresh",
+      "method": "POST",
+      "path": "/api/admin/token-version/refresh",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "profile.update",
+      "method": "PUT",
+      "path": "/api/auth/profile",
+      "matched": true,
+      "source": "backend\\src\\routes\\auth.js"
+    },
+    {
+      "operation": "user.create",
+      "method": "POST",
+      "path": "/api/auth/register",
+      "matched": true,
+      "source": "backend\\src\\routes\\auth.js"
+    },
+    {
+      "operation": "event.list",
+      "method": "GET",
+      "path": "/api/event/admin/list",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.detail",
+      "method": "GET",
+      "path": "/api/event/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.create",
+      "method": "POST",
+      "path": "/api/event/admin",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.update",
+      "method": "PUT",
+      "path": "/api/event/:id",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.approve",
+      "method": "POST",
+      "path": "/api/event/:id/approve",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.reject",
+      "method": "POST",
+      "path": "/api/event/:id/reject",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.status",
+      "method": "POST",
+      "path": "/api/event/:id/status",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.delete",
+      "method": "POST",
+      "path": "/api/event/:id/delete",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.settle",
+      "method": "POST",
+      "path": "/api/event/:id/settle",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.results",
+      "method": "POST",
+      "path": "/api/event/:id/set_result",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "event.participants",
+      "method": "GET",
+      "path": "/api/event/:id/participants",
+      "matched": true,
+      "source": "backend\\src\\routes\\event.js"
+    },
+    {
+      "operation": "recycle.purge",
+      "method": "POST",
+      "path": "/api/admin/recycle-bin/purge",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "ban.list",
+      "method": "GET",
+      "path": "/api/admin/bans",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "ban.create",
+      "method": "POST",
+      "path": "/api/admin/bans",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "backup.settings",
+      "method": "GET",
+      "path": "/api/admin/backups/settings",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "backup.configure",
+      "method": "POST",
+      "path": "/api/admin/backups/settings",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "backup.list",
+      "method": "GET",
+      "path": "/api/admin/backups",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "backup.delete",
+      "method": "DELETE",
+      "path": "/api/admin/backups",
+      "matched": true,
+      "source": "backend\\src\\routes\\admin.js"
+    },
+    {
+      "operation": "upload.asset",
+      "method": "POST",
+      "path": "/api/upload",
+      "matched": true,
+      "source": "backend\\src\\routes\\upload.js"
+    }
+  ],
+  "unmatched": []
+}

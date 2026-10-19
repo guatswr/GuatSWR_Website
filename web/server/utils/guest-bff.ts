@@ -106,8 +106,8 @@ const OPERATION_ROUTES: Readonly<Record<GuestOperationName, OperationRoute>> = O
   signupSave: { method: 'POST', path: eventPath('/signup') },
   signupDelete: { method: 'DELETE', path: eventPath('/signup') },
   eventRead: { method: 'GET', path: eventPath() },
-  uploadContent: { method: 'POST', path: () => '/api/upload_visitor' },
-  uploadAvatar: { method: 'POST', path: () => '/api/upload_visitor/avatar' }
+  uploadContent: { method: 'POST', path: () => '/api/upload/visitor' },
+  uploadAvatar: { method: 'POST', path: () => '/api/upload/visitor/avatar' }
 })
 
 export interface ResolvedGuestOperation {

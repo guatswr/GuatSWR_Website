@@ -49,7 +49,7 @@ test('real guest BFF reuses a draft across upload, manual retry and a confirmed 
   const puts = state.requests.filter(call => call.method === 'PUT')
   expect(puts).toHaveLength(2)
   expect(puts.every(call => call.path === '/api/event/700')).toBe(true)
-  const upload = state.requests.find(call => call.path === '/api/upload_visitor')!
+  const upload = state.requests.find(call => call.path === '/api/upload/visitor')!
   expect(upload.upload).toMatchObject({ eid: 700, name: 'upload.png', type: 'image/png', fields: ['file', 'eid'] })
   expect(upload.upload!.size).toBeGreaterThan(0)
   expect(browserWrites.length).toBe(5)
@@ -103,7 +103,7 @@ test('real guest BFF uploads an avatar, saves, reads and deletes the visitor sig
   const state = await (await request.get(`${fixture}/__fixture/guest`)).json() as State
   expect(state.signups).toEqual([])
   expect(state.requests.filter(call => call.path.endsWith('/signup')).map(call => call.method)).toEqual(['GET', 'POST', 'GET', 'DELETE'])
-  expect(state.requests.find(call => call.path === '/api/upload_visitor/avatar')?.upload).toMatchObject({ eid: 101, name: 'upload.png' })
+  expect(state.requests.find(call => call.path === '/api/upload/visitor/avatar')?.upload).toMatchObject({ eid: 101, name: 'upload.png' })
 })
 
 test('real upload ingress accepts a file above the middleware default and rejects above 50 MiB', async ({ page, request }) => {
@@ -129,7 +129,7 @@ test('real upload ingress accepts a file above the middleware default and reject
   }, [...image.buffer])
   expect(result).toEqual([200, 413])
   const state = await (await request.get(`${fixture}/__fixture/guest`)).json() as State
-  const uploads = state.requests.filter(call => call.path === '/api/upload_visitor')
+  const uploads = state.requests.filter(call => call.path === '/api/upload/visitor')
   expect(uploads).toHaveLength(1)
   expect(uploads[0]!.upload?.size).toBe(9 * 1024 * 1024)
 })

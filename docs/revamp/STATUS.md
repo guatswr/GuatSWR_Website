@@ -13,13 +13,16 @@ See [article evidence](logs/12-admin-articles/README.md). A Windows native proce
 startup failure remains retained; successful regression scopes cap only local
 Node background threads and retain all browser/assertion/security policies.
 
-Next correction in progress: source review found that guest upload BFF/fixtures
+Guest upload correction now passes local acceptance: source review found that guest upload BFF/fixtures
 used the unmounted underscore namespace. The frozen backend mounts
 `/api/upload/visitor`. An independent read-only mount/verb guard fails those
 two paths before correction (53/55 pass), then passes with the boundary tests
-(74/74). Fresh build and real browser upload verification are pending; the old
-guest acceptance does not establish correctness against those actual mounts.
-This later correction is not included in the article artifact above.
+(74/74). The corrected artifact passes four recursive gates, **747 units**,
+**6/6 genuine browser/BFF guest cases**, 14 public JS budgets at the same
+119792–132684 B range, zero maps. Exact upstream paths are checked. See
+[contract evidence](logs/13-frozen-api-contract/README.md). This replaces the
+old guest URL evidence for that boundary; it is a later artifact than the
+article checkpoint `a6868ce`. Full migration acceptance remains open.
 Activity review/settlement/ranking UI is drafted and awaits integration/testing.
 Public article formula/diagram parity, LCP, the Linux dark-log pixel and final
 full-site/security acceptance remain open. No deployment or QQ success notice.

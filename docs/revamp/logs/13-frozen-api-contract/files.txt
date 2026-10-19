@@ -1,0 +1,15 @@
+docs/revamp/CHECKLIST.md
+docs/revamp/STATUS.md
+docs/revamp/logs/13-frozen-api-contract/README.md
+docs/revamp/logs/13-frozen-api-contract/after.log
+docs/revamp/logs/13-frozen-api-contract/before.log
+docs/revamp/logs/13-frozen-api-contract/e2e.json
+docs/revamp/logs/13-frozen-api-contract/files.txt
+docs/revamp/logs/13-frozen-api-contract/mount-audit.json
+docs/revamp/logs/13-frozen-api-contract/route-budget.json
+docs/revamp/logs/README.md
+web/server/utils/guest-bff.ts
+web/tests/e2e/guest-integration.spec.ts
+web/tests/fixtures/guest-upstream.mjs
+web/tests/frozen-api-contract.test.ts
+web/tests/guest-bff.test.ts

@@ -1,0 +1,56 @@
+
+ RUN  v5.0.5 E:/Taropoi/workspace/GuatSWR_Website/web
+
+ ❯ tests/frozen-api-contract.test.ts (55 tests | 2 failed) 20ms
+   ❯ BFF operations agree with the frozen Express mounts, independently of fixtures (55)
+     × matches visitor operation uploadContent 8ms
+     × matches visitor operation uploadAvatar 1ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/frozen-api-contract.test.ts > BFF operations agree with the frozen Express mounts, independently of fixtures > matches visitor operation uploadContent
+AssertionError: POST /api/upload_visitor must be mounted by the frozen backend: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ assertMounted tests/frozen-api-contract.test.ts:28:163
+     26| function assertMounted(method: string, path: string) {
+     27|   expect(routes.length, 'the read-only literal route inventory must no…
+     28|   expect(routes.some(route => route.method === method && normalized(ro…
+       |                                                                                                                                                                   ^
+     29| }
+     30| describe('BFF operations agree with the frozen Express mounts, indepen…
+ ❯ tests/frozen-api-contract.test.ts:36:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+
+ FAIL  tests/frozen-api-contract.test.ts > BFF operations agree with the frozen Express mounts, independently of fixtures > matches visitor operation uploadAvatar
+AssertionError: POST /api/upload_visitor/avatar must be mounted by the frozen backend: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+
+ ❯ assertMounted tests/frozen-api-contract.test.ts:28:163
+     26| function assertMounted(method: string, path: string) {
+     27|   expect(routes.length, 'the read-only literal route inventory must no…
+     28|   expect(routes.some(route => route.method === method && normalized(ro…
+       |                                                                                                                                                                   ^
+     29| }
+     30| describe('BFF operations agree with the frozen Express mounts, indepen…
+ ❯ tests/frozen-api-contract.test.ts:36:7
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/2]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  2 failed | 53 passed (55)
+   Start at  05:12:51
+   Duration  441ms (import 61%, transform 31%, tests 7%, worker 1%)
+

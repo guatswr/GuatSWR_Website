@@ -36,7 +36,7 @@ export function createGuestUpstreamFixture() {
         return send(response, 200, snapshot())
       }
       const event = /^\/api\/event\/(\d+)(\/signup)?$/.exec(path)
-      const upload = ['/api/upload_visitor', '/api/upload_visitor/avatar'].includes(path)
+      const upload = ['/api/upload/visitor', '/api/upload/visitor/avatar'].includes(path)
       const draft = path === '/api/event/draft' && request.method === 'POST'
       if (!draft && !upload && !event) return false
       const id = event ? Number(event[1]) : undefined

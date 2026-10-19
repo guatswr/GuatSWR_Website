@@ -51,7 +51,7 @@ describe('closed operation map', () => {
     const body = new FormData()
     body.append('eid', '27')
     await upstream.request({ operation: { name }, body, clientIp: '203.0.113.5' })
-    expect(calls[0]?.url).toBe(`http://127.0.0.1:8080/api/upload_visitor${name === 'uploadAvatar' ? '/avatar' : ''}`)
+    expect(calls[0]?.url).toBe(`http://127.0.0.1:8080/api/upload/visitor${name === 'uploadAvatar' ? '/avatar' : ''}`)
     expect(calls[0]?.init.body).toBe(body)
     expect((calls[0]?.init.headers as Record<string, string>)['content-type']).toBeUndefined()
   })
@@ -82,11 +82,11 @@ describe('closed operation map', () => {
     })
     expect(resolveGuestOperation({ name: 'uploadContent' })).toEqual({
       method: 'POST',
-      path: '/api/upload_visitor'
+      path: '/api/upload/visitor'
     })
     expect(resolveGuestOperation({ name: 'uploadAvatar' })).toEqual({
       method: 'POST',
-      path: '/api/upload_visitor/avatar'
+      path: '/api/upload/visitor/avatar'
     })
   })
 
