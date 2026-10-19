@@ -4,11 +4,13 @@ import { createHmac, randomBytes } from 'node:crypto'
  * Server-side guest draft records.
  *
  * The browser only ever holds an unpredictable opaque id in an HttpOnly cookie.
- * The store maps a keyed hash of that id (or of a cookie-less intent key) to the
+ * Record indices map a keyed hash of that id (or of a cookie-less intent key) to the
  * draft ids issued for it, so a guessed `:id` can never modify another visitor's
  * draft. Records are hard-bounded, TTL'd, bound to the creating client IP, and
  * carry a small bounded set of *confirmed submission receipts* so a retry after a
- * lost response does not repeat a mutation.
+ * lost response does not repeat a mutation. A separate bounded five-minute
+ * response cache retains first-response cookies for a lost Set-Cookie retry;
+ * these capabilities remain in server memory and never enter logs or JSON.
  *
  * Single-process default: a durable multi-instance store remains a
  * deployment-plan item (no Redis or installation here).
@@ -74,6 +76,7 @@ export interface IssuedDraft {
 
 export type GuestSubmissionState =
   | { kind: 'replay', id: number }
+  | { kind: 'conflict' }
   /** Another submission for the same draft id is still in flight. */
   | { kind: 'busy' }
   | { kind: 'new' }
@@ -142,6 +145,9 @@ export function createGuestDraftStore(
   const reuseMs = boundedOption(options.reuseMs, GUEST_DRAFT_REUSE_MS, 0, 60 * 60 * 1000)
   const records = new Map<string, GuestDraftRecord>()
   const inFlight = new Map<string, Promise<IssuedDraft>>()
+  // A first response may be lost before Set-Cookie arrives. Retain the issued
+  // response briefly for the same CSRF intent and address, with a hard bound.
+  const firstResponses = new Map<string, { at: number, issued: IssuedDraft }>()
   /** Per-draft exclusive submission markers, `${recordKey}:${draftId}`. */
   const submissionsInFlight = new Set<string>()
 
@@ -159,19 +165,26 @@ export function createGuestDraftStore(
   function enforceRecordBound(): void {
     const cutoff = now() - ttlMs
     for (const [recordKey, record] of records) {
-      if (record.updatedAt < cutoff) records.delete(recordKey)
+      if (record.updatedAt < cutoff) discardRecord(recordKey)
     }
     while (records.size >= maxRecords) {
       const oldest = records.keys().next().value
       if (oldest === undefined) break
-      records.delete(oldest)
+      discardRecord(oldest)
+    }
+  }
+
+  function discardRecord(recordKey: string): void {
+    records.delete(recordKey)
+    for (const marker of submissionsInFlight) {
+      if (marker.startsWith(`${recordKey}:`)) submissionsInFlight.delete(marker)
     }
   }
 
   function put(recordKey: string, record: GuestDraftRecord): void {
-    enforceRecordBound()
     records.delete(recordKey)
     records.set(recordKey, record)
+    enforceRecordBound()
   }
 
   const validCookie = (cookieId: string | undefined): cookieId is string =>
@@ -182,7 +195,7 @@ export function createGuestDraftStore(
       return { recordKey: hashGuestCookieId(key, intent.cookieId), cookieId: intent.cookieId }
     }
     if (typeof intent.intentKey === 'string' && intent.intentKey.length >= 16) {
-      return { recordKey: hashGuestIntentKey(key, intent.intentKey), cookieId: undefined }
+      return { recordKey: hashGuestIntentKey(key, `${intent.clientIp}\0${intent.intentKey}`), cookieId: undefined }
     }
     return { recordKey: '', cookieId: undefined }
   }
@@ -218,6 +231,14 @@ export function createGuestDraftStore(
     }
     const pending = inFlight.get(recordKey)
     if (pending) return await pending
+    for (const [intentKey, response] of firstResponses) {
+      if (now() - response.at >= Math.min(reuseMs, ttlMs)) firstResponses.delete(intentKey)
+    }
+    const first = cookieId === undefined ? firstResponses.get(recordKey) : undefined
+    const firstRecord = first && read({ cookieId: first.issued.cookieId, clientIp: intent.clientIp })
+    if (first && firstRecord?.drafts.includes(first.issued.id) && !firstRecord.submitted.includes(first.issued.id)) {
+      return { ...first.issued, reused: true }
+    }
     if (inFlight.size >= maxInflight) {
       throw new Error('guest draft store is at its in-flight limit')
     }
@@ -228,7 +249,7 @@ export function createGuestDraftStore(
       // reassigned, exactly like a foreign-IP or malformed one. Checking presence
       // alone would resurrect a record past its TTL.
       const existing = stored !== undefined && stored.updatedAt >= now() - ttlMs ? stored : undefined
-      if (stored !== undefined && existing === undefined) records.delete(recordKey)
+      if (stored !== undefined && existing === undefined) discardRecord(recordKey)
       const sameOwner = existing !== undefined && existing.clientIp === intent.clientIp
       // A foreign, expired or missing record is never reassigned: rotate the cookie.
       const effectiveCookieId = sameOwner ? cookieId ?? newGuestCookieId() : newGuestCookieId()
@@ -260,7 +281,13 @@ export function createGuestDraftStore(
     const release = (): void => {
       if (inFlight.get(recordKey) === work) inFlight.delete(recordKey)
     }
-    void work.then(release, release)
+    void work.then(issued => {
+      if (cookieId === undefined && reuseMs > 0) {
+        firstResponses.set(recordKey, { at: now(), issued })
+        while (firstResponses.size > maxRecords) firstResponses.delete(firstResponses.keys().next().value!)
+      }
+      release()
+    }, release)
     return await work
   }
 
@@ -273,17 +300,14 @@ export function createGuestDraftStore(
     },
     beginSubmission(intent, id, digest) {
       const record = read(intent)
-      if (!record) return { kind: 'new' }
-      const receipt = record.receipts.find((entry) => entry.digest === digest)
-      if (receipt && receipt.id === id) return { kind: 'replay', id: receipt.id }
+      if (!record || !record.drafts.includes(id)) return { kind: 'conflict' }
+      const receipt = record.receipts.find((entry) => entry.id === id && entry.digest === digest)
+      if (receipt) return { kind: 'replay', id: receipt.id }
+      if (record.submitted.includes(id)) return { kind: 'conflict' }
       const marker = `${record.key}:${id}`
       if (submissionsInFlight.has(marker)) return { kind: 'busy' }
-      // Bounded like every other structure here: a marker lost to eviction can
-      // only allow a duplicate upstream write, never block a legitimate save.
-      if (submissionsInFlight.size >= maxInflight) {
-        const oldest = submissionsInFlight.values().next().value
-        if (oldest !== undefined) submissionsInFlight.delete(oldest)
-      }
+      // Never evict an active lock: doing so would permit a duplicate write.
+      if (submissionsInFlight.size >= maxInflight) return { kind: 'busy' }
       submissionsInFlight.add(marker)
       return { kind: 'new' }
     },
@@ -296,7 +320,7 @@ export function createGuestDraftStore(
       if (!record) return
       if (!record.submitted.includes(id)) record.submitted.push(id)
       while (record.submitted.length > maxDrafts) record.submitted.shift()
-      record.receipts = record.receipts.filter((entry) => entry.digest !== digest)
+      record.receipts = record.receipts.filter((entry) => entry.id !== id)
       record.receipts.push({ digest, id })
       while (record.receipts.length > maxReceipts) record.receipts.shift()
       record.lastIssuedAt = 0

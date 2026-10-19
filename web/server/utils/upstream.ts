@@ -15,7 +15,7 @@ export const assertUpstreamOrigin = (origin: string): URL => {
 /** Resolve only fixed API paths against a private, administrator-set origin. */
 export function upstreamUrl(origin: string, path: string): string {
   const base = assertUpstreamOrigin(origin)
-  if (!/^\/api\/[a-z0-9/-]+$/i.test(path) || path.includes('//')) {
+  if (!/^\/api\/[a-z0-9/_-]+$/i.test(path) || path.includes('//')) {
     throw new Error('Upstream path must be a fixed v1 API path')
   }
   return new URL(path, base).href

@@ -30,6 +30,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - run: docker build --file web/Dockerfile --tag guatswr-revamp:ci .
+      - run: node scripts/revamp/container-smoke.mjs --image guatswr-revamp:ci
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: revamp-container-runtime
+          path: .tools/container-runtime-validation.json
+          include-hidden-files: true
+          retention-days: 7
   foundation:
     # Both UIs are rendered in the same pinned browser for direct comparisons.
     # Every host runs the full functional, visual and build gate. The Lighthouse

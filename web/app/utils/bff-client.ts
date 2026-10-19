@@ -275,6 +275,8 @@ export interface BffMutationOptions extends Omit<BffRequestOptions, 'method' | '
   csrfToken: () => string
   /** Fetches a fresh token from `/api/bff/auth/csrf`. */
   refreshCsrf: () => Promise<string>
+  /** Per-app generation guard, checked immediately before each network write. */
+  assertCurrent?: () => void
 }
 
 export interface BffMutationResult {
@@ -290,13 +292,16 @@ export interface BffMutationResult {
  */
 export async function bffMutation(path: BffAuthPath, options: BffMutationOptions): Promise<BffMutationResult> {
   let token = options.csrfToken()
+  options.assertCurrent?.()
   try {
     const data = await bffRequest(path, { ...options, method: 'POST', csrfToken: token })
     return { data, csrfToken: token }
   }
   catch (error) {
     if (!isCsrfRejection(error)) throw error
+    options.assertCurrent?.()
     token = await options.refreshCsrf()
+    options.assertCurrent?.()
     const data = await bffRequest(path, { ...options, method: 'POST', csrfToken: token })
     return { data, csrfToken: token }
   }

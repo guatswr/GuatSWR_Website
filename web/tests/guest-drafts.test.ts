@@ -12,7 +12,7 @@ import type { GuestIntent } from '../server/utils/guest-drafts'
 
 /**
  * Guest draft store: concurrency, identity binding, retention bounds and
- * confirmed-submission receipts. Written but not executed here.
+ * confirmed-submission receipts.
  */
 
 const key = createHmac('sha256', 'test-secret').update('guest-drafts').digest()
@@ -36,6 +36,26 @@ function setup(
 }
 
 describe('guest draft intents', () => {
+  it('reuses the issued response when the first Set-Cookie was lost', async () => {
+    const qa = setup()
+    const intent = qa.intent(undefined, '203.0.113.5', 'csrf-digest-lost-response')
+    const first = await qa.store.issue(intent, qa.create)
+    const retry = await qa.store.issue(intent, qa.create)
+    expect(retry).toEqual({ ...first, reused: true })
+    expect(qa.store.owns(qa.intent(retry.cookieId), retry.id)).toBe(true)
+    qa.advance(GUEST_DRAFT_REUSE_MS + 1)
+    expect((await qa.store.issue(intent, qa.create)).id).not.toBe(first.id)
+  })
+
+  it('separates simultaneous intents on different visitor addresses', async () => {
+    const qa = setup()
+    const [first, second] = await Promise.all([
+      qa.store.issue(qa.intent(undefined, '203.0.113.5', 'csrf-digest-identical-key'), qa.create),
+      qa.store.issue(qa.intent(undefined, '198.51.100.5', 'csrf-digest-identical-key'), qa.create),
+    ])
+    expect(first.id).not.toBe(second.id)
+    expect(first.cookieId).not.toBe(second.cookieId)
+  })
   it('collapses concurrent first requests with one intent key into one draft', async () => {
     const qa = setup()
     let created = 0
@@ -118,6 +138,31 @@ describe('guest draft intents', () => {
 })
 
 describe('guest draft ownership and receipts', () => {
+  it('keeps identical payload receipts separate for separate drafts', async () => {
+    const qa = setup({ reuseMs: 0 })
+    const first = await qa.store.issue(qa.intent(), qa.create)
+    const intent = qa.intent(first.cookieId)
+    const second = await qa.store.issue(intent, qa.create)
+    const digest = qa.store.digest(intent, { type: 'STG', title: '比赛', content: {} })
+    for (const id of [first.id, second.id]) {
+      expect(qa.store.beginSubmission(intent, id, digest)).toEqual({ kind: 'new' })
+      qa.store.confirmSubmission(intent, id, digest)
+    }
+    for (const id of [first.id, second.id])
+      expect(qa.store.beginSubmission(intent, id, digest)).toEqual({ kind: 'replay', id })
+  })
+
+  it('refuses extra concurrent submissions without evicting a live lock', async () => {
+    const qa = setup({ maxInflight: 1, reuseMs: 0 })
+    const first = await qa.store.issue(qa.intent(), qa.create)
+    const intent = qa.intent(first.cookieId)
+    const second = await qa.store.issue(intent, qa.create)
+    expect(qa.store.beginSubmission(intent, first.id, 'a')).toEqual({ kind: 'new' })
+    expect(qa.store.beginSubmission(intent, second.id, 'b')).toEqual({ kind: 'busy' })
+    expect(qa.store.beginSubmission(intent, first.id, 'a')).toEqual({ kind: 'busy' })
+    qa.store.abortSubmission(intent, first.id)
+    expect(qa.store.beginSubmission(intent, second.id, 'b')).toEqual({ kind: 'new' })
+  })
   it('retires submitted drafts and replays only an identical confirmed payload', async () => {
     const qa = setup()
     const issued = await qa.store.issue(qa.intent(), qa.create)
@@ -137,7 +182,7 @@ describe('guest draft ownership and receipts', () => {
     })
     // A conflicting payload is not replayed and the draft is no longer owned.
     const conflicting = qa.store.digest(intent, { type: 'STG', title: '别的', content: {} })
-    expect(qa.store.beginSubmission(intent, issued.id, conflicting)).toEqual({ kind: 'new' })
+    expect(qa.store.beginSubmission(intent, issued.id, conflicting)).toEqual({ kind: 'conflict' })
     expect(qa.store.owns(intent, issued.id)).toBe(false)
   })
 

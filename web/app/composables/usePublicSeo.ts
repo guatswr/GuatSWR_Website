@@ -1,51 +1,62 @@
-import { computed } from 'vue'
-import { absoluteLocalUrl } from '~/utils/public-url'
+import { computed, toValue } from 'vue'
+import type { MaybeRefOrGetter } from 'vue'
+import { defineBreadcrumb, defineOrganization, defineWebPage, defineWebSite, useSchemaOrg } from '#schema-org/app'
+import { SEO_SITE_NAME, PUBLIC_INDEX_PAGES, seoImageUrl, seoUrl, trustedSeoOrigin } from '#shared/seo'
+import { buildPublicSeo } from '~/utils/public-seo'
+import type { PublicSeoInput } from '~/utils/public-seo'
 
-/** The archived `composables/useSeo.js` copy and defaults. */
-export const SITE_NAME = '桂航绯想天'
-export const SITE_TITLE = '桂航绯想天 | 东方Project同好会'
-export const DEFAULT_DESCRIPTION =
-  '桂航绯想天是桂林航天工业学院东方 Project 同好会，记录活动、成员与群史，欢迎校内外同好一起加入。'
-const DEFAULT_OG_IMAGE = '/og-image.png'
-
-export interface PublicSeoOptions {
-  /** Page title only; `nuxt-seo-utils` appends the separator and site name. */
-  title: string
-  path: string
-  description?: string
-  /** Local cover path; anything that is not a same-origin path is rejected. */
-  image?: string
-}
-
-/**
- * Preview deployments stay `noindex`; the canonical follows the configured
- * preview origin and never carries an arbitrary tracking query.
- */
-export function usePublicSeo(options: PublicSeoOptions): void {
+/** One reactive metadata owner for every public content page. */
+export function usePublicSeo(input: MaybeRefOrGetter<PublicSeoInput>): void {
   const site = useSiteConfig()
-  const description = options.description || DEFAULT_DESCRIPTION
-  const canonical = computed(() => absoluteLocalUrl(options.path, site.url))
-  const image = computed(
-    () =>
-      absoluteLocalUrl(options.image, site.url) ||
-      absoluteLocalUrl(DEFAULT_OG_IMAGE, site.url)
-  )
-
+  const origin = trustedSeoOrigin(site.url)
+  const seo = computed(() => buildPublicSeo(toValue(input), origin))
+  const image = computed(() => seo.value.image || seoImageUrl(null, origin))
   useSeoMeta({
-    title: options.title,
-    description,
-    robots: 'noindex, nofollow',
-    ogTitle: options.title,
-    ogDescription: description,
-    ogUrl: canonical,
-    ogType: 'website',
-    ogSiteName: SITE_TITLE,
+    title: () => seo.value.title,
+    description: () => seo.value.description,
+    ogTitle: () => seo.value.title,
+    ogDescription: () => seo.value.description,
+    ogUrl: () => seo.value.canonical,
+    ogType: () => seo.value.type,
+    ogSiteName: () => seo.value.ogSiteName,
     ogLocale: 'zh_CN',
     ogImage: image,
-    twitterCard: 'summary_large_image',
-    twitterTitle: options.title,
-    twitterDescription: description,
-    twitterImage: image
+    twitterCard: () => seo.value.twitterCard,
+    twitterTitle: () => seo.value.title,
+    twitterDescription: () => seo.value.description,
+    twitterImage: image,
+    // Indexing remains a separately approved cutover change, even if a generic
+    // site-indexable environment flag is accidentally enabled on the preview.
+    robots: 'noindex, nofollow',
   })
-  useHead({ link: [{ rel: 'canonical', href: canonical }] })
+  useHead(() => ({
+    // buildPublicSeo already appends the name; do not append it a second time.
+    titleTemplate: null,
+    link: [
+      { rel: 'canonical', href: seo.value.canonical },
+      { rel: 'alternate', type: 'application/rss+xml', title: `${SEO_SITE_NAME} · 最近活动记录`, href: seoUrl('/rss.xml', origin) },
+    ],
+  }))
+
+  // The maintained resolver emits a graph with each fresh SSR response. Keep
+  // this runtime on the server (the module's default model); client metadata
+  // above is still reactive, and crawlers receive each URL's own graph.
+  if (import.meta.server) {
+    useSchemaOrg(computed(() => {
+      const value = toValue(input)
+      const canonical = seo.value.canonical
+      const crumbs = [{ name: '首页', item: seoUrl('/', origin) }]
+      if (value.type === 'article') crumbs.push({ name: '社团活动记录', item: seoUrl('/activities', origin) })
+      if (value.path !== '/') crumbs.push({
+        name: PUBLIC_INDEX_PAGES.find(page => page.path === value.path)?.title || value.title,
+        item: canonical,
+      })
+      return [
+        defineOrganization({ '@id': `${origin}/#organization`, name: SEO_SITE_NAME, url: `${origin}/` }),
+        defineWebSite({ '@id': `${origin}/#website`, name: SEO_SITE_NAME, url: `${origin}/`, inLanguage: 'zh-CN', publisher: { '@id': `${origin}/#organization` } }),
+        defineWebPage({ '@id': `${canonical}#webpage`, name: seo.value.title, url: canonical, description: seo.value.description, inLanguage: 'zh-CN', isPartOf: { '@id': `${origin}/#website` } }),
+        defineBreadcrumb({ '@id': `${canonical}#breadcrumb`, itemListElement: crumbs }),
+      ]
+    }))
+  }
 }

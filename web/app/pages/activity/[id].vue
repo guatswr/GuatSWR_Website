@@ -12,6 +12,8 @@ import type { ActivityContentResponse } from '#shared/content'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import { DEFAULT_DESCRIPTION } from '~/utils/public-seo'
 import { displayImageSource, displayThumbSource } from '~/utils/public-image'
+import { activitySeoNode } from '#shared/seo'
+import { defineArticle, useSchemaOrg } from '#schema-org/app'
 
 definePageMeta({ key: route => route.fullPath })
 
@@ -83,6 +85,10 @@ usePublicPageSeo(() => ({
   ogSiteName: '桂航绯想天 | 车万同好会',
   twitterCard: 'summary',
 }))
+
+if (import.meta.server && activity.value) {
+  useSchemaOrg([defineArticle(activitySeoNode(activity.value, useSiteConfig().url))])
+}
 
 useHead({
   htmlAttrs: { class: 'activity-detail-bg' },

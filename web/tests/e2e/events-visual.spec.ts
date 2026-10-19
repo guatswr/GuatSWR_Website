@@ -5,6 +5,7 @@ import {
   ARCHIVE_ORIGIN,
   EVENT_CATEGORIES,
   compareRegion,
+  compareModalBody,
   stubGuestBff,
   useUpstreamFixtures,
   waitForArchiveReady
@@ -142,7 +143,7 @@ for (const theme of ['light', 'dark'] as const) {
       if (theme === 'dark') {
         await assertDarkModalDeviation(archiveBody, body, suffix, info)
       } else {
-        await compareRegion(archiveBody, body, `signup-modal-${suffix}`, info)
+        await compareModalBody(archiveBody, body, `signup-modal-${suffix}`, info)
       }
     }
     await archive.close()

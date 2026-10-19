@@ -1,0 +1,37 @@
+{
+  "device": "Lighthouse default mobile / simulated throttling",
+  "serverState": "Prewarmed by two HTTP document requests per route; Lighthouse resets browser storage/cache",
+  "warmup": [
+    {
+      "path": "/",
+      "firstDocumentRequestMs": 162.36529999999993,
+      "secondDocumentRequestMs": 23.27079999999978
+    }
+  ],
+  "invalidAttempts": [],
+  "results": [
+    {
+      "url": "http://127.0.0.1:3200/",
+      "runs": [
+        {
+          "performance": 91,
+          "lcpMs": 3021.8700000000003
+        },
+        {
+          "performance": 96,
+          "lcpMs": 2159.9375000000005
+        },
+        {
+          "performance": 95,
+          "lcpMs": 1973.962750000001
+        }
+      ],
+      "median": {
+        "performance": 96,
+        "lcpMs": 2159.9375000000005
+      }
+    }
+  ],
+  "complete": true,
+  "failure": "Mobile performance budget exceeded — / median 2159.9 ms, score 96"
+}

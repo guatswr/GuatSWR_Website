@@ -7,6 +7,9 @@ COPY web/package.json ./web/package.json
 RUN --mount=type=cache,id=guatswr-revamp-pnpm,target=/pnpm/store pnpm install --store-dir=/pnpm/store --frozen-lockfile
 COPY packages/shared ./packages/shared
 COPY web ./web
+# Read-only reference bytes used by the login asset parity test. These never
+# enter the runtime image; all other legacy sources stay out of the context.
+COPY frontend/src/bg/login ./frontend/src/bg/login
 RUN pnpm -r typecheck && pnpm -r lint && pnpm -r test && pnpm -r build
 COPY scripts/revamp/check-artifacts.mjs ./scripts/revamp/check-artifacts.mjs
 RUN node scripts/revamp/check-artifacts.mjs

@@ -9,6 +9,7 @@
  */
 import { canonicalUrl } from './public-query'
 import { displayImageSource } from './public-image'
+import { trustedSeoOrigin } from '#shared/seo'
 
 export const SITE_NAME = '桂航绯想天'
 export const DEFAULT_OG_SITE_NAME = '桂航绯想天 | 东方Project同好会'
@@ -36,13 +37,14 @@ export interface PublicSeo {
 }
 
 export function buildPublicSeo(input: PublicSeoInput, siteUrl: string): PublicSeo {
-  const canonical = canonicalUrl(siteUrl, input.path, input.query ?? {})
+  const origin = trustedSeoOrigin(siteUrl)
+  const canonical = canonicalUrl(origin, input.path, input.query ?? {})
   const imagePath = displayImageSource(input.image ?? null)
   return {
     title: `${input.title} | ${SITE_NAME}`,
     description: input.description?.trim() || DEFAULT_DESCRIPTION,
     canonical,
-    image: imagePath ? new URL(imagePath, siteUrl).href : null,
+    image: imagePath ? new URL(imagePath, origin).href : null,
     type: input.type ?? 'website',
     ogSiteName: input.ogSiteName ?? DEFAULT_OG_SITE_NAME,
     twitterCard: input.twitterCard ?? 'summary_large_image',

@@ -2,12 +2,18 @@
 
 Updated 2026-10-19 (Asia/Shanghai).
 
+Latest user steering: Codex independently reviews, fixes and completes the
+migration **alone**. Do not resume Claude workers or start subagents. Testing
+remains local-only; no infrastructure/deployment actions. Hermes remains the
+delivery channel for the final QQ report, only after actual acceptance.
+
+The following is historical coordination from the earlier delegation phase.
 The user assigned Codex engineering leadership and independent acceptance, with
 Claude Code (the configured Opus 5 model) implementing concrete batches. Multiple
 Claude workers are authorized. Hermes is the delivery channel for the final QQ
 notification, after the local migration has actually passed acceptance.
 
-## Ownership
+## Historical ownership at the Claude handoff
 
 | Worker | Checkout | Current scope | Integration boundary |
 | --- | --- | --- | --- |

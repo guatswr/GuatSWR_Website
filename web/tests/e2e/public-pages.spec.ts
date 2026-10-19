@@ -281,7 +281,7 @@ test.describe('filter and page reactivity', () => {
   test('page and range navigation update the body and the canonical URL', async ({ page }) => {
     const canonical = page.locator('link[rel="canonical"]')
     await page.goto('/logs')
-    await expect(canonical).toHaveAttribute('href', /\/logs\?/)
+    await expect(canonical).toHaveAttribute('href', 'https://next.guatswr.top/logs')
     const firstRange = await page.locator('link[rel="canonical"]').getAttribute('href')
 
     // Client-side query navigation must refresh both the body and the metadata.

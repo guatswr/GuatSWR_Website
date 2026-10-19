@@ -1,17 +1,22 @@
 // Drive the critical request start order from the server-rendered head:
-// 1. `modulepreload`/`preload` link hints are hoisted ahead of the inlined
-//    critical CSS, but always after the import map. The parser reaches the hints
-//    before tokenizing the inline <style>, so the browser
-//    dispatches the script fetches while it is still parsing CSS.
+// 1. Public SSR paints without JavaScript; don't compete for its first screen
+//    with a speculative module graph. Private/login pages retain module hints.
+//    Every retained hint is hoisted after the import map and before inline CSS.
 // 2. Remove speculative SSR `prefetch` hints. They include private middleware,
 //    auth validators and error pages, even on an anonymous public route.
 //    NuxtLink still prefetches on explicit pointer/focus intent; dynamic imports
 //    load normally when their owning route or interaction actually needs them.
 export default defineNitroPlugin((nitroApp) => {
-  nitroApp.hooks.hook('render:html', (html) => {
+  nitroApp.hooks.hook('render:html', (html, { event }) => {
+    const path = event.path.split('?')[0] ?? ''
+    const needsClientEntry = path === '/login' || path === '/admin' || path.startsWith('/admin/')
     const hoisted: string[] = []
     const transform = (chunk: string) =>
       chunk
+        // Public SSR already contains its first screen. Let the module entry
+        // request its dependencies normally instead of competing for bandwidth
+        // with the document/images through dozens of speculative module hints.
+        .replace(/<link[^>]+rel="modulepreload"[^>]*>/g, tag => needsClientEntry ? tag : '')
         .replace(/<link[^>]+rel="(?:modulepreload|preload)"[^>]*>/g, (tag) => {
           hoisted.push(tag)
           return ''

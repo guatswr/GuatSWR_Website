@@ -507,6 +507,7 @@ export function createSpawnExec({ playwrightCli, nodePath = process.execPath }) 
   }
   return function spawnExec({ args, cwd, env }) {
     return new Promise((resolvePromise, rejectPromise) => {
+      const startedAt = performance.now()
       const child = spawn(nodePath, [playwrightCli, ...args], {
         cwd,
         env,
@@ -519,8 +520,8 @@ export function createSpawnExec({ playwrightCli, nodePath = process.execPath }) 
       child.on('error', error => {
         rejectPromise(new E2EIsolationError(`Failed to start Playwright: ${error.message}`))
       })
-      child.on('close', code => {
-        resolvePromise({ code: code ?? 1, stdout, stderr })
+      child.on('close', (code, signal) => {
+        resolvePromise({ code: code ?? 1, signal, elapsedMs: performance.now() - startedAt, stdout, stderr })
       })
     })
   }
@@ -663,6 +664,17 @@ export async function runIsolated({
       env: batchEnv({ batchDir: dir }),
     })
     await writeFile(join(dir, 'playwright.log'), `${result.stdout}${result.stderr}`).catch(() => {})
+    // Preserve native/early process failures too. An empty log plus a missing
+    // JSON report otherwise loses the only diagnostic: the child exit status.
+    await writeFile(join(dir, 'process.json'), JSON.stringify({
+      exitCode: result.code,
+      signal: result.signal ?? null,
+      elapsedMs: result.elapsedMs ?? null,
+      nodeVersion: process.version,
+      platform: process.platform,
+      stdoutBytes: Buffer.byteLength(result.stdout),
+      stderrBytes: Buffer.byteLength(result.stderr),
+    }, null, 2))
     const report = await readJson(join(dir, 'report.json'), `Batch ${planned.index}`)
     const parsed = parseRunReport(report, { expected: planned.identities, batch: planned.index })
     batchResults.push({

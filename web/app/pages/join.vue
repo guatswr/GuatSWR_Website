@@ -6,7 +6,7 @@ import { vReveal } from '~/utils/motion'
 const { config, pending: loading, error: errorMessage, retry, ready } = usePublicConfig()
 await ready
 
-usePublicSeo({ title: '加入我们', path: '/join' })
+usePublicSeo({ title: '加入我们', path: '/join', description: '加入桂航绯想天东方 Project 同好群，查看群号、加群问题与入群方式，一起把热爱变成回忆。' })
 
 const qrFailed = ref(false)
 const qrLoaded = ref(false)

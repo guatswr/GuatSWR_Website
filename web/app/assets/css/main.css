@@ -30,6 +30,9 @@
 }
 
 body { margin: 0; }
+/* Tailwind 4 uses an infinite radius here. Preserve v1's finite radius: on
+   fractional-DPR Chromium it changes the outer avatar border by a pixel. */
+.rounded-full { border-radius: 9999px; }
 html, body { min-height: 100%; }
 html.dark body { background-color: #0b1220; color: #e5e7eb; }
 html.dark .bg-white { background-color: #0f172a !important; }

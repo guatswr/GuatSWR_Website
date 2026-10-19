@@ -41,7 +41,9 @@ export default bffAuthHandler(async (event) => {
   const id = positiveId(getRouterParam(event, 'id'))
 
   const draft = await guestDraftContext(event, context.runtime, context.origin, guestIp)
-  if (!draft.store.owns(draft.intent, id)) {
+  // A confirmed draft no longer accepts uploads/edits, but its owner may replay
+  // an identical receipt after losing the success response.
+  if (!draft.store.read(draft.intent)?.drafts.includes(id)) {
     throw new BffError(404, 'not_found', '找不到该活动')
   }
   enforceGuestLimit(guestLimiters.save, `save:${guestIp}`)
@@ -50,6 +52,7 @@ export default bffAuthHandler(async (event) => {
   const digest = draft.store.digest(draft.intent, payload)
   const state = draft.store.beginSubmission(draft.intent, id, digest)
   if (state.kind === 'replay') return projectSavedEvent(state.id)
+  if (state.kind === 'conflict') throw new BffError(409, 'conflict', '该活动已提交，请勿修改后重复提交')
   if (state.kind === 'busy') {
     // `owns()` stays true until the write is confirmed, so a second identical
     // save would otherwise reach the frozen backend twice. The in-flight marker

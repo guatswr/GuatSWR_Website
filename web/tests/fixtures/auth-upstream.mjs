@@ -2,6 +2,7 @@ import { createServer } from 'node:http'
 import { pathToFileURL } from 'node:url'
 import { handlePublicFixture } from './public-data.mjs'
 import { exitWithParent } from './parent-watch.mjs'
+import { createGuestUpstreamFixture } from './guest-upstream.mjs'
 
 // Deterministic in-memory auth fixture for the BFF integration test. It never
 // starts or writes to the real backend, and it is a separate file from the
@@ -60,6 +61,7 @@ function send(response, status, body, headers = {}) {
 }
 
 export function createAuthUpstreamFixture() {
+  const guest = createGuestUpstreamFixture()
   const state = {
     requests: [],
     loginAttempts: 0,
@@ -197,6 +199,7 @@ export function createAuthUpstreamFixture() {
     // `NUXT_API_BASE` does not have to switch between two fixtures. The
     // credential-leak check above stays scoped to `/api/auth/login`, so public
     // reads cannot pollute it.
+    if (await guest.handle(request, response)) return
     if (handlePublicFixture(request, response)) return
 
     return send(response, 404, { message: 'Not Found' })

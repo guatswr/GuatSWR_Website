@@ -45,6 +45,16 @@ const recordingFetch = (responses: Array<Response | (() => Response)>) => {
 }
 
 describe('closed operation map', () => {
+  it.each(['uploadContent', 'uploadAvatar'] as const)('sends %s through the actual URL boundary and preserves multipart boundaries', async name => {
+    const { impl, calls } = recordingFetch([() => new Response('{"url":"/uploads/image.png"}', { status: 200 })])
+    const upstream = createGuestUpstream({ origin: 'http://127.0.0.1:8080', fetch: impl })
+    const body = new FormData()
+    body.append('eid', '27')
+    await upstream.request({ operation: { name }, body, clientIp: '203.0.113.5' })
+    expect(calls[0]?.url).toBe(`http://127.0.0.1:8080/api/upload_visitor${name === 'uploadAvatar' ? '/avatar' : ''}`)
+    expect(calls[0]?.init.body).toBe(body)
+    expect((calls[0]?.init.headers as Record<string, string>)['content-type']).toBeUndefined()
+  })
   it('maps every guest operation onto its exact frozen route and verb', () => {
     expect(resolveGuestOperation({ name: 'draft' })).toEqual({
       method: 'POST',

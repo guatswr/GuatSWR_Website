@@ -1,0 +1,57 @@
+{
+  "generatedAt": "2026-10-19T06:27:42.819Z",
+  "localOnly": true,
+  "cases": [
+    {
+      "scenario": "normal",
+      "sitemapStatus": 200,
+      "urls": [
+        "https://guatswr.top/",
+        "https://guatswr.top/activities",
+        "https://guatswr.top/history",
+        "https://guatswr.top/join",
+        "https://guatswr.top/logs",
+        "https://guatswr.top/members",
+        "https://guatswr.top/social",
+        "https://guatswr.top/activity/1",
+        "https://guatswr.top/activity/2",
+        "https://guatswr.top/activity/3",
+        "https://guatswr.top/events/betting",
+        "https://guatswr.top/events/bounty",
+        "https://guatswr.top/events/party",
+        "https://guatswr.top/events/stg",
+        "https://guatswr.top/events/zetime"
+      ],
+      "rssItems": 3
+    },
+    {
+      "scenario": "empty",
+      "sitemapStatus": 200,
+      "urls": [
+        "https://guatswr.top/",
+        "https://guatswr.top/activities",
+        "https://guatswr.top/history",
+        "https://guatswr.top/join",
+        "https://guatswr.top/logs",
+        "https://guatswr.top/members",
+        "https://guatswr.top/social",
+        "https://guatswr.top/events/betting",
+        "https://guatswr.top/events/bounty",
+        "https://guatswr.top/events/party",
+        "https://guatswr.top/events/stg",
+        "https://guatswr.top/events/zetime"
+      ],
+      "rssItems": 0
+    },
+    {
+      "scenario": "failure",
+      "sitemapStatus": 503
+    },
+    {
+      "scenario": "oversize",
+      "sitemapStatus": 503
+    }
+  ],
+  "passed": true,
+  "sourceMaps": 0
+}

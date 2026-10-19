@@ -4,6 +4,27 @@ Updated: 2026-10-19 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
 ## Current independent review (Codex, after `bf18a36`)
 
+Latest local follow-up (2026-10-19): public metadata/JSON-LD, bounded RSS and
+the sole sitemap source are implemented. Actual production-output SEO/event/log
+selection passes 20/20; preview indexability-flag probe passes 4/4; local release
+XML rehearsal passes four scenarios. Default preview still forbids indexing.
+Linux Docker build/runtime smoke passed locally. Remote run 39208767023 was red
+(Docker fixture input, empty Windows batch report, two Linux visual comparisons);
+corrections await a new remote run. See [SEO](SEO.md) and
+[workflow evidence](logs/09-seo/README.md).
+
+Homepage performance is still open: first mobile median LCP 2149.3 ms / score
+97; speculative-module correction candidate 1960.7 ms / score 99, still over the
+1800 ms limit. No thresholds were changed. Guest integration also exposed the
+missing per-app CSRF hookup and stale-identity mutation races. These are fixed:
+genuine browser → Nuxt BFF → in-memory frozen upstream workflow passes 6/6 on
+desktop/mobile, including 9 MiB accepted / above-50 MiB rejected uploads. Four
+recursive gates pass (643 units), tooling 56/56, no maps, all 14 initial route
+graphs pass (117275–130126 B gzip). The complete 188-case E2E is running on the
+same artifact. See [guest integration evidence](logs/10-guest-integration/README.md).
+Administration and full-site acceptance remain incomplete. No deployment or QQ
+success notification has occurred. Older checkpoint evidence below is historical.
+
 User steering: continue directly, without Claude/subagent delegation; local
 testing only. The warm-cache `#entry` 500 was independently reproduced in
 headless/full Chromium and fixed by preserving import-map-before-module ordering.

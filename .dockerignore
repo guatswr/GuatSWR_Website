@@ -12,6 +12,12 @@
 **/test-results
 **/playwright-report
 **/.lighthouseci
-frontend
+frontend/**
+!frontend/src/
+!frontend/src/bg/
+!frontend/src/bg/login/
+!frontend/src/bg/login/1.jpg
+!frontend/src/bg/login/2.jpg
+!frontend/src/bg/login/3.jpg
 backend
 backups

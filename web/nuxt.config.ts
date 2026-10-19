@@ -69,9 +69,16 @@ export default defineNuxtConfig({
   },
   // Enable indexability only in the separately approved cutover change.
   robots: { disallow: ['/'] },
-  sitemap: { enabled: false },
+  sitemap: {
+    // Disabled on preview; release rehearsal enables this same XML owner.
+    enabled: false,
+    excludeAppSources: true,
+    sources: ['/api/__sitemap__/urls'],
+    cacheMaxAgeSeconds: 0,
+    autoLastmod: false,
+  },
   ogImage: { enabled: false },
-  schemaOrg: { enabled: false },
+  schemaOrg: { enabled: true, defaults: false, reactive: false },
   linkChecker: { enabled: false },
   aiReady: { enabled: false },
   skewProtection: { enabled: false },
@@ -103,6 +110,12 @@ export default defineNuxtConfig({
     '/api/bff/**': {
       security: { xssValidator: false },
       headers: { 'Cache-Control': 'no-store' },
+    },
+    '/api/bff/guest/upload/**': {
+      // Match the frozen 50 MiB file allowance plus multipart overhead. The
+      // stream parser still enforces exact file/total byte and time limits;
+      // nuxt-security's default 8 MB would reject legitimate uploads first.
+      security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
     },
     '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },

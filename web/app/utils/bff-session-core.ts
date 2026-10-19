@@ -140,6 +140,9 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
     emit()
   }
   const isCurrent = (epoch: number) => !disposed && epoch === generation
+  const assertCurrent = (epoch: number) => {
+    if (!isCurrent(epoch)) throw new BffRequestError(0, 'aborted', '登录状态已变化，请重新发起操作')
+  }
   const runPrivateCleanup = () => {
     deps.onSessionLost?.()
   }
@@ -166,10 +169,12 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
       lastErrorCode: null,
     })
     generation += 1
+    inFlightCsrf = undefined
   }
 
   const clearPrivateState = () => {
     generation += 1
+    inFlightCsrf = undefined
     csrf = ''
     runPrivateCleanup()
     update({
@@ -215,15 +220,24 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
   const ensureCsrf = (): Promise<string> => csrf.length > 0 ? Promise.resolve(csrf) : fetchCsrf()
 
   const performMutation = async <T>(options: BffMutationFacadeOptions<T>): Promise<T> => {
+    const epoch = generation
+    assertCurrent(epoch)
     const token = await ensureCsrf()
+    assertCurrent(epoch)
     const isRejected = options.isCsrfRejection ?? isCsrfRejection
     try {
-      return await options.send(token)
+      const result = await options.send(token)
+      assertCurrent(epoch)
+      return result
     }
     catch (error) {
+      assertCurrent(epoch)
       if (!isRejected(error)) throw error
       const refreshed = await fetchCsrf()
-      return options.send(refreshed)
+      assertCurrent(epoch)
+      const result = await options.send(refreshed)
+      assertCurrent(epoch)
+      return result
     }
   }
 
@@ -308,6 +322,7 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
           timeoutMs: deps.timeoutMs,
           csrfToken: () => csrf,
           refreshCsrf: fetchCsrf,
+          assertCurrent: () => assertCurrent(epoch),
         })
         // A concurrent logout/login changed the generation: the response is
         // stale and must not adopt a user or a token.
@@ -356,6 +371,7 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
           timeoutMs: deps.timeoutMs,
           csrfToken: () => csrf,
           refreshCsrf: fetchCsrf,
+          assertCurrent: () => assertCurrent(epoch),
         })
       }
       catch (error) {
@@ -380,12 +396,14 @@ export function createBffSessionCore(deps: BffSessionCoreDeps = {}): BffSessionC
     async mutate(path, body) {
       const epoch = generation
       await ensureCsrf()
+      assertCurrent(epoch)
       const { data, csrfToken } = await bffMutation(path, {
         body,
         fetchImpl: deps.fetchImpl,
         timeoutMs: deps.timeoutMs,
         csrfToken: () => csrf,
         refreshCsrf: fetchCsrf,
+        assertCurrent: () => assertCurrent(epoch),
       })
       // Do not let an older mutation's rotated token overwrite a newer one.
       if (isCurrent(epoch)) storeCsrf(csrfToken)

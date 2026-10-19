@@ -241,7 +241,9 @@ usePublicPageSeo(() => ({
   query: {
     ...filterQuery.value,
     ...(page.value > 1 ? { page: page.value } : {}),
-    ...umamiQuery.value,
+    ...(activeRange.value !== LOG_RANGE_OPTIONS[0]?.key ? { range: activeRange.value } : {}),
+    ...(environmentType.value !== 'browser' ? { env: environmentType.value } : {}),
+    ...(topLimit.value !== 5 ? { top: topLimit.value } : {}),
   },
 }))
 </script>

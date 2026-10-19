@@ -3,6 +3,7 @@ import type { APIRequestContext, Locator, Page, TestInfo } from '@playwright/tes
 import { writeFileSync } from 'node:fs'
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
+import { compareToArchive } from './public-pages'
 
 /**
  * Event-batch test support. Kept in its own file so it never collides with the
@@ -114,6 +115,8 @@ export async function stubGuestBff(
     const request = route.request()
     const method = request.method()
     const path = new URL(request.url()).pathname
+    if (path === '/api/bff/auth/csrf' && method === 'GET')
+      return route.fulfill({ json: { csrfToken: 'ui-fixture-csrf', expiresIn: 7200 } })
     state.calls.push({ method, path, body: method === 'GET' ? undefined : jsonBody(request) })
     if (path === '/api/bff/guest/events/draft' && method === 'POST')
       return route.fulfill({ json: { id: state.draftId } })
@@ -191,6 +194,43 @@ export async function compareRegion(
     )
   )
   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)
+}
+
+/** Compare modal content at a shared pixel origin, independent of its chrome. */
+export async function compareModalBody(archive: Locator, current: Locator, name: string, info: TestInfo): Promise<void> {
+  const saved = []
+  for (const [index, locator] of [archive, current].entries()) {
+    // Preserve the original capture, including its device-pixel phase.
+    await locator.screenshot({ path: info.outputPath(`${name}-unaligned-${index === 0 ? 'archive' : 'nuxt'}.png`), animations: 'disabled', caret: 'hide' })
+    const context = await locator.evaluate(node => {
+      let ancestor: Element | null = node
+      let background = 'transparent'
+      while (ancestor) {
+        const color = getComputedStyle(ancestor).backgroundColor
+        if (color !== 'transparent' && !/rgba\([^)]*,\s*0\)/.test(color)) { background = color; break }
+        ancestor = ancestor.parentElement
+      }
+      return { background, rect: node.getBoundingClientRect().toJSON(), style: node.getAttribute('style') }
+    })
+    saved.push(context)
+  }
+  writeFileSync(info.outputPath(`${name}-original-context.json`), JSON.stringify(saved, null, 2))
+  expect(saved[0]!.background, 'modal content canvas differs').toBe(saved[1]!.background)
+  // Keep the actually painted ancestor background when isolating a transparent
+  // body. No differing element is hidden, and no pixels inside its box are cut.
+  try {
+    for (const [index, locator] of [archive, current].entries()) {
+      await locator.evaluate((node, background) => { (node as HTMLElement).style.backgroundColor = background }, saved[index]!.background)
+    }
+    await compareToArchive(archive, current, name, info)
+  } finally {
+    for (const [index, locator] of [archive, current].entries()) {
+      await locator.evaluate((node, style) => {
+        if (style === null) node.removeAttribute('style')
+        else node.setAttribute('style', style)
+      }, saved[index]!.style)
+    }
+  }
 }
 
 /** The archived preloader is removed on mount; wait before capturing. */

@@ -4,22 +4,9 @@ import type { EventTransport, UploadSender } from '~/utils/event-transport'
 /**
  * Builds the guest event transport for the interactive public UI.
  *
- * A transport is stateless, so a fresh instance per call is cheaper than any
- * app-level registry. The only app-wide seam is the header provider below: the
- * auth batch registers its CSRF/session helper once; this layer never stores,
- * decodes or re-creates tokens.
+ * The CSRF coordinator belongs to this Nuxt application, never a module-global
+ * callback. It is lazy: rendering an event board makes no auth request.
  */
-
-type HeaderProvider = () =>
-  | Record<string, string>
-  | Promise<Record<string, string>>
-
-let headerProvider: HeaderProvider | undefined
-
-/** Called once by the auth/session integration (no-op until then). */
-export function configureEventTransportHeaders(provider: HeaderProvider | undefined): void {
-  headerProvider = provider
-}
 
 /** The upload implementation is a lazily imported chunk, loaded on first intent. */
 const lazyUpload: UploadSender = async (url, file, fields, options) => {
@@ -37,9 +24,10 @@ export interface EventApiOptions {
 }
 
 export function useEventApi(options: EventApiOptions = {}): EventTransport {
+  const session = useBffSession()
   return createEventTransport({
     upload: lazyUpload,
     canPublish: options.canPublish,
-    getHeaders: () => headerProvider?.() ?? {}
+    performMutation: session.performMutation,
   })
 }

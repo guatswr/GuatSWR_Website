@@ -5,7 +5,7 @@ const { socialLinks: links, pending: loading, error: errorMessage, retry, ready 
 
 await ready
 
-usePublicSeo({ title: '博丽大结界', path: '/social' })
+usePublicSeo({ title: '博丽大结界', path: '/social', description: '桂航绯想天社群与创作平台入口，在你习惯的地方保持联系、分享东方 Project 创作。' })
 </script>
 
 <template>

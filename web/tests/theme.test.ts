@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
-import { parseThemeMode, resolveTheme } from '../app/utils/theme'
+import { runInNewContext } from 'node:vm'
+import { parseThemeMode, resolveTheme, THEME_BOOT_SCRIPT } from '../app/utils/theme'
 
 describe('archived Beijing theme schedule', () => {
   it.each([
@@ -14,5 +15,27 @@ describe('archived Beijing theme schedule', () => {
     expect(parseThemeMode('system')).toBe('auto')
     expect(resolveTheme('light', new Date('2026-10-18T11:00:00Z'))).toBe('light')
     expect(resolveTheme('dark', new Date('2026-10-18T00:00:00Z'))).toBe('dark')
+  })
+  it.each([
+    '2026-10-17T23:59:59Z', '2026-10-18T00:00:00Z',
+    '2026-10-18T10:59:59Z', '2026-10-18T11:00:00Z',
+  ])('boots the same theme before hydration at the Beijing boundary %s', date => {
+    for (const mode of ['auto', 'light', 'dark', 'system', 'storage-failed']) {
+      let dark = false
+      const root = { classList: { toggle: (_name: string, value: boolean) => { dark = value } }, dataset: {} as Record<string, string>, style: {} as Record<string, string> }
+      class Clock extends Date { static override now() { return Date.parse(date) } }
+      runInNewContext(THEME_BOOT_SCRIPT, {
+        Date: Clock,
+        document: { documentElement: root },
+        localStorage: { getItem: () => {
+          if (mode === 'storage-failed') throw new Error('storage unavailable')
+          return mode
+        } },
+      })
+      const expected = resolveTheme(parseThemeMode(mode), new Date(date))
+      expect(root.dataset.theme).toBe(expected)
+      expect(root.style.colorScheme).toBe(expected)
+      expect(dark).toBe(expected === 'dark')
+    }
   })
 })

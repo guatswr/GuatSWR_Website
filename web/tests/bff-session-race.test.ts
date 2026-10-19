@@ -230,6 +230,72 @@ describe('identity and role changes clear private data first', () => {
 })
 
 describe('logout failure and facade retry bounds', () => {
+  it('never sends a queued write after its CSRF wait crosses logout or disposal', async () => {
+    for (const dispose of [false, true]) {
+      const harness = createHarness()
+      const slow = deferred<Response>()
+      harness.handlers.set(BFF_AUTH_PATHS.csrf, () => slow.promise)
+      const core = createBffSessionCore({ fetchImpl: harness.fetchImpl })
+      const send = vi.fn().mockResolvedValue('written')
+      const pending = core.performMutation({ send })
+      const rejected = expect(pending).rejects.toMatchObject({ code: 'aborted' })
+      if (dispose) core.dispose()
+      else core.clearPrivateState()
+      slow.resolve(json({ csrfToken: 'stale' }))
+      await rejected
+      expect(send).not.toHaveBeenCalled()
+    }
+  })
+
+  it('never retries an old write under a newly adopted identity', async () => {
+    const harness = createHarness()
+    const rejection = deferred<string>()
+    const core = createBffSessionCore({ fetchImpl: harness.fetchImpl })
+    await core.login({ username: 'alice', password: 'x' })
+    const send = vi.fn(() => rejection.promise)
+    const pending = core.performMutation({ send })
+    const rejected = expect(pending).rejects.toMatchObject({ code: 'aborted' })
+    await vi.waitFor(() => expect(send).toHaveBeenCalledTimes(1))
+    harness.handlers.set(BFF_AUTH_PATHS.login, () => json({ user: BOB, csrfToken: 'csrf-b' }))
+    await core.login({ username: 'bob', password: 'x' })
+    rejection.reject(new BffRequestError(403, 'csrf_invalid', 'rejected before write'))
+    await rejected
+    expect(send).toHaveBeenCalledTimes(1)
+    expect(core.getSnapshot().user).toEqual(BOB)
+    expect(core.csrf.token()).toBe('csrf-b')
+  })
+
+  it('checks the generation again after refreshing a rejected write token', async () => {
+    const harness = createHarness()
+    const slow = deferred<Response>()
+    const core = createBffSessionCore({ fetchImpl: harness.fetchImpl })
+    await core.csrf.ensure()
+    harness.handlers.set(BFF_AUTH_PATHS.csrf, () => slow.promise)
+    const send = vi.fn().mockRejectedValue(new BffRequestError(403, 'csrf_invalid', 'rejected'))
+    const pending = core.performMutation({ send })
+    const rejected = expect(pending).rejects.toMatchObject({ code: 'aborted' })
+    await vi.waitFor(() => expect(harness.count(BFF_AUTH_PATHS.csrf)).toBe(2))
+    core.clearPrivateState()
+    slow.resolve(json({ csrfToken: 'stale-refresh' }))
+    await rejected
+    expect(send).toHaveBeenCalledTimes(1)
+    expect(core.csrf.token()).toBe('')
+  })
+
+  it('allows a new generation to acquire CSRF while an old generation is pending', async () => {
+    const harness = createHarness()
+    const slow = deferred<Response>()
+    let count = 0
+    harness.handlers.set(BFF_AUTH_PATHS.csrf, () => ++count === 1 ? slow.promise : json({ csrfToken: 'fresh-generation' }))
+    const core = createBffSessionCore({ fetchImpl: harness.fetchImpl })
+    const old = core.csrf.ensure()
+    core.clearPrivateState()
+    await expect(core.csrf.ensure()).resolves.toBe('fresh-generation')
+    slow.resolve(json({ csrfToken: 'stale-generation' }))
+    await old
+    expect(core.csrf.token()).toBe('fresh-generation')
+  })
+
   it('keeps the session on a logout network failure and clears on a later success', async () => {
     const harness = createHarness()
     let failLogout = true

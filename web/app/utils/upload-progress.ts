@@ -1,4 +1,4 @@
-import { EventTransportError } from './event-transport'
+import { EventTransportError, eventResponseError, MAX_EVENT_RESPONSE_BYTES, parseEventResponseText } from './event-transport'
 import type { UploadOptions, UploadSender } from './event-transport'
 
 /**
@@ -36,6 +36,8 @@ export const sendUploadWithProgress: UploadSender = (
     request.open('POST', url, true)
     request.withCredentials = true
     request.responseType = 'text'
+    // Server allows 30 s for ingress plus 8 s upstream; leave bounded headroom.
+    request.timeout = 60_000
     request.setRequestHeader('accept', 'application/json')
     for (const [name, value] of Object.entries(options.headers ?? {})) {
       // Never let a caller override the multipart boundary the browser chooses.
@@ -56,30 +58,22 @@ export const sendUploadWithProgress: UploadSender = (
       finish(() => reject(new EventTransportError('network', '上传已取消')))
     request.ontimeout = () =>
       finish(() => reject(new EventTransportError('unavailable', '上传超时，请重试')))
+    request.onprogress = event => {
+      if (event.loaded > MAX_EVENT_RESPONSE_BYTES) {
+        finish(() => reject(new EventTransportError('unavailable', '服务响应超出限制，请重试')))
+        request.abort()
+      }
+    }
     request.onload = () =>
       finish(() => {
-        if (request.status === 401) {
-          reject(new EventTransportError('unauthenticated', '登录状态已失效，请重新登录', 401))
-          return
-        }
-        if (request.status === 403) {
-          reject(new EventTransportError('forbidden', '没有权限上传该文件', 403))
-          return
-        }
-        if (request.status < 200 || request.status >= 300) {
-          reject(
-            new EventTransportError(
-              request.status >= 500 ? 'unavailable' : 'invalid',
-              request.status >= 500 ? '服务暂时不可用，请稍后重试' : '图片未能上传，请重试',
-              request.status
-            )
-          )
-          return
-        }
         let payload: unknown
-        try {
-          payload = JSON.parse(request.responseText || '{}')
-        } catch {
+        try { payload = parseEventResponseText(request.responseText || '{}') }
+        catch (error) { reject(error); return }
+        if (request.status < 200 || request.status >= 300) {
+          reject(eventResponseError(request.status, payload))
+          return
+        }
+        if (payload === undefined) {
           reject(new EventTransportError('unavailable', '上传响应无法解析，请重试'))
           return
         }

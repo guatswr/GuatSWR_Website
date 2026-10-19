@@ -1,0 +1,57 @@
+{
+  "date": "2026-10-19",
+  "base": "7e0b4d9",
+  "localOnly": true,
+  "node": "24.15.0",
+  "pnpm": "11.25.0",
+  "recursiveGates": {
+    "test": 0,
+    "build": 0,
+    "lint": 0,
+    "lintWarnings": 33,
+    "typecheck": 0,
+    "unitTests": {
+      "web": 575,
+      "shared": 68,
+      "total": 643
+    }
+  },
+  "tooling": {
+    "failed": 0,
+    "passed": 56
+  },
+  "guestE2E": {
+    "flaky": 0,
+    "declared": 6,
+    "retries": 0,
+    "counts": {
+      "passed": 6,
+      "expected": 6,
+      "flaky": 0,
+      "failed": 0,
+      "skipped": 0,
+      "allDeclared": 6
+    },
+    "skipped": 0
+  },
+  "publicRouteJavaScript": {
+    "maxBytes": 130126.0,
+    "budgetBytes": 153600,
+    "minBytes": 117275.0,
+    "sourceMaps": 0,
+    "routes": 14
+  },
+  "fullE2E": {
+    "declared": 188,
+    "state": "running"
+  },
+  "performance": {
+    "scoreBudget": 95,
+    "lcpBudgetMs": 1800,
+    "latestHomeMedianLcpMs": 1960.6676,
+    "score": 99,
+    "state": "failed"
+  },
+  "deployment": "deferred by user",
+  "successNotificationSent": false
+}

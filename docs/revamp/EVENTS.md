@@ -1,5 +1,11 @@
 # Event pages and interactive form UI — implementation notes (worker H, batch 2)
 
+> Latest independent integration (2026-10-19): guest UI now uses per-app CSRF,
+> real multipart uploads and confirmed draft receipts. Six genuine desktop/mobile
+> workflow cases pass against the built Nuxt BFF. See [integration evidence](logs/10-guest-integration/README.md);
+> this supersedes historical source-only/proposed-BFF notes below. Whole-site
+> performance and administration remain open.
+
 Source-only. Routes: `/events` (302 → `/events/bounty`), `/events/{bounty,betting,stg,zetime,party}`.
 Everything is a logical port of the archived `frontend/src` event sources; no redesign, no backend
 or API contract change.

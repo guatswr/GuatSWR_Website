@@ -3,6 +3,8 @@ import { computed, defineAsyncComponent, onBeforeUnmount, ref } from 'vue'
 import type { PublicEvent, PublicEventParticipant, PublicEventsPage } from '@guatswr/shared'
 import EventCard from './EventCard.vue'
 import EventModal from './EventModal.vue'
+import { eventSeoNode } from '#shared/seo'
+import { useSchemaOrg } from '#schema-org/app'
 
 /**
  * Public event board. Titles, copy, statuses and the card layout are the archived
@@ -37,6 +39,11 @@ const { data, error, pending, refresh } = await useFetch<PublicEventsPage>('/api
   default: () => ({ total: 0, page: 1, limit: 50, items: [] })
 })
 const items = computed<PublicEvent[]>(() => data.value.items)
+const route = useRoute()
+usePublicSeo({ title: props.title, description: props.subtitle, path: route.path })
+if (import.meta.server) {
+  useSchemaOrg(items.value.map(event => eventSeoNode(event, route.path, useSiteConfig().url)))
+}
 
 const formOpen = ref(false)
 const signupOpen = ref(false)
