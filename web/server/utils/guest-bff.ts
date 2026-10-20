@@ -12,7 +12,7 @@ import {
 import type { EventSignupInput, EventType } from '@guatswr/shared'
 import { parseClubTime } from '~/utils/club-date'
 import { getBffRuntime, getCsrfBinding, readCookieSession, readEventJsonBody, resolveEventClientIp } from './bff-auth-context'
-import type { BffRuntime } from './bff-auth-context'
+import type { BffRuntime } from './bff-runtime'
 import { isLoopbackHostname, isLoopbackIp, parseIp } from './bff-identity'
 import { BffError } from './bff-errors'
 import {

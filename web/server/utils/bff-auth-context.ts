@@ -14,7 +14,6 @@ import { hashSessionId } from './bff-session'
 import { createBffRuntimeFactory } from './bff-runtime'
 import type { BffRuntime } from './bff-runtime'
 
-export type { BffAuthRuntimeConfig, BffRuntime } from './bff-runtime'
 
 function readRecord(raw: unknown): Record<string, unknown> {
   return typeof raw === 'object' && raw !== null ? raw as Record<string, unknown> : {}

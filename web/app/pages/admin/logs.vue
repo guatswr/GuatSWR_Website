@@ -22,7 +22,7 @@ watch(query.data, () => selectedLogIds.value.clear())
 watch(logLimit, () => { logPage.value = 1 })
 const totalPages = computed(() => Math.ceil(logTotal.value / logLimit.value) || 1)
 const isAllSelected = computed(() => logs.value.length > 0 && logs.value.every(log => selectedLogIds.value.has(log.id)))
-const logActions = ['LOGIN', 'UPLOAD', 'CREATE_ACTIVITY', 'UPDATE_ACTIVITY', 'DELETE_ACTIVITY', 'CREATE_MEMBER', 'UPDATE_MEMBER', 'DELETE_MEMBER', 'CREATE_HISTORY', 'UPDATE_HISTORY', 'DELETE_HISTORY', 'UPDATE_CONFIG', 'CREATE_USER', 'DELETE_USER', 'RESET_PWD', 'UPDATE_PROFILE']
+const logActions = ['LOGIN', 'UPLOAD', 'CREATE_ACTIVITY', 'UPDATE_ACTIVITY', 'DELETE_ACTIVITY', 'RESTORE_ACTIVITY', 'SUBMIT_EVENT', 'CREATE_EVENT', 'APPROVE_EVENT', 'REJECT_EVENT', 'UPDATE_EVENT_STATUS', 'SETTLE_EVENT', 'SET_EVENT_RESULT', 'DELETE_EVENT', 'CREATE_MEMBER', 'UPDATE_MEMBER', 'DELETE_MEMBER', 'RESTORE_MEMBER', 'CREATE_HISTORY', 'UPDATE_HISTORY', 'DELETE_HISTORY', 'RESTORE_HISTORY', 'UPDATE_CONFIG', 'PURGE_RECYCLE_BIN', 'CREATE_USER', 'DELETE_USER', 'RESET_PWD', 'UPDATE_PROFILE', 'CREATE_IP_BAN', 'DELETE_IP_BAN']
 async function fetchLogs() { Object.assign(applied, logFilter); await nextTick(); await query.refetch() }
 function formatTime(value: string) {
   if (!value) return '-'

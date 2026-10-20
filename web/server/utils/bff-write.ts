@@ -356,14 +356,7 @@ export function createFixedWindowRateLimiter(options: FixedWindowRateLimiterOpti
   }
 
   const evictSoonestReset = () => {
-    let oldestKey: string | undefined
-    let oldestReset = Number.POSITIVE_INFINITY
-    for (const [key, state] of windows) {
-      if (state.resetAt < oldestReset) {
-        oldestReset = state.resetAt
-        oldestKey = key
-      }
-    }
+    const oldestKey = windows.keys().next().value
     if (oldestKey !== undefined) windows.delete(oldestKey)
   }
 

@@ -55,7 +55,7 @@ export function adminWorkflowHandler(operation: AdminWorkflow) {
         const input = parseAdminInput(adminEventInputSchema, body)
         const response = await callAdminUpstream(session.admin, { route: operation, body: input })
         const created = projectAdminResponse(z.object({ id: z.number().int().positive() }), response.data)
-        await invalidateBffPublicData(['events'])
+        await invalidateBffPublicData(['events', 'logs'])
         return { ...created, message: '创建成功' }
       }
       case 'event.update':
@@ -68,14 +68,14 @@ export function adminWorkflowHandler(operation: AdminWorkflow) {
         const parsed = schema.safeParse(body)
         if (!parsed.success) throw new BffError(400, 'invalid_request', '活动信息未通过校验')
         await callAdminUpstream(session.admin, { route: operation, params, body: parsed.data })
-        await invalidateBffPublicData(['events'])
+        await invalidateBffPublicData(['events', 'logs'])
         return { id, message: operation === 'event.results' ? '结果已保存' : '更新成功' }
       }
       case 'event.approve':
       case 'event.reject':
       case 'event.delete':
         await callAdminUpstream(session.admin, { route: operation, params })
-        await invalidateBffPublicData(['events'])
+        await invalidateBffPublicData(['events', 'logs'])
         return { message: operation === 'event.approve' ? '已发布' : operation === 'event.reject' ? '已驳回' : '已删除' }
       case 'user.create':
         await callAdminUpstream(session.admin, { route: operation, body: parseAdminInput(adminRegisterSchema, body) })
