@@ -57,6 +57,11 @@ test('workspace navigation, theme, keyboard focus and member search work without
   await page.setViewportSize({ width: 320, height: 800 })
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true)
   await expect(page.getByRole('button', { name: '退出', exact: true })).toBeInViewport()
+  await page.getByRole('button', { name: '退出', exact: true }).click()
+  await page.getByRole('button', { name: '退出登录', exact: true }).click()
+  await expect(page).toHaveURL(/\/login$/)
+  await expect(page.getByLabel('Username')).toBeVisible()
+  await expect(page.getByTestId('route-progress')).toHaveCSS('opacity', '0')
 })
 
 for (const group of [

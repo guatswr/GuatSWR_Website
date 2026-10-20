@@ -181,7 +181,8 @@ export function createAdminUpstreamFixture() {
       const page = Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1
       const limit = Math.min(100, Number.parseInt(url.searchParams.get('limit') ?? '20', 10) || 20)
       const items = state.activities.filter(activity => (includeDeleted || activity.deleted_at === null)
-        && (!publicRead || activity.status === 'published'))
+        // Frozen public reads also include legacy rows with a null status.
+        && (!publicRead || activity.status === null || activity.status === 'published'))
       return send(response, 200, { total: items.length, page, limit, items: items.slice((page - 1) * limit, page * limit) })
     }
     if (url.pathname === '/api/activities/draft' && request.method === 'POST') {

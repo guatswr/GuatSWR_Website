@@ -2,7 +2,29 @@
 
 Updated: 2026-10-21 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest checkpoint: public page changes now use the archive's 200ms leave and
+Latest checkpoint: public navigation now has an immediate 3px top progress bar,
+retaining the archive's blue light/dark gradients and completing after the
+destination's fade-in. Navigation identity prevents cancelled/older callbacks
+from ending newer feedback. Reduced motion is static while waiting; admin
+layout boundaries clear the public indicator. No dependency was added.
+**791** units, typecheck, lint (0 errors / 34 existing warnings), **59** tooling
+tests, shared build and isolated production Nuxt build pass. **16/16** progress
+E2E plus **26/26** mixed existing regression checks pass with zero retries,
+flaky results or skips; **30** approved-reference regions have zero differing
+pixels. The mixed regression exposed a test-fixture list predicate excluding
+legacy null-status activities; it now matches the unchanged backend contract.
+Screenshot protocol and thresholds are unchanged. **15/15** JS graphs pass at
+**122487–137385 B gzip**, with **0 maps** and the production rate limit enabled.
+
+The updated **http://127.0.0.1:3101** preview passes a real-backend Chromium
+social-to-join check: visible progress, one document load, zero page errors.
+The original 3100 process and sampled `web/.output` files remain unchanged;
+unrelated backend/legacy proxy/Nuxt runtime-default edits remain excluded.
+See [log 25](logs/25-route-progress/README.md) and its machine evidence.
+This is local feature acceptance; whole-migration performance/security/a11y,
+cross-platform CI and deployment remain open.
+
+Previous checkpoint: public page changes now use the archive's 200ms leave and
 enter fades, with concurrent Nuxt mounting to avoid an async `out-in` blank-page
 failure. A shared grid preserves height and each page's navbar spacing; native
 scroll restoration completes before the destination becomes clearly visible.

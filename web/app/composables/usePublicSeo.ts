@@ -7,6 +7,9 @@ import type { PublicSeoInput } from '~/utils/public-seo'
 
 /** One reactive metadata owner for every public content page. */
 export function usePublicSeo(input: MaybeRefOrGetter<PublicSeoInput>): void {
+  // Async setup can resume after its page was abandoned. A disposed component
+  // must not resolve context-dependent site config or register stale metadata.
+  if (getCurrentInstance()?.isUnmounted || getCurrentScope()?.active === false) return
   const site = useSiteConfig()
   const origin = trustedSeoOrigin(site.url)
   const seo = computed(() => buildPublicSeo(toValue(input), origin))
