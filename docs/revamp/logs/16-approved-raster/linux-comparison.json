@@ -1,0 +1,76 @@
+{
+  "component": "logs-table-dark",
+  "project": "mobile",
+  "state": "/logs matches the archive (dark)",
+  "width": 2179,
+  "height": 2344,
+  "differingPixels": 1,
+  "allowedDifferingPixels": 1,
+  "approvedDeviation": {
+    "id": "2026-10-20-user-linux-log-border",
+    "reason": "User approved only the documented Linux mobile dark-log avatar-border pixel.",
+    "coordinate": {
+      "x": 670,
+      "y": 1789
+    },
+    "archiveRGBA": [
+      51,
+      65,
+      85,
+      255
+    ],
+    "currentRGBA": [
+      30,
+      41,
+      61,
+      255
+    ],
+    "significantPixels": 1,
+    "captureGeometry": {
+      "width": 2179,
+      "rawWidth": 2181,
+      "height": 2344,
+      "source": "local pinned Noble browser, Node 24.16.0"
+    },
+    "masks": 0,
+    "report": "docs/revamp/evidence/linux-log-raster-953dc79/README.md"
+  },
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false,
+  "capture": {
+    "devicePixelRatio": 2.625,
+    "actualRect": {
+      "x": 0,
+      "y": 0,
+      "width": 830.469,
+      "height": 893
+    },
+    "archiveRect": {
+      "x": 0,
+      "y": 0,
+      "width": 830.469,
+      "height": 893
+    },
+    "rawDevicePixels": {
+      "width": 2181,
+      "height": 2344
+    },
+    "croppedDevicePixels": {
+      "width": 2179,
+      "height": 2344
+    },
+    "targetDevicePixels": {
+      "width": 2179,
+      "height": 2344
+    },
+    "excludedDevicePixels": {
+      "width": 0.98046875,
+      "height": 0.125
+    },
+    "excludedCssPixels": {
+      "width": 0.37351190476190477,
+      "height": 0.047619047619047616
+    },
+    "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+  }
+}

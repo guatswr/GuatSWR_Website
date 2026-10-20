@@ -18,11 +18,26 @@ and SESSION-CUTOVER.md. The latter describes the existing same-origin limited
 legacy cleanup and the future separately approved main-origin rehearsal; it
 does not execute cutover or affect the old site's origin from preview.
 
+Current follow-up: the user approved the single documented Linux mobile dark-log
+border pixel. The exact coordinate/color/count/scope guard passes 15/15 focused
+tests; final recursive typecheck/lint/test pass **767 units**. Fresh actual
+Windows public-page regression passes **48/48** (24 batches, no retry/flaky/skip,
+34 compared regions with zero significant differences). Fresh Linux mobile
+dark-log comparison passes **1/1**, retaining **one** explicitly approved pixel.
+No global threshold or masking change. See [log 16](logs/16-approved-raster/README.md).
+A complete-home performance baseline on the unchanged secondary-admin output is
+**2260.4 ms / score 98**, three valid samples, still over 1800 ms. The previous
+1960.7 ms result is historical, not current acceptance.
+
 Latest Ubuntu artifact pinpoints article flakes to an ambiguous title locator
 (input plus editor toolbar); corrected by role, not sleeps/retries. The public
 dark-log comparison still detects one significant avatar-border pixel. See
 [the decision report](evidence/linux-log-raster-953dc79/README.md). User confirmation
-of a tightly bounded exception is pending; the zero-pixel gate remains intact.
+was subsequently granted for that tightly bounded exception; all other pixels
+retain the zero-difference gate. The fresh local comparison is accepted in log 16.
+Prior `13cff96` CI completes: Windows **254/254**, zero flakes; Linux container
+passes; Ubuntu **253/254**, zero flakes, only the pre-approval dark-log pixel
+fails. Its performance step was skipped, so this is not complete CI acceptance.
 Current real-page LCP, public advanced Markdown, full accessibility/security/
 monitoring and final complete CI remain open. No deployment or QQ success.
 

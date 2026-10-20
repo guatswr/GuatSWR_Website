@@ -1,0 +1,45 @@
+{
+  "generatedAt": "2026-10-20T05:01:45.213Z",
+  "workDir": "/artifacts/codex-approved-raster-local-geometry",
+  "totalShards": 1,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 1,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 1,
+  "counts": {
+    "passed": 1,
+    "expected": 1,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 1
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    }
+  ]
+}

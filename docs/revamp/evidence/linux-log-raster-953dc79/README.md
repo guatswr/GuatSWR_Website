@@ -1,6 +1,9 @@
 # Public dark logs: bounded visual-deviation decision
 
-2026-10-20. **Decision pending; the zero-difference test still fails.**
+2026-10-20. **User approved only this documented pixel exception.**
+Direct answer: “接受这一个已记录的像素例外（推荐）”. Implementation and fresh
+Windows/Linux verification are recorded in [log 16](../../logs/16-approved-raster/README.md);
+the original failing evidence below remains unchanged.
 
 Source: actual Ubuntu [run 39368727728](https://github.com/guatswr/GuatSWR_Website/actions/runs/39368727728),
 commit `953dc79f76a12ea1372e5937b9fdb15a69609ef1`, artifact 12240298746,
@@ -31,11 +34,20 @@ retouching, scaling, masks or replacement background:
 | --- | --- |
 | ![Archive avatar border](archive-detail.png) | ![Nuxt avatar border](nuxt-detail.png) |
 
-Proposed decision: accept **this documented avatar-border difference only** as a
-specific public visual exception. If approved, the test must still retain both
+Approved decision: accept **this documented avatar-border difference only** as a
+specific public visual exception. The test must still retain both
 original screenshots/diff, require identical capture geometry, allow zero
 differences elsewhere, and fail for an additional pixel or a different color/
 location. This is not approval to loosen the global threshold, mask an avatar,
-alter public styling or skip the comparison. If declined or unanswered, retain
-the current zero-pixel gate and leave this item open. No test policy has been
-changed by this report. Other public, performance and security gates remain.
+alter public styling or skip the comparison. All other comparisons retain zero
+unapproved pixels. Other public, performance and security gates remain.
+
+Fresh local Noble/Chromium captures measure a different whole-table width:
+2179 cropped / 2181 raw physical pixels, still height 2344 and DPR 2.625.
+Both sites have identical geometry within that environment. The significant
+pixel remains exactly `(670,1789)` with the same RGBA pair. The guard explicitly
+enumerates this measured geometry and the original Ubuntu geometry above;
+it does not accept arbitrary image sizes. The first local verification failed
+because only the Ubuntu width was enumerated; its raw report is retained.
+The subsequent fresh browser run passes with the exact approved pixel still
+reported as **one**, not zero. No additional visual difference is authorized.

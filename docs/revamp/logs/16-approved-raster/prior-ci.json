@@ -1,0 +1,28 @@
+{
+  "run": 39370918315,
+  "commit": "13cff960d63bc14be627d42632bc4f7af06b9024",
+  "url": "https://github.com/guatswr/GuatSWR_Website/actions/runs/39370918315",
+  "checkedAt": "2026-10-20T05:02:00Z",
+  "windows": {
+    "job": 118458359127,
+    "conclusion": "success",
+    "passed": 254,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "units": 752,
+    "performanceStep": "skipped by existing Linux-only CI policy"
+  },
+  "linuxContainer": { "job": 118458359281, "conclusion": "success" },
+  "ubuntu": {
+    "job": 118458359297,
+    "conclusion": "failure",
+    "passed": 253,
+    "flaky": 0,
+    "failed": 1,
+    "skipped": 0,
+    "failure": "mobile public-pages.spec.ts /logs matches the archive (dark), batch 121",
+    "performanceStep": "skipped after E2E failure"
+  },
+  "scope": "Prior production source, before the approved raster guard. This is not final migration acceptance."
+}

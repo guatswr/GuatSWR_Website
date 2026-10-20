@@ -1,0 +1,14 @@
+docs/revamp/evidence/lcp-trace-analysis.md
+docs/revamp/evidence/linux-log-raster-953dc79/README.md
+docs/revamp/logs/16-approved-raster/home-performance-baseline.json
+docs/revamp/logs/16-approved-raster/linux-comparison.json
+docs/revamp/logs/16-approved-raster/linux-e2e.json
+docs/revamp/logs/16-approved-raster/prior-ci.json
+docs/revamp/logs/16-approved-raster/README.md
+docs/revamp/logs/16-approved-raster/route-budget.json
+docs/revamp/logs/16-approved-raster/windows-public-e2e.json
+docs/revamp/STATUS.md
+web/tests/approved-raster.test.ts
+web/tests/e2e/support/approved-raster.ts
+web/tests/e2e/support/public-pages.ts
+docs/revamp/logs/16-approved-raster/files.txt

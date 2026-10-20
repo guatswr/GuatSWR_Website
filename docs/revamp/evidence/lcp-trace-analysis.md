@@ -2,7 +2,7 @@
 
 > Historical foundation/scaffold checkpoint, **not current homepage acceptance**.
 > After the full homepage migration, the latest measured mobile median is
-> **1960.7 ms / score 99**, above the unchanged 1800 ms limit. See STATUS.md.
+> **2260.4 ms / score 98**, above the unchanged 1800 ms limit (log 16). See STATUS.md.
 > The 1507.7 ms result below must not be quoted as the completed site's LCP.
 
 Date: 2026-10-19 · Author: Hermes (self-verified; Codex to re-verify)

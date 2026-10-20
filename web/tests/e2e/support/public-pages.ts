@@ -16,6 +16,7 @@ import { writeFileSync } from 'node:fs'
 // `The "cb" argument must be of type function` when awaited; the promise API
 // lives in `node:fs/promises`.
 import { readFile } from 'node:fs/promises'
+import { approvedLogBorderPixel } from './approved-raster'
 
 /**
  * The isolated fixture origins follow the same `E2E_PORT_BASE` derivation as
@@ -250,7 +251,7 @@ function cropCapture(rawBytes: CaptureBytes, crop: DevicePixelCrop, info: TestIn
 
 /**
  * Archive-vs-new comparison: same data, same viewport, same theme, reduced
- * motion, settled images, whole-device-pixel crop, zero differing pixels. Raw,
+ * motion, settled images, whole-device-pixel crop, zero unapproved pixels. Raw,
  * archive, new and diff PNGs are written next to the report for inspection.
  */
 export async function compareToArchive(
@@ -302,6 +303,12 @@ export async function compareToArchive(
 
   const diff = new PNG({ width: oldImage.width, height: oldImage.height })
   const pixels = pixelmatch(oldImage.data, newImage.data, diff.data, oldImage.width, oldImage.height, { threshold: 0.1 })
+  const approvedDeviation = approvedLogBorderPixel({
+    platform: process.platform, project: info.project.name, component: name, state: info.title,
+    devicePixelRatio: crop.devicePixelRatio,
+    rawWidth: crop.rawDevicePixels.width, rawHeight: crop.rawDevicePixels.height,
+    pixels, archive: oldImage, current: newImage, diff,
+  })
   writeFileSync(info.outputPath(`${name}-diff.png`), PNG.sync.write(diff))
   writeFileSync(info.outputPath(`${name}-comparison.json`), JSON.stringify({
     component: name,
@@ -310,6 +317,8 @@ export async function compareToArchive(
     width: oldImage.width,
     height: oldImage.height,
     differingPixels: pixels,
+    allowedDifferingPixels: approvedDeviation ? 1 : 0,
+    ...(approvedDeviation ? { approvedDeviation } : {}),
     pixelmatchThreshold: 0.1,
     includeAntialias: false,
     capture: {
@@ -327,5 +336,5 @@ export async function compareToArchive(
       source: 'geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png',
     },
   }, null, 2))
-  expect(pixels, `${name}: pixels different from the archived site`).toBe(0)
+  expect(pixels, `${name}: unapproved pixels different from the archived site`).toBe(approvedDeviation ? 1 : 0)
 }
