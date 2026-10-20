@@ -47,5 +47,13 @@
     "Public preload experiment withdrawn; Lighthouse still fails baseline 1800ms",
     "Full CI red: advanced/math fixture cache contamination requires separate correction",
     "Full-site a11y/security/monitoring/performance not accepted"
-  ]
+  ],
+  "browser": {
+    "passed": 32,
+    "expected": 32,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 32
+  }
 }

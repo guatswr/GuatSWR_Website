@@ -238,14 +238,14 @@ async function devicePixelCrop(reference: Locator, current: Locator, name: strin
 }
 
 /** Keep the uncropped capture, then cut the fully covered device pixels out. */
-function cropCapture(rawBytes: CaptureBytes, crop: DevicePixelCrop, info: TestInfo, label: string) {
+function cropCapture(rawBytes: CaptureBytes, crop: DevicePixelCrop, info: TestInfo, label: string, origin = { x: 0, y: 0 }) {
   const raw = PNG.sync.read(rawBytes)
   const target = crop.targetDevicePixels
-  expect(raw.width, `${label}: raw capture is narrower than the device pixel crop`).toBeGreaterThanOrEqual(target.width)
-  expect(raw.height, `${label}: raw capture is shorter than the device pixel crop`).toBeGreaterThanOrEqual(target.height)
+  expect(raw.width, `${label}: raw capture is narrower than the device pixel crop`).toBeGreaterThanOrEqual(origin.x + target.width)
+  expect(raw.height, `${label}: raw capture is shorter than the device pixel crop`).toBeGreaterThanOrEqual(origin.y + target.height)
   writeFileSync(info.outputPath(`${label}-raw.png`), rawBytes)
   const cropped = new PNG({ width: target.width, height: target.height })
-  PNG.bitblt(raw, cropped, 0, 0, target.width, target.height, 0, 0)
+  PNG.bitblt(raw, cropped, origin.x, origin.y, target.width, target.height, 0, 0)
   return { bytes: PNG.sync.write(cropped), rawDevicePixels: { width: raw.width, height: raw.height } }
 }
 
@@ -259,6 +259,7 @@ export async function compareToArchive(
   current: Locator,
   name: string,
   info: TestInfo,
+  alignment: 'fixed' | 'natural' = 'fixed',
 ): Promise<void> {
   const options = { animations: 'disabled' as const, caret: 'hide' as const }
   await waitForVisibleImages(reference)
@@ -269,20 +270,59 @@ export async function compareToArchive(
   const saved = await Promise.all([reference, current].map(async locator => ({
     style: await locator.getAttribute('style'), rect: await locator.boundingBox(),
   })))
-  for (const [index, locator] of [reference, current].entries()) {
-    const rect = saved[index]!.rect
-    if (!rect) throw new Error(`${name}: region has no bounds`)
-    await locator.evaluate((node, width) => Object.assign((node as HTMLElement).style, {
-      position: 'fixed', top: '0', left: '0', width: `${width}px`, zIndex: '9999',
-    }), rect.width)
+  if (alignment === 'natural') {
+    for (const locator of [reference, current]) {
+      await locator.evaluate(node => node.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' }))
+      const bounds = await locator.boundingBox()
+      if (!bounds) throw new Error(`${name}: natural region has no bounds`)
+      const viewport = await locator.page().evaluate(() => ({ width: innerWidth, height: innerHeight }))
+      expect(bounds.y, `${name}: natural capture overlaps fixed navigation`).toBeGreaterThanOrEqual(64)
+      expect(bounds.y + bounds.height, `${name}: natural region extends past viewport`).toBeLessThanOrEqual(viewport.height)
+      expect(bounds.x).toBeGreaterThanOrEqual(0)
+      expect(bounds.x + bounds.width).toBeLessThanOrEqual(viewport.width)
+      expect(await locator.evaluate(node => {
+        const rect = node.getBoundingClientRect()
+        return node.contains(document.elementFromPoint(rect.x + rect.width / 2, rect.y + rect.height / 2))
+      }), `${name}: another layer covers the natural region centre`).toBe(true)
+    }
   }
-  await Promise.all([reference.page(), current.page()].map(async (page) => {
-    await page.evaluate(() => window.scrollTo(0, 0))
-  }))
-  const crop = await devicePixelCrop(reference, current, name)
-  const archiveCapture = cropCapture(await reference.screenshot(options), crop, info, `${name}-archive`)
-  const newCapture = cropCapture(await current.screenshot(options), crop, info, `${name}-nuxt`)
-  for (const [index, locator] of [reference, current].entries()) {
+  else {
+    for (const [index, locator] of [reference, current].entries()) {
+      const rect = saved[index]!.rect
+      if (!rect) throw new Error(`${name}: region has no bounds`)
+      await locator.evaluate((node, width) => Object.assign((node as HTMLElement).style, {
+        position: 'fixed', top: '0', left: '0', width: `${width}px`, zIndex: '9999',
+      }), rect.width)
+    }
+    await Promise.all([reference.page(), current.page()].map(async (page) => {
+      await page.evaluate(() => window.scrollTo(0, 0))
+    }))
+  }
+  const alignedCrop = await devicePixelCrop(reference, current, name)
+  const naturalInteriors = alignment === 'natural' ? await Promise.all([reference, current].map(async locator => {
+    const rect = await locator.boundingBox()
+    if (!rect) throw new Error(`${name}: natural capture lost its bounds`)
+    const dpr = alignedCrop.devicePixelRatio
+    const origin = { x: Math.ceil(rect.x * dpr), y: Math.ceil(rect.y * dpr) }
+    const end = { x: Math.floor((rect.x + rect.width) * dpr), y: Math.floor((rect.y + rect.height) * dpr) }
+    const excludedEdges = { left: origin.x - rect.x * dpr, top: origin.y - rect.y * dpr,
+      right: (rect.x + rect.width) * dpr - end.x, bottom: (rect.y + rect.height) * dpr - end.y }
+    for (const amount of Object.values(excludedEdges)) {
+      expect(amount).toBeGreaterThanOrEqual(0)
+      expect(amount, `${name}: only a partial device pixel may be excluded at each edge`).toBeLessThan(1)
+    }
+    return { origin, target: { width: end.x - origin.x, height: end.y - origin.y }, excludedEdges }
+  })) : null
+  if (naturalInteriors) {
+    expect(naturalInteriors[1]!.target, `${name}: naturally covered pixel dimensions differ`).toEqual(naturalInteriors[0]!.target)
+  }
+  const crop: DevicePixelCrop = naturalInteriors ? { ...alignedCrop, targetDevicePixels: naturalInteriors[0]!.target } : alignedCrop
+  // A viewport PNG has an exact device-pixel origin. Locator screenshots round
+  // natural fractional CSS bounds outward, which cannot be cropped at (0,0)
+  // while honestly claiming only completely covered component pixels.
+  const archiveCapture = cropCapture(await (alignment === 'natural' ? reference.page().screenshot(options) : reference.screenshot(options)), crop, info, `${name}-archive`, naturalInteriors?.[0]?.origin)
+  const newCapture = cropCapture(await (alignment === 'natural' ? current.page().screenshot(options) : current.screenshot(options)), crop, info, `${name}-nuxt`, naturalInteriors?.[1]?.origin)
+  if (alignment === 'fixed') for (const [index, locator] of [reference, current].entries()) {
     await locator.evaluate((node, style) => {
       if (style === null) node.removeAttribute('style')
       else node.setAttribute('style', style)
@@ -328,12 +368,16 @@ export async function compareToArchive(
       rawDevicePixels: crop.rawDevicePixels,
       croppedDevicePixels: { width: oldImage.width, height: oldImage.height },
       targetDevicePixels: crop.targetDevicePixels,
-      excludedDevicePixels: crop.excludedDevicePixels,
-      excludedCssPixels: {
-        width: crop.excludedDevicePixels.width / crop.devicePixelRatio,
-        height: crop.excludedDevicePixels.height / crop.devicePixelRatio,
-      },
-      source: 'geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png',
+      ...(naturalInteriors ? { naturalInteriors } : {
+        excludedDevicePixels: crop.excludedDevicePixels,
+        excludedCssPixels: {
+          width: crop.excludedDevicePixels.width / crop.devicePixelRatio,
+          height: crop.excludedDevicePixels.height / crop.devicePixelRatio,
+        },
+      }),
+      source: alignment === 'natural' ? 'viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png'
+        : 'geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png',
+      alignment,
     },
   }, null, 2))
   expect(pixels, `${name}: unapproved pixels different from the archived site`).toBe(approvedDeviation ? 1 : 0)

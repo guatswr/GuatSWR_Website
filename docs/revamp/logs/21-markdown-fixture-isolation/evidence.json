@@ -1,0 +1,66 @@
+{
+  "base": "ed05908",
+  "gates": {
+    "typecheck": 0,
+    "lintErrors": 0,
+    "lintWarnings": 34,
+    "unitPassed": 785,
+    "build": 0
+  },
+  "browser": {
+    "passed": 8,
+    "expected": 8,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 8
+  },
+  "mixed": {
+    "passed": 4,
+    "expected": 4,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 4
+  },
+  "comparisons": {
+    "regions": 16,
+    "differingPixels": 0,
+    "threshold": 0.1
+  },
+  "sources": [
+    {
+      "path": "web/tests/e2e/public-markdown-advanced.spec.ts",
+      "sha256Utf8Lf": "2266c1255685f22df51e2436b9b4dfa665c82eba050fc052fedf928c6e7013c7"
+    },
+    {
+      "path": "web/tests/e2e/public-math-visual.spec.ts",
+      "sha256Utf8Lf": "f60e96f5280c0b34e01348045394aadc9626f4f0e42ac9656fe775b9507052cf"
+    },
+    {
+      "path": "web/tests/e2e/support/public-pages.ts",
+      "sha256Utf8Lf": "8288b217ec1ef2cb9b7c7ee445c55f901411b7d4e7068a2cf70d85e729291aa8"
+    },
+    {
+      "path": "web/tests/fixtures/auth-upstream.mjs",
+      "sha256Utf8Lf": "7bca5adfcd5f0c7f76b6fd4b8effec9062a61e7a9f23454f50c856e4060a3bfd"
+    },
+    {
+      "path": "web/tests/fixtures/budget-upstream.mjs",
+      "sha256Utf8Lf": "302a9e9e2c1aee90ecbfffee19ea831a5ca850606165d242191803b11c4f70c7"
+    },
+    {
+      "path": "web/tests/fixtures/public-markdown-advanced.mjs",
+      "sha256Utf8Lf": "f562804615f9b0179b5e5fe9a68a0b6d78c7f821a069c76ec9496f0acbbd5e25"
+    },
+    {
+      "path": "web/tests/fixtures/markdown-details.mjs",
+      "sha256Utf8Lf": "0f08658424d364d3c599446c330f1464bf01f4987177031ef9caa3c487d16230"
+    },
+    {
+      "path": "web/tests/markdown-fixture-isolation.test.ts",
+      "sha256Utf8Lf": "0bf6237c46a9f24ce1b7e83556c850208bccd996ff7ef727f46fc4d14001fd60"
+    }
+  ],
+  "scope": "Fixture and test protocol only; production app unchanged; full CI/performance/a11y/security not accepted"
+}

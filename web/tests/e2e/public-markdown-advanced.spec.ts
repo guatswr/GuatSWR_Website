@@ -1,14 +1,9 @@
 import { expect, test } from '@playwright/test'
 import { readFile, readdir } from 'node:fs/promises'
-import { publicAdvancedMarkdownFixture as source } from '../fixtures/public-markdown-advanced.mjs'
 
 const base = Number(process.env.E2E_PORT_BASE ?? 3100)
-const fixture = `http://127.0.0.1:${base + 82}`
 
-test.beforeEach(async ({ request, page }) => {
-  // In-memory canonical v1 article, read through the real public BFF. The same
-  // content in every case avoids changing an already cached public record.
-  expect((await request.post(`${fixture}/__fixture/admin`, { data: { publicMarkdown: source } })).ok()).toBe(true)
+test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => localStorage.setItem('theme-preference', 'light'))
 })
 
@@ -16,7 +11,7 @@ test('math and readable diagram source exist without JavaScript', async ({ brows
   const context = await browser.newContext({ javaScriptEnabled: false, baseURL })
   try {
     const page = await context.newPage()
-    expect((await page.goto('/activity/1'))?.status()).toBe(200)
+    expect((await page.goto('/activity/991'))?.status()).toBe(200)
     const body = page.locator('.safe-markdown')
     await expect(body.getByRole('heading', { name: '高阶公式与图表回归' })).toBeVisible()
     await expect(body.locator('math')).toHaveCount(3)
@@ -50,7 +45,7 @@ test('diagram engines load only after keyboard activation and clean up on hide, 
   })
   page.on('pageerror', error => errors.push(error.message))
   page.on('console', message => { if (/Content Security Policy|Refused to (load|execute|apply)/i.test(message.text())) csp.push(message.text()) })
-  expect((await page.goto('/activity/1', { waitUntil: 'load' }))?.status()).toBe(200)
+  expect((await page.goto('/activity/991', { waitUntil: 'load' }))?.status()).toBe(200)
   const body = page.locator('.safe-markdown'), blocks = body.locator('.md-mermaid-wrapper')
   await expect(blocks).toHaveCount(3)
   await page.waitForTimeout(2000) // Same interaction-free observation window as the route collector.

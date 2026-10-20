@@ -5,6 +5,7 @@ import { createAdminUpstreamFixture } from './admin-upstream.mjs'
 import { exitWithParent } from './parent-watch.mjs'
 import { createGuestUpstreamFixture } from './guest-upstream.mjs'
 import { createAdminEventsUpstreamFixture } from './admin-events-upstream.mjs'
+import { handleMarkdownDetailFixture } from './markdown-details.mjs'
 
 // Deterministic in-memory auth fixture for the BFF integration test. It never
 // starts or writes to the real backend, and it is a separate file from the
@@ -122,11 +123,6 @@ export function createAuthUpstreamFixture() {
     if (url.pathname === '/__fixture/admin') {
       if (request.method === 'POST') {
         const body = await readJsonBody(request); adminEnabled = true
-        // Public Markdown browser acceptance, isolated in memory. No real backend writes.
-        if (typeof body.publicMarkdown === 'string' && body.publicMarkdown.length <= 200_000) {
-          const article = admin.state.activities.find(item => item.id === 1)
-          if (article) article.content = body.publicMarkdown
-        }
         if (body.stalledBackup && !admin.state.backups.some(item => item.name === 'full_stall.tar.gz'))
           admin.state.backups.push({ type: 'full', name: 'full_stall.tar.gz', size: 100 * 1024 * 1024, mtime: 1_792_310_400_000 })
         if (body.failNext && Number.isInteger(body.failNext.status)) admin.state.failNext = body.failNext
@@ -236,6 +232,7 @@ export function createAuthUpstreamFixture() {
     // `NUXT_API_BASE` does not have to switch between two fixtures. The
     // credential-leak check above stays scoped to `/api/auth/login`, so public
     // reads cannot pollute it.
+    if (handleMarkdownDetailFixture(request, response)) return
     if (adminEnabled) {
       const mutableResource = /^\/api\/(?:activities|members|history)(?:\/|$)/.test(url.pathname)
         || url.pathname === '/api/config' || url.pathname.startsWith('/api/admin/')

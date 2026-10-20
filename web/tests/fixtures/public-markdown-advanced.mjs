@@ -10,3 +10,5 @@ export const publicAdvancedMarkdownFixture = [
   '<span class="katex" style="position:absolute;top:-1000px">author text</span>',
   '<svg><path d="M0 0" onload="window.publicPwned=1"></path></svg>',
 ].join('\n\n')
+
+export const publicMathMarkdownFixture = '## 公式对照\n\n行内公式 $x+1$ 。\n\n根式 $\\sqrt{x}+\\frac{1}{2}$ 。\n\n$$\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix}$$'

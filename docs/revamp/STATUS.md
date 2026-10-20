@@ -2,6 +2,17 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
+Latest local test correction: shared mutable article 1 is replaced by stable,
+detail-only fixture IDs 991/992. Every math case warms advanced content first
+through the real BFF and checks ordinary article 1 afterwards. Natural-context
+viewport captures replace formula captures polluted by fixed navigation/cover
+pixels. **8/8 unique cases**, plus **4/4 repeated mixed cases**, all pass without
+retry/flaky/skip; all **16** unique formula/prose regions are zero-difference.
+Four recursive gates pass **785 units**, lint 0 errors / 34 warnings, zero maps.
+Production app/cache/backend/frozen frontend source is unchanged in this
+workstream. See [log 21](logs/21-markdown-fixture-isolation/README.md).
+Fresh full CI remains required; earlier f8a4dbe host results are red.
+
 Runtime correction after f8a4dbe: renewed rate-limit windows are now evicted by
 expiry instead of insertion order; three-sample score/LCP medians are independent.
 Four recursive gates pass **784 units**, lint 0 errors / 34 warnings, tooling

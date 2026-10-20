@@ -1,0 +1,74 @@
+{
+  "component": "math-1-light",
+  "project": "mobile",
+  "state": "formulas and prose match the actual archived renderer (light)",
+  "width": 163,
+  "height": 57,
+  "differingPixels": 0,
+  "allowedDifferingPixels": 0,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false,
+  "capture": {
+    "devicePixelRatio": 2.625,
+    "actualRect": {
+      "x": 81.391,
+      "y": 406.344,
+      "width": 62.266,
+      "height": 22
+    },
+    "archiveRect": {
+      "x": 81.391,
+      "y": 406.344,
+      "width": 62.266,
+      "height": 22
+    },
+    "rawDevicePixels": {
+      "width": 1082,
+      "height": 2202
+    },
+    "croppedDevicePixels": {
+      "width": 163,
+      "height": 57
+    },
+    "targetDevicePixels": {
+      "width": 163,
+      "height": 57
+    },
+    "naturalInteriors": [
+      {
+        "origin": {
+          "x": 214,
+          "y": 1067
+        },
+        "target": {
+          "width": 163,
+          "height": 57
+        },
+        "excludedEdges": {
+          "left": 0.349609375,
+          "top": 0.34765625,
+          "right": 0.09765625,
+          "bottom": 0.40234375
+        }
+      },
+      {
+        "origin": {
+          "x": 214,
+          "y": 1067
+        },
+        "target": {
+          "width": 163,
+          "height": 57
+        },
+        "excludedEdges": {
+          "left": 0.349609375,
+          "top": 0.34765625,
+          "right": 0.09765625,
+          "bottom": 0.40234375
+        }
+      }
+    ],
+    "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+    "alignment": "natural"
+  }
+}
