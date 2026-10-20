@@ -1,0 +1,169 @@
+{
+  "generatedAt": "2026-10-20T04:30:13.667Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-admin-secondary-reviewed",
+  "totalShards": 5,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 5,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 10,
+  "counts": {
+    "passed": 10,
+    "expected": 10,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 10
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::admin-secondary.spec.ts::115:1::admin-secondary.spec.ts > home link icon upload uses the fixed icon category and persists through public configuration",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-secondary.spec.ts::133:1::admin-secondary.spec.ts > large backup hands the actual stream to the browser without a Blob or false completion notice",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-secondary.spec.ts::28:1::admin-secondary.spec.ts > avatar-only saves retain sessions while enabling and disabling 2FA requires fresh login",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-secondary.spec.ts::65:1::admin-secondary.spec.ts > global logout requires super admin, permits cancellation and revokes independently created sessions",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-secondary.spec.ts::88:1::admin-secondary.spec.ts > recycle purge confirms its exact scope, preserves active records and excludes deleted events",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-secondary.spec.ts::115:1::admin-secondary.spec.ts > home link icon upload uses the fixed icon category and persists through public configuration",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-secondary.spec.ts::133:1::admin-secondary.spec.ts > large backup hands the actual stream to the browser without a Blob or false completion notice",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-secondary.spec.ts::28:1::admin-secondary.spec.ts > avatar-only saves retain sessions while enabling and disabling 2FA requires fresh login",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-secondary.spec.ts::65:1::admin-secondary.spec.ts > global logout requires super admin, permits cancellation and revokes independently created sessions",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-secondary.spec.ts::88:1::admin-secondary.spec.ts > recycle purge confirms its exact scope, preserves active records and excludes deleted events",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    }
+  ]
+}

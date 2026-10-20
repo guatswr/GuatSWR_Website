@@ -70,6 +70,9 @@ export function createAuthUpstreamFixture() {
   admin.state.members = structuredClone(publicMembersFixture)
   admin.state.history = structuredClone(publicHistoryFixture)
   admin.state.config = publicConfigFixture()
+  // The public fixture intentionally contains a nonnumeric private-looking
+  // sentinel. Auth needs a real version counter, independent of that sentinel.
+  admin.state.config.token_version = '1'
   let adminEnabled = false
   const state = {
     requests: [],
@@ -77,6 +80,7 @@ export function createAuthUpstreamFixture() {
     lockLogin: false,
     loginDelayMs: 0,
     tokenTtlSeconds: 3600,
+    tokenVersion: Number(admin.state.config.token_version),
     meStatus: null,
     hugeMe: false,
     users: new Map([
@@ -173,7 +177,7 @@ export function createAuthUpstreamFixture() {
         const remaining = Math.max(0, 5 - state.loginAttempts)
         return send(response, 401, { message: `用户名或密码错误 (剩余 ${remaining} 次)` })
       }
-      if (user.twofa) {
+      if (user.twofaEnabled) {
         if (!body.twofa) return send(response, 401, { message: '需要二步密码' })
         if (body.twofa !== user.twofa) return send(response, 401, { message: `二步密码错误 ${body.twofa}` })
       }
@@ -181,7 +185,7 @@ export function createAuthUpstreamFixture() {
         id: user.id,
         username: user.username,
         role: user.role,
-        token_version: 1,
+        token_version: state.tokenVersion,
         exp: Math.floor(Date.now() / 1000) + state.tokenTtlSeconds,
       })
       return send(response, 200, {
@@ -212,6 +216,7 @@ export function createAuthUpstreamFixture() {
       const user = [...state.users.values()].find(candidate => candidate.id === payload.id)
       if (!user) return send(response, 404, { message: '用户不存在' })
       if (user.disabled) return send(response, 401, { message: '账号不可用' })
+      if (payload.token_version !== state.tokenVersion) return send(response, 401, { message: '登录状态已过期' })
       return send(response, 200, {
         id: user.id,
         username: user.username,
@@ -248,10 +253,12 @@ export function createAuthUpstreamFixture() {
           if (user && body) {
             if ('avatar' in body) user.avatar = body.avatar
             if ('password' in body) user.password = body.password
-            if ('twofa_password' in body) user.twofa = body.twofa_password
-            if ('twofa_enabled' in body) user.twofaEnabled = body.twofa_enabled ? 1 : 0
+            if (body.twofa_enabled === false) { user.twofaEnabled = 0; user.twofa = null }
+            else if (body.twofa_password) { user.twofaEnabled = 1; user.twofa = body.twofa_password }
           }
         }
+        if (url.pathname === '/api/admin/token-version/refresh' && response.statusCode === 200)
+          state.tokenVersion = Number(admin.state.config.token_version)
         return
       }
     }

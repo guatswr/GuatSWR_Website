@@ -1,5 +1,11 @@
 # Opaque BFF auth server (batch S) — implementation notes
 
+Current integration evidence is in [STATUS](STATUS.md) and logs 11–15; the
+batch-S notes below preserve their original, historical scope. The private BFF,
+profile revocation and client cleanup are now integrated. Session transition
+policy is specified in [SESSION-CUTOVER](SESSION-CUTOVER.md); it performs no
+deployment, main-site cleanup or global token refresh.
+
 Status 2026-10-19: **source and tests written, not integrated and not executed
 in this worktree.** No dependency install, build, Nuxt prepare, browser, real
 backend or git operation was run here. Codex must review this diff, apply the

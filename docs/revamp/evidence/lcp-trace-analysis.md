@@ -1,5 +1,10 @@
 # LCP trace analysis and Stage 02 performance closure (checklist 01–05)
 
+> Historical foundation/scaffold checkpoint, **not current homepage acceptance**.
+> After the full homepage migration, the latest measured mobile median is
+> **1960.7 ms / score 99**, above the unchanged 1800 ms limit. See STATUS.md.
+> The 1507.7 ms result below must not be quoted as the completed site's LCP.
+
 Date: 2026-10-19 · Author: Hermes (self-verified; Codex to re-verify)
 Branch: `revamp/nuxt-foundation` · Fixtures: `/`, `/__revamp/layout`
 

@@ -95,7 +95,9 @@ export function createAdminUpstreamFixture() {
     if (headers.cookie || headers.origin || headers['x-real-ip'] || headers['cf-connecting-ip'] || headers.forwarded) {
       return send(response, 500, { message: 'credential-leak', error: 'SQLITE_ERROR: leak' })
     }
-    if (state.failNext) {
+    if (state.failNext
+      && (!state.failNext.method || state.failNext.method === request.method)
+      && (!state.failNext.path || state.failNext.path === url.pathname)) {
       const failure = state.failNext
       state.failNext = null
       return send(response, failure.status, failure.body)
@@ -142,7 +144,7 @@ export function createAdminUpstreamFixture() {
       const form = await new Response(Buffer.concat(chunks), { headers: { 'content-type': request.headers['content-type'] } }).formData()
       const file = form.get('file')
       if (!(file instanceof File)) return send(response, 400, { message: 'missing file' })
-      state.uploads.push({ name: file.name, type: file.type, size: file.size, fields: [...form.keys()] })
+      state.uploads.push({ name: file.name, type: file.type, size: file.size, fields: [...form.keys()], category: url.searchParams.get('category') })
       return send(response, 200, { url: `/uploads/admin-${state.uploads.length}.png` })
     }
 
@@ -349,7 +351,18 @@ export function createAdminUpstreamFixture() {
       return send(response, 200, { message: '二步密码已重置' })
     }
     if (url.pathname === '/api/admin/token-version/refresh' && request.method === 'POST') {
-      return send(response, 200, { message: '已强制刷新登录状态', version: 8 })
+      const version = Number(state.config.token_version || '0') + 1
+      state.config.token_version = String(version)
+      return send(response, 200, { message: '已强制刷新登录状态', version })
+    }
+
+    if (url.pathname === '/api/admin/recycle-bin/purge' && request.method === 'POST') {
+      const result = {}
+      for (const resource of ['activities', 'members', 'history']) {
+        result[resource] = state[resource].filter(row => row.deleted_at != null).length
+        state[resource] = state[resource].filter(row => row.deleted_at == null)
+      }
+      return send(response, 200, { message: '已清空回收站', result })
     }
 
     if (url.pathname === '/api/admin/bans') {

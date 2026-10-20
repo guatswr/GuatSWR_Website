@@ -62,7 +62,7 @@ async function saveConfig() {
 async function purgeRecycleBin() {
   if (purgeLoading.value) return
   try {
-    await ElMessageBox.confirm('⚠️ 危险操作：清空回收站将【永久删除】所有已软删除的记录及其关联的图片资源。\n此操作不可撤销！', '清空回收站', { type: 'warning', confirmButtonText: '确定彻底删除', cancelButtonText: '取消', confirmButtonClass: 'el-button--danger' })
+    await ElMessageBox.confirm('将永久删除回收站中的文章、住民、群史及其关联图片；不包括活动管理中的已删除活动。\n此操作不可撤销！', '清空回收站', { type: 'warning', confirmButtonText: '确定彻底删除', cancelButtonText: '取消', confirmButtonClass: 'el-button--danger' })
     purgeLoading.value = true
     await api.command('recyclePurge', {}, value => value)
     await ElMessageBox.alert('清理完成！', '操作成功', { type: 'success' })
@@ -89,6 +89,6 @@ async function purgeRecycleBin() {
         </section>
       </div>
     </AdminPanel>
-    <AdminPanel v-if="isSuperAdmin" title="回收站" description="永久删除所有已软删除的活动、成员、群史及关联图片。"><div class="admin-danger-zone"><p>清空后无法恢复，请先确认已保存需要保留的数据。</p><button class="admin-button admin-button--danger" :disabled="purgeLoading" @click="purgeRecycleBin">{{ purgeLoading ? '正在清理…' : '彻底清空回收站' }}</button></div></AdminPanel>
+    <AdminPanel v-if="isSuperAdmin" title="回收站" description="永久删除已软删除的文章、住民、群史及关联图片；不包括活动管理中的已删除活动。"><div class="admin-danger-zone"><p>清空后无法恢复，请先确认已保存需要保留的数据。</p><button class="admin-button admin-button--danger" :disabled="purgeLoading" @click="purgeRecycleBin">{{ purgeLoading ? '正在清理…' : '彻底清空回收站' }}</button></div></AdminPanel>
   </div>
 </template>

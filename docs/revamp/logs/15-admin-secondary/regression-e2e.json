@@ -1,0 +1,1177 @@
+{
+  "generatedAt": "2026-10-20T04:37:17.345Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-admin-secondary-regression",
+  "totalShards": 41,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    },
+    {
+      "index": 12,
+      "exitCode": 0
+    },
+    {
+      "index": 13,
+      "exitCode": 0
+    },
+    {
+      "index": 14,
+      "exitCode": 0
+    },
+    {
+      "index": 15,
+      "exitCode": 0
+    },
+    {
+      "index": 16,
+      "exitCode": 0
+    },
+    {
+      "index": 17,
+      "exitCode": 0
+    },
+    {
+      "index": 18,
+      "exitCode": 0
+    },
+    {
+      "index": 19,
+      "exitCode": 0
+    },
+    {
+      "index": 20,
+      "exitCode": 0
+    },
+    {
+      "index": 21,
+      "exitCode": 0
+    },
+    {
+      "index": 22,
+      "exitCode": 0
+    },
+    {
+      "index": 23,
+      "exitCode": 0
+    },
+    {
+      "index": 24,
+      "exitCode": 0
+    },
+    {
+      "index": 25,
+      "exitCode": 0
+    },
+    {
+      "index": 26,
+      "exitCode": 0
+    },
+    {
+      "index": 27,
+      "exitCode": 0
+    },
+    {
+      "index": 28,
+      "exitCode": 0
+    },
+    {
+      "index": 29,
+      "exitCode": 0
+    },
+    {
+      "index": 30,
+      "exitCode": 0
+    },
+    {
+      "index": 31,
+      "exitCode": 0
+    },
+    {
+      "index": 32,
+      "exitCode": 0
+    },
+    {
+      "index": 33,
+      "exitCode": 0
+    },
+    {
+      "index": 34,
+      "exitCode": 0
+    },
+    {
+      "index": 35,
+      "exitCode": 0
+    },
+    {
+      "index": 36,
+      "exitCode": 0
+    },
+    {
+      "index": 37,
+      "exitCode": 0
+    },
+    {
+      "index": 38,
+      "exitCode": 0
+    },
+    {
+      "index": 39,
+      "exitCode": 0
+    },
+    {
+      "index": 40,
+      "exitCode": 0
+    },
+    {
+      "index": 41,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 41,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 82,
+  "counts": {
+    "passed": 82,
+    "expected": 82,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 82
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::admin-articles.spec.ts::122:1::admin-articles.spec.ts > article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-articles.spec.ts::147:1::admin-articles.spec.ts > invalid articles never write and an upstream failure leaves content available for explicit manual retry",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-articles.spec.ts::19:1::admin-articles.spec.ts > article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 对赌协议 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 线下聚会 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 悬赏令 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 则则 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports STG without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::154:1::admin-events.spec.ts > participant workflows preserve the frozen public whitelist and save permanent ranking avatars",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::192:1::admin-events.spec.ts > bounty completion and betting settlement preserve original content and become public immediately",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::218:1::admin-events.spec.ts > ordinary admins use event workflows through opaque sessions and anonymous callers cannot read them",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::238:1::admin-events.spec.ts > event avatar BFF enforces session, Origin, CSRF, public status and server-bound event storage",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::36:1::admin-events.spec.ts > pending review, protected detail, status changes, deletion and restoration invalidate warmed public reads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::73:1::admin-events.spec.ts > rejecting and editing a private event preserve status, nested people, settlement and unknown metadata",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::20:1::admin-interface.spec.ts > workspace navigation, theme, keyboard focus and member search work without hover",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-interface.spec.ts::94:1::admin-interface.spec.ts > ordinary administrators see permitted navigation and cannot enter super-admin pages",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::109:1::admin-workflows.spec.ts > configuration validates before writing and refreshes a previously cached public read",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::125:1::admin-workflows.spec.ts > a confirmed credential change revokes the opaque session and accepts only the new password",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::143:1::admin-workflows.spec.ts > home link editing validates destinations and updates the public projection",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::160:1::admin-workflows.spec.ts > private log selection and confirmed deletion update the actual admin list",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::171:1::admin-workflows.spec.ts > account and IPv6 ban workflows stay on protected fixed endpoints",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::205:1::admin-workflows.spec.ts > backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::233:1::admin-workflows.spec.ts > cancelled backpressured binary downloads release both BFF concurrency slots",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::25:1::admin-workflows.spec.ts > member upload, create, edit, sort, delete and restore cross the real BFF and invalidate public data",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::64:1::admin-workflows.spec.ts > private writes reject missing CSRF and fresh role denials without browser tokens",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-workflows.spec.ts::80:1::admin-workflows.spec.ts > history edits retain the archived HTML controls and sanitize both previews and public output",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::109:1::guest-integration.spec.ts > real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::11:1::guest-integration.spec.ts > real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::81:1::guest-integration.spec.ts > real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::109:3::login.spec.ts > login and client session boundary > requires CSRF for logout and clears the server record before claiming success",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 19,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::134:3::login.spec.ts > login and client session boundary > keeps the upstream token out of storage, HTML, payload, URLs, headers and console",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 19,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::168:3::login.spec.ts > login and client session boundary > keeps keyboard access, focus and the native confirmation modal",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 20,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::181:3::login.spec.ts > login and client session boundary > focuses the first invalid field when client validation fails",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 20,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::191:5::login.spec.ts > login and client session boundary > matches the archived login visuals",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 21,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::49:3::login.spec.ts > login and client session boundary > shows the sanitized credential error without navigating",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::56:3::login.spec.ts > login and client session boundary > asks for the second password, then completes login after confirmation",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 17,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::66:3::login.spec.ts > login and client session boundary > blocks duplicate submits while the first login is in flight",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 17,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::83:3::login.spec.ts > login and client session boundary > redirects a reloaded login page when a valid BFF session already exists",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 18,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::90:3::login.spec.ts > login and client session boundary > keeps the session server-authoritative for expiry and role changes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 18,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-articles.spec.ts::122:1::admin-articles.spec.ts > article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 22,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-articles.spec.ts::147:1::admin-articles.spec.ts > invalid articles never write and an upstream failure leaves content available for explicit manual retry",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 22,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-articles.spec.ts::19:1::admin-articles.spec.ts > article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 21,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 对赌协议 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 24,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 线下聚会 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 26,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 悬赏令 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 24,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 则则 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 25,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports STG without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 25,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::154:1::admin-events.spec.ts > participant workflows preserve the frozen public whitelist and save permanent ranking avatars",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 26,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::192:1::admin-events.spec.ts > bounty completion and betting settlement preserve original content and become public immediately",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 27,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::218:1::admin-events.spec.ts > ordinary admins use event workflows through opaque sessions and anonymous callers cannot read them",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 27,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::238:1::admin-events.spec.ts > event avatar BFF enforces session, Origin, CSRF, public status and server-bound event storage",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 28,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::36:1::admin-events.spec.ts > pending review, protected detail, status changes, deletion and restoration invalidate warmed public reads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 23,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::73:1::admin-events.spec.ts > rejecting and editing a private event preserve status, nested people, settlement and unknown metadata",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 23,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::20:1::admin-interface.spec.ts > workspace navigation, theme, keyboard focus and member search work without hover",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 28,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 29,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::65:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 29,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-interface.spec.ts::94:1::admin-interface.spec.ts > ordinary administrators see permitted navigation and cannot enter super-admin pages",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 30,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::109:1::admin-workflows.spec.ts > configuration validates before writing and refreshes a previously cached public read",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 32,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::125:1::admin-workflows.spec.ts > a confirmed credential change revokes the opaque session and accepts only the new password",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 32,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::143:1::admin-workflows.spec.ts > home link editing validates destinations and updates the public projection",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 33,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::160:1::admin-workflows.spec.ts > private log selection and confirmed deletion update the actual admin list",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 33,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::171:1::admin-workflows.spec.ts > account and IPv6 ban workflows stay on protected fixed endpoints",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 34,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::205:1::admin-workflows.spec.ts > backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 34,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::233:1::admin-workflows.spec.ts > cancelled backpressured binary downloads release both BFF concurrency slots",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 35,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::25:1::admin-workflows.spec.ts > member upload, create, edit, sort, delete and restore cross the real BFF and invalidate public data",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 30,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::64:1::admin-workflows.spec.ts > private writes reject missing CSRF and fresh role denials without browser tokens",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 31,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-workflows.spec.ts::80:1::admin-workflows.spec.ts > history edits retain the archived HTML controls and sanitize both previews and public output",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 31,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::109:1::guest-integration.spec.ts > real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 36,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::11:1::guest-integration.spec.ts > real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 35,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::81:1::guest-integration.spec.ts > real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 36,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::109:3::login.spec.ts > login and client session boundary > requires CSRF for logout and clears the server record before claiming success",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 39,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::134:3::login.spec.ts > login and client session boundary > keeps the upstream token out of storage, HTML, payload, URLs, headers and console",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 40,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::168:3::login.spec.ts > login and client session boundary > keeps keyboard access, focus and the native confirmation modal",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 40,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::181:3::login.spec.ts > login and client session boundary > focuses the first invalid field when client validation fails",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 41,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::191:5::login.spec.ts > login and client session boundary > matches the archived login visuals",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 41,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::49:3::login.spec.ts > login and client session boundary > shows the sanitized credential error without navigating",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 37,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::56:3::login.spec.ts > login and client session boundary > asks for the second password, then completes login after confirmation",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 37,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::66:3::login.spec.ts > login and client session boundary > blocks duplicate submits while the first login is in flight",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 38,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::83:3::login.spec.ts > login and client session boundary > redirects a reloaded login page when a valid BFF session already exists",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 38,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::90:3::login.spec.ts > login and client session boundary > keeps the session server-authoritative for expiry and role changes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 39,
+      "exitCode": 0
+    }
+  ]
+}

@@ -78,7 +78,7 @@ async function resetTwofa(id: number) {
 async function forceRefreshSessions() {
   if (refreshSessionLoading.value) return
   try {
-    await ElMessageBox.confirm('⚠️ 高风险操作：\n这将强制系统内所有管理员（包括你自己）立即登出，必须重新登录。\n是否继续？', '强制刷新 Session', { type: 'warning', confirmButtonText: '强制登出所有人', confirmButtonClass: 'el-button--danger' })
+    await ElMessageBox.confirm('⚠️ 高风险操作：\n这将强制系统内所有管理员（包括你自己）立即登出，必须重新登录。\n是否继续？', '强制刷新 Session', { type: 'warning', confirmButtonText: '强制登出所有人', cancelButtonText: '取消', confirmButtonClass: 'el-button--danger' })
     refreshSessionLoading.value = true
     await api.command('tokenRefresh', {}, value => value)
     ElMessage.success('操作成功，即将跳转登录页...')

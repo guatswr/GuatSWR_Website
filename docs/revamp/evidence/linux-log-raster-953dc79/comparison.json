@@ -1,0 +1,46 @@
+{
+  "component": "logs-table-dark",
+  "project": "mobile",
+  "state": "/logs matches the archive (dark)",
+  "width": 2291,
+  "height": 2344,
+  "differingPixels": 1,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false,
+  "capture": {
+    "devicePixelRatio": 2.625,
+    "actualRect": {
+      "x": 0,
+      "y": 0,
+      "width": 872.766,
+      "height": 893
+    },
+    "archiveRect": {
+      "x": 0,
+      "y": 0,
+      "width": 872.766,
+      "height": 893
+    },
+    "rawDevicePixels": {
+      "width": 2292,
+      "height": 2344
+    },
+    "croppedDevicePixels": {
+      "width": 2291,
+      "height": 2344
+    },
+    "targetDevicePixels": {
+      "width": 2291,
+      "height": 2344
+    },
+    "excludedDevicePixels": {
+      "width": 0.009765625,
+      "height": 0.125
+    },
+    "excludedCssPixels": {
+      "width": 0.003720238095238095,
+      "height": 0.047619047619047616
+    },
+    "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+  }
+}

@@ -2,7 +2,31 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest accepted local feature: modern activity administration, including review,
+Latest accepted local feature: secondary administrator workflows. Actual
+desktop/mobile tests cover avatar-only saves, 2FA enable/disable/re-login,
+independent user/global session revocation, explicit global-logout cancellation,
+exact recycle purge scope, icon upload, and a real 100 MiB native download.
+Four recursive gates pass **752 units**, lint 0 errors/34 warnings; **92 unique
+E2E cases pass** with zero retry/flaky/skip (10 new + 82 regression). A test-only
+title-selector correction then passes all 6 article cases again, on the same
+unchanged output; 98 executions/49 fresh batches, 92 unique cases. All 14 public
+JS graphs pass **119907–132798 B gzip**, zero maps; 52 actual screenshots are
+retained. See [secondary evidence](logs/15-admin-secondary/README.md).
+
+State ownership and session transition are now recorded in STATE-BOUNDARIES.md
+and SESSION-CUTOVER.md. The latter describes the existing same-origin limited
+legacy cleanup and the future separately approved main-origin rehearsal; it
+does not execute cutover or affect the old site's origin from preview.
+
+Latest Ubuntu artifact pinpoints article flakes to an ambiguous title locator
+(input plus editor toolbar); corrected by role, not sleeps/retries. The public
+dark-log comparison still detects one significant avatar-border pixel. See
+[the decision report](evidence/linux-log-raster-953dc79/README.md). User confirmation
+of a tightly bounded exception is pending; the zero-pixel gate remains intact.
+Current real-page LCP, public advanced Markdown, full accessibility/security/
+monitoring and final complete CI remain open. No deployment or QQ success.
+
+Previous accepted feature: modern activity administration, including review,
 five-type creation/editing, participants, ranking, bounty/betting settlement and
 confirmed-write public cache invalidation. Permanent ranking avatars use the
 frozen canonical upload endpoint behind a protected, server-bound BFF route.
@@ -20,10 +44,11 @@ default Node settings. Historical 24.15.0/pool-cap evidence below is retained
 as historical. Docker build-only route declarations are now included for the
 independent frozen API guard and excluded from the runtime image.
 
-Full migration remains open: secondary administrator workflows, public article
-formula/diagram parity, homepage LCP (last measured 1960.7 ms > 1800), Ubuntu
-public dark-log pixel, an Ubuntu article retry-case flake, final security and
-full-site CI. Remote `18b0fed` run 39327274634 failed; it is not accepted as green.
+At the activity checkpoint, secondary administrator workflows and the article
+flake were still open; the newer log 15 supersedes those local items. Public
+article formula/diagram parity, homepage LCP (1960.7 ms > 1800), Ubuntu public
+dark-log pixel, final security and full-site CI remain open. Remote `18b0fed`
+run 39327274634 failed; it is not accepted as green.
 No deployment, infrastructure changes or QQ success notification.
 
 ## Earlier accepted feature checkpoints

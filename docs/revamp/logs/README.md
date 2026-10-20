@@ -39,3 +39,4 @@ accepted; these logs are the evidence behind them.
 | Article administration | [`12-admin-articles/`](12-admin-articles/README.md) | Local feature accepted: 692 units, 82 unique E2E, 14 route budgets, zero maps; public advanced Markdown and full migration open |
 | Frozen API upload contract | [`13-frozen-api-contract/`](13-frozen-api-contract/README.md) | Canonical paths fixed; independent mounted-route guard, 747 units, 6/6 real guest E2E, 14 route budgets, zero maps |
 | Activity administration and runtime correction | [`14-admin-events/`](14-admin-events/README.md) | Local feature accepted: Node 24.16.0, 750 units, tooling 56/56, 62/62 E2E, 14 route budgets, Linux build/runtime smoke; full migration open |
+| Secondary administrator workflows | [`15-admin-secondary/`](15-admin-secondary/README.md) | Local workflows accepted: 752 units, 92 unique E2E, six article selector checks repeated, 14 route budgets, zero maps; final full-site acceptance open |

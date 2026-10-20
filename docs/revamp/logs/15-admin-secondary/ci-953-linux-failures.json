@@ -1,0 +1,68 @@
+{
+  "revision": "953dc79f76a12ea1372e5937b9fdb15a69609ef1",
+  "runId": 39368727728,
+  "counts": {
+    "passed": 241,
+    "expected": 241,
+    "flaky": 2,
+    "failed": 1,
+    "skipped": 0,
+    "allDeclared": 244
+  },
+  "tests": [
+    {
+      "identity": "desktop::admin-articles.spec.ts::122:1::admin-articles.spec.ts > article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+      "status": "flaky",
+      "expectedStatus": "passed",
+      "attempts": 2,
+      "retries": 1,
+      "finalStatus": "passed",
+      "attachments": [
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-01/test-results/admin-articles-article-edi-82a20-it-deletion-and-restoration-desktop/error-context.md",
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-01/test-results/admin-articles-article-edi-82a20-it-deletion-and-restoration-desktop/trace.zip"
+      ],
+      "errors": [
+        "Error: locator.fill: Error: strict mode violation: getByLabel('标题', { exact: true }) resolved to 2 elements:\n    1) <input required=\"\" maxlength=\"200\" id=\"article-title\"/> aka getByRole('textbox', { name: '标题' })\n    2) <button title=\"标题\" type=\"button\" aria-label=\"标题\" class=\"md-editor-toolbar-item\">…</button> aka getByRole('button', { name: '标题' })\n\nCall log:\n\u001b[2m  - waiting for getByLabel('标题', { exact: true })\u001b[22m\n\n\n  125 |   const card = page.getByTestId('admin-article-card').filter({ hasText: '秋季例会' })\n  126 |   await card.getByRole('button', { name: '编辑', exact: true }).click()\n> 127 |   await page.getByLabel('标题', { exact: true }).fill('秋季例会迁移修订')\n      |                                                ^\n  128 |   await page.getByRole('button', { name: 'Markdown 源码', exact: true }).click()\n  129 |   await page.getByLabel('文章正文', { exact: true }).fill('# 修订后的正文\\n\\n内容已更新。')\n  130 |   await page.getByRole('button', { name: '返回列表', exact: true }).click()\n    at /home/runner/work/GuatSWR_Website/GuatSWR_Website/web/tests/e2e/admin-articles.spec.ts:127:48"
+      ],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-articles.spec.ts::19:1::admin-articles.spec.ts > article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+      "status": "flaky",
+      "expectedStatus": "passed",
+      "attempts": 2,
+      "retries": 1,
+      "finalStatus": "passed",
+      "attachments": [
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-01/test-results/admin-articles-article-edi-00b75-hed-draft-before-publishing-desktop/error-context.md",
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-01/test-results/admin-articles-article-edi-00b75-hed-draft-before-publishing-desktop/trace.zip"
+      ],
+      "errors": [
+        "Error: locator.fill: Error: strict mode violation: getByLabel('标题', { exact: true }) resolved to 2 elements:\n    1) <input required=\"\" maxlength=\"200\" id=\"article-title\"/> aka getByRole('textbox', { name: '标题' })\n    2) <button title=\"标题\" type=\"button\" aria-label=\"标题\" class=\"md-editor-toolbar-item\">…</button> aka getByRole('button', { name: '标题' })\n\nCall log:\n\u001b[2m  - waiting for getByLabel('标题', { exact: true })\u001b[22m\n\n\n  37 |   await page.getByRole('button', { name: '新建文章', exact: true }).click()\n  38 |   const title = `迁移文章-${info.project.name}`\n> 39 |   await page.getByLabel('标题', { exact: true }).fill(title)\n     |                                                ^\n  40 |   await page.getByLabel('标签', { exact: true }).fill('迁移')\n  41 |   await page.getByLabel('日期', { exact: true }).fill('2026-10-20')\n  42 |   await page.getByLabel('简短介绍', { exact: true }).fill('真实管理端文章工作流')\n    at /home/runner/work/GuatSWR_Website/GuatSWR_Website/web/tests/e2e/admin-articles.spec.ts:39:48"
+      ],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (dark)",
+      "status": "unexpected",
+      "expectedStatus": "passed",
+      "attempts": 2,
+      "retries": 1,
+      "finalStatus": "failed",
+      "attachments": [
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-116/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile/error-context.md",
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-116/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile/trace.zip",
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-116/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile-retry1/error-context.md",
+        "/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/.e2e-isolated/2026-10-20T04-18-38-930Z/batch-116/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile-retry1/trace.zip"
+      ],
+      "errors": [
+        "Error: logs-table-dark: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\n   at support/public-pages.ts:330\n\n  328 |     },\n  329 |   }, null, 2))\n> 330 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  331 | }\n  332 |\n    at compareToArchive (/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/tests/e2e/support/public-pages.ts:330:70)\n    at /home/runner/work/GuatSWR_Website/GuatSWR_Website/web/tests/e2e/public-pages.spec.ts:467:11",
+        "Error: logs-table-dark: pixels different from the archived site\n\n\u001b[2mexpect(\u001b[22m\u001b[31mreceived\u001b[39m\u001b[2m).\u001b[22mtoBe\u001b[2m(\u001b[22m\u001b[32mexpected\u001b[39m\u001b[2m) // Object.is equality\u001b[22m\n\nExpected: \u001b[32m0\u001b[39m\nReceived: \u001b[31m1\u001b[39m\n\n   at support/public-pages.ts:330\n\n  328 |     },\n  329 |   }, null, 2))\n> 330 |   expect(pixels, `${name}: pixels different from the archived site`).toBe(0)\n      |                                                                      ^\n  331 | }\n  332 |\n    at compareToArchive (/home/runner/work/GuatSWR_Website/GuatSWR_Website/web/tests/e2e/support/public-pages.ts:330:70)\n    at /home/runner/work/GuatSWR_Website/GuatSWR_Website/web/tests/e2e/public-pages.spec.ts:467:11"
+      ],
+      "batch": 116,
+      "exitCode": 1
+    }
+  ]
+}

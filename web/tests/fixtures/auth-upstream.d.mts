@@ -25,6 +25,7 @@ export interface AuthFixtureState {
   lockLogin: boolean
   loginDelayMs: number
   tokenTtlSeconds: number
+  tokenVersion: number
   meStatus: number | null
   hugeMe: boolean
   users: Map<string, AuthFixtureUser>
