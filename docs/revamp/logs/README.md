@@ -31,6 +31,7 @@ accepted; these logs are the evidence behind them.
 
 | Workstream | Directory | State |
 | --- | --- | --- |
+| Runtime hardening and honest performance aggregation | [`20-runtime-hardening/`](20-runtime-hardening/README.md) | 784 units, tooling 59/59, 32/32 actual E2E, 15 JS graphs, zero maps; failed preload experiment withdrawn, final CI/performance/a11y open |
 | Recovery of the 2026-10-19 working-tree loss | [`00-recovery-2026-10-19/`](00-recovery-2026-10-19/README.md) | Restored; four gates green; E2E baseline re-measured |
 | Independent blocker review | [`08-independent-acceptance/`](08-independent-acceptance/README.md) | Warm reload fixed; all 14 route JS graphs pass; 170 unique E2E cases passed across full + exact repair selections |
 | Public SEO and portable validation | [`09-seo/`](09-seo/README.md) | Local output validation passes; full-site performance and new remote CI still open |

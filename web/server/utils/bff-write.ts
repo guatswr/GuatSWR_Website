@@ -349,15 +349,19 @@ export function createFixedWindowRateLimiter(options: FixedWindowRateLimiterOpti
   const now = options.now ?? Date.now
   const windows = new Map<string, WindowState>()
 
-  const sweep = (current: number) => {
+  const makeRoom = (current: number) => {
+    let soonestKey: string | undefined
+    let soonestReset = Number.POSITIVE_INFINITY
     for (const [key, state] of windows) {
       if (state.resetAt <= current) windows.delete(key)
+      else if (soonestKey === undefined || state.resetAt < soonestReset) {
+        soonestKey = key
+        soonestReset = state.resetAt
+      }
     }
-  }
-
-  const evictSoonestReset = () => {
-    const oldestKey = windows.keys().next().value
-    if (oldestKey !== undefined) windows.delete(oldestKey)
+    // Renewing an existing Map entry does not move it to the end. Select by
+    // actual deadline while sweeping, rather than assuming insertion order.
+    if (windows.size >= maxKeys && soonestKey !== undefined) windows.delete(soonestKey)
   }
 
   return {
@@ -366,8 +370,7 @@ export function createFixedWindowRateLimiter(options: FixedWindowRateLimiterOpti
       let state = windows.get(key)
       if (!state || state.resetAt <= current) {
         if (!state && windows.size >= maxKeys) {
-          sweep(current)
-          if (windows.size >= maxKeys) evictSoonestReset()
+          makeRoom(current)
         }
         state = { count: 0, resetAt: current + windowMs }
         windows.set(key, state)

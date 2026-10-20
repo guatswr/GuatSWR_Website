@@ -1,0 +1,477 @@
+{
+  "generatedAt": "2026-10-20T08:44:31.403Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-runtime-hardening",
+  "totalShards": 16,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    },
+    {
+      "index": 12,
+      "exitCode": 0
+    },
+    {
+      "index": 13,
+      "exitCode": 0
+    },
+    {
+      "index": 14,
+      "exitCode": 0
+    },
+    {
+      "index": 15,
+      "exitCode": 0
+    },
+    {
+      "index": 16,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 16,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 32,
+  "counts": {
+    "passed": 32,
+    "expected": 32,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 32
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::entry-loading.spec.ts::6:3::entry-loading.spec.ts > / hydrates after repeated warm-cache document reloads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /login hydrates after repeated warm-cache document reloads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /members hydrates after repeated warm-cache document reloads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::109:1::guest-integration.spec.ts > real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::11:1::guest-integration.spec.ts > real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::81:1::guest-integration.spec.ts > real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::109:3::login.spec.ts > login and client session boundary > requires CSRF for logout and clears the server record before claiming success",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::134:3::login.spec.ts > login and client session boundary > keeps the upstream token out of storage, HTML, payload, URLs, headers and console",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::168:3::login.spec.ts > login and client session boundary > keeps keyboard access, focus and the native confirmation modal",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::181:3::login.spec.ts > login and client session boundary > focuses the first invalid field when client validation fails",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::191:5::login.spec.ts > login and client session boundary > matches the archived login visuals",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::49:3::login.spec.ts > login and client session boundary > shows the sanitized credential error without navigating",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::56:3::login.spec.ts > login and client session boundary > asks for the second password, then completes login after confirmation",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::66:3::login.spec.ts > login and client session boundary > blocks duplicate submits while the first login is in flight",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::83:3::login.spec.ts > login and client session boundary > redirects a reloaded login page when a valid BFF session already exists",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::login.spec.ts::90:3::login.spec.ts > login and client session boundary > keeps the session server-authoritative for expiry and role changes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::entry-loading.spec.ts::6:3::entry-loading.spec.ts > / hydrates after repeated warm-cache document reloads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /login hydrates after repeated warm-cache document reloads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /members hydrates after repeated warm-cache document reloads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::109:1::guest-integration.spec.ts > real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::11:1::guest-integration.spec.ts > real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::81:1::guest-integration.spec.ts > real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::109:3::login.spec.ts > login and client session boundary > requires CSRF for logout and clears the server record before claiming success",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::134:3::login.spec.ts > login and client session boundary > keeps the upstream token out of storage, HTML, payload, URLs, headers and console",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::168:3::login.spec.ts > login and client session boundary > keeps keyboard access, focus and the native confirmation modal",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::181:3::login.spec.ts > login and client session boundary > focuses the first invalid field when client validation fails",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::191:5::login.spec.ts > login and client session boundary > matches the archived login visuals",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::49:3::login.spec.ts > login and client session boundary > shows the sanitized credential error without navigating",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::56:3::login.spec.ts > login and client session boundary > asks for the second password, then completes login after confirmation",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::66:3::login.spec.ts > login and client session boundary > blocks duplicate submits while the first login is in flight",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::83:3::login.spec.ts > login and client session boundary > redirects a reloaded login page when a valid BFF session already exists",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::login.spec.ts::90:3::login.spec.ts > login and client session boundary > keeps the session server-authoritative for expiry and role changes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    }
+  ]
+}

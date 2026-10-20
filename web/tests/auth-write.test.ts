@@ -250,6 +250,21 @@ describe('fixed-window rate limiting', () => {
     expect(limiter.size()).toBeLessThanOrEqual(10_000)
     expect(limiter.check('fresh').allowed).toBe(true)
   })
+
+  it('preserves a renewed active quota when an older window is closer to reset', () => {
+    let current = 0
+    const limiter = createFixedWindowRateLimiter({ limit: 1, windowMs: 100, maxKeys: 2, now: () => current })
+    expect(limiter.check('renewed').allowed).toBe(true) // expires at 100
+    current = 50
+    expect(limiter.check('older').allowed).toBe(true) // expires at 150
+    current = 110
+    expect(limiter.check('renewed').allowed).toBe(true) // renewed to 210, still first in Map order
+    current = 120
+    expect(limiter.check('newcomer').allowed).toBe(true)
+    expect(limiter.size()).toBe(2)
+    // Capacity pressure may forget the 150ms window, not reset the fresh quota.
+    expect(limiter.check('renewed').allowed).toBe(false)
+  })
 })
 
 describe('upstream message sanitizing', () => {

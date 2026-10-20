@@ -2,6 +2,19 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
+Runtime correction after f8a4dbe: renewed rate-limit windows are now evicted by
+expiry instead of insertion order; three-sample score/LCP medians are independent.
+Four recursive gates pass **784 units**, lint 0 errors / 34 warnings, tooling
+**59/59**, actual auth/guest/warm-reload E2E **32/32** without retry/flaky/skip,
+all **15** JS graphs pass and **0 maps**. The public module-preload experiment
+worsened LCP and is withdrawn; current public performance remains unaccepted.
+See [log 20](logs/20-runtime-hardening/README.md). Both f8a4dbe host CI jobs are
+red; Linux container succeeds. Ubuntu's only E2E failure is confirmed fixture
+contamination: advanced Markdown and math reuse cached article 1. Separate
+fixture-only IDs are being prepared without changing production cache policy.
+The fresh 60-state public a11y scan also has unresolved findings. No deployment
+or complete-migration/QQ success claim.
+
 Latest correction checkpoint: independent Markdown review of `11e9bcc`.
 The user's **click “显示图表” before downloading Mermaid** decision is verified,
 with readable SSR source and unchanged JS budget. Nine math regressions,

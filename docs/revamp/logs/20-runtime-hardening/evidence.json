@@ -1,0 +1,51 @@
+{
+  "base": "f8a4dbe79de1c6dac1b3595e73f7c02fe4a6cd46",
+  "runtime": {
+    "node": "24.16.0",
+    "pnpm": "11.25.0"
+  },
+  "gates": {
+    "typecheck": 0,
+    "lintErrors": 0,
+    "lintWarnings": 34,
+    "unitPassed": 784,
+    "build": 0,
+    "toolingPassed": 59,
+    "sourceMaps": 0
+  },
+  "routes": {
+    "count": 15,
+    "passed": true
+  },
+  "sources": [
+    {
+      "path": "package.json",
+      "sha256Utf8Lf": "d85aec32ed1af70ab6fbf86a6f1fc90237f577cab1cdd914ea0eb149aefa1be1"
+    },
+    {
+      "path": "web/scripts/performance.mjs",
+      "sha256Utf8Lf": "dbef6ac57533296945a0c0c7c285221b51638007fdb0c2a744a7eab5754004c6"
+    },
+    {
+      "path": "web/scripts/performance-metrics.mjs",
+      "sha256Utf8Lf": "9fc3bb62e69072069b6dbf3c90c7b5d8b4d6541f4419f1b295c969a8068e186e"
+    },
+    {
+      "path": "web/scripts/performance-metrics.test.mjs",
+      "sha256Utf8Lf": "14c67ba511b6d0c055732b828c57faaa795c807444b8f4386520d3bdf611e254"
+    },
+    {
+      "path": "web/server/utils/bff-write.ts",
+      "sha256Utf8Lf": "ee3423e8e3799d10dac3d9ccc3184b9808d3cb180de82124974853a48dd45b77"
+    },
+    {
+      "path": "web/tests/auth-write.test.ts",
+      "sha256Utf8Lf": "058d817bd3c0cbe29173a320cc99af2981f9b4cb893a5787e54728bddd7169e8"
+    }
+  ],
+  "limitations": [
+    "Public preload experiment withdrawn; Lighthouse still fails baseline 1800ms",
+    "Full CI red: advanced/math fixture cache contamination requires separate correction",
+    "Full-site a11y/security/monitoring/performance not accepted"
+  ]
+}

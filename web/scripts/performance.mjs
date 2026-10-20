@@ -6,6 +6,7 @@ import { setTimeout } from 'node:timers/promises'
 import { chromium } from '@playwright/test'
 import { launch } from 'chrome-launcher'
 import lighthouse from 'lighthouse'
+import { summarizePerformance } from './performance-metrics.mjs'
 
 // Dedicated ports: the E2E web servers own 3100/3181, and on Windows CI a
 // leftover E2E preview could still hold those ports when this script starts.
@@ -36,6 +37,7 @@ const server = spawn(process.execPath, ['.output/server/index.mjs'], {
 })
 let chrome
 const summary = {
+  aggregation: 'Independent medians of score and LCP across exactly three valid samples',
   device: 'Lighthouse default mobile / simulated throttling',
   serverState: 'Prewarmed by two HTTP document requests per route; Lighthouse resets browser storage/cache',
   warmup: [], invalidAttempts: [], results: [], complete: false,
@@ -128,8 +130,7 @@ try {
     for (let run = 1; run <= 3; run++) {
       summaries.push(await collect(`${url}${path}`, name, run))
     }
-    const ordered = [...summaries].sort((a, b) => a.lcpMs - b.lcpMs)
-    summary.results.push({ url: `${url}${path}`, runs: summaries, median: ordered[1] })
+    summary.results.push({ url: `${url}${path}`, runs: summaries, ...summarizePerformance(summaries) })
   }
   summary.complete = true
   console.log(JSON.stringify(summary, null, 2))
