@@ -1,0 +1,685 @@
+{
+  "generatedAt": "2026-10-20T17:52:45.353Z",
+  "baseRevision": "3b99f15ad83bc78c419971bd51ef6849d0b99f0d",
+  "branch": "revamp/nuxt-foundation",
+  "scope": "Public navigation continuity; no deployment or full-migration acceptance",
+  "build": {
+    "command": "node .tools/navigation-transitions/build.mjs",
+    "log": ".tools/navigation-transitions/build-stack.log",
+    "sha256": "d196cfe6d7c46f4862c10f68eaba743efa5cd2e0a513ce047219466481acb831",
+    "output": ".tools/navigation-transitions/.output",
+    "configSnapshot": "git show 3b99f15:web/nuxt.config.ts",
+    "rateLimiter": {
+      "tokensPerInterval": 150,
+      "interval": 300000
+    },
+    "sharedBuild": "pnpm --filter @guatswr/shared build"
+  },
+  "gates": [
+    {
+      "gate": "typecheck",
+      "exitCode": 0
+    },
+    {
+      "gate": "lint",
+      "exitCode": 0
+    },
+    {
+      "gate": "test",
+      "exitCode": 0
+    }
+  ],
+  "unitTests": {
+    "shared": 73,
+    "web": 712,
+    "total": 785
+  },
+  "lint": {
+    "errors": 0,
+    "existingWarnings": 34
+  },
+  "tooling": {
+    "passed": 59,
+    "failed": 0
+  },
+  "e2e": [
+    {
+      "name": "accepted",
+      "path": "web/.e2e-isolated/navigation-transitions-accepted/summary.json",
+      "sha256": "fbd80b6697ddaa80b7900e4c029576969d8e599e8398879450360c1afa367a02",
+      "declared": 16,
+      "batches": 8,
+      "passed": 16,
+      "expected": 16,
+      "flaky": 0,
+      "failed": 0,
+      "skipped": 0,
+      "allDeclared": 16,
+      "retries": 0
+    },
+    {
+      "name": "regression",
+      "path": "web/.e2e-isolated/navigation-transitions-regression/summary.json",
+      "sha256": "11a75292eb4f09f8be541e7e4d009cd1b859f2c67da88be641186954b4d8e95f",
+      "declared": 28,
+      "batches": 14,
+      "passed": 28,
+      "expected": 28,
+      "flaky": 0,
+      "failed": 0,
+      "skipped": 0,
+      "allDeclared": 28,
+      "retries": 0
+    }
+  ],
+  "visual": {
+    "regions": 62,
+    "differingPixels": 0,
+    "protocol": "Existing independently approved accessibility references; no new masks, thresholds or exceptions",
+    "comparisons": [
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-dark-layout-desktop/board-STG-dark-desktop-comparison.json",
+        "sha256": "aba2b1fdde1424b2177e6433cc918065b7697a9acb20360766d865772f7ded18",
+        "component": "board-STG-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-dark-layout-desktop/board-悬赏令-dark-desktop-comparison.json",
+        "sha256": "586979cb845e1a0fce4f88c5c16b1c339e569a024601d90fa4b3fee79875945d",
+        "component": "board-悬赏令-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-dark-layout-desktop/card-STG-dark-desktop-comparison.json",
+        "sha256": "f4a310891bbb7b5b26f4594efaaa06fcaaca3797e763235947e9990ad0b3ff0d",
+        "component": "card-STG-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-dark-layout-desktop/card-悬赏令-dark-desktop-comparison.json",
+        "sha256": "756c6c776c4af14c0b734621602f05fc3aa71085d5b8bdfe12251bf81e84869d",
+        "component": "card-悬赏令-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-light-layout-desktop/board-STG-light-desktop-comparison.json",
+        "sha256": "274a77c38c6fa7dfe660b0d11079def519654395d5f38bf47b46a89f75480922",
+        "component": "board-STG-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-light-layout-desktop/board-悬赏令-light-desktop-comparison.json",
+        "sha256": "ca489a2338eb290c35d4bd8b2b7b9044735b0d3038f2b5e2c9c96a28273a631d",
+        "component": "board-悬赏令-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-light-layout-desktop/card-STG-light-desktop-comparison.json",
+        "sha256": "32d8c34268edeb47687d577f5cdaeb5b47b4e2243017e66c9066b8815f6d5554",
+        "component": "card-STG-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-light-layout-desktop/card-悬赏令-light-desktop-comparison.json",
+        "sha256": "e77de52194d5d42811385f0589b0529860fcda44bc4092549f611d894c94d8df",
+        "component": "card-悬赏令-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-03/test-results/events-visual-event-pages-match-the-archived-light-layout-desktop/signup-modal-light-desktop-comparison.json",
+        "sha256": "25cb168a79e0f66212f8a8ebdadbb29350d3eea99c881154281b07d9771fb717",
+        "component": "signup-modal-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/about-dark-desktop-comparison.json",
+        "sha256": "c71452887a897caeb7b3e7d8613908de28345661218ee3f401fb7816a5ff4fb4",
+        "component": "about-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/archive-dark-desktop-comparison.json",
+        "sha256": "08d3c4ac91b0ca0017b303692add5e497f0f144eb45ed347780e60c1890f018a",
+        "component": "archive-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/community-dark-desktop-comparison.json",
+        "sha256": "e2e76c4af41e0afbce12d7b2de8366973a427c12f420729d2a9af414e36623e9",
+        "component": "community-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/hero-dark-desktop-comparison.json",
+        "sha256": "17f0d3e5a655e644f6c49b185ccf56a483d49d0ef667d1eec8c9e1903ecfbffe",
+        "component": "hero-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/interests-dark-desktop-comparison.json",
+        "sha256": "ef9e31f24925389bd125a08f000fd91a468358871b4da11613118aa9bced9a67",
+        "component": "interests-dark-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/about-light-desktop-comparison.json",
+        "sha256": "128ea51f853101ab5fdf3f864955ed0ab7946401c1888f98fa00368c054f9475",
+        "component": "about-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/archive-light-desktop-comparison.json",
+        "sha256": "da6a69a415483bd09866cbfadd5fa7df2a7952073f5262ee75665fc196dec458",
+        "component": "archive-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/community-light-desktop-comparison.json",
+        "sha256": "feaa341dc7482c58906c0799772aab35b24d6d16c75a9ac7688c6d6be9acd6c4",
+        "component": "community-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/hero-light-desktop-comparison.json",
+        "sha256": "f514fa84d4f766b84926e72c4a5fa4c65b12539259b089d16a0248234007a4f7",
+        "component": "hero-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-04/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/interests-light-desktop-comparison.json",
+        "sha256": "cbd17236e11f10e97d21c649d20c1624311763e7d1a164704bb6dec84456f049",
+        "component": "interests-light-desktop",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-05/test-results/layout-navigation-and-footer-match-archived-dark-layout-desktop/footer-comparison.json",
+        "sha256": "0e62c18a6101b88e228845119e423c87b8e7082697497dcfd0597a398ef2ea51",
+        "component": "footer",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-05/test-results/layout-navigation-and-footer-match-archived-dark-layout-desktop/navbar-comparison.json",
+        "sha256": "aa5f98c62bb25d37ae4faa01313b8107e1d887c4da2236377ff146fb36edcd8d",
+        "component": "navbar",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-05/test-results/layout-navigation-and-footer-match-archived-light-layout-desktop/footer-comparison.json",
+        "sha256": "ff8d4468e33d2efab3ba0fb0ca5b9ca5cf5d35f13561919590f2160490aa9cf0",
+        "component": "footer",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-05/test-results/layout-navigation-and-footer-match-archived-light-layout-desktop/navbar-comparison.json",
+        "sha256": "2ee564bbb681650d41ac3dc448e434809a0645308e84752d5a44717e0f303119",
+        "component": "navbar",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-06/test-results/public-pages-visual-parity-222c2--matches-the-archive-light--desktop/history-month-rail-light-comparison.json",
+        "sha256": "3fc632f125466174abd03165e91e9150fad37c1bb03d42b0175e412e4403ae31",
+        "component": "history-month-rail-light",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-06/test-results/public-pages-visual-parity-222c2--matches-the-archive-light--desktop/history-timeline-light-comparison.json",
+        "sha256": "0ef738ac9c6bc3333ca66ff1b9f1aa66dfe5d38849d4f4b73ebdd2143ad7e169",
+        "component": "history-timeline-light",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-06/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--desktop/members-chart-light-comparison.json",
+        "sha256": "58df60599e3bd582352dca85747911361c5de2967fa7e0173027b9a656e6596b",
+        "component": "members-chart-light",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-06/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--desktop/members-grid-light-comparison.json",
+        "sha256": "0157e6d3fb2ff0d2c088a744cc0e5249a5ede2d26c8be245a9bd55db57bc0def",
+        "component": "members-grid-light",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-07/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--desktop/members-chart-dark-comparison.json",
+        "sha256": "8a397443d2ab156aef29b1a6a03eb2a71fedc18148cce3a01e8f55dfd6b5e488",
+        "component": "members-chart-dark",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-07/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--desktop/members-grid-dark-comparison.json",
+        "sha256": "599f0f0b11028f81b417bb1da757ff4fd7137b8ae7aaecb45c837d1244710940",
+        "component": "members-grid-dark",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-07/test-results/public-pages-visual-parity-8a07a-y-matches-the-archive-dark--desktop/history-month-rail-dark-comparison.json",
+        "sha256": "8fc157c5cbb4532b1fbd3c334db024b91d65a0db53e1cca80280d38deb4f3251",
+        "component": "history-month-rail-dark",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-07/test-results/public-pages-visual-parity-8a07a-y-matches-the-archive-dark--desktop/history-timeline-dark-comparison.json",
+        "sha256": "06e6a1a9aa48a0d348178d352d805ceca64040ede46036f8c44fc2fe9ad44929",
+        "component": "history-timeline-dark",
+        "project": "desktop",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-dark-layout-mobile/board-STG-dark-mobile-comparison.json",
+        "sha256": "24c1106f33ab702d0e9befd2092ee07f8d90493d376bc72ee0f7e61a02b06cd8",
+        "component": "board-STG-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-dark-layout-mobile/board-悬赏令-dark-mobile-comparison.json",
+        "sha256": "5011295fc911499d0d97c1d40adc0d90d7086cc564ce60a07f910b3605c6b3d7",
+        "component": "board-悬赏令-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-dark-layout-mobile/card-STG-dark-mobile-comparison.json",
+        "sha256": "022e63aecb2443715a0385c2691813e0f3cef485ab1c07122dab3677f0bae8da",
+        "component": "card-STG-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-dark-layout-mobile/card-悬赏令-dark-mobile-comparison.json",
+        "sha256": "2011e5b06161e8ab46db4add01c7071d682c96cee9face7bf25d4f3fb4897e26",
+        "component": "card-悬赏令-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-light-layout-mobile/board-STG-light-mobile-comparison.json",
+        "sha256": "7965223c1f829e2b6c4d93a8e5a9eb6f0c44f66fcbdcd87590d502d02c9dbba5",
+        "component": "board-STG-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-light-layout-mobile/board-悬赏令-light-mobile-comparison.json",
+        "sha256": "abe47ef16a17162c55a4be1c4dcc20ee6ed2444a511b05e2bdb87c4d0b161cfb",
+        "component": "board-悬赏令-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-light-layout-mobile/card-STG-light-mobile-comparison.json",
+        "sha256": "324b5844d1c165563b59c0e827ad1fd6da5a1691cf78f78c98efaab6e8a56ad5",
+        "component": "card-STG-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-light-layout-mobile/card-悬赏令-light-mobile-comparison.json",
+        "sha256": "e9699a575b4af1d8048c123b671bef385ebc85fa6f5709ac4aab1538288c4d08",
+        "component": "card-悬赏令-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-10/test-results/events-visual-event-pages-match-the-archived-light-layout-mobile/signup-modal-light-mobile-comparison.json",
+        "sha256": "d48ffbbc1db2289dcabac49f8e7de39548e809c01cf36a158dbd2643d2db86d3",
+        "component": "signup-modal-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/about-dark-mobile-comparison.json",
+        "sha256": "c1462db79190bd4b8f5f317caa56731a90a3a91d9e932b8361723d8a290bca22",
+        "component": "about-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/archive-dark-mobile-comparison.json",
+        "sha256": "251cee67a32812c67b9585cf6dadd83411b253c807412889ffd0bdfa6b354db8",
+        "component": "archive-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/community-dark-mobile-comparison.json",
+        "sha256": "37431dd65feec0cf27a3a49f0dd8d0e7f5e95494e0c292b0dbb0e5babf2e5838",
+        "component": "community-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/hero-dark-mobile-comparison.json",
+        "sha256": "5b0c69a1314fdd294bd897c2d34a8e4d98b834f72e54e98ae32115bdaee58c08",
+        "component": "hero-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/interests-dark-mobile-comparison.json",
+        "sha256": "3c6afacf9423faaf15b46e0a19c61dc374799c767ff9d866774b1bb9e22be8ab",
+        "component": "interests-dark-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/about-light-mobile-comparison.json",
+        "sha256": "c18bc373714726af42ccacee386e9cc87b57c3d6f84d2c53f5d572c7d3231d40",
+        "component": "about-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/archive-light-mobile-comparison.json",
+        "sha256": "6e7a17f2810ab6cb6222f9f4c7032b4354ee2aeffc75dd354026c1b714ce8b3d",
+        "component": "archive-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/community-light-mobile-comparison.json",
+        "sha256": "7fed565b1ada9c542c5e1617e262aa73ed3563bfbc44debf7792233fce03de07",
+        "component": "community-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/hero-light-mobile-comparison.json",
+        "sha256": "f197c47f01b21e32206ebd0ee02ac2071881d663241f5120c20afea14e7451f5",
+        "component": "hero-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-11/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/interests-light-mobile-comparison.json",
+        "sha256": "cbf19402537e4c9d77da281885eb570080d4e4ffcaede5240488042e827f364c",
+        "component": "interests-light-mobile",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-12/test-results/layout-navigation-and-footer-match-archived-dark-layout-mobile/footer-comparison.json",
+        "sha256": "5568ea5883074166190280da839e770b72f00ee9b76022530e59b8a9fbd4fb9f",
+        "component": "footer",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-12/test-results/layout-navigation-and-footer-match-archived-dark-layout-mobile/mobile-menu-comparison.json",
+        "sha256": "4b0cc1e6f8c15c22f08e3c15ab3cbd3832098916aeab38c1f4a96cc4ef1447f2",
+        "component": "mobile-menu",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-12/test-results/layout-navigation-and-footer-match-archived-dark-layout-mobile/navbar-comparison.json",
+        "sha256": "2608a69950317be16eb0295510ae8135872a4ba04a17abfc284b8c198fabc514",
+        "component": "navbar",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-12/test-results/layout-navigation-and-footer-match-archived-light-layout-mobile/footer-comparison.json",
+        "sha256": "a44b32a92fc6b98dbcf1850fbd6178587ffebcaf124fccc1372c9a77b29951bf",
+        "component": "footer",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-12/test-results/layout-navigation-and-footer-match-archived-light-layout-mobile/mobile-menu-comparison.json",
+        "sha256": "6ed026fdf83b47339a3c4a96966ae7b3134f0286797089fdfab79d15d666a4e2",
+        "component": "mobile-menu",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-12/test-results/layout-navigation-and-footer-match-archived-light-layout-mobile/navbar-comparison.json",
+        "sha256": "b197d8c3ce5c3e62f46addab6b4a523fe4fe9b8e167a50b241fcdc5d933b31b4",
+        "component": "navbar",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-13/test-results/public-pages-visual-parity-222c2--matches-the-archive-light--mobile/history-timeline-light-comparison.json",
+        "sha256": "81bf3299cb85079dd368d3f4f51fd295bc0fd5ff7e788fcbd3f32ff83805ab99",
+        "component": "history-timeline-light",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-13/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--mobile/members-chart-light-comparison.json",
+        "sha256": "5b167769f0539475c7bcd8a1a4feb65bae74783675cbab20c936daa4d5bb89fe",
+        "component": "members-chart-light",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-13/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--mobile/members-grid-light-comparison.json",
+        "sha256": "d613178530c26561e31ebd681df813181ec8725bd8385f07b2a00deb38d34853",
+        "component": "members-grid-light",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-14/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--mobile/members-chart-dark-comparison.json",
+        "sha256": "ddec2ad5184e53c8e06b09e36729097fd757b32b235bed9dd54ade9b8319163e",
+        "component": "members-chart-dark",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-14/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--mobile/members-grid-dark-comparison.json",
+        "sha256": "52c5f61956dadb888cb987af3e872ceac4d1ddbc592ccdfa80675648482e4602",
+        "component": "members-grid-dark",
+        "project": "mobile",
+        "differingPixels": 0
+      },
+      {
+        "path": "web/.e2e-isolated/navigation-transitions-regression/batch-14/test-results/public-pages-visual-parity-8a07a-y-matches-the-archive-dark--mobile/history-timeline-dark-comparison.json",
+        "sha256": "4580ce4dc214660389084ccc1971ff25d3bf24c512df637e9b620499ca4ededb",
+        "component": "history-timeline-dark",
+        "project": "mobile",
+        "differingPixels": 0
+      }
+    ]
+  },
+  "budget": {
+    "path": ".tools/navigation-transitions/budget.json",
+    "sha256": "494d1d2efbd70caa7a11e663139e83b2464055a0a298eca3b4032b068e84319d",
+    "sourceMaps": 0,
+    "budgetBytes": 153600,
+    "min": 122479,
+    "max": 137376,
+    "routes": [
+      {
+        "path": "/",
+        "initialRouteJsGzipBytes": 137376,
+        "assetCount": 35
+      },
+      {
+        "path": "/activities",
+        "initialRouteJsGzipBytes": 124935,
+        "assetCount": 31
+      },
+      {
+        "path": "/activity/1",
+        "initialRouteJsGzipBytes": 130472,
+        "assetCount": 32
+      },
+      {
+        "path": "/activity/991",
+        "initialRouteJsGzipBytes": 130472,
+        "assetCount": 32
+      },
+      {
+        "path": "/members",
+        "initialRouteJsGzipBytes": 127271,
+        "assetCount": 31
+      },
+      {
+        "path": "/history",
+        "initialRouteJsGzipBytes": 130949,
+        "assetCount": 31
+      },
+      {
+        "path": "/logs",
+        "initialRouteJsGzipBytes": 130565,
+        "assetCount": 31
+      },
+      {
+        "path": "/social",
+        "initialRouteJsGzipBytes": 122479,
+        "assetCount": 30
+      },
+      {
+        "path": "/join",
+        "initialRouteJsGzipBytes": 124136,
+        "assetCount": 29
+      },
+      {
+        "path": "/events",
+        "initialRouteJsGzipBytes": 129774,
+        "assetCount": 32
+      },
+      {
+        "path": "/events/bounty",
+        "initialRouteJsGzipBytes": 129774,
+        "assetCount": 32
+      },
+      {
+        "path": "/events/betting",
+        "initialRouteJsGzipBytes": 129744,
+        "assetCount": 32
+      },
+      {
+        "path": "/events/stg",
+        "initialRouteJsGzipBytes": 129741,
+        "assetCount": 32
+      },
+      {
+        "path": "/events/zetime",
+        "initialRouteJsGzipBytes": 129769,
+        "assetCount": 32
+      },
+      {
+        "path": "/events/party",
+        "initialRouteJsGzipBytes": 129748,
+        "assetCount": 32
+      }
+    ]
+  },
+  "originalPreview": {
+    "port": 3100,
+    "processId": 56840,
+    "sampledArtifactHashesUnchanged": [
+      {
+        "path": "web/.output/server/index.mjs",
+        "sha256": "4F5C47341B5E1E9B6606E6DCC82C0B5231E27814DF7B8A5687D985D15709FF0A"
+      },
+      {
+        "path": "web/.output/nitro.json",
+        "sha256": "2581EFA655C710B7FE9FF16EF325C39BA48A5D8E7B3ABA39ACD12A9E49CEA518"
+      }
+    ]
+  },
+  "adjustedPreview": {
+    "url": "http://127.0.0.1:3101",
+    "api": "http://127.0.0.1:8088",
+    "passed": true,
+    "documents": 1,
+    "pageErrors": [],
+    "finalPath": "/join",
+    "checkedAt": "2026-10-20T17:52:16.060Z",
+    "processId": 13560,
+    "session": "Separate local cookie name and random in-memory sealing key; no key file or shared session cookie"
+  },
+  "sources": [
+    {
+      "path": "web/app/app.vue",
+      "sha256": "6c3691ece1491937b9b8f6d17f220c34a7cc395ac8bc9ec47a0949ddb4ec8c13"
+    },
+    {
+      "path": "web/app/layouts/default.vue",
+      "sha256": "474e7f2fdf628c5e837668dfdf62efd4e33712899d444ec67e34bafa5476343d"
+    },
+    {
+      "path": "web/app/pages/events.vue",
+      "sha256": "1390416fb6df65d9146a9ddf2557e9e393134673fd9a514043c240cf1e07bc63"
+    },
+    {
+      "path": "web/app/assets/css/main.css",
+      "sha256": "f60a2a23d3e26503c6874880228c3bf02902902f96deb75d85ea28aeb3bcba56"
+    },
+    {
+      "path": "web/app/assets/css/page-transition.css",
+      "sha256": "ff755028c3caff125ccd4d5f8094ca9867a51d610d745cc8ea289d119b4d289b"
+    },
+    {
+      "path": "web/playwright.config.ts",
+      "sha256": "57dbac4f8a8c4e4f395b334ae8bf7fb5ffeb23a3dede0fc26430c39547b8c41c"
+    },
+    {
+      "path": "web/tests/fixtures/nuxt-server.mjs",
+      "sha256": "cbf92e71b8043bacf78aea8020ffba2ac47e4a2e925f3f512ef7b8915416141f"
+    },
+    {
+      "path": "web/tests/e2e/page-transitions.spec.ts",
+      "sha256": "45ef3b7555e842b390a289675d31ea1f7c54859a2873a8554deebaccf8a703c7"
+    }
+  ],
+  "retainedAttempts": [
+    {
+      "path": "web/.e2e-isolated/navigation-transitions/summary.json",
+      "passed": 10,
+      "failed": 4,
+      "explanation": "Two real out-in async-navigation failures; desktop captured an intermediate smooth-scroll position; mobile attempted the intentionally hidden desktop rail."
+    },
+    {
+      "path": "web/.e2e-isolated/navigation-transitions-overlap-probe/summary.json",
+      "passed": 2,
+      "failed": 1,
+      "explanation": "Absolute overlap fixes rapid navigation, but outgoing home moves 64px. Replaced by a height-preserving grid."
+    },
+    {
+      "path": "web/.e2e-isolated/navigation-transitions-final/summary.json",
+      "passed": 15,
+      "failed": 1,
+      "explanation": "Grid run had one mobile setup failure: a hidden desktop month link. The same production artifact subsequently passes all 16 cases with corrected setup and strict actual-scroll assertions."
+    }
+  ],
+  "limits": [
+    "In-app browser unavailable; actual Chromium CLI E2E used.",
+    "Manual touch/focus/motion audit and whole-migration performance/security/CI acceptance remain open.",
+    "No backend, frozen frontend or unrelated Nuxt runtime-default edits included."
+  ]
+}

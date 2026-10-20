@@ -8,6 +8,7 @@
 @import "./invitation.css";
 @import "./motion.css";
 @import "./scroll-motion.css";
+@import "./page-transition.css";
 @custom-variant dark (&:where(.dark, .dark *));
 
 /* Existing brand values; the full token and layout port is stage 02. */

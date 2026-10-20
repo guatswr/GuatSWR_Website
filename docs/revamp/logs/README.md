@@ -31,6 +31,7 @@ accepted; these logs are the evidence behind them.
 
 | Workstream | Directory | State |
 | --- | --- | --- |
+| Public page navigation continuity | [`24-page-transitions/`](24-page-transitions/README.md) | 16/16 normal/reduced-motion navigation checks, 28/28 existing regression, 62 zero-difference regions, 785 units, 15 JS graphs and zero maps; separate local preview on 3101, original 3100 preserved |
 | Approved public accessibility colours / targets | [`23-approved-accessibility/`](23-approved-accessibility/README.md) | 785 units, 132/132 regression, 98 approved-reference zero-difference regions, 15 JS graphs; 56 closed + 11 interaction states strictly pass; empty-board/dark-rules diagnostics and complete #80 remain open |
 | Public accessibility semantics / visual decision | [`22-public-accessibility/`](22-public-accessibility/README.md) | Historical pre-approval evidence: 785 units, 112/112 E2E, 88 zero-difference regions; visual proposal subsequently approved, implementation in log 23 |
 | Markdown fixture/cache and capture isolation | [`21-markdown-fixture-isolation/`](21-markdown-fixture-isolation/README.md) | 785 units, 8/8 unique E2E plus 4 mixed repeats; 16 natural-context zero-difference regions; full CI pending |

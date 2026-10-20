@@ -139,7 +139,9 @@ const isActive = (path: string): boolean => route.path.includes(path)
     <!-- 主内容区域 (Main Content) -->
     <div class="flex-1 min-w-0 p-4 md:p-8 overflow-x-hidden">
       <div class="max-w-6xl mx-auto min-h-[500px] py-6 md:px-4">
-        <NuxtPage />
+        <div class="club-page-stack">
+          <NuxtPage :transition="{ name: 'club-page' }" />
+        </div>
       </div>
     </div>
   </div>

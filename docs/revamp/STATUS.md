@@ -2,7 +2,27 @@
 
 Updated: 2026-10-21 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest checkpoint: the user-approved bounded accessibility colours and month
+Latest checkpoint: public page changes now use the archive's 200ms leave and
+enter fades, with concurrent Nuxt mounting to avoid an async `out-in` blank-page
+failure. A shared grid preserves height and each page's navbar spacing; native
+scroll restoration completes before the destination becomes clearly visible.
+Initial SSR, reduced motion, query-only filters and the admin shell are preserved.
+**16/16** navigation E2E and **28/28** existing regression checks pass without
+retry/flaky/skip. **62** approved-reference regions have zero differing pixels;
+**785** units, typecheck, lint (0 errors / 34 existing warnings), **59** tooling
+tests, shared build and an isolated production Nuxt build pass. **15/15** initial
+JS graphs pass at **122479–137376 B gzip**, with **0 maps**. The production rate
+limit remains enabled in the validated artifact. This is a local navigation
+checkpoint; final migration/CI/performance/security/a11y acceptance remains open.
+
+Adjusted local preview: **http://127.0.0.1:3101**, using the existing local
+backend on 8088, a separate session cookie and an in-memory random sealing key.
+An actual Chromium social-to-join check passes with one document load and no
+page errors. The original 3100 preview/process and `web/.output` are preserved.
+Backend, legacy proxy and Nuxt working-tree runtime-default edits are excluded.
+See [log 24](logs/24-page-transitions/README.md) and its machine evidence.
+
+Previous checkpoint: the user-approved bounded accessibility colours and month
 targets are implemented. Original 14px dots sit inside independent 44×44px
 links, with 4px gaps and a scrolling 56px rail; native keyboard access reaches
 the last of 60 months. Passing dark colours and hover interactions are preserved.

@@ -1,0 +1,45 @@
+/* Keep both pages in one grid cell until leave completes. The taller page
+   preserves document height during the fade, avoiding an early scroll clamp.
+   No transform (fixed descendants) or appear (SSR first paint). */
+.club-page-stack {
+  display: grid;
+}
+
+.club-page-stack > * {
+  grid-area: 1 / 1;
+  min-width: 0;
+  align-self: start;
+}
+
+/* Each root keeps its own navbar space, including when crossing home. */
+#main-content > .club-page-stack > :not(.club-home) {
+  margin-top: 4rem;
+}
+
+.club-page-enter-active,
+.club-page-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.club-page-leave-active {
+  pointer-events: none;
+}
+
+/* Match the archive's leave-then-enter timing with concurrent Nuxt mounting.
+   Native scroll restoration runs at leave completion, before the new page
+   becomes visible. out-in can strand Nuxt's pending Suspense on rapid clicks. */
+.club-page-enter-active {
+  transition-delay: 0.2s;
+}
+
+.club-page-enter-from,
+.club-page-leave-to {
+  opacity: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .club-page-enter-active,
+  .club-page-leave-active {
+    transition: none;
+  }
+}

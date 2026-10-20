@@ -58,7 +58,7 @@ export default defineConfig({
       env: { PORT: String(authPort) },
     },
     {
-      command: 'node .output/server/index.mjs',
+      command: 'node tests/fixtures/nuxt-server.mjs',
       url: `${origin(appPort)}/api/health`,
       reuseExistingServer: false,
       env: {
