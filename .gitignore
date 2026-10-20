@@ -48,3 +48,36 @@ backups/
 # API source shares the feature name; keep only these controllers in Git.
 !web/server/api/bff/admin/backups/
 !web/server/api/bff/admin/backups/*.ts
+
+# Agent & AI assistant artifacts
+AGENT.md
+AGENTS.md
+**/AGENT.md
+**/AGENTS.md
+agent.md
+agents.md
+**/agent.md
+**/agents.md
+*.agent.md
+**/*.agent.md
+agent-*.md
+**/agent-*.md
+.agent/
+.agents/
+CLAUDE.md
+claude.md
+**/CLAUDE.md
+**/claude.md
+.claude/
+CODEX.md
+codex.md
+**/CODEX.md
+**/codex.md
+.codex/
+.cursor/
+.cursorrules
+.gemini/
+.antigravity/
+.windsurf/
+.windsurfrules
+
