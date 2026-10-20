@@ -2,7 +2,19 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest accepted local feature: secondary administrator workflows. Actual
+Latest accepted local improvement: native idle hydration for homepage interests/
+about and the shared footer, preserving complete SSR text, images and links.
+Four recursive gates pass **767 units** (final test-only assertions also pass
+typecheck/lint). **96/96** actual production/visual cases pass, 48 fresh batches,
+zero retry/flaky/skip; **64** archive comparison regions have zero significant
+differences on Windows. Home Lighthouse median **1662.1 ms / 98**, layout fixture
+**1514.6 ms / 98**, all valid slow samples retained. All **14** initial JS graphs
+pass **121133–135910 B gzip**, zero maps. Native wrappers slightly increase JS;
+the improvement is client scheduling. See [log 17](logs/17-public-hydration/README.md).
+These are local fixture measurements, not a production speedup claim or final
+full-site performance acceptance. Fresh Windows/Linux CI is still required.
+
+Latest accepted functional feature: secondary administrator workflows. Actual
 desktop/mobile tests cover avatar-only saves, 2FA enable/disable/re-login,
 independent user/global session revocation, explicit global-logout cancellation,
 exact recycle purge scope, icon upload, and a real 100 MiB native download.
@@ -25,9 +37,9 @@ Windows public-page regression passes **48/48** (24 batches, no retry/flaky/skip
 34 compared regions with zero significant differences). Fresh Linux mobile
 dark-log comparison passes **1/1**, retaining **one** explicitly approved pixel.
 No global threshold or masking change. See [log 16](logs/16-approved-raster/README.md).
-A complete-home performance baseline on the unchanged secondary-admin output is
-**2260.4 ms / score 98**, three valid samples, still over 1800 ms. The previous
-1960.7 ms result is historical, not current acceptance.
+The complete-home **baseline before the newer idle-hydration source** is
+**2260.4 ms / score 98**, three valid Windows samples, over 1800 ms. The newer
+local home result is 1662.1 ms / 98 above. The previous 1960.7 ms is historical.
 
 Latest Ubuntu artifact pinpoints article flakes to an ambiguous title locator
 (input plus editor toolbar); corrected by role, not sleeps/retries. The public
@@ -38,7 +50,10 @@ retain the zero-difference gate. The fresh local comparison is accepted in log 1
 Prior `13cff96` CI completes: Windows **254/254**, zero flakes; Linux container
 passes; Ubuntu **253/254**, zero flakes, only the pre-approval dark-log pixel
 fails. Its performance step was skipped, so this is not complete CI acceptance.
-Current real-page LCP, public advanced Markdown, full accessibility/security/
+The subsequent `6ad9a1a` Ubuntu run passes **254/254 E2E**, zero flakes, and the
+Linux container passes. Its unchanged pre-hydration home fails LCP at **2034.0 ms /
+99** (layout 908.9 ms / 100). New hydration source was not in that run.
+Full-route performance, public advanced Markdown, full accessibility/security/
 monitoring and final complete CI remain open. No deployment or QQ success.
 
 Previous accepted feature: modern activity administration, including review,

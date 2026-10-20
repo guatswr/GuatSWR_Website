@@ -2,6 +2,9 @@
 import { useUiStore } from '~/stores/ui'
 import { THEME_BOOT_SCRIPT } from '~/utils/theme'
 
+// Footer text and links remain server-rendered; defer their client setup off the first paint.
+const SiteFooter = defineLazyHydrationComponent('idle', () => import('~/components/SiteFooter.vue'))
+
 const route = useRoute()
 const ui = useUiStore(usePinia())
 // The one shared public-config request for the whole application: it publishes

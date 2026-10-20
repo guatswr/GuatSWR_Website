@@ -1,0 +1,1373 @@
+{
+  "generatedAt": "2026-10-20T05:26:52.605Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\.tools\\home-footer-idle-regression",
+  "totalShards": 48,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    },
+    {
+      "index": 12,
+      "exitCode": 0
+    },
+    {
+      "index": 13,
+      "exitCode": 0
+    },
+    {
+      "index": 14,
+      "exitCode": 0
+    },
+    {
+      "index": 15,
+      "exitCode": 0
+    },
+    {
+      "index": 16,
+      "exitCode": 0
+    },
+    {
+      "index": 17,
+      "exitCode": 0
+    },
+    {
+      "index": 18,
+      "exitCode": 0
+    },
+    {
+      "index": 19,
+      "exitCode": 0
+    },
+    {
+      "index": 20,
+      "exitCode": 0
+    },
+    {
+      "index": 21,
+      "exitCode": 0
+    },
+    {
+      "index": 22,
+      "exitCode": 0
+    },
+    {
+      "index": 23,
+      "exitCode": 0
+    },
+    {
+      "index": 24,
+      "exitCode": 0
+    },
+    {
+      "index": 25,
+      "exitCode": 0
+    },
+    {
+      "index": 26,
+      "exitCode": 0
+    },
+    {
+      "index": 27,
+      "exitCode": 0
+    },
+    {
+      "index": 28,
+      "exitCode": 0
+    },
+    {
+      "index": 29,
+      "exitCode": 0
+    },
+    {
+      "index": 30,
+      "exitCode": 0
+    },
+    {
+      "index": 31,
+      "exitCode": 0
+    },
+    {
+      "index": 32,
+      "exitCode": 0
+    },
+    {
+      "index": 33,
+      "exitCode": 0
+    },
+    {
+      "index": 34,
+      "exitCode": 0
+    },
+    {
+      "index": 35,
+      "exitCode": 0
+    },
+    {
+      "index": 36,
+      "exitCode": 0
+    },
+    {
+      "index": 37,
+      "exitCode": 0
+    },
+    {
+      "index": 38,
+      "exitCode": 0
+    },
+    {
+      "index": 39,
+      "exitCode": 0
+    },
+    {
+      "index": 40,
+      "exitCode": 0
+    },
+    {
+      "index": 41,
+      "exitCode": 0
+    },
+    {
+      "index": 42,
+      "exitCode": 0
+    },
+    {
+      "index": 43,
+      "exitCode": 0
+    },
+    {
+      "index": 44,
+      "exitCode": 0
+    },
+    {
+      "index": 45,
+      "exitCode": 0
+    },
+    {
+      "index": 46,
+      "exitCode": 0
+    },
+    {
+      "index": 47,
+      "exitCode": 0
+    },
+    {
+      "index": 48,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 48,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 96,
+  "counts": {
+    "passed": 96,
+    "expected": 96,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 96
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::114:3::homepage.spec.ts > homepage > never hides an already painted hero when hydration is delayed",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::133:3::homepage.spec.ts > homepage > fetches the hero image exactly once and keeps its source stable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::160:3::homepage.spec.ts > homepage > hydrates without errors and never refetches the shared data",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::18:3::homepage.spec.ts > homepage > is readable and shows a real hero image with JavaScript disabled",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::199:3::homepage.spec.ts > homepage > falls back to the original when the archived thumbnail is missing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::216:3::homepage.spec.ts > homepage > reports a permanently broken image and stops after bounded retries",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::235:3::homepage.spec.ts > homepage > nine clicks freeze the page and native scrolling thaws it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::260:3::homepage.spec.ts > homepage > reduced motion keeps the freeze static and dismisses it quickly",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::271:3::homepage.spec.ts > homepage > keeps the archived archive retry state and recovers",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::285:3::homepage.spec.ts > homepage > publishes a share image that actually resolves to an image",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::homepage.spec.ts::70:3::homepage.spec.ts > homepage > keeps the eager hero visible with scripts blocked and stylesheets intact",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::layout.spec.ts::249:1::layout.spec.ts > keyboard navigation and Reka dialog return focus without CSP or hydration errors",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::layout.spec.ts::287:1::layout.spec.ts > lazy dialog reports a failed download and works after reload",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::104:3::public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::138:3::public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::160:3::public-pages.spec.ts > activity detail > missing and non-public records answer 404",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::165:3::public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::176:3::public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::203:3::public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::251:3::public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::281:3::public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::300:3::public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::321:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::36:3::public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 19,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 19,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 17,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 20,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 17,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 21,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 18,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 20,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 18,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::59:3::public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::64:3::public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::89:3::public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::24:3::social-join.spec.ts > social channels > opens curated channels in a new, isolated tab",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 22,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::32:3::social-join.spec.ts > social channels > does not refetch the shared configuration when navigating to join",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 22,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::48:3::social-join.spec.ts > join page > renders group details without JavaScript",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 23,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::5:3::social-join.spec.ts > social channels > renders the archived channel index without JavaScript",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 21,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::71:3::social-join.spec.ts > join page > falls back to the archived copy message when the clipboard is denied",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 23,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::89:3::social-join.spec.ts > join page > confirms a successful copy",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 24,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::social-join.spec.ts::99:3::social-join.spec.ts > join page > shows the archived QR failure state and retries it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 24,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 25,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage-visual.spec.ts::19:3::homepage-visual.spec.ts > homepage matches the archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 25,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::114:3::homepage.spec.ts > homepage > never hides an already painted hero when hydration is delayed",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 27,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::133:3::homepage.spec.ts > homepage > fetches the hero image exactly once and keeps its source stable",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 27,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::160:3::homepage.spec.ts > homepage > hydrates without errors and never refetches the shared data",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 28,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::18:3::homepage.spec.ts > homepage > is readable and shows a real hero image with JavaScript disabled",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 26,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::199:3::homepage.spec.ts > homepage > falls back to the original when the archived thumbnail is missing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 28,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::216:3::homepage.spec.ts > homepage > reports a permanently broken image and stops after bounded retries",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 29,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::235:3::homepage.spec.ts > homepage > nine clicks freeze the page and native scrolling thaws it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 29,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::260:3::homepage.spec.ts > homepage > reduced motion keeps the freeze static and dismisses it quickly",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 30,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::271:3::homepage.spec.ts > homepage > keeps the archived archive retry state and recovers",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 30,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::285:3::homepage.spec.ts > homepage > publishes a share image that actually resolves to an image",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 31,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::homepage.spec.ts::70:3::homepage.spec.ts > homepage > keeps the eager hero visible with scripts blocked and stylesheets intact",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 26,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 32,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::layout.spec.ts::214:3::layout.spec.ts > navigation and footer match archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 31,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::layout.spec.ts::249:1::layout.spec.ts > keyboard navigation and Reka dialog return focus without CSP or hydration errors",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 32,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::layout.spec.ts::287:1::layout.spec.ts > lazy dialog reports a failed download and works after reload",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 33,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::104:3::public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 35,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::138:3::public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 36,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::160:3::public-pages.spec.ts > activity detail > missing and non-public records answer 404",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 36,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::165:3::public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 37,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::176:3::public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 37,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::203:3::public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 38,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::251:3::public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 38,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::281:3::public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 39,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::300:3::public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 39,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::321:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 40,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::36:3::public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 33,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 43,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activities matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 40,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 43,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /activity/1 matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 41,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 44,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 41,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 45,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /logs matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 42,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 44,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /members matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 42,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::59:3::public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 34,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::64:3::public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 34,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::89:3::public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 35,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::24:3::social-join.spec.ts > social channels > opens curated channels in a new, isolated tab",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 46,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::32:3::social-join.spec.ts > social channels > does not refetch the shared configuration when navigating to join",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 46,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::48:3::social-join.spec.ts > join page > renders group details without JavaScript",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 47,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::5:3::social-join.spec.ts > social channels > renders the archived channel index without JavaScript",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 45,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::71:3::social-join.spec.ts > join page > falls back to the archived copy message when the clipboard is denied",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 47,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::89:3::social-join.spec.ts > join page > confirms a successful copy",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 48,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::social-join.spec.ts::99:3::social-join.spec.ts > join page > shows the archived QR failure state and retries it",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 48,
+      "exitCode": 0
+    }
+  ]
+}

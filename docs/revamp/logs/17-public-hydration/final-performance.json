@@ -1,0 +1,62 @@
+{
+  "device": "Lighthouse default mobile / simulated throttling",
+  "serverState": "Prewarmed by two HTTP document requests per route; Lighthouse resets browser storage/cache",
+  "warmup": [
+    {
+      "path": "/",
+      "firstDocumentRequestMs": 207.29089999999997,
+      "secondDocumentRequestMs": 27.38689999999997
+    },
+    {
+      "path": "/__revamp/layout",
+      "firstDocumentRequestMs": 29.493600000000242,
+      "secondDocumentRequestMs": 17.229199999999764
+    }
+  ],
+  "invalidAttempts": [],
+  "results": [
+    {
+      "url": "http://127.0.0.1:3200/",
+      "runs": [
+        {
+          "performance": 79,
+          "lcpMs": 3579.7514999999994
+        },
+        {
+          "performance": 99,
+          "lcpMs": 1659.926
+        },
+        {
+          "performance": 98,
+          "lcpMs": 1662.1452
+        }
+      ],
+      "median": {
+        "performance": 98,
+        "lcpMs": 1662.1452
+      }
+    },
+    {
+      "url": "http://127.0.0.1:3200/__revamp/layout",
+      "runs": [
+        {
+          "performance": 96,
+          "lcpMs": 2556.3027499999994
+        },
+        {
+          "performance": 100,
+          "lcpMs": 1360.6452
+        },
+        {
+          "performance": 98,
+          "lcpMs": 1514.64255
+        }
+      ],
+      "median": {
+        "performance": 98,
+        "lcpMs": 1514.64255
+      }
+    }
+  ],
+  "complete": true
+}

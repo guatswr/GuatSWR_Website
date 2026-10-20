@@ -1,0 +1,12 @@
+docs/revamp/CHECKLIST.md
+docs/revamp/logs/17-public-hydration/e2e.json
+docs/revamp/logs/17-public-hydration/files.txt
+docs/revamp/logs/17-public-hydration/final-performance.json
+docs/revamp/logs/17-public-hydration/home-only-performance.json
+docs/revamp/logs/17-public-hydration/launcher-failure.json
+docs/revamp/logs/17-public-hydration/README.md
+docs/revamp/logs/17-public-hydration/route-budget.json
+docs/revamp/STATUS.md
+web/app/layouts/default.vue
+web/app/pages/index.vue
+web/tests/e2e/homepage.spec.ts

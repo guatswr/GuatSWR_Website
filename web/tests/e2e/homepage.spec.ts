@@ -28,6 +28,11 @@ test.describe('homepage', () => {
 
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('桂航绯想天')
     await expect(page.getByText(String(config.banner_text))).toBeVisible()
+    // Deferred client hydration must never defer the public body or navigation HTML.
+    await expect(page.getByRole('heading', { name: '总有一种热爱，与你同频' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /因东方相识，.*让同好成为朋友/ })).toBeVisible()
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: '群史', exact: true })).toHaveAttribute('href', '/history')
+    await expect(page.getByRole('contentinfo').getByRole('link', { name: '管理入口', exact: true })).toHaveAttribute('href', '/login')
     expect(activities.items.length).toBeGreaterThan(0)
     for (const activity of activities.items) {
       await expect(

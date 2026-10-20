@@ -1,0 +1,15 @@
+{
+  "device": "Lighthouse default mobile / simulated throttling",
+  "serverState": "Prewarmed by two HTTP document requests per route; Lighthouse resets browser storage/cache",
+  "warmup": [
+    {
+      "path": "/",
+      "firstDocumentRequestMs": 212.8993999999998,
+      "secondDocumentRequestMs": 26.804000000000087
+    }
+  ],
+  "invalidAttempts": [],
+  "results": [],
+  "complete": false,
+  "failure": "ENOENT: no such file or directory, mkdtemp 'E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.tools\\tmp\\lighthouse.XXXXXX'"
+}

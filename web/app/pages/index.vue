@@ -5,13 +5,15 @@ import ClubIcon from '~/components/ClubIcon.vue'
 import ProgressiveImage from '~/components/ProgressiveImage.vue'
 import HomeSocialLinks from '~/components/HomeSocialLinks.vue'
 import HomeHero from '~/components/home/HomeHero.vue'
-import HomeInterests from '~/components/home/HomeInterests.vue'
-import HomeAbout from '~/components/home/HomeAbout.vue'
 import { getThumbUrl } from '~/utils/image-url'
 import { formatArchiveDate } from '~/utils/club-date'
 import { normalizedGroupNumber } from '~/utils/site-config'
 import { HOME_INTERESTS } from '~/utils/home-content'
 import { vScrollReveal } from '~/utils/scroll-motion'
+
+// Keep below-fold markup in SSR; hydrate its motion only when the browser is idle.
+const HomeInterests = defineLazyHydrationComponent('idle', () => import('~/components/home/HomeInterests.vue'))
+const HomeAbout = defineLazyHydrationComponent('idle', () => import('~/components/home/HomeAbout.vue'))
 
 const { config, socialLinks, ready } = usePublicConfig()
 const archivesRequest = useFetch<PublicActivitiesPage>('/api/activities', {
