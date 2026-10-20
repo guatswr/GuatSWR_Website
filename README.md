@@ -4,7 +4,7 @@
 
 新版位于 `web/`，契约类型与校验位于 `packages/shared/`。`frontend/`、`backend/` 保留原有构建和部署方式，不参与新 workspace。进度与验收证据见 [STATUS.md](docs/revamp/STATUS.md)，基础设施操作前先审阅 [预发布方案](docs/revamp/STAGING.md)。
 
-新版使用 Node **24.15.0**（`.node-version`）与 pnpm **11.25.0**，生产默认不生成 sourcemap，`next.guatswr.top` 默认禁止索引。导航、页脚与主题已平移至内部布局验证页；当前首页主体仍是 SSR 脚手架，完整公开页将在后续阶段迁移。
+新版使用 Node **24.16.0**（`.node-version`）与 pnpm **11.25.0**。24.15.0 存在已知的 Windows TCP 原生崩溃，项目内运行时、CI 与新版镜像统一升级，系统 Node 无需替换。公开页 SSR/数据 SWR、BFF 会话和管理工作台已接入；完整迁移验收仍在继续，具体范围以 STATUS 为准。生产不生成 sourcemap，`next.guatswr.top` 默认禁止索引，当前仅本地测试。
 
 ```powershell
 pnpm install --frozen-lockfile

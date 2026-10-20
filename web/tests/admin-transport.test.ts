@@ -107,4 +107,25 @@ describe('private browser boundary', () => {
     expect(new Headers(request.init.headers).has('content-type')).toBe(false)
     expect(new Headers(request.init.headers).get('x-csrf-token')).toBe('csrf-1')
   })
+
+  it('binds avatar intent to a validated event path, without browser-selected upstream fields or tokens', async () => {
+    const { api, requests } = harness(() => json({ url: '/uploads/img/events/27/avatars/p.png' }))
+    expect(await api.uploadEventAvatar(new File(['png'], 'p.png', { type: 'image/png' }), 27)).toBe('/uploads/img/events/27/avatars/p.png')
+    const request = requests.find(item => item.path === '/api/bff/admin/events/27/avatar')!
+    const headers = new Headers(request.init.headers)
+    expect(headers.has('authorization')).toBe(false)
+    expect(headers.has('content-type')).toBe(false)
+    expect(headers.get('x-csrf-token')).toBe('csrf-1')
+    const body = request.init.body as FormData
+    expect([...body.keys()]).toEqual(['file'])
+    expect((body.get('file') as File).name).toBe('p.png')
+  })
+
+  it('rejects hostile avatar event ids before any session or upload request', () => {
+    const { api, requests } = harness(() => json({}))
+    const file = new File(['png'], 'p.png', { type: 'image/png' })
+    for (const id of [0, -1, 1.5, NaN, Infinity, Number.MAX_SAFE_INTEGER + 1])
+      expect(() => api.uploadEventAvatar(file, id)).toThrow('Invalid admin id')
+    expect(requests).toEqual([])
+  })
 })

@@ -8,14 +8,14 @@ infrastructure inputs do not block subsequent local implementation stages.
 
 An independent local image is now build-verified: `guatswr-revamp:foundation-local`.
 Reproduce from the repository root with `docker build -f web/Dockerfile -t guatswr-revamp:<reviewed-sha> .`.
-The Dockerfile runs all four recursive gates and artifact checks, uses Node 24.15.0,
+The Dockerfile runs all four recursive gates and artifact checks, uses Node 24.16.0,
 and runs the final Nitro service as the unprivileged `node` user. Local loopback
 smoke checks passed; this is not a server deployment or a traffic cutover.
 
 ## Proposed topology
 
 - Keep the current frontend container, backend container, database, uploads, reverse proxy upstream and `guatswr.top` routes untouched.
-- Add an independent Node 24.15.0 Nitro service on a loopback-only port (proposed `127.0.0.1:3100`). Run with a separate unprivileged user/container and restart/health policy.
+- Add an independent Node 24.16.0 Nitro service on a loopback-only port (proposed `127.0.0.1:3100`). Run with a separate unprivileged user/container and restart/health policy.
 - Add only a `next.guatswr.top` HTTPS virtual host forwarding to that service. Its `/api/*` endpoints are Nitro BFF endpoints, not a blanket reverse proxy to the backend. Upload serving will be designed and reviewed with the image port.
 - Set private `NUXT_API_BASE` to the existing backend's internal HTTP(S) origin. Production preview receives environment variables from the service/secret store, not a checked-in file.
 - Generate `NUXT_SESSION_PASSWORD` (at least 32 random characters) in the server secret store. Do not send it in chat, commit it, print it, or include it in a browser runtime config. Use a host-only cookie (`guatswr-next`), HttpOnly/Secure/SameSite=Lax.

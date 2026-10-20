@@ -11,6 +11,8 @@
 **/.env.*
 **/test-results
 **/playwright-report
+**/.e2e-isolated
+**/blob-report
 **/.lighthouseci
 frontend/**
 !frontend/src/
@@ -19,5 +21,9 @@ frontend/**
 !frontend/src/bg/login/1.jpg
 !frontend/src/bg/login/2.jpg
 !frontend/src/bg/login/3.jpg
-backend
+backend/**
+!backend/src/
+!backend/src/app.js
+!backend/src/routes/
+!backend/src/routes/*.js
 backups

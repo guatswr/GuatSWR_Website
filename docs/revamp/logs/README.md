@@ -15,8 +15,9 @@ Rules for a log entry:
 
 1. **Report only what was executed.** A test that was written but not run is
    listed as `unrun`, never as passing.
-2. **Name the exact commands** and the pinned runtime (`.tools/env.sh`, Node
-   24.15.0, pnpm 11.25.0) so the numbers are reproducible.
+2. **Name the exact commands** and the runtime from `.node-version` (currently
+   24.16.0, pnpm 11.25.0) so the numbers are reproducible. Historical 24.15.0
+   evidence stays dated; the Windows TCP native-crash fix starts with log 14.
 3. **State the checkout and revision** the numbers came from.
 4. **List limitations and deviations** explicitly, including anything a later
    agent must not treat as accepted.
@@ -37,3 +38,4 @@ accepted; these logs are the evidence behind them.
 | Private administration integration | [`11-admin-integration/`](11-admin-integration/README.md) | Foundation accepted at 0d7f22d: 686 units, 28/28 E2E, 36 retained screenshots, 14 public JS budgets; full admin stage open |
 | Article administration | [`12-admin-articles/`](12-admin-articles/README.md) | Local feature accepted: 692 units, 82 unique E2E, 14 route budgets, zero maps; public advanced Markdown and full migration open |
 | Frozen API upload contract | [`13-frozen-api-contract/`](13-frozen-api-contract/README.md) | Canonical paths fixed; independent mounted-route guard, 747 units, 6/6 real guest E2E, 14 route budgets, zero maps |
+| Activity administration and runtime correction | [`14-admin-events/`](14-admin-events/README.md) | Local feature accepted: Node 24.16.0, 750 units, tooling 56/56, 62/62 E2E, 14 route budgets, Linux build/runtime smoke; full migration open |

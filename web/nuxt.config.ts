@@ -125,6 +125,9 @@ export default defineNuxtConfig({
     '/api/bff/admin/upload': {
       security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
     },
+    '/api/bff/admin/events/*/avatar': {
+      security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
+    },
     '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
   security: {

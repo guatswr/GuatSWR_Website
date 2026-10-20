@@ -1,0 +1,337 @@
+{
+  "generatedAt": "2026-10-19T21:55:29.041Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-node2416-events",
+  "totalShards": 11,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 11,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 22,
+  "counts": {
+    "passed": 22,
+    "expected": 22,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 22
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 对赌协议 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 线下聚会 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 悬赏令 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 则则 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports STG without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::154:1::admin-events.spec.ts > participant workflows preserve the frozen public whitelist and save permanent ranking avatars",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::192:1::admin-events.spec.ts > bounty completion and betting settlement preserve original content and become public immediately",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::218:1::admin-events.spec.ts > ordinary admins use event workflows through opaque sessions and anonymous callers cannot read them",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::238:1::admin-events.spec.ts > event avatar BFF enforces session, Origin, CSRF, public status and server-bound event storage",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::36:1::admin-events.spec.ts > pending review, protected detail, status changes, deletion and restoration invalidate warmed public reads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::admin-events.spec.ts::73:1::admin-events.spec.ts > rejecting and editing a private event preserve status, nested people, settlement and unknown metadata",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 对赌协议 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 线下聚会 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 悬赏令 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports 则则 without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::101:58::admin-events.spec.ts > authenticated creation supports STG without a guest draft",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::154:1::admin-events.spec.ts > participant workflows preserve the frozen public whitelist and save permanent ranking avatars",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::192:1::admin-events.spec.ts > bounty completion and betting settlement preserve original content and become public immediately",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::218:1::admin-events.spec.ts > ordinary admins use event workflows through opaque sessions and anonymous callers cannot read them",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::238:1::admin-events.spec.ts > event avatar BFF enforces session, Origin, CSRF, public status and server-bound event storage",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::36:1::admin-events.spec.ts > pending review, protected detail, status changes, deletion and restoration invalidate warmed public reads",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::admin-events.spec.ts::73:1::admin-events.spec.ts > rejecting and editing a private event preserve status, nested people, settlement and unknown metadata",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    }
+  ]
+}

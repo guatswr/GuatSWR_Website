@@ -63,6 +63,7 @@ export const ADMIN_UPSTREAM_ROUTES = {
   'backup.list': { method: 'GET', path: '/api/admin/backups' },
   'backup.delete': { method: 'DELETE', path: '/api/admin/backups', query: ['type', 'file'] },
   'upload.asset': { method: 'POST', path: '/api/upload', query: ['activityId', 'category'], multipart: true, maxRequestBytes: 51 * 1024 * 1024, maxResponseBytes: 64 * 1024 },
+  'upload.eventAvatar': { method: 'POST', path: '/api/upload/visitor/avatar', multipart: true, maxRequestBytes: 51 * 1024 * 1024, maxResponseBytes: 64 * 1024 },
 } as const satisfies UpstreamRouteTable
 
 export type AdminUpstreamRouteName = keyof typeof ADMIN_UPSTREAM_ROUTES

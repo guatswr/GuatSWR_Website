@@ -1,4 +1,4 @@
-FROM node:24.15.0-alpine AS build
+FROM node:24.16.0-alpine AS build
 WORKDIR /workspace
 RUN npm install --global pnpm@11.25.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
@@ -10,11 +10,15 @@ COPY web ./web
 # Read-only reference bytes used by the login asset parity test. These never
 # enter the runtime image; all other legacy sources stay out of the context.
 COPY frontend/src/bg/login ./frontend/src/bg/login
+# Literal Express route declarations are read-only contract-test inputs.
+# They are never imported, executed, or copied into the final runtime image.
+COPY backend/src/app.js ./backend/src/app.js
+COPY backend/src/routes ./backend/src/routes
 RUN pnpm -r typecheck && pnpm -r lint && pnpm -r test && pnpm -r build
 COPY scripts/revamp/check-artifacts.mjs ./scripts/revamp/check-artifacts.mjs
 RUN node scripts/revamp/check-artifacts.mjs
 
-FROM node:24.15.0-alpine AS runtime
+FROM node:24.16.0-alpine AS runtime
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100
 WORKDIR /app
 COPY --from=build --chown=node:node /workspace/web/.output ./.output

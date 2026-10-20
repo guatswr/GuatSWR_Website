@@ -122,6 +122,16 @@ export function createAdminTransport(session: Session, fetchImpl: typeof fetch =
       }
     }
   return {
+    uploadEventAvatar(file: File, eventId: number, signal?: AbortSignal): Promise<string> {
+      const path = adminRequestPath({ resource: 'events', id: eventId })
+      if (!file.type.startsWith('image/') || file.size > 50 * 1024 * 1024) throw new Error('图片类型或大小无效')
+      const body = new FormData()
+      body.append('file', file)
+      return execute(`${path}/avatar`, 'POST', body, value => {
+        if (!value || typeof value !== 'object' || !('url' in value) || typeof value.url !== 'string') throw new Error('上传响应无效')
+        return value.url
+      }, signal, 60_000)
+    },
     removeBan(ip: string, signal?: AbortSignal) {
       const input = adminBanInputSchema.parse({ ip })
       return execute(`/api/bff/admin/bans/${encodeURIComponent(input.ip)}`, 'DELETE', {}, value => value, signal)

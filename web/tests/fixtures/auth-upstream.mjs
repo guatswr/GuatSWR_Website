@@ -4,6 +4,7 @@ import { handlePublicFixture, publicActivitiesFixture, publicMembersFixture, pub
 import { createAdminUpstreamFixture } from './admin-upstream.mjs'
 import { exitWithParent } from './parent-watch.mjs'
 import { createGuestUpstreamFixture } from './guest-upstream.mjs'
+import { createAdminEventsUpstreamFixture } from './admin-events-upstream.mjs'
 
 // Deterministic in-memory auth fixture for the BFF integration test. It never
 // starts or writes to the real backend, and it is a separate file from the
@@ -63,6 +64,7 @@ function send(response, status, body, headers = {}) {
 
 export function createAuthUpstreamFixture() {
   const guest = createGuestUpstreamFixture()
+  const events = createAdminEventsUpstreamFixture()
   const admin = createAdminUpstreamFixture()
   admin.state.activities = structuredClone(publicActivitiesFixture)
   admin.state.members = structuredClone(publicMembersFixture)
@@ -253,6 +255,7 @@ export function createAuthUpstreamFixture() {
         return
       }
     }
+    if (await events.handle(request, response)) return
     if (await guest.handle(request, response)) return
     if (handlePublicFixture(request, response)) return
 

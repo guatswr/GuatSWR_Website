@@ -12,6 +12,7 @@ export function useAdminApi() {
     request: (<T>(input: Parameters<typeof transport.request>[0], project: (value: unknown) => T) =>
       transport.request({ ...input, signal: input.signal ? AbortSignal.any([input.signal, lifetime.signal]) : lifetime.signal }, project)),
     upload: (file: File, activityId?: number) => transport.upload(file, lifetime.signal, activityId),
+    uploadEventAvatar: (file: File, eventId: number) => transport.uploadEventAvatar(file, eventId, lifetime.signal),
     uploadIcon: (file: File) => transport.upload(file, lifetime.signal, undefined, true),
     command: <T>(name: AdminCommand, body: unknown, project: (value: unknown) => T) => transport.command(name, body, project, lifetime.signal),
     removeBan: (ip: string) => transport.removeBan(ip, lifetime.signal),

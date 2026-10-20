@@ -1,0 +1,113 @@
+{
+  "generatedAt": "2026-10-19T21:58:45.541Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-node2416-guest",
+  "totalShards": 3,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 3,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 6,
+  "counts": {
+    "passed": 6,
+    "expected": 6,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 6
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::guest-integration.spec.ts::109:1::guest-integration.spec.ts > real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::11:1::guest-integration.spec.ts > real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::guest-integration.spec.ts::81:1::guest-integration.spec.ts > real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::109:1::guest-integration.spec.ts > real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::11:1::guest-integration.spec.ts > real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::guest-integration.spec.ts::81:1::guest-integration.spec.ts > real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    }
+  ]
+}

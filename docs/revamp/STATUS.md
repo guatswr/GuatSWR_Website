@@ -2,6 +2,32 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
+Latest accepted local feature: modern activity administration, including review,
+five-type creation/editing, participants, ranking, bounty/betting settlement and
+confirmed-write public cache invalidation. Permanent ranking avatars use the
+frozen canonical upload endpoint behind a protected, server-bound BFF route.
+All four recursive gates pass **750 units**, tooling **56/56**, and **62/62**
+unique production-browser cases (22 events + 28 existing admin + 6 articles +
+6 guests), 31 fresh batches, zero retry/flaky/skip. Twelve actual screenshots
+are retained; 14 public JS graphs pass **119904–132795 B gzip**, zero maps.
+Fresh Linux image build and runtime SSR/SEO/image smoke pass. See
+[activity evidence](logs/14-admin-events/README.md).
+
+Runtime is now **Node 24.16.0** (same LTS, project-local only), including the
+upstream Windows TCP fix matching the observed native exits. No local native
+dump establishes an exact stack; fresh gates and 62 browser cases pass with
+default Node settings. Historical 24.15.0/pool-cap evidence below is retained
+as historical. Docker build-only route declarations are now included for the
+independent frozen API guard and excluded from the runtime image.
+
+Full migration remains open: secondary administrator workflows, public article
+formula/diagram parity, homepage LCP (last measured 1960.7 ms > 1800), Ubuntu
+public dark-log pixel, an Ubuntu article retry-case flake, final security and
+full-site CI. Remote `18b0fed` run 39327274634 failed; it is not accepted as green.
+No deployment, infrastructure changes or QQ success notification.
+
+## Earlier accepted feature checkpoints
+
 Latest accepted local feature: protected article administration, lazy local
 Markdown editor/import/images and safe private formula/diagram preview. A real
 public prose-loss bug and first-render/cached-diagram defects are fixed. Four
@@ -23,7 +49,7 @@ two paths before correction (53/55 pass), then passes with the boundary tests
 [contract evidence](logs/13-frozen-api-contract/README.md). This replaces the
 old guest URL evidence for that boundary; it is a later artifact than the
 article checkpoint `a6868ce`. Full migration acceptance remains open.
-Activity review/settlement/ranking UI is drafted and awaits integration/testing.
+Activity review/settlement/ranking UI is accepted by the newer log 14 above.
 Public article formula/diagram parity, LCP, the Linux dark-log pixel and final
 full-site/security acceptance remain open. No deployment or QQ success notice.
 
