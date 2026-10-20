@@ -1,0 +1,149 @@
+{
+  "base": "c3d00cc",
+  "runtime": {
+    "node": "24.16.0",
+    "pnpm": "11.25.0"
+  },
+  "gates": {
+    "typecheck": 0,
+    "lintErrors": 0,
+    "lintWarnings": 34,
+    "units": 785,
+    "build": 0,
+    "sourceMaps": 0,
+    "toolingPassed": 59
+  },
+  "audits": {
+    "baseline": {
+      "directory": ".tools/public-a11y-1792485910079/",
+      "states": 60,
+      "rules": {
+        "color-contrast": {
+          "states": 60,
+          "nodes": 268
+        },
+        "label-content-name-mismatch": {
+          "states": 60,
+          "nodes": 76
+        },
+        "scrollable-region-focusable": {
+          "states": 4,
+          "nodes": 4
+        },
+        "heading-order": {
+          "states": 28,
+          "nodes": 28
+        },
+        "target-size": {
+          "states": 2,
+          "nodes": 4
+        },
+        "image-alt": {
+          "states": 16,
+          "nodes": 24
+        }
+      },
+      "pageErrors": []
+    },
+    "intermediate": {
+      "directory": ".tools/public-a11y-1792499402743/",
+      "states": 60,
+      "rules": {
+        "color-contrast": {
+          "states": 60,
+          "nodes": 268
+        },
+        "landmark-unique": {
+          "states": 4,
+          "nodes": 4
+        },
+        "target-size": {
+          "states": 2,
+          "nodes": 4
+        }
+      },
+      "pageErrors": []
+    },
+    "final": {
+      "directory": ".tools/public-a11y-1792499773660/",
+      "states": 60,
+      "rules": {
+        "color-contrast": {
+          "states": 60,
+          "nodes": 268
+        },
+        "target-size": {
+          "states": 2,
+          "nodes": 4
+        }
+      },
+      "pageErrors": []
+    }
+  },
+  "browser": {
+    "passed": 112,
+    "expected": 112,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 112
+  },
+  "freshBatches": 56,
+  "visuals": {
+    "regions": 88,
+    "differingPixels": 0,
+    "threshold": 0.1
+  },
+  "routes": {
+    "count": 15,
+    "min": 122319,
+    "max": 137070
+  },
+  "sources": [
+    {
+      "path": "web/app/components/SafeMarkdownPre.vue",
+      "sha256Utf8Lf": "010c8dbf645953b8f362dfb4dfef6987782d730a46f69aa53bf136104a108fe3"
+    },
+    {
+      "path": "web/app/components/SiteNavbar.vue",
+      "sha256Utf8Lf": "a3959c7c6c26f56c17da7b93ea632e5a28b59168951aaa13a42953d33f964a62"
+    },
+    {
+      "path": "web/app/components/events/EventCard.vue",
+      "sha256Utf8Lf": "4e27cbdbd6b01bce421fe6845c5fdc78c5feebcaf9b62019e79945c8d4ef4c3b"
+    },
+    {
+      "path": "web/app/components/home/HomeInterests.vue",
+      "sha256Utf8Lf": "26fd8890d10bea79c5a6387d7be4ec04ec02aaba837a5b3e87455e853d2e42d7"
+    },
+    {
+      "path": "web/app/pages/history.vue",
+      "sha256Utf8Lf": "ac2e0c4397679faa5e805d7bda09d6449eb6a7b42f3cbd4f95e65bffb6dbff82"
+    },
+    {
+      "path": "web/app/pages/logs.vue",
+      "sha256Utf8Lf": "d1ee4081c7794c1cf83f208c81be124b014dc3f68bcc1b027e3afb809c85ff1c"
+    },
+    {
+      "path": "web/app/pages/members.vue",
+      "sha256Utf8Lf": "2872873161be24384486fecba9c4f1c214ec207086107f5a5fcfc599a428b0f5"
+    },
+    {
+      "path": "web/tests/e2e/events.spec.ts",
+      "sha256Utf8Lf": "e7cc04181486e95a3796db3e7d2620fa93ddb898e81713614e81bd6559aa66ff"
+    },
+    {
+      "path": "web/tests/e2e/public-accessibility.spec.ts",
+      "sha256Utf8Lf": "0dab454a528b4893f5149215f0ef1fa9cbee9d9ff6b2a93536fe5756066de331"
+    }
+  ],
+  "visualProposal": {
+    "accepted": false,
+    "appChanged": false,
+    "states": 9
+  },
+  "limits": [
+    "Only declared closed states in automated axe scan; incomplete/manual/expanded states remain",
+    "Public visual decision pending; public LCP/final CI/security/monitoring not accepted"
+  ]
+}

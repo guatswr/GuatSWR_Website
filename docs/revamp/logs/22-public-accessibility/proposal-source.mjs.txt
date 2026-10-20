@@ -1,0 +1,95 @@
+// Review-only injection; never imported by the app or used as acceptance baseline.
+import { spawn } from 'node:child_process'
+import { once } from 'node:events'
+import { createRequire } from 'node:module'
+import { mkdir, writeFile } from 'node:fs/promises'
+import { setTimeout as delay } from 'node:timers/promises'
+const require = createRequire(new URL('../web/package.json', import.meta.url))
+const { chromium } = require('@playwright/test'), axe = require('axe-core')
+const origin = 'http://127.0.0.1:3200', upstream = 'http://127.0.0.1:3281'
+const directory = 'docs/revamp/logs/22-public-accessibility/proposal'
+await mkdir(directory, { recursive: true })
+async function stop(child) {
+  if (child.exitCode !== null || child.signalCode !== null) return
+  const done = once(child, 'exit'); child.kill(); await Promise.race([done, delay(5000)])
+}
+async function ready(url, child) {
+  for (let i=0;i<100;i++) {
+    if (child.exitCode !== null) throw new Error('Preview child exited')
+    try { if ((await fetch(url)).ok) return } catch {}
+    await delay(100)
+  }
+  throw new Error(`Not ready: ${url}`)
+}
+const cases = [['home-light','/','light'], ['home-dark','/','dark'], ['members-light','/members','light'], ['logs-light','/logs','light'], ['logs-dark','/logs','dark'], ['bounty-light','/events/bounty','light'], ['stg-light','/events/stg','light'], ['stg-dark','/events/stg','dark'], ['history-light','/history','light']]
+const summary = { accepted: false, appliedToApp: false, engine: axe.version, cases: [] }
+const browser = await chromium.launch({ args: ['--disable-lcd-text', '--font-render-hinting=none'] })
+try {
+  for (const [name,path,theme] of cases) {
+    const fixture = spawn(process.execPath, ['web/tests/fixtures/budget-upstream.mjs'], { stdio: 'ignore', env: { ...process.env, PORT: '3281' } })
+    const app = spawn(process.execPath, ['web/.output/server/index.mjs'], { stdio: 'ignore', env: { ...process.env, PORT: '3200', HOST:'127.0.0.1', NUXT_API_BASE: upstream, NUXT_SESSION_PASSWORD:'review-only-local-fixture-not-a-real-session-credential' } })
+    const context = await browser.newContext({ viewport:{width:1280,height:720}, deviceScaleFactor:1, reducedMotion:'reduce', timezoneId:'Asia/Shanghai' })
+    try {
+      await ready(`${upstream}/health`, fixture); await ready(`${origin}/api/health`, app)
+      await context.addInitScript(theme => localStorage.setItem('theme-preference', theme), theme)
+      const page = await context.newPage()
+      const errors=[]; page.on('pageerror', error => errors.push(error.message))
+      if (!(await page.goto(origin+path,{waitUntil:'networkidle'})).ok()) throw new Error(`${path} failed`)
+      await page.evaluate(async()=>{
+        await document.fonts.ready
+        for(let y=0;y<document.documentElement.scrollHeight;y+=500) { scrollTo(0,y); await new Promise(requestAnimationFrame) }
+        scrollTo(0,0)
+      })
+      await page.evaluate(axe.source+'\n;undefined')
+      const before = await page.evaluate(async()=>window.axe.run(document,{runOnly:{type:'rule',values:['color-contrast','target-size']}}))
+      await page.screenshot({path:`${directory}/${name}-before.png`,fullPage:true})
+      const changes = await page.evaluate(({violations,theme,path})=>{
+        const changes=[]
+        function set(node,property,value,reason) {
+          const before=getComputedStyle(node).getPropertyValue(property)
+          node.style.setProperty(property,value,'important')
+          changes.push({html:node.outerHTML.slice(0,450),property,before,value,reason})
+        }
+        if(path==='/members') for(const node of document.querySelectorAll('main a[aria-current="page"]')) {
+          set(node,'background-color','#075985','Active school filter; retain white label and badge')
+          set(node,'border-color','#075985','Match active fill')
+        }
+        if(theme==='dark'&&path==='/logs') for(const node of document.querySelectorAll('main .border-t.bg-gray-50\\/50')) set(node,'background-color','#0f172a','Remove light translucent pagination surface in dark theme')
+        const tokens = { '#9ca3af':'#6b7280', '#6366f1':theme==='dark'?'#a5b4fc':'#4f46e5', '#059669':'#047857', '#dc2626':'#b91c1c', '#0284c7':'#0369a1', '#808790':'#475569', '#94a3b8':theme==='dark'?'#94a3b8':'#475569', '#64748b':'#94a3b8', '#ec4899':'#be185d', '#0ea5e9':'#0369a1', '#f59e0b':'#92400e', '#d97706':'#92400e', '#38bdf8':'#0369a1', '#f43f5e':'#be123c', '#4a94bd':'#0369a1' }
+        for(const violation of violations.filter(v=>v.id==='color-contrast')) for(const finding of violation.nodes) {
+          const node=document.querySelector(finding.target[0]); if(!node) throw new Error('Preview selector missing')
+          const data=finding.any.find(check=>check.id==='color-contrast')?.data
+          if(!data) continue
+          if(path==='/members'&&node.closest('a[aria-current="page"]')) continue
+          if(theme==='dark'&&path==='/logs'&&node.closest('.border-t.bg-gray-50\\/50')) continue
+          if(data.fgColor==='#ffffff'&&data.bgColor==='#0284c7') {set(node,'background-color','#0369a1','White primary label needs darker sky fill');continue}
+          const value=tokens[data.fgColor]; if(!value) throw new Error(`Unspecified preview colour: ${data.fgColor}`)
+          set(node,'color',value,'Explicit proposed contrast token')
+          if(node.classList.contains('opacity-70')) set(node,'opacity','1','Keep secondary text readable at its small font size')
+        }
+        if(path==='/history') {
+          const links=[...document.querySelectorAll('a[aria-label^="跳转到 "]')]
+          if(links.length) {
+            const list=links[0].parentElement, rail=list.parentElement
+            set(rail,'width','56px','44px targets plus 6px focus clearance per side')
+            set(rail,'height','auto','Space distinct targets without overlap')
+            set(rail,'padding','6px','Visible focus clearance')
+            set(list,'gap','4px','44px targets separated by 4px')
+            for(const link of links) {
+              const dot=document.createElement('span'); dot.className=link.className; dot.setAttribute('aria-hidden','true')
+              link.className=''; link.append(dot)
+              for(const [property,value] of Object.entries({display:'grid','place-items':'center',width:'44px',height:'44px','flex-shrink':'0',background:'transparent',border:'0'})) set(link,property,value,'Separate 44×44px month link; original dot remains 14px')
+            }
+          }
+        }
+        return changes
+      },{violations:before.violations,theme,path})
+      const after = await page.evaluate(async()=>window.axe.run(document,{runOnly:{type:'rule',values:['color-contrast','target-size']}}))
+      await page.screenshot({path:`${directory}/${name}-proposal.png`,fullPage:true})
+      const row={name,path,theme,changes,errors,before:before.violations.map(v=>({id:v.id,nodes:v.nodes.length})),after:after.violations.map(v=>({id:v.id,nodes:v.nodes.length})),incomplete:after.incomplete.map(v=>({id:v.id,nodes:v.nodes.length}))}
+      summary.cases.push(row)
+      await writeFile(`${directory}/${name}.json`,JSON.stringify(row,null,2)+'\n')
+      console.log(JSON.stringify({name,before:row.before,after:row.after,errors}))
+    } finally {await context.close(); await Promise.allSettled([stop(app),stop(fixture)])}
+  }
+} finally {await browser.close(); await writeFile(`${directory}/summary.json`,JSON.stringify(summary,null,2)+'\n')}

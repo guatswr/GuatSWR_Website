@@ -45,7 +45,7 @@ test.describe('event routes', () => {
     const cards = page.locator('article')
     expect(await cards.count()).toBeGreaterThan(0)
     for (let index = 0; index < (await cards.count()); index++) {
-      await expect(cards.nth(index).locator('h3')).not.toBeEmpty()
+      await expect(cards.nth(index).getByRole('heading', { level: 2 })).not.toBeEmpty()
     }
     // The archived status labels and signup button are server-rendered.
     await expect(page.getByRole('button', { name: /我要参加|已结束/ }).first()).toBeVisible()

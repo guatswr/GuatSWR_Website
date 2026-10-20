@@ -1,0 +1,914 @@
+{
+  "accepted": false,
+  "appliedToApp": false,
+  "engine": "4.14.0",
+  "cases": [
+    {
+      "name": "home-light",
+      "path": "/",
+      "theme": "light",
+      "changes": [
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 1
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 45
+        }
+      ]
+    },
+    {
+      "name": "home-dark",
+      "path": "/",
+      "theme": "dark",
+      "changes": [
+        {
+          "html": "<a href=\"/join\" class=\"club-button club-button-primary shrink-0\" data-v-f87dd891=\"\" style=\"background-color: rgb(3, 105, 161) !important;\">加入桂航绯想天 <span aria-hidden=\"true\" data-v-f87dd891=\"\">↗</span></a>",
+          "property": "background-color",
+          "before": "rgb(2, 132, 199)",
+          "value": "#0369a1",
+          "reason": "White primary label needs darker sky fill"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 45
+        }
+      ]
+    },
+    {
+      "name": "members-light",
+      "path": "/members",
+      "theme": "light",
+      "changes": [
+        {
+          "html": "<a aria-current=\"page\" href=\"/members\" class=\"router-link-active router-link-exact-active relative px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shadow-sm hover:-translate-y-0.5 text-white shadow-md ring-2 ring-offset-2 ring-offset-[#f0f9ff] dark:ring-offset-slate-950\" style=\"background-color: rgb(7, 89, 133) !important; border-color: rgb(56, 189, 248); --tw-ring-color: #38bdf8;\"><span>全部</span><span",
+          "property": "background-color",
+          "before": "rgb(56, 189, 248)",
+          "value": "#075985",
+          "reason": "Active school filter; retain white label and badge"
+        },
+        {
+          "html": "<a aria-current=\"page\" href=\"/members\" class=\"router-link-active router-link-exact-active relative px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shadow-sm hover:-translate-y-0.5 text-white shadow-md ring-2 ring-offset-2 ring-offset-[#f0f9ff] dark:ring-offset-slate-950\" style=\"background-color: rgb(7, 89, 133) !important; border-color: rgb(7, 89, 133) !important; --tw-ring-color: #38bdf8;\"><span>全部</s",
+          "property": "border-color",
+          "before": "rgb(56, 189, 248)",
+          "value": "#075985",
+          "reason": "Match active fill"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 47
+        }
+      ]
+    },
+    {
+      "name": "logs-light",
+      "path": "/logs",
+      "theme": "light",
+      "changes": [
+        {
+          "html": "<div class=\"text-xs text-gray-400\" style=\"color: rgb(107, 114, 128) !important;\">页面浏览</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 mt-1\" style=\"color: rgb(107, 114, 128) !important;\">Pageviews</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-xs text-gray-400\" style=\"color: rgb(107, 114, 128) !important;\">独立访客</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 mt-1\" style=\"color: rgb(107, 114, 128) !important;\">Visitors</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-xs text-gray-400\" style=\"color: rgb(107, 114, 128) !important;\">跳出率</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 mt-1\" style=\"color: rgb(107, 114, 128) !important;\">Bounces</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-xs text-gray-400\" style=\"color: rgb(107, 114, 128) !important;\">平均停留</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 mt-1\" style=\"color: rgb(107, 114, 128) !important;\">Avg. Time</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400\" style=\"color: rgb(107, 114, 128) !important;\">近7天</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span style=\"color: rgb(107, 114, 128) !important;\">Top Pages</span>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 truncate\" style=\"color: rgb(107, 114, 128) !important;\">/activities</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span style=\"color: rgb(107, 114, 128) !important;\">Top Environments</span>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 truncate\" style=\"color: rgb(107, 114, 128) !important;\">环境</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 truncate\" style=\"color: rgb(107, 114, 128) !important;\">环境</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\" style=\"color: rgb(79, 70, 229) !important;\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-4 w-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M21 ",
+          "property": "color",
+          "before": "rgb(99, 102, 241)",
+          "value": "#4f46e5",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-xs text-gray-400 truncate mt-0.5\" style=\"color: rgb(107, 114, 128) !important;\">UID: Unknown</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 uppercase tracking-wider\" style=\"color: rgb(107, 114, 128) !important;\">Edits</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-xs text-gray-400 truncate mt-0.5\" style=\"color: rgb(107, 114, 128) !important;\">UID: Unknown</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-gray-400 uppercase tracking-wider\" style=\"color: rgb(107, 114, 128) !important;\">Edits</div>",
+          "property": "color",
+          "before": "rgb(156, 163, 175)",
+          "value": "#6b7280",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE ACTIVITY</span>",
+          "property": "color",
+          "before": "rgb(5, 150, 105)",
+          "value": "#047857",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-red-50 text-red-600 border-red-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(185, 28, 28) !important;\">RESET PWD</span>",
+          "property": "color",
+          "before": "rgb(220, 38, 38)",
+          "value": "#b91c1c",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE HISTORY</span>",
+          "property": "color",
+          "before": "rgb(5, 150, 105)",
+          "value": "#047857",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE MEMBER</span>",
+          "property": "color",
+          "before": "rgb(5, 150, 105)",
+          "value": "#047857",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 24
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 18
+        }
+      ]
+    },
+    {
+      "name": "logs-dark",
+      "path": "/logs",
+      "theme": "dark",
+      "changes": [
+        {
+          "html": "<div class=\"px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4\" style=\"background-color: rgb(15, 23, 42) !important;\"><div class=\"text-xs text-gray-500\"> 显示第 <span class=\"font-bold text-gray-700\">1</span> 至 <span class=\"font-bold text-gray-700\">13</span> 条， 共 <span class=\"font-bold text-gray-700\">13</span> 条记录 </div><div class=\"flex items-center gap-2\"><span class=\"px-3 py-1.5 rounded-lg b",
+          "property": "background-color",
+          "before": "oklab(0.984619 -0.000598699 -0.00156033 / 0.5)",
+          "value": "#0f172a",
+          "reason": "Remove light translucent pagination surface in dark theme"
+        },
+        {
+          "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\" style=\"color: rgb(165, 180, 252) !important;\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-4 w-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M2",
+          "property": "color",
+          "before": "rgb(99, 102, 241)",
+          "value": "#a5b4fc",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE ACTIVITY</span>",
+          "property": "color",
+          "before": "rgb(5, 150, 105)",
+          "value": "#047857",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-red-50 text-red-600 border-red-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(185, 28, 28) !important;\">RESET PWD</span>",
+          "property": "color",
+          "before": "rgb(220, 38, 38)",
+          "value": "#b91c1c",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE HISTORY</span>",
+          "property": "color",
+          "before": "rgb(5, 150, 105)",
+          "value": "#047857",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE MEMBER</span>",
+          "property": "color",
+          "before": "rgb(5, 150, 105)",
+          "value": "#047857",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 17
+        }
+      ]
+    },
+    {
+      "name": "bounty-light",
+      "path": "/events/bounty",
+      "theme": "light",
+      "changes": [
+        {
+          "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\" style=\"color: rgb(3, 105, 161) !important;\">悬赏令</span>",
+          "property": "color",
+          "before": "rgb(2, 132, 199)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">达成契约</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">达成契约</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">打飞机</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">打飞机</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">ymyz</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">ymyz</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">线下面基</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">线下面基</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\" style=\"color: rgb(3, 105, 161) !important;\">悬赏令</span>",
+          "property": "color",
+          "before": "rgb(2, 132, 199)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\" style=\"color: rgb(71, 85, 105) !important;\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+          "property": "color",
+          "before": "rgb(148, 163, 184)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\" style=\"color: rgb(190, 24, 93) !important;\"><span class=\"animate-pulse\">剩余：</span> 41天 3小时</div>",
+          "property": "color",
+          "before": "rgb(236, 72, 153)",
+          "value": "#be185d",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"animate-pulse\" style=\"color: rgb(190, 24, 93) !important;\">剩余：</span>",
+          "property": "color",
+          "before": "rgb(190, 24, 93)",
+          "value": "#be185d",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">时间</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">发起</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">挑战</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">要求</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-amber-500 text-xs font-bold dark:text-amber-300\" style=\"color: rgb(146, 64, 14) !important;\">REWARD</span>",
+          "property": "color",
+          "before": "rgb(245, 158, 11)",
+          "value": "#92400e",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"font-bold text-amber-600 dark:text-amber-200\" style=\"color: rgb(146, 64, 14) !important;\">东方设定集一本</span>",
+          "property": "color",
+          "before": "rgb(217, 119, 6)",
+          "value": "#92400e",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "name": "stg-light",
+      "path": "/events/stg",
+      "theme": "light",
+      "changes": [
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">赏金猎人</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">赏金猎人</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">达成契约</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">达成契约</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\" style=\"color: rgb(3, 105, 161) !important;\">STG</span>",
+          "property": "color",
+          "before": "rgb(2, 132, 199)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">ymyz</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">ymyz</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">线下面基</span>",
+          "property": "color",
+          "before": "rgb(75, 85, 99)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">线下面基</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\" style=\"color: rgb(3, 105, 161) !important;\">STG</span>",
+          "property": "color",
+          "before": "rgb(2, 132, 199)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\" style=\"color: rgb(71, 85, 105) !important;\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+          "property": "color",
+          "before": "rgb(148, 163, 184)",
+          "value": "#475569",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\" style=\"color: rgb(190, 24, 93) !important;\"><span class=\"animate-pulse\">剩余：</span> 21天 23小时</div>",
+          "property": "color",
+          "before": "rgb(236, 72, 153)",
+          "value": "#be185d",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"animate-pulse\" style=\"color: rgb(190, 24, 93) !important;\">剩余：</span>",
+          "property": "color",
+          "before": "rgb(190, 24, 93)",
+          "value": "#be185d",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">时间</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">规则</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">奖品</span>",
+          "property": "color",
+          "before": "rgb(14, 165, 233)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"line-clamp-1 text-amber-600 font-medium dark:text-amber-200\" style=\"color: rgb(146, 64, 14) !important;\">冠军：东方周边礼包</span>",
+          "property": "color",
+          "before": "rgb(217, 119, 6)",
+          "value": "#92400e",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"text-[10px] text-sky-400 uppercase tracking-wider font-bold dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\"> Top Rankers </div>",
+          "property": "color",
+          "before": "rgb(56, 189, 248)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important;\">#1</span>",
+          "property": "color",
+          "before": "rgb(3, 105, 161)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important; opacity: 1 !important;\">#1</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important;\">#2</span>",
+          "property": "color",
+          "before": "rgb(3, 105, 161)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important; opacity: 1 !important;\">#2</span>",
+          "property": "opacity",
+          "before": "0.7",
+          "value": "1",
+          "reason": "Keep secondary text readable at its small font size"
+        },
+        {
+          "html": "<span style=\"color: rgb(3, 105, 161) !important;\">我要参加</span>",
+          "property": "color",
+          "before": "rgb(2, 132, 199)",
+          "value": "#0369a1",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 18
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "name": "stg-dark",
+      "path": "/events/stg",
+      "theme": "dark",
+      "changes": [
+        {
+          "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\" style=\"color: rgb(148, 163, 184) !important;\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "name": "history-light",
+      "path": "/history",
+      "theme": "light",
+      "changes": [
+        {
+          "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+          "property": "color",
+          "before": "rgb(100, 116, 139)",
+          "value": "#94a3b8",
+          "reason": "Explicit proposed contrast token"
+        },
+        {
+          "html": "<div class=\"w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative\" style=\"height: 96px; width: 56px !important;\"><div class=\"absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60\"></div><div class=\"flex flex-col gap-2 relative z-10\"><!--[--><a href=\"#history-0\" class=\"w-3.5 h-3",
+          "property": "width",
+          "before": "40px",
+          "value": "56px",
+          "reason": "44px targets plus 6px focus clearance per side"
+        },
+        {
+          "html": "<div class=\"w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative\" style=\"height: auto !important; width: 56px !important;\"><div class=\"absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60\"></div><div class=\"flex flex-col gap-2 relative z-10\"><!--[--><a href=\"#history-0\" class",
+          "property": "height",
+          "before": "96px",
+          "value": "auto",
+          "reason": "Space distinct targets without overlap"
+        },
+        {
+          "html": "<div class=\"w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative\" style=\"height: auto !important; width: 56px !important; padding: 6px !important;\"><div class=\"absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60\"></div><div class=\"flex flex-col gap-2 relative z-10\"><!--[--><",
+          "property": "padding",
+          "before": "12px 0px",
+          "value": "6px",
+          "reason": "Visible focus clearance"
+        },
+        {
+          "html": "<div class=\"flex flex-col gap-2 relative z-10\" style=\"gap: 4px !important;\"><!--[--><a href=\"#history-0\" class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\"></a><a href=\"#history-1\" class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-r",
+          "property": "gap",
+          "before": "8px",
+          "value": "4px",
+          "reason": "44px targets separated by 4px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+          "property": "display",
+          "before": "block",
+          "value": "grid",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+          "property": "place-items",
+          "before": "normal",
+          "value": "center",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+          "property": "width",
+          "before": "14px",
+          "value": "44px",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+          "property": "height",
+          "before": "14px",
+          "value": "44px",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+          "property": "flex-shrink",
+          "before": "1",
+          "value": "0",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+          "property": "background",
+          "before": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "value": "transparent",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important; border: 0px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span>",
+          "property": "border",
+          "before": "0px solid rgb(17, 24, 39)",
+          "value": "0",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+          "property": "display",
+          "before": "block",
+          "value": "grid",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+          "property": "place-items",
+          "before": "normal",
+          "value": "center",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+          "property": "width",
+          "before": "44px",
+          "value": "44px",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+          "property": "height",
+          "before": "14px",
+          "value": "44px",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+          "property": "flex-shrink",
+          "before": "1",
+          "value": "0",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+          "property": "background",
+          "before": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+          "value": "transparent",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        },
+        {
+          "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important; border: 0px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a",
+          "property": "border",
+          "before": "0px solid rgb(17, 24, 39)",
+          "value": "0",
+          "reason": "Separate 44×44px month link; original dot remains 14px"
+        }
+      ],
+      "errors": [],
+      "before": [
+        {
+          "id": "color-contrast",
+          "nodes": 1
+        },
+        {
+          "id": "target-size",
+          "nodes": 2
+        }
+      ],
+      "after": [],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 25
+        }
+      ]
+    }
+  ]
+}

@@ -2,6 +2,26 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
+Latest local checkpoint: public accessibility semantics and keyboard scrolling.
+Wordmark/card names include visible labels, headings follow page hierarchy,
+duplicate avatar names are suppressed, code/log scroll areas accept native Tab
+and arrows with visible focus. Final 60-state axe scan removes the name,
+heading, alt, scroll-focus and duplicate-landmark findings. Existing contrast
+**60 states / 268 node records** and month-target **2 / 4** findings remain.
+The [bounded visual proposal](logs/22-public-accessibility/VISUAL-PROPOSAL.md)
+has nine actual before/after desktop previews, candidate checks clear in those
+states, and awaits the user's 1:1 exception decision; colours/rail geometry in
+the app remain unchanged. Checklist #80 stays open.
+
+Four recursive gates pass **785 units**, lint **0 errors / 34 warnings**;
+tooling **59/59**, **112/112** actual E2E in 56 fresh batches, no retry/flaky/skip.
+All **88** archive regions have zero differing pixels on Windows. **15/15**
+initial JS graphs pass **122319–137070 B gzip**; whole output has **0 maps**.
+See [log 22](logs/22-public-accessibility/README.md). Full-host CI is being
+requested for this checkpoint; previous f8a4dbe results below are historical.
+Current public LCP has no new accepted result; final performance/security/
+monitoring and extended Markdown remain open. No deployment or QQ success.
+
 Latest local test correction: shared mutable article 1 is replaced by stable,
 detail-only fixture IDs 991/992. Every math case warms advanced content first
 through the real BFF and checks ordinary article 1 afterwards. Natural-context

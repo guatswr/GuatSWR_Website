@@ -1,0 +1,28 @@
+{
+  "name": "home-light",
+  "path": "/",
+  "theme": "light",
+  "changes": [
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 1
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 45
+    }
+  ]
+}

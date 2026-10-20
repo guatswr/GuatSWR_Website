@@ -1,0 +1,81 @@
+// Diagnostic baseline; not a declaration of WCAG conformance.
+import { spawn } from 'node:child_process'
+import { randomBytes } from 'node:crypto'
+import { once } from 'node:events'
+import { createRequire } from 'node:module'
+import { mkdir, readFile, writeFile } from 'node:fs/promises'
+import { setTimeout as delay } from 'node:timers/promises'
+const require = createRequire(new URL('../web/package.json', import.meta.url))
+const { chromium, devices } = require('@playwright/test')
+const axe = require('axe-core') // Existing pinned Lighthouse dependency, 4.14.0; diagnostic only.
+const root = new URL('../', import.meta.url)
+const out = new URL(`public-a11y-${Date.now()}/`, import.meta.url)
+await mkdir(out)
+const routes = JSON.parse(await readFile(new URL('../scripts/revamp/route-fixtures.json', import.meta.url))).routes
+const origin = 'http://127.0.0.1:3200', upstream = 'http://127.0.0.1:3281'
+for (const url of [origin, upstream]) {
+  let occupied = false
+  try { await fetch(url, { signal: AbortSignal.timeout(500) }); occupied = true } catch {}
+  if (occupied) throw new Error(`Audit port already occupied: ${url}`)
+}
+const report = { engine: `axe-core ${axe.version}`, scope: '15 declared public scenarios, including advanced math/diagram source before activation; light/dark, Desktop Chrome/Pixel 7, reduced motion. Dialog states/manual keyboard/touch review remain separate.', directory: out.href, accepted: false, complete: false, cases: [] }
+async function stop(child) {
+  if (!child || child.exitCode !== null || child.signalCode !== null) return
+  const done = once(child, 'exit'); child.kill(); await Promise.race([done, delay(5000)])
+}
+async function ready(url, child) {
+  for (let i = 0; i < 100; i++) {
+    if (child.exitCode !== null) throw new Error(`${url} child exited ${child.exitCode}`)
+    try { if ((await fetch(url, { signal: AbortSignal.timeout(500) })).ok) return } catch {}
+    await delay(100)
+  }
+  throw new Error(`${url} readiness failed`)
+}
+let browser
+try {
+  browser = await chromium.launch({ headless: true, args: ['--disable-lcd-text', '--font-render-hinting=none'] })
+  for (const [index, route] of routes.entries()) for (const theme of ['light', 'dark']) {
+    const key = `${String(index + 1).padStart(2, '0')}-${theme}`
+    const logs = []
+    const fixture = spawn(process.execPath, ['web/tests/fixtures/budget-upstream.mjs'], { cwd: root, stdio: 'pipe', env: { ...process.env, PORT: '3281' } })
+    const server = spawn(process.execPath, ['web/.output/server/index.mjs'], { cwd: root, stdio: 'pipe', env: { ...process.env, PORT: '3200', HOST: '127.0.0.1', NUXT_API_BASE: upstream, NUXT_SESSION_PASSWORD: randomBytes(48).toString('hex') } })
+    for (const child of [fixture, server]) for (const stream of [child.stdout, child.stderr]) stream.on('data', bytes => logs.push(bytes.toString()))
+    try {
+      await ready(`${upstream}/health`, fixture); await ready(`${origin}/api/health`, server)
+      for (const [project, device] of [['desktop', 'Desktop Chrome'], ['mobile', 'Pixel 7']]) {
+        const { defaultBrowserType: _, ...deviceOptions } = devices[device]
+        const context = await browser.newContext({ ...deviceOptions, reducedMotion: 'reduce', timezoneId: 'Asia/Shanghai' })
+        try {
+          await context.addInitScript(value => localStorage.setItem('theme-preference', value), theme)
+          const page = await context.newPage()
+          const errors = []; page.on('pageerror', error => errors.push(error.message))
+          const response = await page.goto(origin + route.path, { waitUntil: 'networkidle' })
+          if (!response?.ok() || !(await page.locator('main').innerText()).includes(route.mainContent)) throw new Error(`${route.path} is not its expected real page`)
+          await page.evaluate(() => document.fonts.ready)
+          await page.evaluate(axe.source + '\n;undefined')
+          const result = await page.evaluate(async () => {
+            const result = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa', 'best-practice'] } })
+            return { url: result.url, testEngine: result.testEngine, testEnvironment: result.testEnvironment,
+              violations: result.violations, incomplete: result.incomplete, passes: result.passes.map(item => item.id) }
+          })
+          const file = `${key}-${project}.json`
+          await writeFile(new URL(file, out), JSON.stringify({ path: route.path, theme, project, errors, ...result }, null, 2))
+          report.cases.push({ path: route.path, theme, project, file, errors,
+            violations: result.violations.map(item => ({ id: item.id, impact: item.impact, nodes: item.nodes.length })),
+            incomplete: result.incomplete.map(item => ({ id: item.id, nodes: item.nodes.length })) })
+          console.log(JSON.stringify(report.cases.at(-1)))
+        } finally { await context.close() }
+      }
+    } finally {
+      await Promise.allSettled([stop(server), stop(fixture)])
+      await writeFile(new URL(`${key}-server.log`, out), logs.join(''))
+    }
+    await writeFile(new URL('summary.json', out), JSON.stringify(report, null, 2))
+  }
+  report.complete = true
+} catch (error) { report.failure = error.message; throw error }
+finally {
+  await browser?.close()
+  await writeFile(new URL('summary.json', out), JSON.stringify(report, null, 2))
+  console.log(`Audit evidence: ${out.href}`)
+}

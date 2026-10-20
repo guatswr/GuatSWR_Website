@@ -200,9 +200,9 @@ usePublicPageSeo({
                 </span>
               </div>
 
-              <h3 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3 font-serif tracking-wide group-hover:text-red-600 transition">
+              <h2 class="text-2xl font-bold text-gray-800 dark:text-gray-100 mb-3 font-serif tracking-wide group-hover:text-red-600 transition">
                 {{ event.title }}
-              </h3>
+              </h2>
 
               <a
                 v-if="displayImageSource(event.image)"

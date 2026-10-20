@@ -1,0 +1,35 @@
+{
+  "name": "stg-dark",
+  "path": "/events/stg",
+  "theme": "dark",
+  "changes": [
+    {
+      "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\" style=\"color: rgb(148, 163, 184) !important;\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 2
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 15
+    }
+  ]
+}

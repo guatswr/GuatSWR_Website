@@ -111,7 +111,7 @@ onBeforeUnmount(() => {
             {{ buttonLabel }}
           </button>
         </div>
-        <pre ref="pre"><slot /></pre>
+        <pre ref="pre" tabindex="0" role="group" aria-label="Mermaid 图表源码（可横向滚动）"><slot /></pre>
         <span class="md-code-status" role="status" aria-live="polite">{{ statusText }}</span>
       </div>
     </details>
@@ -141,7 +141,7 @@ onBeforeUnmount(() => {
         {{ buttonLabel }}
       </button>
     </div>
-    <pre ref="pre"><slot /></pre>
+    <pre ref="pre" tabindex="0" role="group" :aria-label="`${label} 代码（可横向滚动）`"><slot /></pre>
     <span class="md-code-status" role="status" aria-live="polite">{{ statusText }}</span>
   </div>
 </template>
@@ -229,5 +229,10 @@ onBeforeUnmount(() => {
   padding: 0.75rem 1rem;
   overflow-x: auto;
   background: transparent;
+}
+
+.md-code :deep(pre:focus-visible) {
+  outline: 2px solid #0284c7;
+  outline-offset: -2px;
 }
 </style>

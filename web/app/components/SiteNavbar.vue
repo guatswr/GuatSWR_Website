@@ -108,7 +108,7 @@ onBeforeUnmount(() => {
 :prefetch="false"
           to="/"
           class="club-wordmark flex min-h-11 shrink-0 items-center gap-2.5"
-          aria-label="桂航绯想天同好会首页"
+          aria-label="桂航绯想天 GUAT TOUHOU FANS CLUB 首页"
           @click="closeMenus"
         >
           <ClubAvatar

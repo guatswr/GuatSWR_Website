@@ -1,0 +1,158 @@
+{
+  "name": "history-light",
+  "path": "/history",
+  "theme": "light",
+  "changes": [
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<div class=\"w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative\" style=\"height: 96px; width: 56px !important;\"><div class=\"absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60\"></div><div class=\"flex flex-col gap-2 relative z-10\"><!--[--><a href=\"#history-0\" class=\"w-3.5 h-3",
+      "property": "width",
+      "before": "40px",
+      "value": "56px",
+      "reason": "44px targets plus 6px focus clearance per side"
+    },
+    {
+      "html": "<div class=\"w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative\" style=\"height: auto !important; width: 56px !important;\"><div class=\"absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60\"></div><div class=\"flex flex-col gap-2 relative z-10\"><!--[--><a href=\"#history-0\" class",
+      "property": "height",
+      "before": "96px",
+      "value": "auto",
+      "reason": "Space distinct targets without overlap"
+    },
+    {
+      "html": "<div class=\"w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative\" style=\"height: auto !important; width: 56px !important; padding: 6px !important;\"><div class=\"absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60\"></div><div class=\"flex flex-col gap-2 relative z-10\"><!--[--><",
+      "property": "padding",
+      "before": "12px 0px",
+      "value": "6px",
+      "reason": "Visible focus clearance"
+    },
+    {
+      "html": "<div class=\"flex flex-col gap-2 relative z-10\" style=\"gap: 4px !important;\"><!--[--><a href=\"#history-0\" class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\"></a><a href=\"#history-1\" class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-r",
+      "property": "gap",
+      "before": "8px",
+      "value": "4px",
+      "reason": "44px targets separated by 4px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+      "property": "display",
+      "before": "block",
+      "value": "grid",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+      "property": "place-items",
+      "before": "normal",
+      "value": "center",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+      "property": "width",
+      "before": "14px",
+      "value": "44px",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+      "property": "height",
+      "before": "14px",
+      "value": "44px",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+      "property": "flex-shrink",
+      "before": "1",
+      "value": "0",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span></a>",
+      "property": "background",
+      "before": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "value": "transparent",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-0\" class=\"\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important; border: 0px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]\" aria-hidden=\"true\"></span>",
+      "property": "border",
+      "before": "0px solid rgb(17, 24, 39)",
+      "value": "0",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+      "property": "display",
+      "before": "block",
+      "value": "grid",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+      "property": "place-items",
+      "before": "normal",
+      "value": "center",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+      "property": "width",
+      "before": "44px",
+      "value": "44px",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+      "property": "height",
+      "before": "14px",
+      "value": "44px",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+      "property": "flex-shrink",
+      "before": "1",
+      "value": "0",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a>",
+      "property": "background",
+      "before": "rgba(0, 0, 0, 0) none repeat scroll 0% 0% / auto padding-box border-box",
+      "value": "transparent",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    },
+    {
+      "html": "<a href=\"#history-1\" class=\"\" title=\"2026-04\" aria-label=\"跳转到 2026-04\" style=\"display: grid !important; place-items: center !important; width: 44px !important; height: 44px !important; flex-shrink: 0 !important; background: transparent !important; border: 0px !important;\"><span class=\"w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300\" aria-hidden=\"true\"></span></a",
+      "property": "border",
+      "before": "0px solid rgb(17, 24, 39)",
+      "value": "0",
+      "reason": "Separate 44×44px month link; original dot remains 14px"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 1
+    },
+    {
+      "id": "target-size",
+      "nodes": 2
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 25
+    }
+  ]
+}

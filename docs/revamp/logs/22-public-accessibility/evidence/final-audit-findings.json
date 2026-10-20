@@ -1,0 +1,3012 @@
+[
+  {
+    "path": "/",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 45
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "nodes": 1
+      }
+    ]
+  },
+  {
+    "path": "/",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 32
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "nodes": 1
+      }
+    ]
+  },
+  {
+    "path": "/",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".club-button"
+            ],
+            "html": "<a href=\"/join\" class=\"club-button club-button-primary shrink-0\" data-v-f87dd891=\"\">加入桂航绯想天 <span aria-hidden=\"true\" data-v-f87dd891=\"\">↗</span></a>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 45
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "nodes": 1
+      }
+    ]
+  },
+  {
+    "path": "/",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".club-button"
+            ],
+            "html": "<a href=\"/join\" class=\"club-button club-button-primary shrink-0\" data-v-f87dd891=\"\">加入桂航绯想天 <span aria-hidden=\"true\" data-v-f87dd891=\"\">↗</span></a>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 32
+      },
+      {
+        "id": "label-content-name-mismatch",
+        "nodes": 1
+      }
+    ]
+  },
+  {
+    "path": "/activities",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 18
+      }
+    ]
+  },
+  {
+    "path": "/activities",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "path": "/activities",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 18
+      }
+    ]
+  },
+  {
+    "path": "/activities",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "path": "/activity/1",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 19
+      }
+    ]
+  },
+  {
+    "path": "/activity/1",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 6
+      }
+    ]
+  },
+  {
+    "path": "/activity/1",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 19
+      }
+    ]
+  },
+  {
+    "path": "/activity/1",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 6
+      }
+    ]
+  },
+  {
+    "path": "/activity/991",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 24
+      }
+    ]
+  },
+  {
+    "path": "/activity/991",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 11
+      }
+    ]
+  },
+  {
+    "path": "/activity/991",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 23
+      }
+    ]
+  },
+  {
+    "path": "/activity/991",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 10
+      }
+    ]
+  },
+  {
+    "path": "/members",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".ring-2 > span:nth-child(1)"
+            ],
+            "html": "<span>全部</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.14 (foreground color: #ffffff, background color: #38bdf8, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 48
+      }
+    ]
+  },
+  {
+    "path": "/members",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".ring-2 > span:nth-child(1)"
+            ],
+            "html": "<span>全部</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.14 (foreground color: #ffffff, background color: #38bdf8, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 36
+      }
+    ]
+  },
+  {
+    "path": "/members",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".ring-2 > span:nth-child(1)"
+            ],
+            "html": "<span>全部</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.14 (foreground color: #ffffff, background color: #38bdf8, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 37
+      }
+    ]
+  },
+  {
+    "path": "/members",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".ring-2 > span:nth-child(1)"
+            ],
+            "html": "<span>全部</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.14 (foreground color: #ffffff, background color: #38bdf8, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 25
+      }
+    ]
+  },
+  {
+    "path": "/history",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      },
+      {
+        "id": "target-size",
+        "nodes": [
+          {
+            "target": [
+              ".border-red-400"
+            ],
+            "html": "<a href=\"#history-0\" class=\"bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)] w-3.5 h-3.5 rounded-full border transition\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\"></a>",
+            "failureSummary": "Fix any of the following:\n  Target has insufficient size (15.4px by 15.4px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 20px instead of at least 24px."
+          },
+          {
+            "target": [
+              ".bg-gray-300\\/70"
+            ],
+            "html": "<a href=\"#history-1\" class=\"bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300 w-3.5 h-3.5 rounded-full border transition\" title=\"2026-04\" aria-label=\"跳转到 2026-04\"></a>",
+            "failureSummary": "Fix any of the following:\n  Target has insufficient size (14px by 14px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 20px instead of at least 24px."
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 25
+      }
+    ]
+  },
+  {
+    "path": "/history",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 11
+      }
+    ]
+  },
+  {
+    "path": "/history",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      },
+      {
+        "id": "target-size",
+        "nodes": [
+          {
+            "target": [
+              ".border-red-400"
+            ],
+            "html": "<a href=\"#history-0\" class=\"bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)] w-3.5 h-3.5 rounded-full border transition\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\"></a>",
+            "failureSummary": "Fix any of the following:\n  Target has insufficient size (15.4px by 15.4px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 20px instead of at least 24px."
+          },
+          {
+            "target": [
+              ".bg-gray-300\\/70"
+            ],
+            "html": "<a href=\"#history-1\" class=\"bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300 w-3.5 h-3.5 rounded-full border transition\" title=\"2026-04\" aria-label=\"跳转到 2026-04\"></a>",
+            "failureSummary": "Fix any of the following:\n  Target has insufficient size (14px by 14px, should be at least 24px by 24px)\n  Target has insufficient space to its closest neighbors. Safe clickable space has a diameter of 20px instead of at least 24px."
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 25
+      }
+    ]
+  },
+  {
+    "path": "/history",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 11
+      }
+    ]
+  },
+  {
+    "path": "/logs",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(1) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">页面浏览</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(1) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Pageviews</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(2) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">独立访客</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(2) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Visitors</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(3) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">跳出率</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(3) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Bounces</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(4) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">平均停留</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(4) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Avg. Time</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".mb-4.justify-between.flex > div > .text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400\">近7天</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(1) > .mb-4.justify-between.flex > .text-gray-400.gap-2.text-\\[10px\\] > span"
+            ],
+            "html": "<span>Top Pages</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".justify-between.gap-3.flex:nth-child(2) > .min-w-0 > .text-gray-400.truncate.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 truncate\">/activities</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(2) > .mb-4.justify-between.flex > .text-gray-400.gap-2.text-\\[10px\\] > span"
+            ],
+            "html": "<span>Top Environments</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".justify-between.gap-3.flex:nth-child(1) > .min-w-0.gap-2.flex > div > .text-gray-400.truncate.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 truncate\">环境</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".justify-between.gap-3.flex:nth-child(2) > .min-w-0.gap-2.flex > div > .text-gray-400.truncate.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 truncate\">环境</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-indigo-50"
+            ],
+            "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #6366f1, background color: #fdfbf7, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(1) > .flex-1.min-w-0 > .mt-0\\.5.text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400 truncate mt-0.5\">UID: Unknown</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(1) > .text-right > .tracking-wider.uppercase.text-gray-400"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 uppercase tracking-wider\">Edits</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(2) > .flex-1.min-w-0 > .mt-0\\.5.text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400 truncate mt-0.5\">UID: Unknown</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(2) > .text-right > .tracking-wider.uppercase.text-gray-400"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 uppercase tracking-wider\">Edits</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-gray-50\\/50.dark\\:hover\\:bg-slate-800\\/40:nth-child(1) > .whitespace-nowrap:nth-child(3) > .bg-emerald-50.text-emerald-600.border-emerald-100"
+            ],
+            "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">CREATE ACTIVITY</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #059669, background color: #ecfdf5, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".bg-red-50"
+            ],
+            "html": "<span class=\"bg-red-50 text-red-600 border-red-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">RESET PWD</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #dc2626, background color: #fef2f2, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-gray-50\\/50.dark\\:hover\\:bg-slate-800\\/40:nth-child(10) > .whitespace-nowrap:nth-child(3) > .bg-emerald-50.text-emerald-600.border-emerald-100"
+            ],
+            "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">CREATE HISTORY</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #059669, background color: #ecfdf5, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-gray-50\\/50.dark\\:hover\\:bg-slate-800\\/40:nth-child(11) > .whitespace-nowrap:nth-child(3) > .bg-emerald-50.text-emerald-600.border-emerald-100"
+            ],
+            "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">CREATE MEMBER</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #059669, background color: #ecfdf5, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 18
+      }
+    ]
+  },
+  {
+    "path": "/logs",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(1) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">页面浏览</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(1) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Pageviews</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(2) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">独立访客</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(2) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Visitors</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(3) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">跳出率</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(3) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Bounces</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(4) > .text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400\">平均停留</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(4) > .mt-1.text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 mt-1\">Avg. Time</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".mb-4.justify-between.flex > div > .text-gray-400.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400\">近7天</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(1) > .mb-4.justify-between.flex > .text-gray-400.gap-2.text-\\[10px\\] > span"
+            ],
+            "html": "<span>Top Pages</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".justify-between.gap-3.flex:nth-child(2) > .min-w-0 > .text-gray-400.truncate.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 truncate\">/activities</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".p-4.rounded-xl.dark\\:border-slate-800:nth-child(2) > .mb-4.justify-between.flex > .text-gray-400.gap-2.text-\\[10px\\] > span"
+            ],
+            "html": "<span>Top Environments</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".justify-between.gap-3.flex:nth-child(1) > .min-w-0.gap-2.flex > div > .text-gray-400.truncate.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 truncate\">环境</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".justify-between.gap-3.flex:nth-child(2) > .min-w-0.gap-2.flex > div > .text-gray-400.truncate.text-\\[10px\\]"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 truncate\">环境</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-indigo-50"
+            ],
+            "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #6366f1, background color: #fdfbf7, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(1) > .flex-1.min-w-0 > .mt-0\\.5.text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400 truncate mt-0.5\">UID: Unknown</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(1) > .text-right > .tracking-wider.uppercase.text-gray-400"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 uppercase tracking-wider\">Edits</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(2) > .flex-1.min-w-0 > .mt-0\\.5.text-xs.text-gray-400"
+            ],
+            "html": "<div class=\"text-xs text-gray-400 truncate mt-0.5\">UID: Unknown</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:shadow-md.hover\\:-translate-y-0\\.5.transition-all:nth-child(2) > .text-right > .tracking-wider.uppercase.text-gray-400"
+            ],
+            "html": "<div class=\"text-[10px] text-gray-400 uppercase tracking-wider\">Edits</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #9ca3af, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "path": "/logs",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".hover\\:bg-indigo-50"
+            ],
+            "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.99 (foreground color: #6366f1, background color: #0f172a, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-gray-50\\/50.dark\\:hover\\:bg-slate-800\\/40:nth-child(1) > .whitespace-nowrap:nth-child(3) > .bg-emerald-50.text-emerald-600.border-emerald-100"
+            ],
+            "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">CREATE ACTIVITY</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #059669, background color: #ecfdf5, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".bg-red-50"
+            ],
+            "html": "<span class=\"bg-red-50 text-red-600 border-red-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">RESET PWD</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.41 (foreground color: #dc2626, background color: #fef2f2, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-gray-50\\/50.dark\\:hover\\:bg-slate-800\\/40:nth-child(10) > .whitespace-nowrap:nth-child(3) > .bg-emerald-50.text-emerald-600.border-emerald-100"
+            ],
+            "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">CREATE HISTORY</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #059669, background color: #ecfdf5, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-gray-50\\/50.dark\\:hover\\:bg-slate-800\\/40:nth-child(11) > .whitespace-nowrap:nth-child(3) > .bg-emerald-50.text-emerald-600.border-emerald-100"
+            ],
+            "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\">CREATE MEMBER</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.57 (foreground color: #059669, background color: #ecfdf5, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".border-gray-50.bg-gray-50\\/50.border-t > .text-gray-500.text-xs"
+            ],
+            "html": "<div class=\"text-xs text-gray-500\"> 显示第 <span class=\"font-bold text-gray-700\">1</span> 至 <span class=\"font-bold text-gray-700\">13</span> 条， 共 <span class=\"font-bold text-gray-700\">13</span> 条记录 </div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.39 (foreground color: #9ca3af, background color: #848892, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-gray-700.font-bold:nth-child(2)"
+            ],
+            "html": "<span class=\"font-bold text-gray-700\">13</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.86 (foreground color: #e5e7eb, background color: #848892, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-gray-500.text-xs > .text-gray-700.font-bold:nth-child(3)"
+            ],
+            "html": "<span class=\"font-bold text-gray-700\">13</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.86 (foreground color: #e5e7eb, background color: #848892, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".border-none"
+            ],
+            "html": "<select value=\"20\" class=\"text-xs border-none bg-transparent text-gray-500 focus:ring-0 cursor-pointer hover:text-gray-700\" aria-label=\"每页条数\"><!--[--><option value=\"20\">20 条/页</option><option value=\"50\">50 条/页</option><option value=\"100\">100 条/页</option><!--]--></select>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.39 (foreground color: #9ca3af, background color: #848892, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 19
+      }
+    ]
+  },
+  {
+    "path": "/logs",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".hover\\:bg-indigo-50"
+            ],
+            "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.99 (foreground color: #6366f1, background color: #0f172a, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".border-gray-50.bg-gray-50\\/50.border-t > .text-gray-500.text-xs"
+            ],
+            "html": "<div class=\"text-xs text-gray-500\"> 显示第 <span class=\"font-bold text-gray-700\">1</span> 至 <span class=\"font-bold text-gray-700\">13</span> 条， 共 <span class=\"font-bold text-gray-700\">13</span> 条记录 </div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.39 (foreground color: #9ca3af, background color: #848892, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-gray-700.font-bold:nth-child(2)"
+            ],
+            "html": "<span class=\"font-bold text-gray-700\">13</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.86 (foreground color: #e5e7eb, background color: #848892, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-gray-500.text-xs > .text-gray-700.font-bold:nth-child(3)"
+            ],
+            "html": "<span class=\"font-bold text-gray-700\">13</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.86 (foreground color: #e5e7eb, background color: #848892, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".border-none"
+            ],
+            "html": "<select value=\"20\" class=\"text-xs border-none bg-transparent text-gray-500 focus:ring-0 cursor-pointer hover:text-gray-700\" aria-label=\"每页条数\"><!--[--><option value=\"20\">20 条/页</option><option value=\"50\">50 条/页</option><option value=\"100\">100 条/页</option><!--]--></select>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.39 (foreground color: #9ca3af, background color: #848892, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 5
+      }
+    ]
+  },
+  {
+    "path": "/social",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/social",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/social",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/social",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/join",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 43
+      }
+    ]
+  },
+  {
+    "path": "/join",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 30
+      }
+    ]
+  },
+  {
+    "path": "/join",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 43
+      }
+    ]
+  },
+  {
+    "path": "/join",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 30
+      }
+    ]
+  },
+  {
+    "path": "/events",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-\\[\\#404249\\] > .transition-opacity.w-auto.opacity-100 > .font-medium.text-sm[data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\">悬赏令</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"betting\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">达成契约</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"stg\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">打飞机</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"zetime\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">ymyz</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"party\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">线下面基</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">悬赏令</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 41天 3小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(2) > .text-sky-500.dark\\:text-sky-300.shrink-0"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 dark:text-sky-300\">发起</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">挑战</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(4) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">要求</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-500"
+            ],
+            "html": "<span class=\"text-amber-500 text-xs font-bold dark:text-amber-300\">REWARD</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.07 (foreground color: #f59e0b, background color: #fffbeb, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-600"
+            ],
+            "html": "<span class=\"font-bold text-amber-600 dark:text-amber-200\">东方设定集一本</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.07 (foreground color: #d97706, background color: #fffbeb, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/events",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/30"
+            ],
+            "html": "<a aria-current=\"page\" href=\"/events/bounty\" class=\"router-link-active router-link-exact-active flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50\" data-v-9913b59c=\"\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">悬赏令</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 41天 3小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(2) > .text-sky-500.dark\\:text-sky-300.shrink-0"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 dark:text-sky-300\">发起</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">挑战</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(4) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">要求</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-500"
+            ],
+            "html": "<span class=\"text-amber-500 text-xs font-bold dark:text-amber-300\">REWARD</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.07 (foreground color: #f59e0b, background color: #fffbeb, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-600"
+            ],
+            "html": "<span class=\"font-bold text-amber-600 dark:text-amber-200\">东方设定集一本</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.07 (foreground color: #d97706, background color: #fffbeb, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/events",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/events",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/events/bounty",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-\\[\\#404249\\] > .transition-opacity.w-auto.opacity-100 > .font-medium.text-sm[data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\">悬赏令</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"betting\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">达成契约</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"stg\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">打飞机</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"zetime\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">ymyz</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"party\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">线下面基</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">悬赏令</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 41天 3小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(2) > .text-sky-500.dark\\:text-sky-300.shrink-0"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 dark:text-sky-300\">发起</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">挑战</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(4) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">要求</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-500"
+            ],
+            "html": "<span class=\"text-amber-500 text-xs font-bold dark:text-amber-300\">REWARD</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.07 (foreground color: #f59e0b, background color: #fffbeb, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-600"
+            ],
+            "html": "<span class=\"font-bold text-amber-600 dark:text-amber-200\">东方设定集一本</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.07 (foreground color: #d97706, background color: #fffbeb, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/events/bounty",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/30"
+            ],
+            "html": "<a aria-current=\"page\" href=\"/events/bounty\" class=\"router-link-active router-link-exact-active flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50\" data-v-9913b59c=\"\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">悬赏令</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 41天 3小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(2) > .text-sky-500.dark\\:text-sky-300.shrink-0"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 dark:text-sky-300\">发起</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">挑战</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(4) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">要求</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-500"
+            ],
+            "html": "<span class=\"text-amber-500 text-xs font-bold dark:text-amber-300\">REWARD</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.07 (foreground color: #f59e0b, background color: #fffbeb, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-600"
+            ],
+            "html": "<span class=\"font-bold text-amber-600 dark:text-amber-200\">东方设定集一本</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.07 (foreground color: #d97706, background color: #fffbeb, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/events/bounty",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/events/bounty",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/events/betting",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"bounty\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">赏金猎人</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-\\[\\#404249\\] > .transition-opacity.w-auto.opacity-100 > .font-medium.text-sm[data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\">对赌协议</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"stg\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">打飞机</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"zetime\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">ymyz</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"party\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">线下面基</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">对赌协议</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 21天 23小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-400"
+            ],
+            "html": "<span class=\"text-sky-400 font-black italic text-sm\">VS</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.04 (foreground color: #38bdf8, background color: #f8fafc, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".pt-2 > .text-sky-500.dark\\:text-sky-300.shrink-0"
+            ],
+            "html": "<span class=\"text-sky-500 font-bold shrink-0 dark:text-sky-300\">目标:</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.64 (foreground color: #0ea5e9, background color: #f8fafc, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">惩罚</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-rose-500"
+            ],
+            "html": "<span class=\"text-rose-500 font-medium dark:text-rose-300\">负方请在群里唱一首歌。</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.54 (foreground color: #f43f5e, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/events/betting",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/30"
+            ],
+            "html": "<a aria-current=\"page\" href=\"/events/betting\" class=\"router-link-active router-link-exact-active flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50\" data-v-9913b59c=\"\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">对赌协议</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 21天 23小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-400"
+            ],
+            "html": "<span class=\"text-sky-400 font-black italic text-sm\">VS</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.04 (foreground color: #38bdf8, background color: #f8fafc, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".pt-2 > .text-sky-500.dark\\:text-sky-300.shrink-0"
+            ],
+            "html": "<span class=\"text-sky-500 font-bold shrink-0 dark:text-sky-300\">目标:</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.64 (foreground color: #0ea5e9, background color: #f8fafc, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .mt-0\\.5.text-sky-500.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">惩罚</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-rose-500"
+            ],
+            "html": "<span class=\"text-rose-500 font-medium dark:text-rose-300\">负方请在群里唱一首歌。</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.54 (foreground color: #f43f5e, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/events/betting",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 16
+      }
+    ]
+  },
+  {
+    "path": "/events/betting",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 已发布</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 3
+      }
+    ]
+  },
+  {
+    "path": "/events/stg",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"bounty\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">赏金猎人</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"betting\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">达成契约</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-\\[\\#404249\\] > .transition-opacity.w-auto.opacity-100 > .font-medium.text-sm[data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\">STG</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"zetime\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">ymyz</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"party\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">线下面基</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".rounded.text-\\[11px\\].dark\\:border-sky-800"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">STG</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 21天 23小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .text-sky-500.mt-0\\.5.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .text-sky-500.mt-0\\.5.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">规则</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(4) > .text-sky-500.mt-0\\.5.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">奖品</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-600"
+            ],
+            "html": "<span class=\"line-clamp-1 text-amber-600 font-medium dark:text-amber-200\">冠军：东方周边礼包</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.07 (foreground color: #d97706, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-400"
+            ],
+            "html": "<div class=\"text-[10px] text-sky-400 uppercase tracking-wider font-bold dark:text-sky-300\"> Top Rankers </div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.06 (foreground color: #38bdf8, background color: #fbfbf8, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-700.dark\\:border-sky-800.px-2:nth-child(1) > .opacity-70.font-bold.text-\\[10px\\]"
+            ],
+            "html": "<span class=\"font-bold text-[10px] opacity-70\">#1</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #4a94bd, background color: #f0f9ff, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-700.dark\\:border-sky-800.px-2:nth-child(2) > .opacity-70.font-bold.text-\\[10px\\]"
+            ],
+            "html": "<span class=\"font-bold text-[10px] opacity-70\">#2</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #4a94bd, background color: #f0f9ff, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-sky-500 > span"
+            ],
+            "html": "<span>我要参加</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 15
+      }
+    ]
+  },
+  {
+    "path": "/events/stg",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/30"
+            ],
+            "html": "<a aria-current=\"page\" href=\"/events/stg\" class=\"router-link-active router-link-exact-active flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50\" data-v-9913b59c=\"\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".rounded.text-\\[11px\\].dark\\:border-sky-800"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">STG</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 21天 23小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".items-start.gap-2.flex > .text-sky-500.mt-0\\.5.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(3) > .text-sky-500.mt-0\\.5.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">规则</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.flex:nth-child(4) > .text-sky-500.mt-0\\.5.dark\\:text-sky-300"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">奖品</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-amber-600"
+            ],
+            "html": "<span class=\"line-clamp-1 text-amber-600 font-medium dark:text-amber-200\">冠军：东方周边礼包</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.07 (foreground color: #d97706, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-400"
+            ],
+            "html": "<div class=\"text-[10px] text-sky-400 uppercase tracking-wider font-bold dark:text-sky-300\"> Top Rankers </div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.06 (foreground color: #38bdf8, background color: #fbfbf8, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-700.dark\\:border-sky-800.px-2:nth-child(1) > .opacity-70.font-bold.text-\\[10px\\]"
+            ],
+            "html": "<span class=\"font-bold text-[10px] opacity-70\">#1</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #4a94bd, background color: #f0f9ff, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-sky-700.dark\\:border-sky-800.px-2:nth-child(2) > .opacity-70.font-bold.text-\\[10px\\]"
+            ],
+            "html": "<span class=\"font-bold text-[10px] opacity-70\">#2</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.14 (foreground color: #4a94bd, background color: #f0f9ff, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".hover\\:bg-sky-500 > span"
+            ],
+            "html": "<span>我要参加</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 2
+      }
+    ]
+  },
+  {
+    "path": "/events/stg",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 15
+      }
+    ]
+  },
+  {
+    "path": "/events/stg",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 2
+      }
+    ]
+  },
+  {
+    "path": "/events/zetime",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"bounty\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">赏金猎人</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"betting\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">达成契约</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"stg\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">打飞机</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".shadow-sm > .transition-opacity.w-auto.opacity-100 > .font-medium.text-sm[data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\">则则</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"party\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">线下面基</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 15
+      }
+    ]
+  },
+  {
+    "path": "/events/zetime",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/30"
+            ],
+            "html": "<a aria-current=\"page\" href=\"/events/zetime\" class=\"router-link-active router-link-exact-active flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50\" data-v-9913b59c=\"\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 2
+      }
+    ]
+  },
+  {
+    "path": "/events/zetime",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 15
+      }
+    ]
+  },
+  {
+    "path": "/events/zetime",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 2
+      }
+    ]
+  },
+  {
+    "path": "/events/party",
+    "project": "desktop",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"bounty\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">赏金猎人</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"betting\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">达成契约</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"stg\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">打飞机</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:hover\\:text-gray-200.rounded-md[href$=\"zetime\"] > .transition-opacity.w-auto.opacity-100 > .opacity-70.text-\\[10px\\][data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\">ymyz</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.5 (foreground color: #808790, background color: #fbfbf8, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-\\[\\#404249\\] > .transition-opacity.w-auto.opacity-100 > .font-medium.text-sm[data-v-9913b59c=\"\"]"
+            ],
+            "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\">聚会</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">线下聚会</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 进行中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 60天 20小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".mt-0\\.5"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(2) > .text-sky-500.dark\\:text-sky-300.font-bold"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold dark:text-sky-300\">地点</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(3) > .text-sky-500.dark\\:text-sky-300.font-bold"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold dark:text-sky-300\">类型</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 15
+      }
+    ]
+  },
+  {
+    "path": "/events/party",
+    "project": "mobile",
+    "theme": "light",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/30"
+            ],
+            "html": "<a aria-current=\"page\" href=\"/events/party\" class=\"router-link-active router-link-exact-active flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50\" data-v-9913b59c=\"\">",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:bg-sky-900\\/40"
+            ],
+            "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\">线下聚会</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.84 (foreground color: #0284c7, background color: #f0f9ff, font size: 8.3pt (11px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 进行中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-pink-500"
+            ],
+            "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\"><span class=\"animate-pulse\">剩余：</span> 60天 20小时</div>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".animate-pulse"
+            ],
+            "html": "<span class=\"animate-pulse\">剩余：</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.23 (foreground color: #ec4899, background color: #fdf2f8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".mt-0\\.5"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\">时间</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(2) > .text-sky-500.dark\\:text-sky-300.font-bold"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold dark:text-sky-300\">地点</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".gap-2.items-center.flex:nth-child(3) > .text-sky-500.dark\\:text-sky-300.font-bold"
+            ],
+            "html": "<span class=\"text-xs text-sky-500 font-bold dark:text-sky-300\">类型</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.67 (foreground color: #0ea5e9, background color: #fbfbf8, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 2
+      }
+    ]
+  },
+  {
+    "path": "/events/party",
+    "project": "desktop",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 进行中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 15
+      }
+    ]
+  },
+  {
+    "path": "/events/party",
+    "project": "mobile",
+    "theme": "dark",
+    "violations": [
+      {
+        "id": "color-contrast",
+        "nodes": [
+          {
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 进行中</span>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "target": [
+              ".text-\\[9px\\]"
+            ],
+            "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\"> GUAT TOUHOU FANS CLUB </p>",
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.93 (foreground color: #64748b, background color: #0b1220, font size: 6.8pt (9px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "nodes": 2
+      }
+    ]
+  }
+]

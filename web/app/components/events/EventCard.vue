@@ -78,11 +78,11 @@ const topResults = computed(() => eventTopResults(content.value))
           </div>
         </div>
 
-        <h3
+        <h2
           class="text-lg font-bold text-slate-800 leading-snug break-words group-hover:text-sky-600 transition-colors dark:text-slate-100 dark:group-hover:text-sky-300"
         >
           {{ event.title || '未命名活动' }}
-        </h3>
+        </h2>
       </header>
 
       <div
@@ -125,6 +125,7 @@ const topResults = computed(() => eventTopResults(content.value))
               <img
                 v-if="content.initiator?.avatar"
                 :src="content.initiator.avatar"
+                alt=""
                 class="w-4 h-4 rounded-full object-cover"
               />
               <span
@@ -170,6 +171,7 @@ const topResults = computed(() => eventTopResults(content.value))
               <img
                 v-if="content.completion?.avatar"
                 :src="content.completion.avatar"
+                alt=""
                 class="w-4 h-4 rounded-full object-cover"
               />
               <span class="text-xs font-medium">{{
@@ -189,6 +191,7 @@ const topResults = computed(() => eventTopResults(content.value))
                 <img
                   v-if="content.a?.avatar"
                   :src="content.a.avatar"
+                  alt=""
                   class="w-5 h-5 rounded-full ring-1 ring-slate-200 dark:ring-slate-700"
                 />
                 <span class="font-bold text-slate-700 dark:text-slate-200">{{
@@ -203,6 +206,7 @@ const topResults = computed(() => eventTopResults(content.value))
                 <img
                   v-if="content.b?.avatar"
                   :src="content.b.avatar"
+                  alt=""
                   class="w-5 h-5 rounded-full ring-1 ring-slate-200 dark:ring-slate-700"
                 />
               </div>
@@ -278,6 +282,7 @@ const topResults = computed(() => eventTopResults(content.value))
                 <img
                   v-if="row.avatar"
                   :src="row.avatar"
+                  alt=""
                   class="w-3 h-3 rounded-full"
                 />
                 <span class="truncate max-w-[60px] font-medium">{{

@@ -1,0 +1,1775 @@
+{
+  "engine": "axe-core 4.14.0",
+  "scope": "15 declared public scenarios, including advanced math/diagram source before activation; light/dark, Desktop Chrome/Pixel 7, reduced motion. Dialog states/manual keyboard/touch review remain separate.",
+  "directory": "file:///E:/Taropoi/workspace/GuatSWR_Website/.tools/public-a11y-1792485910079/",
+  "accepted": false,
+  "complete": true,
+  "cases": [
+    {
+      "path": "/",
+      "theme": "light",
+      "project": "desktop",
+      "file": "01-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 5
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 45
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "nodes": 1
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "theme": "light",
+      "project": "mobile",
+      "file": "01-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 5
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 32
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "nodes": 1
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "01-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 5
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 45
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "nodes": 1
+        }
+      ]
+    },
+    {
+      "path": "/",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "01-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 5
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 32
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "nodes": 1
+        }
+      ]
+    },
+    {
+      "path": "/activities",
+      "theme": "light",
+      "project": "desktop",
+      "file": "02-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 18
+        }
+      ]
+    },
+    {
+      "path": "/activities",
+      "theme": "light",
+      "project": "mobile",
+      "file": "02-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 5
+        }
+      ]
+    },
+    {
+      "path": "/activities",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "02-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 18
+        }
+      ]
+    },
+    {
+      "path": "/activities",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "02-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 5
+        }
+      ]
+    },
+    {
+      "path": "/activity/1",
+      "theme": "light",
+      "project": "desktop",
+      "file": "03-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 19
+        }
+      ]
+    },
+    {
+      "path": "/activity/1",
+      "theme": "light",
+      "project": "mobile",
+      "file": "03-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 6
+        }
+      ]
+    },
+    {
+      "path": "/activity/1",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "03-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 19
+        }
+      ]
+    },
+    {
+      "path": "/activity/1",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "03-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 6
+        }
+      ]
+    },
+    {
+      "path": "/activity/991",
+      "theme": "light",
+      "project": "desktop",
+      "file": "04-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 24
+        }
+      ]
+    },
+    {
+      "path": "/activity/991",
+      "theme": "light",
+      "project": "mobile",
+      "file": "04-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 11
+        }
+      ]
+    },
+    {
+      "path": "/activity/991",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "04-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 23
+        }
+      ]
+    },
+    {
+      "path": "/activity/991",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "04-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 10
+        }
+      ]
+    },
+    {
+      "path": "/members",
+      "theme": "light",
+      "project": "desktop",
+      "file": "05-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 48
+        }
+      ]
+    },
+    {
+      "path": "/members",
+      "theme": "light",
+      "project": "mobile",
+      "file": "05-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 36
+        }
+      ]
+    },
+    {
+      "path": "/members",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "05-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 37
+        }
+      ]
+    },
+    {
+      "path": "/members",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "05-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 25
+        }
+      ]
+    },
+    {
+      "path": "/history",
+      "theme": "light",
+      "project": "desktop",
+      "file": "06-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "target-size",
+          "impact": "serious",
+          "nodes": 2
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 25
+        }
+      ]
+    },
+    {
+      "path": "/history",
+      "theme": "light",
+      "project": "mobile",
+      "file": "06-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 11
+        }
+      ]
+    },
+    {
+      "path": "/history",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "06-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "target-size",
+          "impact": "serious",
+          "nodes": 2
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 25
+        }
+      ]
+    },
+    {
+      "path": "/history",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "06-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 11
+        }
+      ]
+    },
+    {
+      "path": "/logs",
+      "theme": "light",
+      "project": "desktop",
+      "file": "07-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 24
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 18
+        }
+      ]
+    },
+    {
+      "path": "/logs",
+      "theme": "light",
+      "project": "mobile",
+      "file": "07-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 20
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 5
+        }
+      ]
+    },
+    {
+      "path": "/logs",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "07-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 10
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 19
+        }
+      ]
+    },
+    {
+      "path": "/logs",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "07-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 6
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "scrollable-region-focusable",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 5
+        }
+      ]
+    },
+    {
+      "path": "/social",
+      "theme": "light",
+      "project": "desktop",
+      "file": "08-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/social",
+      "theme": "light",
+      "project": "mobile",
+      "file": "08-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/social",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "08-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/social",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "08-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/join",
+      "theme": "light",
+      "project": "desktop",
+      "file": "09-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 43
+        }
+      ]
+    },
+    {
+      "path": "/join",
+      "theme": "light",
+      "project": "mobile",
+      "file": "09-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 30
+        }
+      ]
+    },
+    {
+      "path": "/join",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "09-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 43
+        }
+      ]
+    },
+    {
+      "path": "/join",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "09-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 30
+        }
+      ]
+    },
+    {
+      "path": "/events",
+      "theme": "light",
+      "project": "desktop",
+      "file": "10-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 16
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/events",
+      "theme": "light",
+      "project": "mobile",
+      "file": "10-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 12
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/events",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "10-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/events",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "10-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/events/bounty",
+      "theme": "light",
+      "project": "desktop",
+      "file": "11-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 16
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/events/bounty",
+      "theme": "light",
+      "project": "mobile",
+      "file": "11-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 12
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/events/bounty",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "11-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/events/bounty",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "11-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/events/betting",
+      "theme": "light",
+      "project": "desktop",
+      "file": "12-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 15
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/events/betting",
+      "theme": "light",
+      "project": "mobile",
+      "file": "12-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 11
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/events/betting",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "12-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 16
+        }
+      ]
+    },
+    {
+      "path": "/events/betting",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "12-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 3
+        }
+      ]
+    },
+    {
+      "path": "/events/stg",
+      "theme": "light",
+      "project": "desktop",
+      "file": "13-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 18
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "path": "/events/stg",
+      "theme": "light",
+      "project": "mobile",
+      "file": "13-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 14
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ]
+    },
+    {
+      "path": "/events/stg",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "13-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "path": "/events/stg",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "13-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "image-alt",
+          "impact": "critical",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ]
+    },
+    {
+      "path": "/events/zetime",
+      "theme": "light",
+      "project": "desktop",
+      "file": "14-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 7
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "path": "/events/zetime",
+      "theme": "light",
+      "project": "mobile",
+      "file": "14-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 3
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ]
+    },
+    {
+      "path": "/events/zetime",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "14-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "path": "/events/zetime",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "14-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ]
+    },
+    {
+      "path": "/events/party",
+      "theme": "light",
+      "project": "desktop",
+      "file": "15-light-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 13
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "path": "/events/party",
+      "theme": "light",
+      "project": "mobile",
+      "file": "15-light-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 9
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ]
+    },
+    {
+      "path": "/events/party",
+      "theme": "dark",
+      "project": "desktop",
+      "file": "15-dark-desktop.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 15
+        }
+      ]
+    },
+    {
+      "path": "/events/party",
+      "theme": "dark",
+      "project": "mobile",
+      "file": "15-dark-mobile.json",
+      "errors": [],
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": 2
+        },
+        {
+          "id": "heading-order",
+          "impact": "moderate",
+          "nodes": 1
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": 1
+        }
+      ],
+      "incomplete": [
+        {
+          "id": "color-contrast",
+          "nodes": 2
+        }
+      ]
+    }
+  ]
+}

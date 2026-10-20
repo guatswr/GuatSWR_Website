@@ -627,7 +627,7 @@ usePublicPageSeo(() => ({
           <p>没有找到相关记录</p>
         </div>
 
-        <div v-else class="overflow-x-auto">
+        <div v-else class="overflow-x-auto focus-visible:outline-2 focus-visible:outline-sky-600 focus-visible:-outline-offset-2" tabindex="0" role="region" aria-label="操作日志表格（可横向滚动）">
           <table class="w-full text-left border-collapse">
             <thead class="bg-gray-50/80 dark:bg-slate-800/60 border-b border-gray-100 dark:border-slate-800 text-xs uppercase tracking-wider text-gray-500 dark:text-slate-300 font-medium">
               <tr>

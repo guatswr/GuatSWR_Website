@@ -1,0 +1,189 @@
+{
+  "name": "stg-light",
+  "path": "/events/stg",
+  "theme": "light",
+  "changes": [
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">赏金猎人</span>",
+      "property": "color",
+      "before": "rgb(75, 85, 99)",
+      "value": "#475569",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">赏金猎人</span>",
+      "property": "opacity",
+      "before": "0.7",
+      "value": "1",
+      "reason": "Keep secondary text readable at its small font size"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">达成契约</span>",
+      "property": "color",
+      "before": "rgb(75, 85, 99)",
+      "value": "#475569",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">达成契约</span>",
+      "property": "opacity",
+      "before": "0.7",
+      "value": "1",
+      "reason": "Keep secondary text readable at its small font size"
+    },
+    {
+      "html": "<span class=\"font-medium text-sm\" data-v-9913b59c=\"\" style=\"color: rgb(3, 105, 161) !important;\">STG</span>",
+      "property": "color",
+      "before": "rgb(2, 132, 199)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">ymyz</span>",
+      "property": "color",
+      "before": "rgb(75, 85, 99)",
+      "value": "#475569",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">ymyz</span>",
+      "property": "opacity",
+      "before": "0.7",
+      "value": "1",
+      "reason": "Keep secondary text readable at its small font size"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important;\">线下面基</span>",
+      "property": "color",
+      "before": "rgb(75, 85, 99)",
+      "value": "#475569",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-[10px] opacity-70\" data-v-9913b59c=\"\" style=\"color: rgb(71, 85, 105) !important; opacity: 1 !important;\">线下面基</span>",
+      "property": "opacity",
+      "before": "0.7",
+      "value": "1",
+      "reason": "Keep secondary text readable at its small font size"
+    },
+    {
+      "html": "<span class=\"px-2 py-0.5 rounded text-[11px] font-bold tracking-wider bg-sky-50 text-sky-600 border border-sky-100 dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800\" style=\"color: rgb(3, 105, 161) !important;\">STG</span>",
+      "property": "color",
+      "before": "rgb(2, 132, 199)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500\" style=\"color: rgb(71, 85, 105) !important;\"><span class=\"w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600\"></span> 报名中</span>",
+      "property": "color",
+      "before": "rgb(148, 163, 184)",
+      "value": "#475569",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<div class=\"flex items-center gap-1 px-2 py-0.5 rounded text-[11px] font-medium text-pink-500 bg-pink-50 border border-pink-100 shadow-sm dark:bg-rose-950/40 dark:border-rose-900/60\" style=\"color: rgb(190, 24, 93) !important;\"><span class=\"animate-pulse\">剩余：</span> 21天 23小时</div>",
+      "property": "color",
+      "before": "rgb(236, 72, 153)",
+      "value": "#be185d",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"animate-pulse\" style=\"color: rgb(190, 24, 93) !important;\">剩余：</span>",
+      "property": "color",
+      "before": "rgb(190, 24, 93)",
+      "value": "#be185d",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">时间</span>",
+      "property": "color",
+      "before": "rgb(14, 165, 233)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">规则</span>",
+      "property": "color",
+      "before": "rgb(14, 165, 233)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"text-xs text-sky-500 font-bold shrink-0 mt-0.5 dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\">奖品</span>",
+      "property": "color",
+      "before": "rgb(14, 165, 233)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"line-clamp-1 text-amber-600 font-medium dark:text-amber-200\" style=\"color: rgb(146, 64, 14) !important;\">冠军：东方周边礼包</span>",
+      "property": "color",
+      "before": "rgb(217, 119, 6)",
+      "value": "#92400e",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<div class=\"text-[10px] text-sky-400 uppercase tracking-wider font-bold dark:text-sky-300\" style=\"color: rgb(3, 105, 161) !important;\"> Top Rankers </div>",
+      "property": "color",
+      "before": "rgb(56, 189, 248)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important;\">#1</span>",
+      "property": "color",
+      "before": "rgb(3, 105, 161)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important; opacity: 1 !important;\">#1</span>",
+      "property": "opacity",
+      "before": "0.7",
+      "value": "1",
+      "reason": "Keep secondary text readable at its small font size"
+    },
+    {
+      "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important;\">#2</span>",
+      "property": "color",
+      "before": "rgb(3, 105, 161)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"font-bold text-[10px] opacity-70\" style=\"color: rgb(3, 105, 161) !important; opacity: 1 !important;\">#2</span>",
+      "property": "opacity",
+      "before": "0.7",
+      "value": "1",
+      "reason": "Keep secondary text readable at its small font size"
+    },
+    {
+      "html": "<span style=\"color: rgb(3, 105, 161) !important;\">我要参加</span>",
+      "property": "color",
+      "before": "rgb(2, 132, 199)",
+      "value": "#0369a1",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 18
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 15
+    }
+  ]
+}

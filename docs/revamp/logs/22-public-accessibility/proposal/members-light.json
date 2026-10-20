@@ -1,0 +1,42 @@
+{
+  "name": "members-light",
+  "path": "/members",
+  "theme": "light",
+  "changes": [
+    {
+      "html": "<a aria-current=\"page\" href=\"/members\" class=\"router-link-active router-link-exact-active relative px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shadow-sm hover:-translate-y-0.5 text-white shadow-md ring-2 ring-offset-2 ring-offset-[#f0f9ff] dark:ring-offset-slate-950\" style=\"background-color: rgb(7, 89, 133) !important; border-color: rgb(56, 189, 248); --tw-ring-color: #38bdf8;\"><span>全部</span><span",
+      "property": "background-color",
+      "before": "rgb(56, 189, 248)",
+      "value": "#075985",
+      "reason": "Active school filter; retain white label and badge"
+    },
+    {
+      "html": "<a aria-current=\"page\" href=\"/members\" class=\"router-link-active router-link-exact-active relative px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shadow-sm hover:-translate-y-0.5 text-white shadow-md ring-2 ring-offset-2 ring-offset-[#f0f9ff] dark:ring-offset-slate-950\" style=\"background-color: rgb(7, 89, 133) !important; border-color: rgb(7, 89, 133) !important; --tw-ring-color: #38bdf8;\"><span>全部</s",
+      "property": "border-color",
+      "before": "rgb(56, 189, 248)",
+      "value": "#075985",
+      "reason": "Match active fill"
+    },
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 2
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 47
+    }
+  ]
+}

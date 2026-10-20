@@ -33,7 +33,6 @@ defineProps({
         <li v-for="(interest, index) in items" :key="interest.number" v-scroll-reveal="index * 70">
           <NuxtLink
             :to="interest.path"
-            :aria-label="`${interest.title}：${interest.cta}`"
             class="interest-link"
             :data-tone="interest.color"
           >

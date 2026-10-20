@@ -1,0 +1,70 @@
+{
+  "name": "logs-dark",
+  "path": "/logs",
+  "theme": "dark",
+  "changes": [
+    {
+      "html": "<div class=\"px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4\" style=\"background-color: rgb(15, 23, 42) !important;\"><div class=\"text-xs text-gray-500\"> 显示第 <span class=\"font-bold text-gray-700\">1</span> 至 <span class=\"font-bold text-gray-700\">13</span> 条， 共 <span class=\"font-bold text-gray-700\">13</span> 条记录 </div><div class=\"flex items-center gap-2\"><span class=\"px-3 py-1.5 rounded-lg b",
+      "property": "background-color",
+      "before": "oklab(0.984619 -0.000598699 -0.00156033 / 0.5)",
+      "value": "#0f172a",
+      "reason": "Remove light translucent pagination surface in dark theme"
+    },
+    {
+      "html": "<button type=\"button\" class=\"text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50\" aria-expanded=\"false\" style=\"color: rgb(165, 180, 252) !important;\"><svg xmlns=\"http://www.w3.org/2000/svg\" class=\"h-4 w-4\" fill=\"none\" viewBox=\"0 0 24 24\" stroke=\"currentColor\"><path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M13 16h-1v-4h-1m1-4h.01M2",
+      "property": "color",
+      "before": "rgb(99, 102, 241)",
+      "value": "#a5b4fc",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE ACTIVITY</span>",
+      "property": "color",
+      "before": "rgb(5, 150, 105)",
+      "value": "#047857",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"bg-red-50 text-red-600 border-red-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(185, 28, 28) !important;\">RESET PWD</span>",
+      "property": "color",
+      "before": "rgb(220, 38, 38)",
+      "value": "#b91c1c",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE HISTORY</span>",
+      "property": "color",
+      "before": "rgb(5, 150, 105)",
+      "value": "#047857",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<span class=\"bg-emerald-50 text-emerald-600 border-emerald-100 inline-flex items-center px-2.5 py-1 rounded-md text-[10px] font-bold border tracking-wide uppercase shadow-sm\" style=\"color: rgb(4, 120, 87) !important;\">CREATE MEMBER</span>",
+      "property": "color",
+      "before": "rgb(5, 150, 105)",
+      "value": "#047857",
+      "reason": "Explicit proposed contrast token"
+    },
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 10
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 17
+    }
+  ]
+}

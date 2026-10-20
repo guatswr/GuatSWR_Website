@@ -53,8 +53,7 @@ pnpm -r test
 pnpm -r build
 npm run test:tooling
 node web/scripts/e2e-isolated.mjs login.spec.ts guest-integration.spec.ts entry-loading.spec.ts --work-dir .e2e-isolated/codex-runtime-hardening
-# Separate terminal: PORT=3381, node web/tests/fixtures/budget-upstream.mjs
-# Collector terminal: NUXT_API_BASE=http://127.0.0.1:3381
+# The collector owns both the app (3300) and fixture (3381); start neither manually.
 node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json > .tools/codex-runtime-route-budget.json
 npm run check:artifacts
 ```

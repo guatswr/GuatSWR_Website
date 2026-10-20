@@ -1,0 +1,35 @@
+{
+  "name": "home-dark",
+  "path": "/",
+  "theme": "dark",
+  "changes": [
+    {
+      "html": "<a href=\"/join\" class=\"club-button club-button-primary shrink-0\" data-v-f87dd891=\"\" style=\"background-color: rgb(3, 105, 161) !important;\">加入桂航绯想天 <span aria-hidden=\"true\" data-v-f87dd891=\"\">↗</span></a>",
+      "property": "background-color",
+      "before": "rgb(2, 132, 199)",
+      "value": "#0369a1",
+      "reason": "White primary label needs darker sky fill"
+    },
+    {
+      "html": "<p class=\"mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500\" data-v-c7d1109e=\"\" style=\"color: rgb(148, 163, 184) !important;\"> GUAT TOUHOU FANS CLUB </p>",
+      "property": "color",
+      "before": "rgb(100, 116, 139)",
+      "value": "#94a3b8",
+      "reason": "Explicit proposed contrast token"
+    }
+  ],
+  "errors": [],
+  "before": [
+    {
+      "id": "color-contrast",
+      "nodes": 2
+    }
+  ],
+  "after": [],
+  "incomplete": [
+    {
+      "id": "color-contrast",
+      "nodes": 45
+    }
+  ]
+}

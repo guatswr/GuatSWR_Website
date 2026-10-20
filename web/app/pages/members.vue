@@ -182,9 +182,9 @@ usePublicPageSeo(() => ({
           </div>
 
           <div class="text-center">
-            <h3 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1 font-serif">
+            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1 font-serif">
               {{ member.name }}
-            </h3>
+            </h2>
             <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-slate-800 text-blue-600 dark:text-blue-200 text-xs rounded-full font-bold mb-2 border border-blue-200 dark:border-slate-700">
               {{ member.role }}
             </span>
