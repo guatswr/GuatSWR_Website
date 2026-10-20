@@ -8,6 +8,7 @@
  * parsed and allowlisted from `/api/content/activity/:id`.
  */
 import type { SafeMarkdownNode } from '#shared/markdown'
+import 'katex/dist/katex.min.css'
 
 withDefaults(defineProps<{
   nodes: readonly SafeMarkdownNode[]
@@ -223,6 +224,18 @@ withDefaults(defineProps<{
 
 .dark .safe-markdown :deep(tbody tr:nth-child(2n)) {
   background-color: #111827;
+}
+
+.safe-markdown :deep(.katex-display) {
+  margin: 1em 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 0.5em 0;
+}
+
+.safe-markdown :deep(.katex) {
+  font-size: 1.1em;
+  text-rendering: auto;
 }
 
 /* The archived history card injected the sanitized description into a div that

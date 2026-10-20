@@ -40,3 +40,6 @@ accepted; these logs are the evidence behind them.
 | Frozen API upload contract | [`13-frozen-api-contract/`](13-frozen-api-contract/README.md) | Canonical paths fixed; independent mounted-route guard, 747 units, 6/6 real guest E2E, 14 route budgets, zero maps |
 | Activity administration and runtime correction | [`14-admin-events/`](14-admin-events/README.md) | Local feature accepted: Node 24.16.0, 750 units, tooling 56/56, 62/62 E2E, 14 route budgets, Linux build/runtime smoke; full migration open |
 | Secondary administrator workflows | [`15-admin-secondary/`](15-admin-secondary/README.md) | Local workflows accepted: 752 units, 92 unique E2E, six article selector checks repeated, 14 route budgets, zero maps; final full-site acceptance open |
+| Approved raster exception | [`16-approved-raster/`](16-approved-raster/README.md) | User-approved single Linux dark-log pixel; 767 units, 48/48 Windows regression, 1/1 Linux test |
+| Public idle hydration | [`17-public-hydration/`](17-public-hydration/README.md) | Native idle hydration for homepage and footer; 767 units, 96/96 E2E, Lighthouse 1662.1ms / 98 |
+| Public Markdown KaTeX and Mermaid parity | [`18-public-markdown/`](18-public-markdown/README.md) | Server KaTeX + client lazy Mermaid; 774 units, 14 route budgets (<=128 KB gzip), 0 maps, E2E passing |

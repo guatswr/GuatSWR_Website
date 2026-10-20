@@ -15,8 +15,10 @@ import type { ClipboardAdapter } from '~/utils/clipboard'
 
 const props = withDefaults(defineProps<{
   language?: string | null
+  rawCode?: string
 }>(), {
   language: null,
+  rawCode: '',
 })
 
 const pre = ref<HTMLPreElement | null>(null)
@@ -91,7 +93,29 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="md-code">
+  <div v-if="language === 'mermaid'" class="md-mermaid-wrapper">
+    <ClientOnly>
+      <SafeMarkdownMermaid :code="rawCode" />
+      <template #fallback>
+        <div class="md-code">
+          <div class="md-code-head">
+            <span class="md-code-lang">mermaid</span>
+            <button
+              type="button"
+              class="md-code-copy"
+              aria-label="复制 mermaid 代码"
+              @click="copy"
+            >
+              {{ buttonLabel }}
+            </button>
+          </div>
+          <pre ref="pre"><slot /></pre>
+          <span class="md-code-status" role="status" aria-live="polite">{{ statusText }}</span>
+        </div>
+      </template>
+    </ClientOnly>
+  </div>
+  <div v-else class="md-code">
     <div class="md-code-head">
       <span class="md-code-lang">{{ label }}</span>
       <button

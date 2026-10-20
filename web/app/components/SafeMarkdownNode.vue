@@ -11,8 +11,8 @@ import type { SafeMarkdownNode } from '#shared/markdown'
 import SafeMarkdownPre from './SafeMarkdownPre.vue'
 import { renderSafeNode } from '~/utils/safe-markdown-render'
 
-const renderPre = (language: string | null, children: VNodeChild[]) =>
-  h(SafeMarkdownPre, { language }, { default: () => children })
+const renderPre = (language: string | null, children: VNodeChild[], rawCode?: string) =>
+  h(SafeMarkdownPre, { language, rawCode }, { default: () => children })
 
 export default defineComponent({
   name: 'SafeMarkdownNode',

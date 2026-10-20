@@ -2,7 +2,11 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest accepted local improvement: native idle hydration for homepage interests/
+Latest accepted local improvement: public Markdown formula (KaTeX) and diagram (Mermaid) parity on `/activity/:id` (Checklist item #24 complete).
+Formulas are preprocessed and rendered to KaTeX HTML server-side with strict currency/code preservation and scoped style sanitization (0 client JS overhead). Mermaid diagrams are client-only lazy hydrated on demand via dynamic import and DOMPurify sanitization (0 KB initial JS overhead for articles without diagrams).
+Four recursive gates pass **774 units** (73 shared + 701 web, including 7 focused tests in `public-markdown-parity.test.ts`), lint 0 errors / 35 pre-existing warnings. All **14** initial JS graphs pass **119907–135910 B gzip**, zero maps. Activity detail and visual parity E2E passed. See [log 18](logs/18-public-markdown/README.md).
+
+Previous accepted local improvement: native idle hydration for homepage interests/
 about and the shared footer, preserving complete SSR text, images and links.
 Four recursive gates pass **767 units** (final test-only assertions also pass
 typecheck/lint). **96/96** actual production/visual cases pass, 48 fresh batches,

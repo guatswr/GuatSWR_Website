@@ -90,12 +90,22 @@ const HEADING_TAGS = new Set(['h1', 'h2', 'h3', 'h4', 'h5', 'h6'])
 
 const LANGUAGE_CLASS = /^language-[a-z0-9+#._-]{1,24}$/
 
-/** Shiki emits colour tokens; only these declaration/value pairs survive. */
-const SAFE_STYLE_PROPERTY = /^(?:color|background-color|font-style|font-weight|text-decoration|opacity|--shiki-[a-z-]{1,32})$/
-const SAFE_STYLE_VALUE = /^(?:#[0-9a-f]{3,8}|rgba?\([\d\s.,%]{3,40}\)|hsla?\([\d\s.,%]{3,40}\)|italic|oblique|bold|bolder|lighter|normal|underline|line-through|none|(?:0|1|0?\.\d+))$/
+/**
+ * Classes emitted by KaTeX (math tokens, sizes, layouts, accents and roots).
+ */
+const KATEX_CLASS = /^(?:katex(?:-[a-z0-9-]+)?|vlist(?:-[a-z0-9]+)?|m[a-z]+|math[a-z]+|accent-body|text|main[a-z]+|pstrut|size[0-9]+|reset-size[0-9]+|delimsizing|delimcenter|arraycolsep|col-align-[a-z]|frac-line|hide-tail|large-op|nobreak|nulldelimiter|op-[a-z]+|overline-line|underline-line|[a-z]lap|sqrt|svg-align)$/
+
+/** Shiki colour tokens. */
+const SHIKI_STYLE_PROPERTY = /^(?:color|background-color|font-style|font-weight|text-decoration|opacity|--shiki-[a-z-]{1,32})$/
+const SHIKI_STYLE_VALUE = /^(?:#[0-9a-f]{3,8}|rgba?\([\d\s.,%]{3,40}\)|hsla?\([\d\s.,%]{3,40}\)|italic|oblique|bold|bolder|lighter|normal|underline|line-through|none|(?:0|1|0?\.\d+))$/
+
+/** KaTeX positioning, dimensions and error/text colours. */
+const KATEX_STYLE_PROPERTY = /^(?:color|height|width|min-width|max-width|vertical-align|margin-left|margin-right|margin-top|margin-bottom|padding-left|padding-right|position|top|bottom|left|right|border-bottom-width)$/
+const KATEX_STYLE_VALUE = /^(?:#[0-9a-f]{3,8}|-?\d+(?:\.\d+)?(?:em|px|ex|pt|%)?|relative|absolute|hidden|none|inline-block)$/
+
 const SAFE_ALIGN = new Set(['left', 'center', 'right', 'justify'])
 
-const MAX_DEPTH = 32
+const MAX_DEPTH = 48
 const MAX_NODES = 8_000
 const MAX_IMAGE_DIMENSION = 4_096
 const MAX_URL_LENGTH = 2_048
@@ -231,7 +241,11 @@ export function safeImageSrc(value: unknown): string | null {
   }
 }
 
-const safeStyle = (value: unknown): string | null => {
+const safeStyle = (
+  value: unknown,
+  allowedProperty: RegExp = SHIKI_STYLE_PROPERTY,
+  allowedValue: RegExp = SHIKI_STYLE_VALUE,
+): string | null => {
   if (typeof value !== 'string' || value.length > 512) return null
   const declarations: string[] = []
   for (const part of value.split(';')) {
@@ -239,7 +253,7 @@ const safeStyle = (value: unknown): string | null => {
     if (separator === -1) continue
     const property = part.slice(0, separator).trim().toLowerCase()
     const declarationValue = part.slice(separator + 1).trim().toLowerCase()
-    if (!SAFE_STYLE_PROPERTY.test(property) || !SAFE_STYLE_VALUE.test(declarationValue)) continue
+    if (!allowedProperty.test(property) || !allowedValue.test(declarationValue)) continue
     declarations.push(`${property}: ${declarationValue}`)
   }
   return declarations.length > 0 ? declarations.join('; ') : null
@@ -262,6 +276,14 @@ const languageClass = (value: unknown): string | null => {
     ? value.find((entry): entry is string => typeof entry === 'string' && LANGUAGE_CLASS.test(entry))
     : value
   return typeof candidate === 'string' && LANGUAGE_CLASS.test(candidate) ? candidate : null
+}
+
+const safeClasses = (value: unknown, pattern: RegExp): string | null => {
+  const entries = Array.isArray(value)
+    ? value
+    : (typeof value === 'string' ? value.split(/\s+/) : [])
+  const valid = entries.filter((c): c is string => typeof c === 'string' && pattern.test(c))
+  return valid.length > 0 ? valid.join(' ') : null
 }
 
 /** C0 controls and DEL, tested by code point (see `public-query.ts`). */
@@ -419,11 +441,11 @@ const registerFragments = (context: SanitizeContext, props: unknown, title: stri
   }
 }
 
-const textContent = (nodes: readonly SafeMarkdownNode[]): string => {
+export const textContent = (nodes: readonly SafeMarkdownNode[]): string => {
   let text = ''
   for (const node of nodes) {
     if (node.type === 'text') text += node.value
-    else if (node.tag !== 'img') text += textContent(node.children)
+    else if (node.tag !== 'img' && node.tag !== 'svg') text += textContent(node.children)
   }
   return text
 }
@@ -484,14 +506,23 @@ const sanitizeProps = (tag: string, value: unknown, inCode: boolean): SafeMarkdo
       return props
     }
     case 'code':
+      return props
     case 'span': {
-      // `span` only exists to carry server-side highlighter colours.
-      if (tag === 'span') {
-        if (!inCode) return {}
-        const style = safeStyle(source.style)
+      const katexClass = safeClasses(source.className ?? source.class, KATEX_CLASS)
+      if (katexClass) {
+        props.class = katexClass
+        const style = safeStyle(source.style, KATEX_STYLE_PROPERTY, KATEX_STYLE_VALUE)
+        if (style) props.style = style
+        if (source['aria-hidden'] === 'true' || source.ariaHidden === 'true') {
+          props['aria-hidden'] = 'true'
+        }
+        return props
+      }
+      if (inCode) {
+        const style = safeStyle(source.style, SHIKI_STYLE_PROPERTY, SHIKI_STYLE_VALUE)
         return style ? { style } : {}
       }
-      return props
+      return {}
     }
     case 'ol': {
       const start = boundedInteger(source.start, 1, 10_000)

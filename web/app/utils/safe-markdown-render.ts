@@ -18,11 +18,11 @@ import type { VNode, VNodeChild } from 'vue'
 // Vite app root, so a relative import of it is emitted into the Nitro chunk as
 // an unresolvable path. Vitest aliases `#shared` too, so the focused
 // `vue/server-renderer` tests still load this module.
-import { isSafeMarkdownTag, safeTaskCheckboxProps } from '#shared/markdown'
+import { isSafeMarkdownTag, safeTaskCheckboxProps, textContent } from '#shared/markdown'
 import type { SafeMarkdownNode } from '#shared/markdown'
 
 /** Renders a fenced block's chrome; injected so this module stays SFC-free. */
-export type PreRenderer = (language: string | null, children: VNodeChild[]) => VNode
+export type PreRenderer = (language: string | null, children: VNodeChild[], rawCode?: string) => VNode
 
 const languageOf = (node: SafeMarkdownNode): string | null => {
   if (node.type !== 'element') return null
@@ -42,6 +42,10 @@ export function renderSafeNode(node: SafeMarkdownNode, renderPre: PreRenderer): 
   }
   if (!isSafeMarkdownTag(node.tag)) return null
   const children: VNodeChild[] = node.children.map(child => renderSafeNode(child, renderPre))
-  if (node.tag === 'pre') return renderPre(languageOf(node), children)
+  if (node.tag === 'pre') {
+    const language = languageOf(node)
+    const rawCode = language === 'mermaid' ? textContent(node.children) : undefined
+    return renderPre(language, children, rawCode)
+  }
   return h(node.tag, { ...node.props }, children)
 }
