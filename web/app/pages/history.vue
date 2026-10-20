@@ -237,26 +237,29 @@ usePublicPageSeo({
           class="hidden lg:flex flex-col items-center gap-3 fixed right-6 top-1/2 -translate-y-1/2 z-30"
         >
           <div
-            class="w-10 rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg flex flex-col items-center justify-center py-3 relative"
+            class="history-month-rail rounded-full bg-white/70 dark:bg-slate-900/70 border border-gray-200/70 dark:border-slate-700/70 backdrop-blur-md shadow-lg relative"
             :style="{ height: `${railHeight}px` }"
           >
             <div class="absolute inset-3 rounded-full border border-dashed border-gray-200/60 dark:border-slate-700/60"/>
-            <div class="flex flex-col gap-2 relative z-10">
+            <div class="flex flex-col items-center gap-1 relative z-10">
               <a
                 v-for="item in months"
                 :key="item.month"
                 :href="`#${historyAnchor(item.index)}`"
-                class="w-3.5 h-3.5 rounded-full border transition"
-                :class="
-                  currentMonth === item.month
-                    ? 'bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]'
-                    : 'bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300'
-                "
+                class="history-month-link group/month grid place-items-center w-11 h-11 shrink-0 rounded-full"
                 :title="item.month"
                 :aria-label="`跳转到 ${item.month}`"
                 :aria-current="currentMonth === item.month ? 'true' : undefined"
                 @click.prevent="scrollToMonth(item.index)"
-              />
+              >
+                <span
+                  aria-hidden="true"
+                  class="w-3.5 h-3.5 rounded-full border transition"
+                  :class="currentMonth === item.month
+                    ? 'bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]'
+                    : 'bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 group-hover/month:bg-red-300'"
+                />
+              </a>
             </div>
           </div>
           <div class="px-3 py-1.5 text-xs rounded-full bg-white/80 dark:bg-slate-900/80 border border-gray-200/70 dark:border-slate-700/70 text-gray-500 dark:text-gray-300 shadow-sm backdrop-blur-md">
@@ -281,6 +284,17 @@ usePublicPageSeo({
 </template>
 
 <style>
+.history-month-rail {
+  width: 56px;
+  max-height: max(58px, calc(100svh - 12rem));
+  overflow-y: auto;
+  padding: 6px 0;
+  scrollbar-width: thin;
+  overscroll-behavior: contain;
+}
+
+.history-month-link:focus-visible { outline-offset: -2px; }
+
 .history-bg::before {
   content: '';
   position: absolute;

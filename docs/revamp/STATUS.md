@@ -1,26 +1,38 @@
 # GuatSWR frontend revamp status
 
-Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
+Updated: 2026-10-21 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest local checkpoint: public accessibility semantics and keyboard scrolling.
-Wordmark/card names include visible labels, headings follow page hierarchy,
-duplicate avatar names are suppressed, code/log scroll areas accept native Tab
-and arrows with visible focus. Final 60-state axe scan removes the name,
-heading, alt, scroll-focus and duplicate-landmark findings. Existing contrast
-**60 states / 268 node records** and month-target **2 / 4** findings remain.
-The [bounded visual proposal](logs/22-public-accessibility/VISUAL-PROPOSAL.md)
-has nine actual before/after desktop previews, candidate checks clear in those
-states, and awaits the user's 1:1 exception decision; colours/rail geometry in
-the app remain unchanged. Checklist #80 stays open.
+Latest checkpoint: the user-approved bounded accessibility colours and month
+targets are implemented. Original 14px dots sit inside independent 44×44px
+links, with 4px gaps and a scrolling 56px rail; native keyboard access reaches
+the last of 60 months. Passing dark colours and hover interactions are preserved.
+Raw archive images and independent, exact approved reference projections remain
+separate; pixel thresholds and the single Linux raster exception are unchanged.
 
 Four recursive gates pass **785 units**, lint **0 errors / 34 warnings**;
-tooling **59/59**, **112/112** actual E2E in 56 fresh batches, no retry/flaky/skip.
-All **88** archive regions have zero differing pixels on Windows. **15/15**
-initial JS graphs pass **122319–137070 B gzip**; whole output has **0 maps**.
-See [log 22](logs/22-public-accessibility/README.md). Full-host CI is being
-requested for this checkpoint; previous f8a4dbe results below are historical.
-Current public LCP has no new accepted result; final performance/security/
-monitoring and extended Markdown remain open. No deployment or QQ success.
+tooling **59/59**. Final regression **132/132**, plus **60** scan executions,
+pass without retry/flaky/skip; **16** focused and **4** reference-repair checks
+also pass (repeated coverage). All **98** approved-reference regions have zero
+unapproved pixels. **15/15** initial JS graphs pass **122334–137088 B gzip**;
+the validated production output has **0 maps**. See [log 23](logs/23-approved-accessibility/README.md).
+
+Accessibility acceptance is **not complete**: **56 closed states** and **11
+interaction states** pass strict axe checks. Four empty-event states and three
+expanded/hovered dark-log states retain their full **UNACCEPTED** diagnostics.
+Their colours are outside this visual approval; manual/incomplete/dialog/touch/
+motion review remains. Checklist #80 stays open, as do performance, security,
+monitoring, extended Markdown and final cross-platform CI.
+
+Validation finished on 2026-10-20 before later unrelated working-tree edits and
+an output rebuild on 2026-10-21. The 20 scoped sources match validated content
+(one extra empty EOF line was removed before commit);
+the later backend, legacy dev-proxy and Nuxt default-port/rate-limit changes are
+excluded from this checkpoint. The current ignored `.output` is a later build,
+not the artifact validated above. No deployment or migration-success/QQ message.
+
+Previous `37fea3c` CI: Windows foundation and Linux container pass; Ubuntu fails
+home performance **2762.8ms / 91** and records one dark-member visual flake.
+These historical results do not constitute final performance/CI acceptance.
 
 Latest local test correction: shared mutable article 1 is replaced by stable,
 detail-only fixture IDs 991/992. Every math case warms advanced content first

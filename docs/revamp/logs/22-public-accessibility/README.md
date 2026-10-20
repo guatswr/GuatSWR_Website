@@ -3,6 +3,10 @@
 2026-10-20, Codex alone, base `c3d00cc`. Local only. No backend or frozen
 frontend source writes. Checklist #80 remains open.
 
+Follow-up: the user approved the bounded visual proposal on 2026-10-20.
+Implementation and further findings are recorded in [log 23](../23-approved-accessibility/README.md).
+The measurements below preserve this log's earlier, pre-approval checkpoint.
+
 ## Corrections that preserve normal appearance
 
 - Navbar wordmark accessible name now contains both visible Chinese/English

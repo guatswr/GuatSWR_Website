@@ -470,7 +470,7 @@ usePublicPageSeo(() => ({
           </div>
           <button
             type="button"
-            class="text-xs font-medium text-indigo-500 hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50"
+            class="text-xs font-medium text-indigo-600 dark:text-indigo-300 hover:text-indigo-700 dark:hover:text-indigo-700 flex items-center gap-1 transition-colors px-3 py-1.5 rounded-full hover:bg-indigo-50"
             :aria-expanded="showRules"
             @click="showRules = !showRules"
           >
@@ -482,9 +482,9 @@ usePublicPageSeo(() => ({
         </div>
 
         <div v-show="showRules" class="bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100">
-          <h4 class="font-bold text-indigo-700 mb-3 flex items-center gap-2">
+          <h3 class="font-bold text-indigo-700 mb-3 flex items-center gap-2">
             贡献值计算规则
-          </h4>
+          </h3>
           <div class="grid md:grid-cols-2 gap-6">
             <ul class="space-y-2 list-disc pl-4 marker:text-indigo-300">
               <li><strong>核心公式：</strong> 贡献值 = 用户执行“有效内容编辑”的总次数。</li>
@@ -674,7 +674,7 @@ usePublicPageSeo(() => ({
           </table>
         </div>
 
-        <div class="px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div class="log-pagination px-6 py-4 border-t border-gray-50 bg-gray-50/50 flex flex-col sm:flex-row justify-between items-center gap-4">
           <div class="text-xs text-gray-500">
             显示第 <span class="font-bold text-gray-700">{{ pageSummary.from }}</span>
             至 <span class="font-bold text-gray-700">{{ pageSummary.to }}</span> 条，
@@ -724,3 +724,11 @@ usePublicPageSeo(() => ({
     </div>
   </div>
 </template>
+
+<style scoped>
+html:not(.dark) div.text-gray-400,
+html:not(.dark) p.text-gray-400 { color: #6b7280; }
+span.bg-emerald-50.text-emerald-600 { color: #047857; }
+span.bg-red-50.text-red-600 { color: #b91c1c; }
+.dark .log-pagination { background-color: #0f172a; }
+</style>

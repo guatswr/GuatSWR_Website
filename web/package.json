@@ -51,6 +51,7 @@
     "@types/compression": "1.8.1",
     "@types/node": "24.10.0",
     "@types/pngjs": "6.0.5",
+    "axe-core": "4.14.0",
     "chrome-launcher": "1.2.2",
     "eslint": "10.13.0",
     "lighthouse": "13.5.0",

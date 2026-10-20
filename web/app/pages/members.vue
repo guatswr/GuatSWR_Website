@@ -119,8 +119,8 @@ usePublicPageSeo(() => ({
               : 'bg-white/60 dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-slate-800',
           ]"
           :style="{
-            backgroundColor: selectedSchool === tab.value ? tab.color : '',
-            borderColor: selectedSchool === tab.value ? tab.color : 'transparent',
+            backgroundColor: selectedSchool === tab.value ? '#075985' : '',
+            borderColor: selectedSchool === tab.value ? '#075985' : 'transparent',
             '--tw-ring-color': tab.color,
           }"
           :aria-current="selectedSchool === tab.value ? 'page' : undefined"

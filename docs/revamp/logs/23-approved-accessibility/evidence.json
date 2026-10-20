@@ -1,0 +1,213 @@
+{
+  "base": "37fea3c",
+  "approval": {
+    "date": "2026-10-20",
+    "proposal": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "quote": "接受这组限定的无障碍修复（推荐）"
+  },
+  "runtime": {
+    "node": "v24.16.0",
+    "pnpm": "11.25.0"
+  },
+  "gates": {
+    "typecheck": 0,
+    "lintErrors": 0,
+    "lintWarnings": 34,
+    "units": 785,
+    "build": 0,
+    "tooling": 59,
+    "sourceMaps": 0
+  },
+  "suites": {
+    "focus": {
+      "counts": {
+        "passed": 16,
+        "expected": 16,
+        "flaky": 0,
+        "failed": 0,
+        "skipped": 0,
+        "allDeclared": 16
+      },
+      "batches": 8,
+      "repeatedWithinRegression": true
+    },
+    "referenceRepair": {
+      "counts": {
+        "passed": 4,
+        "expected": 4,
+        "flaky": 0,
+        "failed": 0,
+        "skipped": 0,
+        "allDeclared": 4
+      },
+      "batches": 2,
+      "repeatedWithinRegression": true
+    },
+    "audit": {
+      "counts": {
+        "passed": 60,
+        "expected": 60,
+        "flaky": 0,
+        "failed": 0,
+        "skipped": 0,
+        "allDeclared": 60
+      },
+      "batches": 30,
+      "directory": "web/.e2e-isolated/codex-approved-a11y-closed-audit"
+    },
+    "regression": {
+      "counts": {
+        "passed": 132,
+        "expected": 132,
+        "flaky": 0,
+        "failed": 0,
+        "skipped": 0,
+        "allDeclared": 132
+      },
+      "batches": 66,
+      "directory": "web/.e2e-isolated/codex-approved-a11y-closed-regression"
+    }
+  },
+  "audits": {
+    "strictStates": 67,
+    "strictClosedStates": 56,
+    "closedStatesScanned": 60,
+    "strictViolations": 0,
+    "incompleteChecksStillManual": true
+  },
+  "diagnostics": {
+    "states": 7,
+    "file": "evidence/UNACCEPTED-states.json",
+    "accepted": false
+  },
+  "comparisons": {
+    "regions": 98,
+    "unapprovedPixels": 0
+  },
+  "projections": {
+    "documents": 42,
+    "file": "evidence/reference-projections.json"
+  },
+  "sources": [
+    {
+      "path": "pnpm-lock.yaml",
+      "sha256Utf8Lf": "f760f231b8e6ce1d12ed991c74847d333fe753683422df84b9ebdb3c0c5d4352"
+    },
+    {
+      "path": "web/app/components/SiteFooter.vue",
+      "sha256Utf8Lf": "8f40c52149b262b1a038f5c23439222c18c92907d7d9578623348538e2b29f7c"
+    },
+    {
+      "path": "web/app/components/events/EventBoard.vue",
+      "sha256Utf8Lf": "058d76cceb8fc9e0846e8bea2b04e079bd09e9366f89bd6fb085cc15f932f630"
+    },
+    {
+      "path": "web/app/components/events/EventCard.vue",
+      "sha256Utf8Lf": "17f8c2e0a2a748c5462a2cc64cf699ea373aac821596631c2509c35354f74acf"
+    },
+    {
+      "path": "web/app/pages/events.vue",
+      "sha256Utf8Lf": "5f1fea9419284cc55380e0674fc6bae8bc0548ce28553f2d4e027c5a75a5e13f"
+    },
+    {
+      "path": "web/app/pages/history.vue",
+      "sha256Utf8Lf": "d840404eaa92d86181588534f677ebd472dede035edfa66bdfe3f3be03b6973e"
+    },
+    {
+      "path": "web/app/pages/index.vue",
+      "sha256Utf8Lf": "94c8b6a7d07119ad3a0d6331842f81b1ac2e9da8456ae8a3edd47d6e501b44f9"
+    },
+    {
+      "path": "web/app/pages/logs.vue",
+      "sha256Utf8Lf": "d34dfd6298ac2b5126deb7df545d54a821ebaa23be071aed3ba2cec51ceaf6d6"
+    },
+    {
+      "path": "web/app/pages/members.vue",
+      "sha256Utf8Lf": "21e6f91c566e759f138df995a7b72ee792e59089d641572dd7a9c3df73afd789"
+    },
+    {
+      "path": "web/app/utils/history.ts",
+      "sha256Utf8Lf": "98a3e2871fd6ea3ebd7a7e4763ac698c62f5dbe45d9236babc0a03c7cd57eb2a"
+    },
+    {
+      "path": "web/package.json",
+      "sha256Utf8Lf": "112c1b6780bc27ef3f7dc184e65e7353a1f5b8ab44936eef080f263f0d7a52ee"
+    },
+    {
+      "path": "web/tests/e2e/layout.spec.ts",
+      "sha256Utf8Lf": "4d7998919bc2aa0ee7b7e9eee2bab6d7c78ad726275813831726b09d59d2a83d"
+    },
+    {
+      "path": "web/tests/e2e/public-accessibility.spec.ts",
+      "sha256Utf8Lf": "b5fc9db0c378d049a4be972fdf979c7c48903c86536faa4c02c762109bf926a2"
+    },
+    {
+      "path": "web/tests/e2e/support/events-parity.ts",
+      "sha256Utf8Lf": "f274e52f794551b59ee3fb888ddc94c14eb3a0dc8e22b4f105fc323d82c37b56"
+    },
+    {
+      "path": "web/tests/e2e/support/public-pages.ts",
+      "sha256Utf8Lf": "f2f5e7fb683e16cbbf23af9ecfcd2060137bbdac3d7acc059f9744eba9a5c3e6"
+    },
+    {
+      "path": "web/tests/e2e/support/public-parity.ts",
+      "sha256Utf8Lf": "baeb9d5e5dfe275a47d84068baa93bb648487f45c06a53d4c8c5e26f66c60808"
+    },
+    {
+      "path": "web/tests/public-pages.test.ts",
+      "sha256Utf8Lf": "35c60341fac9f2982875a51d420f815813b09a2a2273be208df7aae4dea48f58"
+    },
+    {
+      "path": "web/tests/e2e/public-accessibility-audit.spec.ts",
+      "sha256Utf8Lf": "bdc8eb468dc4f01628225ca0e378c3e96fcf28f01dc8d22e842db40d8aeb53c2"
+    },
+    {
+      "path": "web/tests/e2e/support/accessibility-audit.ts",
+      "sha256Utf8Lf": "59c633d856e4a21db48b5e281c09205800a6a4d13bcf4d03b85bdf12fdb0b2a8"
+    },
+    {
+      "path": "web/tests/e2e/support/approved-accessibility.ts",
+      "sha256Utf8Lf": "528555fc82a5c1827b6c584cb00f45c895ad3858d1e1cfb526be9a926c6b60eb"
+    }
+  ],
+  "routes": {
+    "count": 15,
+    "min": 122334,
+    "max": 137088
+  },
+  "postValidationFormatting": {
+    "path": "web/app/components/events/EventBoard.vue",
+    "change": "Remove one extra empty EOF line only",
+    "validatedRawSha256": "9FB7740C4780545895E0955CE2BFCF45A02737CB120BA493F919BDDA67520DDE"
+  },
+  "provenance": {
+    "validationDate": "2026-10-20",
+    "closedOn": "2026-10-21",
+    "baseConfiguration": "37fea3c",
+    "applicationBuildLog": ".tools/codex-approved-a11y-accepted-build.log",
+    "finalRunPrefix": ".tools/codex-approved-a11y-closed-",
+    "currentOutputReplacedAfterValidation": true,
+    "excludedLaterWorkingTreeChanges": [
+      "backend/",
+      "frontend/vite.config.js",
+      "web/nuxt.config.ts"
+    ],
+    "baselineInputs": [
+      {
+        "path": "web/nuxt.config.ts",
+        "sha256Utf8LfFromBase": "aeecf7474c0a73c8c63bd9b3a2ec83fd97ea6bb7a635582e096d651ddac2b521",
+        "laterWorkingTreeEditsExcluded": true
+      },
+      {
+        "path": "frontend/vite.config.js",
+        "sha256Utf8LfFromBase": "7baf3e6457d28455422a5fdcb7698ea41163e8971ce2b7e797fa4d5d4356ab17",
+        "laterWorkingTreeEditsExcluded": true
+      }
+    ]
+  },
+  "limits": [
+    "Expanded dark rules panel and empty event messages remain unaccepted; complete checklist 80 is open",
+    "Manual/incomplete, other dialog/touch/motion, full-host CI and performance remain open",
+    "No deployment or entire-migration success claim"
+  ]
+}

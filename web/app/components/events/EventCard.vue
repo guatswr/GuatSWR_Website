@@ -62,7 +62,7 @@ const topResults = computed(() => eventTopResults(content.value))
               {{ type }}
             </span>
             <span
-              class="text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500"
+              class="event-status text-[11px] text-slate-400 font-medium flex items-center gap-1 dark:text-slate-500"
             >
               <span
                 class="w-1.5 h-1.5 rounded-full bg-slate-300 dark:bg-slate-600"
@@ -276,7 +276,7 @@ const topResults = computed(() => eventTopResults(content.value))
                 :key="String(row.rank)"
                 class="flex items-center gap-1 bg-sky-50 text-sky-700 px-2 py-0.5 rounded-full border border-sky-100 text-xs dark:bg-sky-900/40 dark:text-sky-200 dark:border-sky-800"
               >
-                <span class="font-bold text-[10px] opacity-70"
+                <span class="event-rank-number font-bold text-[10px] opacity-70"
                   >#{{ row.rank }}</span
                 >
                 <img
@@ -319,3 +319,18 @@ const topResults = computed(() => eventTopResults(content.value))
     </div>
   </article>
 </template>
+
+<style scoped>
+html:not(.dark) .text-sky-600,
+html:not(.dark) .text-sky-500,
+html:not(.dark) .text-sky-400 {
+  color: #0369a1;
+}
+html:not(.dark) .event-status { color: #475569; }
+.dark .event-status { color: #94a3b8; }
+html:not(.dark) .text-pink-500 { color: #be185d; }
+html:not(.dark) .text-rose-500 { color: #be123c; }
+html:not(.dark) .text-amber-500,
+html:not(.dark) .text-amber-600 { color: #92400e; }
+html:not(.dark) .event-rank-number { color: #0369a1; opacity: 1; }
+</style>

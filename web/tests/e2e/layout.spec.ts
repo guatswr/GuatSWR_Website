@@ -4,6 +4,7 @@ import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { writeFileSync } from 'node:fs'
 import { ARCHIVE_ORIGIN, UPSTREAM_ORIGIN } from './support/public-parity'
+import { projectApprovedAccessibility } from './support/approved-accessibility'
 
 // Fixture images that are laid out must be loaded and decoded before a crop is
 // taken; a hidden lazy image is skipped rather than awaited forever, and a
@@ -99,6 +100,7 @@ function cropCapture(rawBytes: CaptureBytes, crop: DevicePixelCrop, info: TestIn
 }
 
 async function compareToArchive(reference: Locator, current: Locator, name: string, info: TestInfo) {
+  await projectApprovedAccessibility(reference.page(), info)
   const options = { animations: 'disabled' as const, caret: 'hide' as const }
   await waitForVisibleImages(reference)
   await waitForVisibleImages(current)

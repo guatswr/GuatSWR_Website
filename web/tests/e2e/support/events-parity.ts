@@ -1,4 +1,5 @@
 import { expect } from '@playwright/test'
+import { projectApprovedAccessibility } from './approved-accessibility'
 import type { APIRequestContext, Locator, Page, TestInfo } from '@playwright/test'
 import { writeFileSync } from 'node:fs'
 import pixelmatch from 'pixelmatch'
@@ -160,6 +161,7 @@ export async function compareRegion(
   name: string,
   info: TestInfo
 ): Promise<void> {
+  await projectApprovedAccessibility(archive.page(), info)
   const capture = { animations: 'disabled' as const, caret: 'hide' as const }
   const oldBytes = await archive.screenshot(capture)
   const newBytes = await current.screenshot(capture)

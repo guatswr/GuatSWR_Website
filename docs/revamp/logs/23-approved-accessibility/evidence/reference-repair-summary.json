@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-10-20T15:07:35.472Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-approved-a11y-closed-reference-repair",
+  "totalShards": 2,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 2,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 4,
+  "counts": {
+    "passed": 4,
+    "expected": 4,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 4
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::events-visual.spec.ts::86:3::events-visual.spec.ts > event pages match the archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::events-visual.spec.ts::86:3::events-visual.spec.ts > event pages match the archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events-visual.spec.ts::86:3::events-visual.spec.ts > event pages match the archived dark layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::events-visual.spec.ts::86:3::events-visual.spec.ts > event pages match the archived light layout",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    }
+  ]
+}

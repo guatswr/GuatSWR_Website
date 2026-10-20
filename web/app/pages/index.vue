@@ -229,6 +229,10 @@ usePublicSeo({
 </template>
 
 <style scoped>
+.dark .club-button-primary {
+  background-color: #0369a1;
+}
+
 /* Full-width color fields separate chapters, following SCTA's section rhythm. */
 .club-home {
   --home-about-background: #f5f3ed;

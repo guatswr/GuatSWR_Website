@@ -36,13 +36,10 @@ export function monthItems(entries: readonly { readonly date: string }[]): Month
   return [...seen.entries()].map(([month, index]) => ({ month, index }))
 }
 
-/** Archived rail height: 14px dots, 8px gaps, 24px padding, at least 96px. */
+/** Independent 44px links, 4px gaps, 12px padding and two 1px borders. */
 export function monthRailHeight(count: number): number {
   if (count <= 0) return 0
-  const dotSize = 14
-  const gap = 8
-  const padding = 24
-  return Math.max(count * dotSize + (count - 1) * gap + padding, 96)
+  return count * 44 + (count - 1) * 4 + 14
 }
 
 /** Stable anchor id for an entry, usable before hydration. */

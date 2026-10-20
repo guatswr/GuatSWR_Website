@@ -1,0 +1,4287 @@
+[
+  {
+    "project": "desktop",
+    "title": "UNACCEPTED empty-event diagnostic /events/zetime (light)",
+    "name": "UNACCEPTED-empty-event-message",
+    "url": "http://127.0.0.1:4100/events/zetime",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#94a3b8",
+                  "bgColor": "#fbfbf8",
+                  "contrastRatio": 2.47,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"club-paper min-h-screen flex flex-col md:flex-row\" data-v-76d69268=\"\">",
+                    "target": [
+                      ".club-paper"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "13.5pt (18px)",
+                  "fontWeight": "bold",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-display whitespace-nowrap font-serif text-lg font-bold tracking-wider\" data-v-25b3ebeb=\"\">桂航绯想天</span>",
+            "target": [
+              ".club-display.font-serif.font-bold"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/\" class=\"nav-link\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>首页</a>",
+            "target": [
+              ".nav-link[href=\"/\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>",
+            "target": [
+              ".nav-link[href=\"/\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link-active nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+            "target": [
+              "#desktop-activities-trigger"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link-active nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      "#desktop-activities-trigger"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">02</span>",
+            "target": [
+              "#desktop-activities-trigger > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/members\" class=\"nav-link\" title=\"绯想天住民\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>成员</a>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/history\" class=\"nav-link\" title=\"绯想天群史\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>群史</a>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+                    "target": [
+                      ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-seal\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">入社</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-seal[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "11.3pt (15px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-label\" data-v-25b3ebeb=\"\">加入我们</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "image-alt",
+      "image-redundant-alt",
+      "label-content-name-mismatch",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-banner",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "region",
+      "skip-link",
+      "tabindex",
+      "target-size"
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "UNACCEPTED empty-event diagnostic /events/zetime (dark)",
+    "name": "UNACCEPTED-empty-event-message",
+    "url": "http://127.0.0.1:4100/events/zetime",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#64748b",
+                  "bgColor": "#101923",
+                  "contrastRatio": 3.72,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"club-paper min-h-screen flex flex-col md:flex-row\" data-v-76d69268=\"\">",
+                    "target": [
+                      ".club-paper"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "13.5pt (18px)",
+                  "fontWeight": "bold",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-display whitespace-nowrap font-serif text-lg font-bold tracking-wider\" data-v-25b3ebeb=\"\">桂航绯想天</span>",
+            "target": [
+              ".club-display.font-serif.font-bold"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/\" class=\"nav-link\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>首页</a>",
+            "target": [
+              ".nav-link[href=\"/\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>",
+            "target": [
+              ".nav-link[href=\"/\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link-active nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+            "target": [
+              "#desktop-activities-trigger"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link-active nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      "#desktop-activities-trigger"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">02</span>",
+            "target": [
+              "#desktop-activities-trigger > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/members\" class=\"nav-link\" title=\"绯想天住民\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>成员</a>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/history\" class=\"nav-link\" title=\"绯想天群史\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>群史</a>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+                    "target": [
+                      ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"] > .nav-number[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-seal\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">入社</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-seal[aria-hidden=\"true\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "11.3pt (15px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-label\" data-v-25b3ebeb=\"\">加入我们</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-label"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "image-alt",
+      "image-redundant-alt",
+      "label-content-name-mismatch",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-banner",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "region",
+      "skip-link",
+      "tabindex",
+      "target-size"
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "UNACCEPTED empty-event diagnostic /events/zetime (light)",
+    "name": "UNACCEPTED-empty-event-message",
+    "url": "http://127.0.0.1:4100/events/zetime",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#94a3b8",
+                  "bgColor": "#fbfbf8",
+                  "contrastRatio": 2.47,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"club-paper min-h-screen flex flex-col md:flex-row\" data-v-76d69268=\"\">",
+                    "target": [
+                      ".club-paper"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "label-content-name-mismatch",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-banner",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "region",
+      "scrollable-region-focusable",
+      "skip-link",
+      "tabindex",
+      "target-size"
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "UNACCEPTED empty-event diagnostic /events/zetime (dark)",
+    "name": "UNACCEPTED-empty-event-message",
+    "url": "http://127.0.0.1:4100/events/zetime",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#64748b",
+                  "bgColor": "#101923",
+                  "contrastRatio": 3.72,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"club-paper min-h-screen flex flex-col md:flex-row\" data-v-76d69268=\"\">",
+                    "target": [
+                      ".club-paper"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"text-slate-400 text-sm dark:text-slate-500\"> 这里冷冷清清的，什么都没有发生呢... </p>",
+            "target": [
+              ".dark\\:text-slate-500"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress:0;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "label-content-name-mismatch",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-banner",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "region",
+      "scrollable-region-focusable",
+      "skip-link",
+      "tabindex",
+      "target-size"
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "approved filters and log control; expanded panel diagnostic (dark)",
+    "name": "UNACCEPTED-expanded-dark-log-rules",
+    "url": "http://127.0.0.1:4100/logs",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#4338ca",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.11,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.11 (foreground color: #4338ca, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<h3 class=\"font-bold text-indigo-700 mb-3 flex items-center gap-2\" data-v-550e95dc=\"\"> 贡献值计算规则 </h3>",
+            "target": [
+              ".text-indigo-700"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.11 (foreground color: #4338ca, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<li data-v-550e95dc=\"\"><strong data-v-550e95dc=\"\">核心公式：</strong> 贡献值 = 用户执行“有效内容编辑”的总次数。</li>",
+            "target": [
+              ".space-y-2 > li:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<strong data-v-550e95dc=\"\">核心公式：</strong>",
+            "target": [
+              "li:nth-child(1) > strong"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<li data-v-550e95dc=\"\"><strong data-v-550e95dc=\"\">统计范围：</strong> 基于全站历史数据统计，展示贡献前 10 名的用户。</li>",
+            "target": [
+              ".space-y-2 > li:nth-child(2)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<strong data-v-550e95dc=\"\">统计范围：</strong>",
+            "target": [
+              "li:nth-child(2) > strong"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#e5e7eb",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.27,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"font-bold text-gray-700 mb-1\" data-v-550e95dc=\"\">✅ 计入贡献的操作：</p>",
+            "target": [
+              ".mb-1.text-gray-700:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.06,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"mb-2\" data-v-550e95dc=\"\">发布/修改/删除（异变、成员、历史记录）、更新系统配置、更新个人资料。</p>",
+            "target": [
+              ".mb-2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#e5e7eb",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.27,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"font-bold text-gray-700 mb-1\" data-v-550e95dc=\"\">❌ 不计入的操作：</p>",
+            "target": [
+              ".mb-1.text-gray-700:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.06,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p data-v-550e95dc=\"\">日常登录、单纯文件上传、管理员账号管理（如创建账号、重置密码）。</p>",
+            "target": [
+              "p:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "13.5pt (18px)",
+                  "fontWeight": "bold",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-display whitespace-nowrap font-serif text-lg font-bold tracking-wider\" data-v-25b3ebeb=\"\">桂航绯想天</span>",
+            "target": [
+              ".club-display.font-serif.tracking-wider"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/\" class=\"nav-link\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>首页</a>",
+            "target": [
+              ".nav-link[href=\"/\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>",
+            "target": [
+              ".nav-link[href=\"/\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+            "target": [
+              "#desktop-activities-trigger"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      "#desktop-activities-trigger"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">02</span>",
+            "target": [
+              "#desktop-activities-trigger > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/members\" class=\"nav-link\" title=\"绯想天住民\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>成员</a>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/history\" class=\"nav-link\" title=\"绯想天群史\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>群史</a>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+                    "target": [
+                      ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-seal\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">入社</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-seal[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "11.3pt (15px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-label\" data-v-25b3ebeb=\"\">加入我们</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-label[data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#facc15",
+                  "contrastRatio": 1.53,
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "bold",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-yellow-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">1</div>",
+                    "target": [
+                      ".bg-yellow-400"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"bg-yellow-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">1</div>",
+            "target": [
+              ".bg-yellow-400"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#9ca3af",
+                  "contrastRatio": 2.53,
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "bold",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-gray-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">2</div>",
+                    "target": [
+                      ".bg-gray-400"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"bg-gray-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">2</div>",
+            "target": [
+              ".bg-gray-400"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "empty-table-header",
+      "form-field-multiple-labels",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "image-alt",
+      "image-redundant-alt",
+      "label-content-name-mismatch",
+      "label-title-only",
+      "label",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "presentation-role-conflict",
+      "region",
+      "select-name",
+      "skip-link",
+      "svg-img-alt",
+      "tabindex",
+      "table-duplicate-name",
+      "target-size",
+      "td-headers-attr",
+      "th-has-data-cells"
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "approved filters and log control; expanded panel diagnostic (dark)",
+    "name": "UNACCEPTED-hovered-dark-log-rules",
+    "url": "http://127.0.0.1:4100/logs",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#4338ca",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.11,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.11 (foreground color: #4338ca, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<h3 class=\"font-bold text-indigo-700 mb-3 flex items-center gap-2\" data-v-550e95dc=\"\"> 贡献值计算规则 </h3>",
+            "target": [
+              ".text-indigo-700"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.11 (foreground color: #4338ca, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<li data-v-550e95dc=\"\"><strong data-v-550e95dc=\"\">核心公式：</strong> 贡献值 = 用户执行“有效内容编辑”的总次数。</li>",
+            "target": [
+              ".space-y-2 > li:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<strong data-v-550e95dc=\"\">核心公式：</strong>",
+            "target": [
+              "li:nth-child(1) > strong"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<li data-v-550e95dc=\"\"><strong data-v-550e95dc=\"\">统计范围：</strong> 基于全站历史数据统计，展示贡献前 10 名的用户。</li>",
+            "target": [
+              ".space-y-2 > li:nth-child(2)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<strong data-v-550e95dc=\"\">统计范围：</strong>",
+            "target": [
+              "li:nth-child(2) > strong"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#e5e7eb",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.27,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"font-bold text-gray-700 mb-1\" data-v-550e95dc=\"\">✅ 计入贡献的操作：</p>",
+            "target": [
+              ".mb-1.text-gray-700:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.06,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"mb-2\" data-v-550e95dc=\"\">发布/修改/删除（异变、成员、历史记录）、更新系统配置、更新个人资料。</p>",
+            "target": [
+              ".mb-2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#e5e7eb",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.27,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"font-bold text-gray-700 mb-1\" data-v-550e95dc=\"\">❌ 不计入的操作：</p>",
+            "target": [
+              ".mb-1.text-gray-700:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.06,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p data-v-550e95dc=\"\">日常登录、单纯文件上传、管理员账号管理（如创建账号、重置密码）。</p>",
+            "target": [
+              "p:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "13.5pt (18px)",
+                  "fontWeight": "bold",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-display whitespace-nowrap font-serif text-lg font-bold tracking-wider\" data-v-25b3ebeb=\"\">桂航绯想天</span>",
+            "target": [
+              ".club-display.font-serif.tracking-wider"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/\" class=\"nav-link\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>首页</a>",
+            "target": [
+              ".nav-link[href=\"/\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">01</span>",
+            "target": [
+              ".nav-link[href=\"/\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+            "target": [
+              "#desktop-activities-trigger"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<button id=\"desktop-activities-trigger\" type=\"button\" class=\"nav-link gap-1.5\" aria-expanded=\"false\" aria-controls=\"desktop-activities-panel\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      "#desktop-activities-trigger"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">02</span>",
+            "target": [
+              "#desktop-activities-trigger > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/members\" class=\"nav-link\" title=\"绯想天住民\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>成员</a>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">03</span>",
+            "target": [
+              ".nav-link[title=\"绯想天住民\"][href$=\"members\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/history\" class=\"nav-link\" title=\"绯想天群史\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>群史</a>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">04</span>",
+            "target": [
+              ".nav-link[title=\"绯想天群史\"][href$=\"history\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.8pt (9px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<a href=\"/social\" class=\"nav-link\" title=\"博丽大结界\" data-v-25b3ebeb=\"\"><span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>社群链接</a>",
+                    "target": [
+                      ".nav-link[title=\"博丽大结界\"][href$=\"social\"]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"nav-number\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">05</span>",
+            "target": [
+              ".nav-link[title=\"博丽大结界\"][href$=\"social\"] > .nav-number[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-seal\" aria-hidden=\"true\" data-v-25b3ebeb=\"\">入社</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-seal[aria-hidden=\"true\"][data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "11.3pt (15px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.3609923011120616;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-invitation-label\" data-v-25b3ebeb=\"\">加入我们</span>",
+            "target": [
+              ".club-invitation.club-nav-join.ml-4 > .club-invitation-label[data-v-25b3ebeb=\"\"]"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#facc15",
+                  "contrastRatio": 1.53,
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "bold",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-yellow-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">1</div>",
+                    "target": [
+                      ".bg-yellow-400"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"bg-yellow-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">1</div>",
+            "target": [
+              ".bg-yellow-400"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#9ca3af",
+                  "contrastRatio": 2.53,
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "bold",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-gray-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">2</div>",
+                    "target": [
+                      ".bg-gray-400"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"bg-gray-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">2</div>",
+            "target": [
+              ".bg-gray-400"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "empty-table-header",
+      "form-field-multiple-labels",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "image-alt",
+      "image-redundant-alt",
+      "label-content-name-mismatch",
+      "label-title-only",
+      "label",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "presentation-role-conflict",
+      "region",
+      "select-name",
+      "skip-link",
+      "svg-img-alt",
+      "tabindex",
+      "table-duplicate-name",
+      "target-size",
+      "td-headers-attr",
+      "th-has-data-cells"
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "approved filters and log control; expanded panel diagnostic (dark)",
+    "name": "UNACCEPTED-expanded-dark-log-rules",
+    "url": "http://127.0.0.1:4100/logs",
+    "engine": {
+      "name": "axe-core",
+      "version": "4.14.0"
+    },
+    "violations": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#4338ca",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.11,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.11 (foreground color: #4338ca, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<h3 class=\"font-bold text-indigo-700 mb-3 flex items-center gap-2\" data-v-550e95dc=\"\"> 贡献值计算规则 </h3>",
+            "target": [
+              ".text-indigo-700"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.11 (foreground color: #4338ca, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<li data-v-550e95dc=\"\"><strong data-v-550e95dc=\"\">核心公式：</strong> 贡献值 = 用户执行“有效内容编辑”的总次数。</li>",
+            "target": [
+              ".space-y-2 > li:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<strong data-v-550e95dc=\"\">核心公式：</strong>",
+            "target": [
+              "li:nth-child(1) > strong"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<li data-v-550e95dc=\"\"><strong data-v-550e95dc=\"\">统计范围：</strong> 基于全站历史数据统计，展示贡献前 10 名的用户。</li>",
+            "target": [
+              ".space-y-2 > li:nth-child(2)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#7f8494",
+                  "contrastRatio": 2.53,
+                  "fontSize": "10.5pt (14px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<strong data-v-550e95dc=\"\">统计范围：</strong>",
+            "target": [
+              "li:nth-child(2) > strong"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.53 (foreground color: #d1d5db, background color: #7f8494, font size: 10.5pt (14px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#e5e7eb",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.27,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"font-bold text-gray-700 mb-1\" data-v-550e95dc=\"\">✅ 计入贡献的操作：</p>",
+            "target": [
+              ".mb-1.text-gray-700:nth-child(1)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.06,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"mb-2\" data-v-550e95dc=\"\">发布/修改/删除（异变、成员、历史记录）、更新系统配置、更新个人资料。</p>",
+            "target": [
+              ".mb-2"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#e5e7eb",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.27,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "bold",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p class=\"font-bold text-gray-700 mb-1\" data-v-550e95dc=\"\">❌ 不计入的操作：</p>",
+            "target": [
+              ".mb-1.text-gray-700:nth-child(3)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.27 (foreground color: #e5e7eb, background color: #ccced4, font size: 9.0pt (12px), font weight: bold). Expected contrast ratio of 4.5:1"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#d1d5db",
+                  "bgColor": "#ccced4",
+                  "contrastRatio": 1.06,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": null,
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-white/60 rounded-lg p-3 text-xs border border-indigo-50\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-white\\/60"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"bg-indigo-50/50 rounded-xl p-5 mb-6 text-sm text-gray-600 border border-indigo-100\" style=\"\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-indigo-50\\/50"
+                    ]
+                  },
+                  {
+                    "html": "<div class=\"min-h-screen bg-[#FDFBF7] dark:bg-slate-900 font-sans pb-20 text-gray-900 dark:text-slate-100\" data-v-550e95dc=\"\">",
+                    "target": [
+                      ".bg-\\[\\#FDFBF7\\]"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<p data-v-550e95dc=\"\">日常登录、单纯文件上传、管理员账号管理（如创建账号、重置密码）。</p>",
+            "target": [
+              "p:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.06 (foreground color: #d1d5db, background color: #ccced4, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+          }
+        ]
+      }
+    ],
+    "incomplete": [
+      {
+        "id": "color-contrast",
+        "impact": "serious",
+        "tags": [
+          "cat.color",
+          "wcag2aa",
+          "wcag143",
+          "TTv5",
+          "TT13.c",
+          "EN-301-549",
+          "EN-9.1.4.3",
+          "ACT",
+          "RGAAv4",
+          "RGAA-3.2.1"
+        ],
+        "description": "Ensure the contrast between foreground and background colors meets WCAG 2 AA minimum contrast ratio thresholds",
+        "help": "Elements must meet minimum color contrast ratio thresholds",
+        "helpUrl": "https://dequeuniversity.com/rules/axe/4.14/color-contrast?application=axeAPI",
+        "nodes": [
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fontSize": "6.0pt (8px)",
+                  "fontWeight": "normal",
+                  "messageKey": "pseudoContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<nav aria-label=\"主导航\" class=\"club-navbar fixed inset-x-0 top-0 z-50\" data-immersive=\"false\" style=\"--reading-progress: 0.39391377852916315;\" data-v-25b3ebeb=\"\">",
+                    "target": [
+                      ".club-navbar"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element's background color could not be determined due to a pseudo element"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]\" data-v-25b3ebeb=\"\">GUAT TOUHOU FANS CLUB</span>",
+            "target": [
+              ".club-wordmark-subtitle"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element's background color could not be determined due to a pseudo element"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#facc15",
+                  "contrastRatio": 1.53,
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "bold",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-yellow-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">1</div>",
+                    "target": [
+                      ".bg-yellow-400"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"bg-yellow-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">1</div>",
+            "target": [
+              ".bg-yellow-400"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#ffffff",
+                  "bgColor": "#9ca3af",
+                  "contrastRatio": 2.53,
+                  "fontSize": "7.5pt (10px)",
+                  "fontWeight": "bold",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<div class=\"bg-gray-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">2</div>",
+                    "target": [
+                      ".bg-gray-400"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<div class=\"bg-gray-400 absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center rounded-full text-[10px] font-bold text-white shadow-sm\" data-v-550e95dc=\"\">2</div>",
+            "target": [
+              ".bg-gray-400"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          },
+          {
+            "any": [
+              {
+                "id": "color-contrast",
+                "data": {
+                  "fgColor": "#475569",
+                  "bgColor": "#0b1220",
+                  "contrastRatio": 2.47,
+                  "fontSize": "9.0pt (12px)",
+                  "fontWeight": "normal",
+                  "messageKey": "shortTextContent",
+                  "expectedContrastRatio": "4.5:1"
+                },
+                "relatedNodes": [
+                  {
+                    "html": "<footer class=\"club-footer\" data-v-f428b2c2=\"\">",
+                    "target": [
+                      "footer"
+                    ]
+                  }
+                ],
+                "impact": "serious",
+                "message": "Element content is too short to determine if it is actual text content"
+              }
+            ],
+            "all": [],
+            "none": [],
+            "impact": "serious",
+            "html": "<span class=\"text-slate-600\" aria-hidden=\"true\" data-v-f428b2c2=\"\">·</span>",
+            "target": [
+              ".text-slate-600[aria-hidden=\"true\"][data-v-f428b2c2=\"\"]:nth-child(4)"
+            ],
+            "failureSummary": "Fix any of the following:\n  Element content is too short to determine if it is actual text content"
+          }
+        ]
+      }
+    ],
+    "passes": [
+      "aria-allowed-attr",
+      "aria-allowed-role",
+      "aria-conditional-attr",
+      "aria-deprecated-role",
+      "aria-hidden-body",
+      "aria-hidden-focus",
+      "aria-prohibited-attr",
+      "aria-required-attr",
+      "aria-roles",
+      "aria-valid-attr-value",
+      "aria-valid-attr",
+      "avoid-inline-spacing",
+      "button-name",
+      "bypass",
+      "color-contrast",
+      "document-title",
+      "duplicate-id-aria",
+      "empty-heading",
+      "empty-table-header",
+      "form-field-multiple-labels",
+      "heading-order",
+      "html-has-lang",
+      "html-lang-valid",
+      "image-alt",
+      "image-redundant-alt",
+      "label-content-name-mismatch",
+      "label-title-only",
+      "label",
+      "landmark-contentinfo-is-top-level",
+      "landmark-main-is-top-level",
+      "landmark-no-duplicate-contentinfo",
+      "landmark-no-duplicate-main",
+      "landmark-one-main",
+      "landmark-unique",
+      "link-name",
+      "list",
+      "listitem",
+      "meta-viewport-large",
+      "meta-viewport",
+      "nested-interactive",
+      "page-has-heading-one",
+      "presentation-role-conflict",
+      "region",
+      "scrollable-region-focusable",
+      "select-name",
+      "skip-link",
+      "svg-img-alt",
+      "tabindex",
+      "table-duplicate-name",
+      "target-size",
+      "td-headers-attr",
+      "th-has-data-cells"
+    ]
+  }
+]

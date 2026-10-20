@@ -1,0 +1,4192 @@
+[
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-66\\test-results\\public-pages-visual-parity-864a8-s-matches-the-archive-dark--mobile\\members-chart-dark-comparison.json",
+    "component": "members-chart-dark",
+    "project": "mobile",
+    "state": "/members matches the archive (dark)",
+    "width": 997,
+    "height": 656,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 250.125
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 250.125
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 659
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 656
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 656
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.578125
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.22023809523809523
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-66\\test-results\\public-pages-visual-parity-864a8-s-matches-the-archive-dark--mobile\\members-grid-dark-comparison.json",
+    "component": "members-grid-dark",
+    "project": "mobile",
+    "state": "/members matches the archive (dark)",
+    "width": 997,
+    "height": 2560,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 975.25
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 975.25
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 2562
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 2560
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 2560
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.03125
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.011904761904761904
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-66\\test-results\\public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile\\logs-statistics-dark-comparison.json",
+    "component": "logs-statistics-dark",
+    "project": "mobile",
+    "state": "/logs matches the archive (dark)",
+    "width": 997,
+    "height": 3491,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1330
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1330
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 3491
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 3491
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 3491
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.25
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.09523809523809523
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-66\\test-results\\public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile\\logs-table-dark-comparison.json",
+    "component": "logs-table-dark",
+    "project": "mobile",
+    "state": "/logs matches the archive (dark)",
+    "width": 2180,
+    "height": 2344,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 830.813,
+        "height": 893
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 830.813,
+        "height": 893
+      },
+      "rawDevicePixels": {
+        "width": 2181,
+        "height": 2344
+      },
+      "croppedDevicePixels": {
+        "width": 2180,
+        "height": 2344
+      },
+      "targetDevicePixels": {
+        "width": 2180,
+        "height": 2344
+      },
+      "excludedDevicePixels": {
+        "width": 0.8828125,
+        "height": 0.125
+      },
+      "excludedCssPixels": {
+        "width": 0.33630952380952384,
+        "height": 0.047619047619047616
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-65\\test-results\\public-pages-visual-parity-8a07a-y-matches-the-archive-dark--mobile\\history-timeline-dark-comparison.json",
+    "component": "history-timeline-dark",
+    "project": "mobile",
+    "state": "/history matches the archive (dark)",
+    "width": 997,
+    "height": 2719,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1036
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1036
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 2720
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 2719
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 2719
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.5
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.19047619047619047
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-65\\test-results\\public-pages-visual-parity-5d473-1-matches-the-archive-dark--mobile\\activity-1-article-dark-comparison.json",
+    "component": "activity-1-article-dark",
+    "project": "mobile",
+    "state": "/activity/1 matches the archive (dark)",
+    "width": 1081,
+    "height": 3646,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 24,
+        "width": 412,
+        "height": 1389.219
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 24,
+        "width": 412,
+        "height": 1389.219
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 3649
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 3646
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 3646
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.69921875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.2663690476190476
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-65\\test-results\\public-pages-visual-parity-5d473-1-matches-the-archive-dark--mobile\\activity-1-prose-dark-comparison.json",
+    "component": "activity-1-prose-dark",
+    "project": "mobile",
+    "state": "/activity/1 matches the archive (dark)",
+    "width": 845,
+    "height": 428,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 322,
+        "height": 163.172
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 322,
+        "height": 163.172
+      },
+      "rawDevicePixels": {
+        "width": 845,
+        "height": 431
+      },
+      "croppedDevicePixels": {
+        "width": 845,
+        "height": 428
+      },
+      "targetDevicePixels": {
+        "width": 845,
+        "height": 428
+      },
+      "excludedDevicePixels": {
+        "width": 0.25,
+        "height": 0.326171875
+      },
+      "excludedCssPixels": {
+        "width": 0.09523809523809523,
+        "height": 0.12425595238095238
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-64\\test-results\\public-pages-visual-parity-2fe6a-s-matches-the-archive-dark--mobile\\activities-grid-dark-comparison.json",
+    "component": "activities-grid-dark",
+    "project": "mobile",
+    "state": "/activities matches the archive (dark)",
+    "width": 997,
+    "height": 4142,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1578
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1578
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 4142
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 4142
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 4142
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.25
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.09523809523809523
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-64\\test-results\\public-pages-visual-parity-034bf--matches-the-archive-light--mobile\\logs-statistics-light-comparison.json",
+    "component": "logs-statistics-light",
+    "project": "mobile",
+    "state": "/logs matches the archive (light)",
+    "width": 997,
+    "height": 3491,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1330
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1330
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 3491
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 3491
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 3491
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.25
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.09523809523809523
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-64\\test-results\\public-pages-visual-parity-034bf--matches-the-archive-light--mobile\\logs-table-light-comparison.json",
+    "component": "logs-table-light",
+    "project": "mobile",
+    "state": "/logs matches the archive (light)",
+    "width": 2180,
+    "height": 2344,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 830.813,
+        "height": 893
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 830.813,
+        "height": 893
+      },
+      "rawDevicePixels": {
+        "width": 2181,
+        "height": 2344
+      },
+      "croppedDevicePixels": {
+        "width": 2180,
+        "height": 2344
+      },
+      "targetDevicePixels": {
+        "width": 2180,
+        "height": 2344
+      },
+      "excludedDevicePixels": {
+        "width": 0.8828125,
+        "height": 0.125
+      },
+      "excludedCssPixels": {
+        "width": 0.33630952380952384,
+        "height": 0.047619047619047616
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-63\\test-results\\public-pages-visual-parity-7144f--matches-the-archive-light--mobile\\members-chart-light-comparison.json",
+    "component": "members-chart-light",
+    "project": "mobile",
+    "state": "/members matches the archive (light)",
+    "width": 997,
+    "height": 656,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 250.125
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 250.125
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 659
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 656
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 656
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.578125
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.22023809523809523
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-63\\test-results\\public-pages-visual-parity-7144f--matches-the-archive-light--mobile\\members-grid-light-comparison.json",
+    "component": "members-grid-light",
+    "project": "mobile",
+    "state": "/members matches the archive (light)",
+    "width": 997,
+    "height": 2560,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 975.25
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 975.25
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 2562
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 2560
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 2560
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.03125
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.011904761904761904
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-63\\test-results\\public-pages-visual-parity-222c2--matches-the-archive-light--mobile\\history-timeline-light-comparison.json",
+    "component": "history-timeline-light",
+    "project": "mobile",
+    "state": "/history matches the archive (light)",
+    "width": 997,
+    "height": 2719,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1036
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1036
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 2720
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 2719
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 2719
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.5
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.19047619047619047
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-62\\test-results\\public-pages-visual-parity-efb11--matches-the-archive-light--mobile\\activity-1-article-light-comparison.json",
+    "component": "activity-1-article-light",
+    "project": "mobile",
+    "state": "/activity/1 matches the archive (light)",
+    "width": 1081,
+    "height": 3646,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 24,
+        "width": 412,
+        "height": 1389.219
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 24,
+        "width": 412,
+        "height": 1389.219
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 3649
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 3646
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 3646
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.69921875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.2663690476190476
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-62\\test-results\\public-pages-visual-parity-efb11--matches-the-archive-light--mobile\\activity-1-prose-light-comparison.json",
+    "component": "activity-1-prose-light",
+    "project": "mobile",
+    "state": "/activity/1 matches the archive (light)",
+    "width": 845,
+    "height": 428,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 322,
+        "height": 163.172
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 322,
+        "height": 163.172
+      },
+      "rawDevicePixels": {
+        "width": 845,
+        "height": 431
+      },
+      "croppedDevicePixels": {
+        "width": 845,
+        "height": 428
+      },
+      "targetDevicePixels": {
+        "width": 845,
+        "height": 428
+      },
+      "excludedDevicePixels": {
+        "width": 0.25,
+        "height": 0.326171875
+      },
+      "excludedCssPixels": {
+        "width": 0.09523809523809523,
+        "height": 0.12425595238095238
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-62\\test-results\\public-pages-visual-parity-4bdee--matches-the-archive-light--mobile\\activities-grid-light-comparison.json",
+    "component": "activities-grid-light",
+    "project": "mobile",
+    "state": "/activities matches the archive (light)",
+    "width": 997,
+    "height": 4142,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1578
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 380,
+        "height": 1578
+      },
+      "rawDevicePixels": {
+        "width": 998,
+        "height": 4142
+      },
+      "croppedDevicePixels": {
+        "width": 997,
+        "height": 4142
+      },
+      "targetDevicePixels": {
+        "width": 997,
+        "height": 4142
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.25
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.09523809523809523
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--mobile\\math-0-light-comparison.json",
+    "component": "math-0-light",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 116,
+    "height": 57,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 113.391,
+        "y": 407.125,
+        "width": 44.422,
+        "height": 22
+      },
+      "archiveRect": {
+        "x": 113.391,
+        "y": 407.125,
+        "width": 44.422,
+        "height": 22
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 116,
+        "height": 57
+      },
+      "targetDevicePixels": {
+        "width": 116,
+        "height": 57
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 298,
+            "y": 1069
+          },
+          "target": {
+            "width": 116,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.296875,
+            "right": 0.2578125,
+            "bottom": 0.453125
+          }
+        },
+        {
+          "origin": {
+            "x": 298,
+            "y": 1069
+          },
+          "target": {
+            "width": 116,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.296875,
+            "right": 0.2578125,
+            "bottom": 0.453125
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--mobile\\math-1-light-comparison.json",
+    "component": "math-1-light",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 163,
+    "height": 57,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 81.391,
+        "y": 406.344,
+        "width": 62.266,
+        "height": 22
+      },
+      "archiveRect": {
+        "x": 81.391,
+        "y": 406.344,
+        "width": 62.266,
+        "height": 22
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 163,
+        "height": 57
+      },
+      "targetDevicePixels": {
+        "width": 163,
+        "height": 57
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 214,
+            "y": 1067
+          },
+          "target": {
+            "width": 163,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.34765625,
+            "right": 0.09765625,
+            "bottom": 0.40234375
+          }
+        },
+        {
+          "origin": {
+            "x": 214,
+            "y": 1067
+          },
+          "target": {
+            "width": 163,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.34765625,
+            "right": 0.09765625,
+            "bottom": 0.40234375
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--mobile\\math-2-light-comparison.json",
+    "component": "math-2-light",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 844,
+    "height": 121,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 45,
+        "y": 396.016,
+        "width": 322,
+        "height": 46.453
+      },
+      "archiveRect": {
+        "x": 45,
+        "y": 396.016,
+        "width": 322,
+        "height": 46.453
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 844,
+        "height": 121
+      },
+      "targetDevicePixels": {
+        "width": 844,
+        "height": 121
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 119,
+            "y": 1040
+          },
+          "target": {
+            "width": 844,
+            "height": 121
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.458984375,
+            "right": 0.375,
+            "bottom": 0.48046875
+          }
+        },
+        {
+          "origin": {
+            "x": 119,
+            "y": 1040
+          },
+          "target": {
+            "width": 844,
+            "height": 121
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.458984375,
+            "right": 0.375,
+            "bottom": 0.48046875
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--mobile\\math-prose-light-comparison.json",
+    "component": "math-prose-light",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 844,
+    "height": 608,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 45,
+        "y": 303.547,
+        "width": 322,
+        "height": 231.922
+      },
+      "archiveRect": {
+        "x": 45,
+        "y": 303.547,
+        "width": 322,
+        "height": 231.922
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 844,
+        "height": 608
+      },
+      "targetDevicePixels": {
+        "width": 844,
+        "height": 608
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 119,
+            "y": 797
+          },
+          "target": {
+            "width": 844,
+            "height": 608
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.189453125,
+            "right": 0.375,
+            "bottom": 0.60546875
+          }
+        },
+        {
+          "origin": {
+            "x": 119,
+            "y": 797
+          },
+          "target": {
+            "width": 844,
+            "height": 608
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.189453125,
+            "right": 0.375,
+            "bottom": 0.60546875
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--mobile\\math-0-dark-comparison.json",
+    "component": "math-0-dark",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 116,
+    "height": 57,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 113.391,
+        "y": 407.125,
+        "width": 44.422,
+        "height": 22
+      },
+      "archiveRect": {
+        "x": 113.391,
+        "y": 407.125,
+        "width": 44.422,
+        "height": 22
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 116,
+        "height": 57
+      },
+      "targetDevicePixels": {
+        "width": 116,
+        "height": 57
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 298,
+            "y": 1069
+          },
+          "target": {
+            "width": 116,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.296875,
+            "right": 0.2578125,
+            "bottom": 0.453125
+          }
+        },
+        {
+          "origin": {
+            "x": 298,
+            "y": 1069
+          },
+          "target": {
+            "width": 116,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.296875,
+            "right": 0.2578125,
+            "bottom": 0.453125
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--mobile\\math-1-dark-comparison.json",
+    "component": "math-1-dark",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 163,
+    "height": 57,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 81.391,
+        "y": 406.344,
+        "width": 62.266,
+        "height": 22
+      },
+      "archiveRect": {
+        "x": 81.391,
+        "y": 406.344,
+        "width": 62.266,
+        "height": 22
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 163,
+        "height": 57
+      },
+      "targetDevicePixels": {
+        "width": 163,
+        "height": 57
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 214,
+            "y": 1067
+          },
+          "target": {
+            "width": 163,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.34765625,
+            "right": 0.09765625,
+            "bottom": 0.40234375
+          }
+        },
+        {
+          "origin": {
+            "x": 214,
+            "y": 1067
+          },
+          "target": {
+            "width": 163,
+            "height": 57
+          },
+          "excludedEdges": {
+            "left": 0.349609375,
+            "top": 0.34765625,
+            "right": 0.09765625,
+            "bottom": 0.40234375
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--mobile\\math-2-dark-comparison.json",
+    "component": "math-2-dark",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 844,
+    "height": 121,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 45,
+        "y": 396.016,
+        "width": 322,
+        "height": 46.453
+      },
+      "archiveRect": {
+        "x": 45,
+        "y": 396.016,
+        "width": 322,
+        "height": 46.453
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 844,
+        "height": 121
+      },
+      "targetDevicePixels": {
+        "width": 844,
+        "height": 121
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 119,
+            "y": 1040
+          },
+          "target": {
+            "width": 844,
+            "height": 121
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.458984375,
+            "right": 0.375,
+            "bottom": 0.48046875
+          }
+        },
+        {
+          "origin": {
+            "x": 119,
+            "y": 1040
+          },
+          "target": {
+            "width": 844,
+            "height": 121
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.458984375,
+            "right": 0.375,
+            "bottom": 0.48046875
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-54\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--mobile\\math-prose-dark-comparison.json",
+    "component": "math-prose-dark",
+    "project": "mobile",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 844,
+    "height": 608,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 45,
+        "y": 303.547,
+        "width": 322,
+        "height": 231.922
+      },
+      "archiveRect": {
+        "x": 45,
+        "y": 303.547,
+        "width": 322,
+        "height": 231.922
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 844,
+        "height": 608
+      },
+      "targetDevicePixels": {
+        "width": 844,
+        "height": 608
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 119,
+            "y": 797
+          },
+          "target": {
+            "width": 844,
+            "height": 608
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.189453125,
+            "right": 0.375,
+            "bottom": 0.60546875
+          }
+        },
+        {
+          "origin": {
+            "x": 119,
+            "y": 797
+          },
+          "target": {
+            "width": 844,
+            "height": 608
+          },
+          "excludedEdges": {
+            "left": 0.875,
+            "top": 0.189453125,
+            "right": 0.375,
+            "bottom": 0.60546875
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-47\\test-results\\layout-navigation-and-footer-match-archived-light-layout-mobile\\footer-comparison.json",
+    "component": "footer",
+    "project": "mobile",
+    "state": "navigation and footer match archived light layout",
+    "width": 1081,
+    "height": 1947,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 741.719
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 1948
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 1947
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 1947
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.01171875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.004464285714285714
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-47\\test-results\\layout-navigation-and-footer-match-archived-light-layout-mobile\\mobile-menu-comparison.json",
+    "component": "mobile-menu",
+    "project": "mobile",
+    "state": "navigation and footer match archived light layout",
+    "width": 1082,
+    "height": 1229,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-47\\test-results\\layout-navigation-and-footer-match-archived-light-layout-mobile\\navbar-comparison.json",
+    "component": "navbar",
+    "project": "mobile",
+    "state": "navigation and footer match archived light layout",
+    "width": 1082,
+    "height": 171,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-47\\test-results\\layout-navigation-and-footer-match-archived-dark-layout-mobile\\footer-comparison.json",
+    "component": "footer",
+    "project": "mobile",
+    "state": "navigation and footer match archived dark layout",
+    "width": 1081,
+    "height": 1947,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 741.719
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 1948
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 1947
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 1947
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.01171875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.004464285714285714
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-47\\test-results\\layout-navigation-and-footer-match-archived-dark-layout-mobile\\mobile-menu-comparison.json",
+    "component": "mobile-menu",
+    "project": "mobile",
+    "state": "navigation and footer match archived dark layout",
+    "width": 1082,
+    "height": 1229,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-47\\test-results\\layout-navigation-and-footer-match-archived-dark-layout-mobile\\navbar-comparison.json",
+    "component": "navbar",
+    "project": "mobile",
+    "state": "navigation and footer match archived dark layout",
+    "width": 1082,
+    "height": 171,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-mobile\\about-light-mobile-comparison.json",
+    "region": "about-light-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived light layout",
+    "width": 1081,
+    "height": 3038,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 1157.484
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 3040
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 3038
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 3038
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.396484375
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.15104166666666666
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-mobile\\archive-light-mobile-comparison.json",
+    "region": "archive-light-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived light layout",
+    "width": 1081,
+    "height": 4271,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 1627.063
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 4274
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 4271
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 4271
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.0390625
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.01488095238095238
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-mobile\\community-light-mobile-comparison.json",
+    "region": "community-light-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived light layout",
+    "width": 1081,
+    "height": 2040,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 777.172
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2042
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 2040
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 2040
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.076171875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.029017857142857144
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-mobile\\hero-light-mobile-comparison.json",
+    "region": "hero-light-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived light layout",
+    "width": 1081,
+    "height": 2202,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 839
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 2202
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 2202
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.375
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.14285714285714285
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-mobile\\interests-light-mobile-comparison.json",
+    "region": "interests-light-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived light layout",
+    "width": 1081,
+    "height": 3058,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 1165.172
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 3061
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 3058
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 3058
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.576171875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.21949404761904762
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\\about-dark-mobile-comparison.json",
+    "region": "about-dark-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived dark layout",
+    "width": 1081,
+    "height": 3038,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 1157.484
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 3040
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 3038
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 3038
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.396484375
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.15104166666666666
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\\archive-dark-mobile-comparison.json",
+    "region": "archive-dark-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived dark layout",
+    "width": 1081,
+    "height": 4271,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 1627.063
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 4274
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 4271
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 4271
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.0390625
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.01488095238095238
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\\community-dark-mobile-comparison.json",
+    "region": "community-dark-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived dark layout",
+    "width": 1081,
+    "height": 2040,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 777.172
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2042
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 2040
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 2040
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.076171875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.029017857142857144
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\\hero-dark-mobile-comparison.json",
+    "region": "hero-dark-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived dark layout",
+    "width": 1081,
+    "height": 2202,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 839
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 2202
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 2202
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 2202
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.375
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.14285714285714285
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-46\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-mobile\\interests-dark-mobile-comparison.json",
+    "region": "interests-dark-mobile",
+    "project": "mobile",
+    "state": "homepage matches the archived dark layout",
+    "width": 1081,
+    "height": 3058,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 412,
+        "height": 1165.172
+      },
+      "rawDevicePixels": {
+        "width": 1082,
+        "height": 3061
+      },
+      "croppedDevicePixels": {
+        "width": 1081,
+        "height": 3058
+      },
+      "targetDevicePixels": {
+        "width": 1081,
+        "height": 3058
+      },
+      "excludedDevicePixels": {
+        "width": 0.5,
+        "height": 0.576171875
+      },
+      "excludedCssPixels": {
+        "width": 0.19047619047619047,
+        "height": 0.21949404761904762
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-40\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\board-STG-dark-mobile-comparison.json",
+    "region": "board-STG-dark-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived dark layout",
+    "width": 1082,
+    "height": 2528,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-40\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\board-悬赏令-dark-mobile-comparison.json",
+    "region": "board-悬赏令-dark-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived dark layout",
+    "width": 1082,
+    "height": 2370,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-40\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\card-STG-dark-mobile-comparison.json",
+    "region": "card-STG-dark-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived dark layout",
+    "width": 998,
+    "height": 1488,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-40\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-mobile\\card-悬赏令-dark-mobile-comparison.json",
+    "region": "card-悬赏令-dark-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived dark layout",
+    "width": 998,
+    "height": 767,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-39\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\board-STG-light-mobile-comparison.json",
+    "region": "board-STG-light-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived light layout",
+    "width": 1082,
+    "height": 2528,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-39\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\board-悬赏令-light-mobile-comparison.json",
+    "region": "board-悬赏令-light-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived light layout",
+    "width": 1082,
+    "height": 2370,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-39\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\card-STG-light-mobile-comparison.json",
+    "region": "card-STG-light-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived light layout",
+    "width": 998,
+    "height": 1488,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-39\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\card-悬赏令-light-mobile-comparison.json",
+    "region": "card-悬赏令-light-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived light layout",
+    "width": 998,
+    "height": 767,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-39\\test-results\\events-visual-event-pages-match-the-archived-light-layout-mobile\\signup-modal-light-mobile-comparison.json",
+    "component": "signup-modal-light-mobile",
+    "project": "mobile",
+    "state": "event pages match the archived light layout",
+    "width": 910,
+    "height": 1483,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 2.625,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 347.031,
+        "height": 565
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 347.031,
+        "height": 565
+      },
+      "rawDevicePixels": {
+        "width": 914,
+        "height": 1483
+      },
+      "croppedDevicePixels": {
+        "width": 910,
+        "height": 1483
+      },
+      "targetDevicePixels": {
+        "width": 910,
+        "height": 1483
+      },
+      "excludedDevicePixels": {
+        "width": 0.95703125,
+        "height": 0.125
+      },
+      "excludedCssPixels": {
+        "width": 0.3645833333333333,
+        "height": 0.047619047619047616
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-33\\test-results\\public-pages-visual-parity-864a8-s-matches-the-archive-dark--desktop\\members-chart-dark-comparison.json",
+    "component": "members-chart-dark",
+    "project": "desktop",
+    "state": "/members matches the archive (dark)",
+    "width": 900,
+    "height": 525,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 525
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 525
+      },
+      "rawDevicePixels": {
+        "width": 900,
+        "height": 525
+      },
+      "croppedDevicePixels": {
+        "width": 900,
+        "height": 525
+      },
+      "targetDevicePixels": {
+        "width": 900,
+        "height": 525
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-33\\test-results\\public-pages-visual-parity-864a8-s-matches-the-archive-dark--desktop\\members-grid-dark-comparison.json",
+    "component": "members-grid-dark",
+    "project": "desktop",
+    "state": "/members matches the archive (dark)",
+    "width": 1248,
+    "height": 304,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1248,
+        "height": 304.75
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1248,
+        "height": 304.75
+      },
+      "rawDevicePixels": {
+        "width": 1248,
+        "height": 305
+      },
+      "croppedDevicePixels": {
+        "width": 1248,
+        "height": 304
+      },
+      "targetDevicePixels": {
+        "width": 1248,
+        "height": 304
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.75
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.75
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-33\\test-results\\public-pages-visual-parity-1c403-s-matches-the-archive-dark--desktop\\logs-statistics-dark-comparison.json",
+    "component": "logs-statistics-dark",
+    "project": "desktop",
+    "state": "/logs matches the archive (dark)",
+    "width": 1120,
+    "height": 739,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1120,
+        "height": 739
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1120,
+        "height": 739
+      },
+      "rawDevicePixels": {
+        "width": 1120,
+        "height": 739
+      },
+      "croppedDevicePixels": {
+        "width": 1120,
+        "height": 739
+      },
+      "targetDevicePixels": {
+        "width": 1120,
+        "height": 739
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-33\\test-results\\public-pages-visual-parity-1c403-s-matches-the-archive-dark--desktop\\logs-table-dark-comparison.json",
+    "component": "logs-table-dark",
+    "project": "desktop",
+    "state": "/logs matches the archive (dark)",
+    "width": 1118,
+    "height": 893,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1118,
+        "height": 893
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1118,
+        "height": 893
+      },
+      "rawDevicePixels": {
+        "width": 1118,
+        "height": 893
+      },
+      "croppedDevicePixels": {
+        "width": 1118,
+        "height": 893
+      },
+      "targetDevicePixels": {
+        "width": 1118,
+        "height": 893
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-32\\test-results\\public-pages-visual-parity-8a07a-y-matches-the-archive-dark--desktop\\history-month-rail-dark-comparison.json",
+    "component": "history-month-rail-dark",
+    "project": "desktop",
+    "state": "/history matches the archive (dark)",
+    "width": 69,
+    "height": 148,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": -74,
+        "width": 69.625,
+        "height": 148
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": -74,
+        "width": 69.625,
+        "height": 148
+      },
+      "rawDevicePixels": {
+        "width": 70,
+        "height": 148
+      },
+      "croppedDevicePixels": {
+        "width": 69,
+        "height": 148
+      },
+      "targetDevicePixels": {
+        "width": 69,
+        "height": 148
+      },
+      "excludedDevicePixels": {
+        "width": 0.625,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0.625,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-32\\test-results\\public-pages-visual-parity-8a07a-y-matches-the-archive-dark--desktop\\history-timeline-dark-comparison.json",
+    "component": "history-timeline-dark",
+    "project": "desktop",
+    "state": "/history matches the archive (dark)",
+    "width": 1216,
+    "height": 1368,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 1368
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 1368
+      },
+      "rawDevicePixels": {
+        "width": 1216,
+        "height": 1368
+      },
+      "croppedDevicePixels": {
+        "width": 1216,
+        "height": 1368
+      },
+      "targetDevicePixels": {
+        "width": 1216,
+        "height": 1368
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-32\\test-results\\public-pages-visual-parity-5d473-1-matches-the-archive-dark--desktop\\activity-1-article-dark-comparison.json",
+    "component": "activity-1-article-dark",
+    "project": "desktop",
+    "state": "/activity/1 matches the archive (dark)",
+    "width": 1024,
+    "height": 1571,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 48,
+        "width": 1024,
+        "height": 1571.031
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 48,
+        "width": 1024,
+        "height": 1571.031
+      },
+      "rawDevicePixels": {
+        "width": 1024,
+        "height": 1572
+      },
+      "croppedDevicePixels": {
+        "width": 1024,
+        "height": 1571
+      },
+      "targetDevicePixels": {
+        "width": 1024,
+        "height": 1571
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.03125
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.03125
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-32\\test-results\\public-pages-visual-parity-5d473-1-matches-the-archive-dark--desktop\\activity-1-prose-dark-comparison.json",
+    "component": "activity-1-prose-dark",
+    "project": "desktop",
+    "state": "/activity/1 matches the archive (dark)",
+    "width": 862,
+    "height": 176,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 862,
+        "height": 176.984
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 862,
+        "height": 176.984
+      },
+      "rawDevicePixels": {
+        "width": 862,
+        "height": 177
+      },
+      "croppedDevicePixels": {
+        "width": 862,
+        "height": 176
+      },
+      "targetDevicePixels": {
+        "width": 862,
+        "height": 176
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.984375
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.984375
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-31\\test-results\\public-pages-visual-parity-2fe6a-s-matches-the-archive-dark--desktop\\activities-grid-dark-comparison.json",
+    "component": "activities-grid-dark",
+    "project": "desktop",
+    "state": "/activities matches the archive (dark)",
+    "width": 1216,
+    "height": 497,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 497
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 497
+      },
+      "rawDevicePixels": {
+        "width": 1216,
+        "height": 497
+      },
+      "croppedDevicePixels": {
+        "width": 1216,
+        "height": 497
+      },
+      "targetDevicePixels": {
+        "width": 1216,
+        "height": 497
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-31\\test-results\\public-pages-visual-parity-034bf--matches-the-archive-light--desktop\\logs-statistics-light-comparison.json",
+    "component": "logs-statistics-light",
+    "project": "desktop",
+    "state": "/logs matches the archive (light)",
+    "width": 1120,
+    "height": 739,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1120,
+        "height": 739
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1120,
+        "height": 739
+      },
+      "rawDevicePixels": {
+        "width": 1120,
+        "height": 739
+      },
+      "croppedDevicePixels": {
+        "width": 1120,
+        "height": 739
+      },
+      "targetDevicePixels": {
+        "width": 1120,
+        "height": 739
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-31\\test-results\\public-pages-visual-parity-034bf--matches-the-archive-light--desktop\\logs-table-light-comparison.json",
+    "component": "logs-table-light",
+    "project": "desktop",
+    "state": "/logs matches the archive (light)",
+    "width": 1118,
+    "height": 893,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1118,
+        "height": 893
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1118,
+        "height": 893
+      },
+      "rawDevicePixels": {
+        "width": 1118,
+        "height": 893
+      },
+      "croppedDevicePixels": {
+        "width": 1118,
+        "height": 893
+      },
+      "targetDevicePixels": {
+        "width": 1118,
+        "height": 893
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-30\\test-results\\public-pages-visual-parity-7144f--matches-the-archive-light--desktop\\members-chart-light-comparison.json",
+    "component": "members-chart-light",
+    "project": "desktop",
+    "state": "/members matches the archive (light)",
+    "width": 900,
+    "height": 525,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 525
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 900,
+        "height": 525
+      },
+      "rawDevicePixels": {
+        "width": 900,
+        "height": 525
+      },
+      "croppedDevicePixels": {
+        "width": 900,
+        "height": 525
+      },
+      "targetDevicePixels": {
+        "width": 900,
+        "height": 525
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-30\\test-results\\public-pages-visual-parity-7144f--matches-the-archive-light--desktop\\members-grid-light-comparison.json",
+    "component": "members-grid-light",
+    "project": "desktop",
+    "state": "/members matches the archive (light)",
+    "width": 1248,
+    "height": 304,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1248,
+        "height": 304.75
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1248,
+        "height": 304.75
+      },
+      "rawDevicePixels": {
+        "width": 1248,
+        "height": 305
+      },
+      "croppedDevicePixels": {
+        "width": 1248,
+        "height": 304
+      },
+      "targetDevicePixels": {
+        "width": 1248,
+        "height": 304
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.75
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.75
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-30\\test-results\\public-pages-visual-parity-222c2--matches-the-archive-light--desktop\\history-month-rail-light-comparison.json",
+    "component": "history-month-rail-light",
+    "project": "desktop",
+    "state": "/history matches the archive (light)",
+    "width": 69,
+    "height": 148,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": -74,
+        "width": 69.625,
+        "height": 148
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": -74,
+        "width": 69.625,
+        "height": 148
+      },
+      "rawDevicePixels": {
+        "width": 70,
+        "height": 148
+      },
+      "croppedDevicePixels": {
+        "width": 69,
+        "height": 148
+      },
+      "targetDevicePixels": {
+        "width": 69,
+        "height": 148
+      },
+      "excludedDevicePixels": {
+        "width": 0.625,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0.625,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-30\\test-results\\public-pages-visual-parity-222c2--matches-the-archive-light--desktop\\history-timeline-light-comparison.json",
+    "component": "history-timeline-light",
+    "project": "desktop",
+    "state": "/history matches the archive (light)",
+    "width": 1216,
+    "height": 1368,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 1368
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 1368
+      },
+      "rawDevicePixels": {
+        "width": 1216,
+        "height": 1368
+      },
+      "croppedDevicePixels": {
+        "width": 1216,
+        "height": 1368
+      },
+      "targetDevicePixels": {
+        "width": 1216,
+        "height": 1368
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-29\\test-results\\public-pages-visual-parity-efb11--matches-the-archive-light--desktop\\activity-1-article-light-comparison.json",
+    "component": "activity-1-article-light",
+    "project": "desktop",
+    "state": "/activity/1 matches the archive (light)",
+    "width": 1024,
+    "height": 1571,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 48,
+        "width": 1024,
+        "height": 1571.031
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 48,
+        "width": 1024,
+        "height": 1571.031
+      },
+      "rawDevicePixels": {
+        "width": 1024,
+        "height": 1572
+      },
+      "croppedDevicePixels": {
+        "width": 1024,
+        "height": 1571
+      },
+      "targetDevicePixels": {
+        "width": 1024,
+        "height": 1571
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.03125
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.03125
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-29\\test-results\\public-pages-visual-parity-efb11--matches-the-archive-light--desktop\\activity-1-prose-light-comparison.json",
+    "component": "activity-1-prose-light",
+    "project": "desktop",
+    "state": "/activity/1 matches the archive (light)",
+    "width": 862,
+    "height": 176,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 862,
+        "height": 176.984
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 862,
+        "height": 176.984
+      },
+      "rawDevicePixels": {
+        "width": 862,
+        "height": 177
+      },
+      "croppedDevicePixels": {
+        "width": 862,
+        "height": 176
+      },
+      "targetDevicePixels": {
+        "width": 862,
+        "height": 176
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.984375
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.984375
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-29\\test-results\\public-pages-visual-parity-4bdee--matches-the-archive-light--desktop\\activities-grid-light-comparison.json",
+    "component": "activities-grid-light",
+    "project": "desktop",
+    "state": "/activities matches the archive (light)",
+    "width": 1216,
+    "height": 497,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 497
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1216,
+        "height": 497
+      },
+      "rawDevicePixels": {
+        "width": 1216,
+        "height": 497
+      },
+      "croppedDevicePixels": {
+        "width": 1216,
+        "height": 497
+      },
+      "targetDevicePixels": {
+        "width": 1216,
+        "height": 497
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--desktop\\math-0-light-comparison.json",
+    "component": "math-0-light",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 46,
+    "height": 23,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 280.766,
+        "y": 347.109,
+        "width": 46.641,
+        "height": 24
+      },
+      "archiveRect": {
+        "x": 280.766,
+        "y": 347.109,
+        "width": 46.641,
+        "height": 24
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 46,
+        "height": 23
+      },
+      "targetDevicePixels": {
+        "width": 46,
+        "height": 23
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 281,
+            "y": 348
+          },
+          "target": {
+            "width": 46,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.234375,
+            "top": 0.890625,
+            "right": 0.40625,
+            "bottom": 0.109375
+          }
+        },
+        {
+          "origin": {
+            "x": 281,
+            "y": 348
+          },
+          "target": {
+            "width": 46,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.234375,
+            "top": 0.890625,
+            "right": 0.40625,
+            "bottom": 0.109375
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--desktop\\math-1-light-comparison.json",
+    "component": "math-1-light",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 64,
+    "height": 23,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 247.188,
+        "y": 346.5,
+        "width": 65.391,
+        "height": 24
+      },
+      "archiveRect": {
+        "x": 247.188,
+        "y": 346.5,
+        "width": 65.391,
+        "height": 24
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 64,
+        "height": 23
+      },
+      "targetDevicePixels": {
+        "width": 64,
+        "height": 23
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 248,
+            "y": 347
+          },
+          "target": {
+            "width": 64,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.8125,
+            "top": 0.5,
+            "right": 0.578125,
+            "bottom": 0.5
+          }
+        },
+        {
+          "origin": {
+            "x": 248,
+            "y": 347
+          },
+          "target": {
+            "width": 64,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.8125,
+            "top": 0.5,
+            "right": 0.578125,
+            "bottom": 0.5
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--desktop\\math-2-light-comparison.json",
+    "component": "math-2-light",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 862,
+    "height": 48,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 209,
+        "y": 335.297,
+        "width": 862,
+        "height": 48.781
+      },
+      "archiveRect": {
+        "x": 209,
+        "y": 335.297,
+        "width": 862,
+        "height": 48.781
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 862,
+        "height": 48
+      },
+      "targetDevicePixels": {
+        "width": 862,
+        "height": 48
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 209,
+            "y": 336
+          },
+          "target": {
+            "width": 862,
+            "height": 48
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.703125,
+            "right": 0,
+            "bottom": 0.078125
+          }
+        },
+        {
+          "origin": {
+            "x": 209,
+            "y": 336
+          },
+          "target": {
+            "width": 862,
+            "height": 48
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.703125,
+            "right": 0,
+            "bottom": 0.078125
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-f9760-al-archived-renderer-light--desktop\\math-prose-light-comparison.json",
+    "component": "math-prose-light",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (light)",
+    "width": 862,
+    "height": 247,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 209,
+        "y": 235.797,
+        "width": 862,
+        "height": 248.078
+      },
+      "archiveRect": {
+        "x": 209,
+        "y": 235.797,
+        "width": 862,
+        "height": 248.078
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 862,
+        "height": 247
+      },
+      "targetDevicePixels": {
+        "width": 862,
+        "height": 247
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 209,
+            "y": 236
+          },
+          "target": {
+            "width": 862,
+            "height": 247
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.203125,
+            "right": 0,
+            "bottom": 0.875
+          }
+        },
+        {
+          "origin": {
+            "x": 209,
+            "y": 236
+          },
+          "target": {
+            "width": 862,
+            "height": 247
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.203125,
+            "right": 0,
+            "bottom": 0.875
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--desktop\\math-0-dark-comparison.json",
+    "component": "math-0-dark",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 46,
+    "height": 23,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 280.766,
+        "y": 347.109,
+        "width": 46.641,
+        "height": 24
+      },
+      "archiveRect": {
+        "x": 280.766,
+        "y": 347.109,
+        "width": 46.641,
+        "height": 24
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 46,
+        "height": 23
+      },
+      "targetDevicePixels": {
+        "width": 46,
+        "height": 23
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 281,
+            "y": 348
+          },
+          "target": {
+            "width": 46,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.234375,
+            "top": 0.890625,
+            "right": 0.40625,
+            "bottom": 0.109375
+          }
+        },
+        {
+          "origin": {
+            "x": 281,
+            "y": 348
+          },
+          "target": {
+            "width": 46,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.234375,
+            "top": 0.890625,
+            "right": 0.40625,
+            "bottom": 0.109375
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--desktop\\math-1-dark-comparison.json",
+    "component": "math-1-dark",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 64,
+    "height": 23,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 247.188,
+        "y": 346.5,
+        "width": 65.391,
+        "height": 24
+      },
+      "archiveRect": {
+        "x": 247.188,
+        "y": 346.5,
+        "width": 65.391,
+        "height": 24
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 64,
+        "height": 23
+      },
+      "targetDevicePixels": {
+        "width": 64,
+        "height": 23
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 248,
+            "y": 347
+          },
+          "target": {
+            "width": 64,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.8125,
+            "top": 0.5,
+            "right": 0.578125,
+            "bottom": 0.5
+          }
+        },
+        {
+          "origin": {
+            "x": 248,
+            "y": 347
+          },
+          "target": {
+            "width": 64,
+            "height": 23
+          },
+          "excludedEdges": {
+            "left": 0.8125,
+            "top": 0.5,
+            "right": 0.578125,
+            "bottom": 0.5
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--desktop\\math-2-dark-comparison.json",
+    "component": "math-2-dark",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 862,
+    "height": 48,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 209,
+        "y": 335.297,
+        "width": 862,
+        "height": 48.781
+      },
+      "archiveRect": {
+        "x": 209,
+        "y": 335.297,
+        "width": 862,
+        "height": 48.781
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 862,
+        "height": 48
+      },
+      "targetDevicePixels": {
+        "width": 862,
+        "height": 48
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 209,
+            "y": 336
+          },
+          "target": {
+            "width": 862,
+            "height": 48
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.703125,
+            "right": 0,
+            "bottom": 0.078125
+          }
+        },
+        {
+          "origin": {
+            "x": 209,
+            "y": 336
+          },
+          "target": {
+            "width": 862,
+            "height": 48
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.703125,
+            "right": 0,
+            "bottom": 0.078125
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-21\\test-results\\public-math-visual-formula-093f5-ual-archived-renderer-dark--desktop\\math-prose-dark-comparison.json",
+    "component": "math-prose-dark",
+    "project": "desktop",
+    "state": "formulas and prose match the actual archived renderer (dark)",
+    "width": 862,
+    "height": 247,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 209,
+        "y": 235.797,
+        "width": 862,
+        "height": 248.078
+      },
+      "archiveRect": {
+        "x": 209,
+        "y": 235.797,
+        "width": 862,
+        "height": 248.078
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 862,
+        "height": 247
+      },
+      "targetDevicePixels": {
+        "width": 862,
+        "height": 247
+      },
+      "naturalInteriors": [
+        {
+          "origin": {
+            "x": 209,
+            "y": 236
+          },
+          "target": {
+            "width": 862,
+            "height": 247
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.203125,
+            "right": 0,
+            "bottom": 0.875
+          }
+        },
+        {
+          "origin": {
+            "x": 209,
+            "y": 236
+          },
+          "target": {
+            "width": 862,
+            "height": 247
+          },
+          "excludedEdges": {
+            "left": 0,
+            "top": 0.203125,
+            "right": 0,
+            "bottom": 0.875
+          }
+        }
+      ],
+      "source": "viewport PNG at device-pixel origin (0,0), cropped from ceil(left/top*dpr) through floor(right/bottom*dpr); each excluded edge is strictly less than one physical pixel; uncropped viewport kept as <name>-raw.png",
+      "alignment": "natural"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-14\\test-results\\layout-navigation-and-footer-match-archived-light-layout-desktop\\footer-comparison.json",
+    "component": "footer",
+    "project": "desktop",
+    "state": "navigation and footer match archived light layout",
+    "width": 1280,
+    "height": 358,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 358.5
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 359
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 358
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 358
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.5
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.5
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-14\\test-results\\layout-navigation-and-footer-match-archived-light-layout-desktop\\navbar-comparison.json",
+    "component": "navbar",
+    "project": "desktop",
+    "state": "navigation and footer match archived light layout",
+    "width": 1280,
+    "height": 65,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-14\\test-results\\layout-navigation-and-footer-match-archived-dark-layout-desktop\\footer-comparison.json",
+    "component": "footer",
+    "project": "desktop",
+    "state": "navigation and footer match archived dark layout",
+    "width": 1280,
+    "height": 358,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 358.5
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 359
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 358
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 358
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.5
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.5
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-14\\test-results\\layout-navigation-and-footer-match-archived-dark-layout-desktop\\navbar-comparison.json",
+    "component": "navbar",
+    "project": "desktop",
+    "state": "navigation and footer match archived dark layout",
+    "width": 1280,
+    "height": 65,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-desktop\\about-light-desktop-comparison.json",
+    "region": "about-light-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived light layout",
+    "width": 1280,
+    "height": 704,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 704.625
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 705
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 704
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 704
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.625
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.625
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-desktop\\archive-light-desktop-comparison.json",
+    "region": "archive-light-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived light layout",
+    "width": 1280,
+    "height": 730,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 730.328
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 731
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 730
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 730
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.328125
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.328125
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-desktop\\community-light-desktop-comparison.json",
+    "region": "community-light-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived light layout",
+    "width": 1280,
+    "height": 579,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 579.609
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 580
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 579
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 579
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.609375
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.609375
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-desktop\\hero-light-desktop-comparison.json",
+    "region": "hero-light-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived light layout",
+    "width": 1280,
+    "height": 720,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-light-layout-desktop\\interests-light-desktop-comparison.json",
+    "region": "interests-light-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived light layout",
+    "width": 1280,
+    "height": 565,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 565.891
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 566
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 565
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 565
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.890625
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.890625
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\\about-dark-desktop-comparison.json",
+    "region": "about-dark-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived dark layout",
+    "width": 1280,
+    "height": 704,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 704.625
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 705
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 704
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 704
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.625
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.625
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\\archive-dark-desktop-comparison.json",
+    "region": "archive-dark-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived dark layout",
+    "width": 1280,
+    "height": 730,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 730.328
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 731
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 730
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 730
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.328125
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.328125
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\\community-dark-desktop-comparison.json",
+    "region": "community-dark-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived dark layout",
+    "width": 1280,
+    "height": 579,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 579.609
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 580
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 579
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 579
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.609375
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.609375
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\\hero-dark-desktop-comparison.json",
+    "region": "hero-dark-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived dark layout",
+    "width": 1280,
+    "height": 720,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 720
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 720
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-13\\test-results\\homepage-visual-homepage-matches-the-archived-dark-layout-desktop\\interests-dark-desktop-comparison.json",
+    "region": "interests-dark-desktop",
+    "project": "desktop",
+    "state": "homepage matches the archived dark layout",
+    "width": 1280,
+    "height": 565,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 565.891
+      },
+      "rawDevicePixels": {
+        "width": 1280,
+        "height": 566
+      },
+      "croppedDevicePixels": {
+        "width": 1280,
+        "height": 565
+      },
+      "targetDevicePixels": {
+        "width": 1280,
+        "height": 565
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0.890625
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0.890625
+      },
+      "source": "geometric whole-device-pixel crop of the region screenshot, aligned to the viewport origin; uncropped capture kept as <region>-raw.png"
+    }
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-07\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\board-STG-dark-desktop-comparison.json",
+    "region": "board-STG-dark-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived dark layout",
+    "width": 1280,
+    "height": 927,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-07\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\board-悬赏令-dark-desktop-comparison.json",
+    "region": "board-悬赏令-dark-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived dark layout",
+    "width": 1280,
+    "height": 784,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-07\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\card-STG-dark-desktop-comparison.json",
+    "region": "card-STG-dark-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived dark layout",
+    "width": 928,
+    "height": 567,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-07\\test-results\\events-visual-event-pages-match-the-archived-dark-layout-desktop\\card-悬赏令-dark-desktop-comparison.json",
+    "region": "card-悬赏令-dark-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived dark layout",
+    "width": 928,
+    "height": 292,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-06\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\board-STG-light-desktop-comparison.json",
+    "region": "board-STG-light-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived light layout",
+    "width": 1280,
+    "height": 927,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-06\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\board-悬赏令-light-desktop-comparison.json",
+    "region": "board-悬赏令-light-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived light layout",
+    "width": 1280,
+    "height": 784,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-06\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\card-STG-light-desktop-comparison.json",
+    "region": "card-STG-light-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived light layout",
+    "width": 928,
+    "height": 567,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-06\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\card-悬赏令-light-desktop-comparison.json",
+    "region": "card-悬赏令-light-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived light layout",
+    "width": 928,
+    "height": 292,
+    "differingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false
+  },
+  {
+    "file": "web/.e2e-isolated/codex-approved-a11y-closed-regression/batch-06\\test-results\\events-visual-event-pages-match-the-archived-light-layout-desktop\\signup-modal-light-desktop-comparison.json",
+    "component": "signup-modal-light-desktop",
+    "project": "desktop",
+    "state": "event pages match the archived light layout",
+    "width": 608,
+    "height": 383,
+    "differingPixels": 0,
+    "allowedDifferingPixels": 0,
+    "pixelmatchThreshold": 0.1,
+    "includeAntialias": false,
+    "capture": {
+      "devicePixelRatio": 1,
+      "actualRect": {
+        "x": 0,
+        "y": 0,
+        "width": 608,
+        "height": 383
+      },
+      "archiveRect": {
+        "x": 0,
+        "y": 0,
+        "width": 608,
+        "height": 383
+      },
+      "rawDevicePixels": {
+        "width": 608,
+        "height": 383
+      },
+      "croppedDevicePixels": {
+        "width": 608,
+        "height": 383
+      },
+      "targetDevicePixels": {
+        "width": 608,
+        "height": 383
+      },
+      "excludedDevicePixels": {
+        "width": 0,
+        "height": 0
+      },
+      "excludedCssPixels": {
+        "width": 0,
+        "height": 0
+      },
+      "source": "geometric whole-device-pixel crop of the aligned locator screenshot; uncropped capture kept as <name>-raw.png",
+      "alignment": "fixed"
+    }
+  }
+]

@@ -17,6 +17,7 @@ import { writeFileSync } from 'node:fs'
 // lives in `node:fs/promises`.
 import { readFile } from 'node:fs/promises'
 import { approvedLogBorderPixel } from './approved-raster'
+import { projectApprovedAccessibility } from './approved-accessibility'
 
 /**
  * The isolated fixture origins follow the same `E2E_PORT_BASE` derivation as
@@ -261,6 +262,7 @@ export async function compareToArchive(
   info: TestInfo,
   alignment: 'fixed' | 'natural' = 'fixed',
 ): Promise<void> {
+  await projectApprovedAccessibility(reference.page(), info)
   const options = { animations: 'disabled' as const, caret: 'hide' as const }
   await waitForVisibleImages(reference)
   await waitForVisibleImages(current)

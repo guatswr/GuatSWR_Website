@@ -1,0 +1,2456 @@
+[
+  {
+    "project": "desktop",
+    "title": "event pages match the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/bounty",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-pink-500",
+        "property": "color",
+        "before": "rgb(236, 72, 153)",
+        "approved": "#be185d"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(245, 158, 11)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(217, 119, 6)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(148, 163, 184)",
+        "approved": "#475569"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "event pages match the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/stg",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-pink-500",
+        "property": "color",
+        "before": "rgb(236, 72, 153)",
+        "approved": "#be185d"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(217, 119, 6)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(148, 163, 184)",
+        "approved": "#475569"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "event pages match the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/stg",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-pink-500",
+        "property": "color",
+        "before": "rgb(236, 72, 153)",
+        "approved": "#be185d"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(217, 119, 6)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(148, 163, 184)",
+        "approved": "#475569"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "event pages match the archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/bounty",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "event pages match the archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/stg",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "event pages match the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/bounty",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-pink-500",
+        "property": "color",
+        "before": "rgb(236, 72, 153)",
+        "approved": "#be185d"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(245, 158, 11)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(217, 119, 6)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(148, 163, 184)",
+        "approved": "#475569"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "event pages match the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/stg",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-pink-500",
+        "property": "color",
+        "before": "rgb(236, 72, 153)",
+        "approved": "#be185d"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(217, 119, 6)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(148, 163, 184)",
+        "approved": "#475569"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "event pages match the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/stg",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(14, 165, 233)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-sky-600, main article .text-sky-500, main article .text-sky-400, main button.text-sky-600, main div.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article .text-pink-500",
+        "property": "color",
+        "before": "rgb(236, 72, 153)",
+        "approved": "#be185d"
+      },
+      {
+        "selector": "main article .text-amber-500, main article .text-amber-600",
+        "property": "color",
+        "before": "rgb(217, 119, 6)",
+        "approved": "#92400e"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(3, 105, 161)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.font-bold.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a.text-sky-600, main .md\\:hidden a.bg-sky-50.text-sky-600",
+        "property": "color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "color",
+        "before": "rgb(75, 85, 99)",
+        "approved": "#475569"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main aside a span.text-\\[10px\\].opacity-70",
+        "property": "opacity",
+        "before": "0.7",
+        "approved": "1"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(148, 163, 184)",
+        "approved": "#475569"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "event pages match the archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/bounty",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "event pages match the archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/events/stg",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main article span.text-slate-400.font-medium",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "homepage matches the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "homepage matches the archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main a.club-button-primary[href=\"/join\"]",
+        "property": "background-color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "homepage matches the archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "homepage matches the archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main a.club-button-primary[href=\"/join\"]",
+        "property": "background-color",
+        "before": "rgb(2, 132, 199)",
+        "approved": "#0369a1"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "navigation and footer match archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/join",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "navigation and footer match archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/join",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "navigation and footer match archived light layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/join",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "navigation and footer match archived dark layout",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/join",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "formulas and prose match the actual archived renderer (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "formulas and prose match the actual archived renderer (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "formulas and prose match the actual archived renderer (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "formulas and prose match the actual archived renderer (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/activities matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activities",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/activity/1 matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/history matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/history",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "width",
+        "before": "40px",
+        "approved": "56px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "height",
+        "before": "96px",
+        "approved": "106px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "max-height",
+        "before": "none",
+        "approved": "max(58px,calc(100svh - 12rem))"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overflow-y",
+        "before": "visible",
+        "approved": "auto"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "padding",
+        "before": "12px 0px",
+        "approved": "6px 0"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "display",
+        "before": "flex",
+        "approved": "block"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "scrollbar-width",
+        "before": "auto",
+        "approved": "thin"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overscroll-behavior",
+        "before": "auto",
+        "approved": "contain"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "align-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "gap",
+        "before": "8px",
+        "approved": "4px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/members matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/members",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "background-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "border-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/logs matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/logs",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-red-50.text-red-600",
+        "property": "color",
+        "before": "rgb(220, 38, 38)",
+        "approved": "#b91c1c"
+      },
+      {
+        "selector": "main button.text-indigo-500",
+        "property": "color",
+        "before": "rgb(99, 102, 241)",
+        "approved": "#4f46e5"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/activities matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activities",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/activity/1 matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/history matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/history",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "width",
+        "before": "40px",
+        "approved": "56px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "height",
+        "before": "96px",
+        "approved": "106px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "max-height",
+        "before": "none",
+        "approved": "max(58px,calc(100svh - 12rem))"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overflow-y",
+        "before": "visible",
+        "approved": "auto"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "padding",
+        "before": "12px 0px",
+        "approved": "6px 0"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "display",
+        "before": "flex",
+        "approved": "block"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "scrollbar-width",
+        "before": "auto",
+        "approved": "thin"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overscroll-behavior",
+        "before": "auto",
+        "approved": "contain"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "align-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "gap",
+        "before": "8px",
+        "approved": "4px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/members matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/members",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "background-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "border-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      }
+    ]
+  },
+  {
+    "project": "desktop",
+    "title": "/logs matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/logs",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main .border-t.bg-gray-50\\/50",
+        "property": "background-color",
+        "before": "rgba(249, 250, 251, 0.5)",
+        "approved": "#0f172a"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-red-50.text-red-600",
+        "property": "color",
+        "before": "rgb(220, 38, 38)",
+        "approved": "#b91c1c"
+      },
+      {
+        "selector": "main button.text-indigo-500",
+        "property": "color",
+        "before": "rgb(99, 102, 241)",
+        "approved": "#a5b4fc"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/activities matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activities",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/activity/1 matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/history matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/history",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "width",
+        "before": "40px",
+        "approved": "56px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "height",
+        "before": "96px",
+        "approved": "106px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "max-height",
+        "before": "none",
+        "approved": "max(58px,calc(100svh - 12rem))"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overflow-y",
+        "before": "visible",
+        "approved": "auto"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "padding",
+        "before": "12px 0px",
+        "approved": "6px 0"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "display",
+        "before": "flex",
+        "approved": "block"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "scrollbar-width",
+        "before": "auto",
+        "approved": "thin"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overscroll-behavior",
+        "before": "auto",
+        "approved": "contain"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "align-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "gap",
+        "before": "8px",
+        "approved": "4px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/members matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/members",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "background-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "border-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/logs matches the archive (light)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/logs",
+    "dark": false,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main div.text-gray-400, main p.text-gray-400",
+        "property": "color",
+        "before": "rgb(156, 163, 175)",
+        "approved": "#6b7280"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-red-50.text-red-600",
+        "property": "color",
+        "before": "rgb(220, 38, 38)",
+        "approved": "#b91c1c"
+      },
+      {
+        "selector": "main button.text-indigo-500",
+        "property": "color",
+        "before": "rgb(99, 102, 241)",
+        "approved": "#4f46e5"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/activities matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activities",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/activity/1 matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/activity/1",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/history matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/history",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "width",
+        "before": "40px",
+        "approved": "56px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "height",
+        "before": "96px",
+        "approved": "106px"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "max-height",
+        "before": "none",
+        "approved": "max(58px,calc(100svh - 12rem))"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overflow-y",
+        "before": "visible",
+        "approved": "auto"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "padding",
+        "before": "12px 0px",
+        "approved": "6px 0"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "display",
+        "before": "flex",
+        "approved": "block"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "scrollbar-width",
+        "before": "auto",
+        "approved": "thin"
+      },
+      {
+        "selector": "[data-approved-history-rail]",
+        "property": "overscroll-behavior",
+        "before": "auto",
+        "approved": "contain"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "align-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-history-list]",
+        "property": "gap",
+        "before": "8px",
+        "approved": "4px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-red-500 border-red-400 scale-110 shadow-[0_0_10px_rgba(239,68,68,0.6)]",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"0\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "width",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "height",
+        "before": "14px",
+        "approved": "44px"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "structure",
+        "before": "button.w-3.5 h-3.5 rounded-full border transition bg-gray-300/70 dark:bg-slate-700 border-gray-300/70 dark:border-slate-600 hover:bg-red-300",
+        "approved": "44px control containing unchanged original 14px decorative dot"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "display",
+        "before": "block",
+        "approved": "grid"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "place-items",
+        "before": "normal",
+        "approved": "center"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "flex-shrink",
+        "before": "1",
+        "approved": "0"
+      },
+      {
+        "selector": "[data-approved-month-index=\"1\"]",
+        "property": "border-radius",
+        "before": "0px",
+        "approved": "9999px"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/members matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/members",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "background-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      },
+      {
+        "selector": "main .ring-2.text-white",
+        "property": "border-color",
+        "before": "rgb(56, 189, 248)",
+        "approved": "#075985"
+      }
+    ]
+  },
+  {
+    "project": "mobile",
+    "title": "/logs matches the archive (dark)",
+    "approval": "docs/revamp/logs/22-public-accessibility/VISUAL-PROPOSAL.md",
+    "path": "/logs",
+    "dark": true,
+    "changes": [
+      {
+        "selector": "footer p.font-mono.text-slate-500",
+        "property": "color",
+        "before": "rgb(100, 116, 139)",
+        "approved": "#94a3b8"
+      },
+      {
+        "selector": "main .border-t.bg-gray-50\\/50",
+        "property": "background-color",
+        "before": "rgba(249, 250, 251, 0.5)",
+        "approved": "#0f172a"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-emerald-50.text-emerald-600",
+        "property": "color",
+        "before": "rgb(5, 150, 105)",
+        "approved": "#047857"
+      },
+      {
+        "selector": "main span.bg-red-50.text-red-600",
+        "property": "color",
+        "before": "rgb(220, 38, 38)",
+        "approved": "#b91c1c"
+      },
+      {
+        "selector": "main button.text-indigo-500",
+        "property": "color",
+        "before": "rgb(99, 102, 241)",
+        "approved": "#a5b4fc"
+      }
+    ]
+  }
+]

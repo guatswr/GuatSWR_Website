@@ -158,7 +158,7 @@ onBeforeUnmount(() => {
               class="relative px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-300"
               :class="
                 ['published', 'ongoing'].includes(event.status)
-                  ? 'bg-sky-50 text-sky-600 hover:bg-sky-500 hover:text-white dark:bg-sky-900/40 dark:text-sky-200 dark:hover:bg-sky-600'
+                  ? 'bg-sky-50 text-sky-700 hover:bg-sky-500 hover:text-white dark:bg-sky-900/40 dark:text-sky-200 dark:hover:bg-sky-600'
                   : 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500'
               "
               :disabled="!['published', 'ongoing'].includes(event.status)"
@@ -270,7 +270,7 @@ onBeforeUnmount(() => {
             </div>
             <div class="text-xs text-right space-y-0.5">
               <div
-                class="text-sky-600 bg-sky-50 px-2 py-0.5 rounded inline-block dark:bg-sky-900/40 dark:text-sky-200"
+                class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded inline-block dark:bg-sky-900/40 dark:text-sky-200"
               >
                 {{ item.pilot_source || '未知来源' }}
               </div>

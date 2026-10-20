@@ -488,8 +488,8 @@ describe('history timeline', () => {
       { month: '2025-09', index: 2 },
     ])
     expect(monthRailHeight(0)).toBe(0)
-    expect(monthRailHeight(1)).toBe(96)
-    expect(monthRailHeight(4)).toBe(4 * 14 + 3 * 8 + 24)
+    expect(monthRailHeight(1)).toBe(58)
+    expect(monthRailHeight(4)).toBe(4 * 44 + 3 * 4 + 14)
     expect(historyAnchor(3)).toBe('history-3')
   })
 })

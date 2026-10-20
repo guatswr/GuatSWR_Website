@@ -3,6 +3,7 @@ import type { APIRequestContext, Locator, Page, Route, TestInfo } from '@playwri
 import pixelmatch from 'pixelmatch'
 import { PNG } from 'pngjs'
 import { writeFileSync } from 'node:fs'
+import { projectApprovedAccessibility } from './approved-accessibility'
 // Shared deterministic dataset owned by the public-data worker: raw v1 rows plus
 // the isolated v1 server handler. Types come from the sibling `public-data.d.mts`
 // declaration, so nothing here re-implements visibility filtering or fixtures.
@@ -206,6 +207,7 @@ export async function compareRegion(
   name: string,
   info: TestInfo
 ): Promise<void> {
+  await projectApprovedAccessibility(archive.page(), info)
   const capture = { animations: 'disabled' as const, caret: 'hide' as const }
   const [archiveStyle, currentStyle] = await Promise.all([
     archive.getAttribute('style'),

@@ -77,7 +77,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
           class="flex items-center px-3 py-3 rounded-md transition-all group relative overflow-hidden whitespace-nowrap"
           :class="[
             isActive(menu.path)
-              ? 'bg-white text-sky-600 shadow-sm dark:bg-[#404249] dark:text-white'
+              ? 'bg-white text-sky-700 shadow-sm dark:bg-[#404249] dark:text-white'
               : 'text-gray-600 hover:bg-gray-200 dark:text-gray-400 dark:hover:bg-[#35373c] dark:hover:text-gray-200',
             isCollapsed ? 'justify-center' : ''
           ]"
@@ -95,7 +95,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
             :class="isCollapsed ? 'w-0 opacity-0 hidden' : 'w-auto opacity-100'"
           >
             <span class="font-medium text-sm">{{ menu.name }}</span>
-            <span v-if="!isActive(menu.path)" class="text-[10px] opacity-70">{{ menu.desc }}</span>
+            <span v-if="!isActive(menu.path)" class="event-nav-description text-[10px] opacity-70">{{ menu.desc }}</span>
           </div>
 
           <div
@@ -126,7 +126,7 @@ const isActive = (path: string): boolean => route.path.includes(path)
           class="flex items-center px-3 py-1.5 rounded-full text-sm border transition-colors"
           :class="[
             isActive(menu.path)
-              ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-600 dark:text-sky-400 border-sky-200 dark:border-sky-700/50'
+              ? 'bg-sky-50 dark:bg-sky-900/30 text-sky-700 dark:text-sky-400 border-sky-200 dark:border-sky-700/50'
               : 'bg-gray-50 dark:bg-[#35373c] text-gray-600 dark:text-gray-300 border-gray-200 dark:border-[#334155]'
           ]"
         >
@@ -146,6 +146,11 @@ const isActive = (path: string): boolean => route.path.includes(path)
 </template>
 
 <style scoped>
+html:not(.dark) .event-nav-description {
+  color: #475569;
+  opacity: 1;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;

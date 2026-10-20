@@ -1,0 +1,253 @@
+{
+  "generatedAt": "2026-10-20T14:51:53.760Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-approved-a11y-accepted-focus",
+  "totalShards": 8,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 8,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 16,
+  "counts": {
+    "passed": 16,
+    "expected": 16,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 16
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::public-accessibility.spec.ts::14:3::public-accessibility.spec.ts > approved filters and log control; expanded panel diagnostic (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility.spec.ts::14:3::public-accessibility.spec.ts > approved filters and log control; expanded panel diagnostic (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility.spec.ts::59:3::public-accessibility.spec.ts > month links retain dots with independent 44px keyboard targets (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility.spec.ts::59:3::public-accessibility.spec.ts > month links retain dots with independent 44px keyboard targets (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility.spec.ts::88:3::public-accessibility.spec.ts > long month rail scrolls every native keyboard target into view (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility.spec.ts::88:3::public-accessibility.spec.ts > long month rail scrolls every native keyboard target into view (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility.spec.ts::14:3::public-accessibility.spec.ts > approved filters and log control; expanded panel diagnostic (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility.spec.ts::14:3::public-accessibility.spec.ts > approved filters and log control; expanded panel diagnostic (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility.spec.ts::59:3::public-accessibility.spec.ts > month links retain dots with independent 44px keyboard targets (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility.spec.ts::59:3::public-accessibility.spec.ts > month links retain dots with independent 44px keyboard targets (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility.spec.ts::88:3::public-accessibility.spec.ts > long month rail scrolls every native keyboard target into view (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility.spec.ts::88:3::public-accessibility.spec.ts > long month rail scrolls every native keyboard target into view (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-pages.spec.ts::434:7::public-pages.spec.ts > visual parity with the archived site > /history matches the archive (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    }
+  ]
+}

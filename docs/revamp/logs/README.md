@@ -31,7 +31,8 @@ accepted; these logs are the evidence behind them.
 
 | Workstream | Directory | State |
 | --- | --- | --- |
-| Public accessibility semantics / visual decision | [`22-public-accessibility/`](22-public-accessibility/README.md) | 785 units, 112/112 E2E, 88 zero-difference regions, 15 JS graphs; names/headings/alt/scroll focus corrected across 60 states; visual contrast/target proposal awaiting user decision |
+| Approved public accessibility colours / targets | [`23-approved-accessibility/`](23-approved-accessibility/README.md) | 785 units, 132/132 regression, 98 approved-reference zero-difference regions, 15 JS graphs; 56 closed + 11 interaction states strictly pass; empty-board/dark-rules diagnostics and complete #80 remain open |
+| Public accessibility semantics / visual decision | [`22-public-accessibility/`](22-public-accessibility/README.md) | Historical pre-approval evidence: 785 units, 112/112 E2E, 88 zero-difference regions; visual proposal subsequently approved, implementation in log 23 |
 | Markdown fixture/cache and capture isolation | [`21-markdown-fixture-isolation/`](21-markdown-fixture-isolation/README.md) | 785 units, 8/8 unique E2E plus 4 mixed repeats; 16 natural-context zero-difference regions; full CI pending |
 | Runtime hardening and honest performance aggregation | [`20-runtime-hardening/`](20-runtime-hardening/README.md) | 784 units, tooling 59/59, 32/32 actual E2E, 15 JS graphs, zero maps; failed preload experiment withdrawn, final CI/performance/a11y open |
 | Recovery of the 2026-10-19 working-tree loss | [`00-recovery-2026-10-19/`](00-recovery-2026-10-19/README.md) | Restored; four gates green; E2E baseline re-measured |

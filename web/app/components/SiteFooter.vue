@@ -33,7 +33,7 @@ const quickLinks = [
           >
             桂航绯想天
           </p>
-          <p class="mt-1 font-mono text-[9px] tracking-[.22em] text-slate-500">
+          <p class="mt-1 font-mono text-[9px] tracking-[.22em] text-slate-400">
             GUAT TOUHOU FANS CLUB
           </p>
           <p class="mt-5 text-sm leading-7 text-slate-400">

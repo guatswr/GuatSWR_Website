@@ -1,0 +1,10 @@
+{
+  "region": "board-悬赏令-light-mobile",
+  "project": "mobile",
+  "state": "event pages match the archived light layout",
+  "width": 1082,
+  "height": 2370,
+  "differingPixels": 707,
+  "pixelmatchThreshold": 0.1,
+  "includeAntialias": false
+}

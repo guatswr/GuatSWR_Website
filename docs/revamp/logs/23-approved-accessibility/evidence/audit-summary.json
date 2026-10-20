@@ -1,0 +1,869 @@
+{
+  "generatedAt": "2026-10-20T15:23:02.239Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-approved-a11y-closed-audit",
+  "totalShards": 30,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    },
+    {
+      "index": 3,
+      "exitCode": 0
+    },
+    {
+      "index": 4,
+      "exitCode": 0
+    },
+    {
+      "index": 5,
+      "exitCode": 0
+    },
+    {
+      "index": 6,
+      "exitCode": 0
+    },
+    {
+      "index": 7,
+      "exitCode": 0
+    },
+    {
+      "index": 8,
+      "exitCode": 0
+    },
+    {
+      "index": 9,
+      "exitCode": 0
+    },
+    {
+      "index": 10,
+      "exitCode": 0
+    },
+    {
+      "index": 11,
+      "exitCode": 0
+    },
+    {
+      "index": 12,
+      "exitCode": 0
+    },
+    {
+      "index": 13,
+      "exitCode": 0
+    },
+    {
+      "index": 14,
+      "exitCode": 0
+    },
+    {
+      "index": 15,
+      "exitCode": 0
+    },
+    {
+      "index": 16,
+      "exitCode": 0
+    },
+    {
+      "index": 17,
+      "exitCode": 0
+    },
+    {
+      "index": 18,
+      "exitCode": 0
+    },
+    {
+      "index": 19,
+      "exitCode": 0
+    },
+    {
+      "index": 20,
+      "exitCode": 0
+    },
+    {
+      "index": 21,
+      "exitCode": 0
+    },
+    {
+      "index": 22,
+      "exitCode": 0
+    },
+    {
+      "index": 23,
+      "exitCode": 0
+    },
+    {
+      "index": 24,
+      "exitCode": 0
+    },
+    {
+      "index": 25,
+      "exitCode": 0
+    },
+    {
+      "index": 26,
+      "exitCode": 0
+    },
+    {
+      "index": 27,
+      "exitCode": 0
+    },
+    {
+      "index": 28,
+      "exitCode": 0
+    },
+    {
+      "index": 29,
+      "exitCode": 0
+    },
+    {
+      "index": 30,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 30,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 60,
+  "counts": {
+    "passed": 60,
+    "expected": 60,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 60
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility / (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility / (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activities (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activities (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/1 (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/1 (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 3,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/991 (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/991 (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 4,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 10,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/betting (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/betting (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 12,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/bounty (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/bounty (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 11,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/party (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/party (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 15,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/stg (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/stg (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 13,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /history (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /history (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 6,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /join (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /join (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 9,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /logs (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /logs (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 7,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /members (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /members (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 5,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /social (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /social (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 8,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > UNACCEPTED empty-event diagnostic /events/zetime (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > UNACCEPTED empty-event diagnostic /events/zetime (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 14,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility / (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility / (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 16,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activities (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 17,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activities (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 17,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/1 (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 18,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/1 (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 18,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/991 (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 19,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /activity/991 (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 19,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 25,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 25,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/betting (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 27,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/betting (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 27,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/bounty (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 26,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/bounty (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 26,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/party (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 30,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/party (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 30,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/stg (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 28,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /events/stg (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 28,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /history (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 21,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /history (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 21,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /join (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 24,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /join (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 24,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /logs (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 22,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /logs (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 22,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /members (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 20,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /members (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 20,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /social (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 23,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > public automatic accessibility /social (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 23,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > UNACCEPTED empty-event diagnostic /events/zetime (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 29,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-accessibility-audit.spec.ts::7:3::public-accessibility-audit.spec.ts > UNACCEPTED empty-event diagnostic /events/zetime (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 29,
+      "exitCode": 0
+    }
+  ]
+}
