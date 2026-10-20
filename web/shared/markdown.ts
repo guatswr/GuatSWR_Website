@@ -38,6 +38,8 @@ export interface SafeMarkdownElement {
   readonly tag: string
   readonly props: SafeMarkdownProps
   readonly children: readonly SafeMarkdownNode[]
+  /** Set by the server's generated-node identity check, never from author props. */
+  readonly generatedMath?: true
 }
 
 export interface SafeMarkdownText {
@@ -93,7 +95,11 @@ const LANGUAGE_CLASS = /^language-[a-z0-9+#._-]{1,24}$/
 /**
  * Classes emitted by KaTeX (math tokens, sizes, layouts, accents and roots).
  */
-const KATEX_CLASS = /^(?:katex(?:-[a-z0-9-]+)?|vlist(?:-[a-z0-9]+)?|m[a-z]+|math[a-z]+|accent-body|text|main[a-z]+|pstrut|size[0-9]+|reset-size[0-9]+|delimsizing|delimcenter|arraycolsep|col-align-[a-z]|frac-line|hide-tail|large-op|nobreak|nulldelimiter|op-[a-z]+|overline-line|underline-line|[a-z]lap|sqrt|svg-align)$/
+const KATEX_CLASS = /^[a-zA-Z][a-zA-Z0-9_-]{0,63}$/
+// These elements are accepted ONLY from the server's generated-node identity
+// set. Author HTML still goes through DROPPED_TAGS above, including math/svg.
+const MATH_TAGS = new Set(['span', 'svg', 'path', 'line', 'math', 'semantics', 'annotation', 'mrow', 'mi', 'mn', 'mo', 'mtext', 'mspace', 'mfrac', 'msqrt', 'mroot', 'msub', 'msup', 'msubsup', 'munder', 'mover', 'munderover', 'mtable', 'mtr', 'mtd', 'mstyle', 'mpadded', 'mphantom', 'menclose', 'mmultiscripts', 'mprescripts', 'none'])
+const MATH_ATTRIBUTES = new Set(['display', 'encoding', 'mathvariant', 'mathsize', 'mathcolor', 'displaystyle', 'scriptlevel', 'stretchy', 'fence', 'separator', 'symmetric', 'largeop', 'movablelimits', 'accent', 'accentunder', 'lspace', 'rspace', 'minsize', 'maxsize', 'columnalign', 'rowalign', 'columnspacing', 'rowspacing', 'columnlines', 'rowlines', 'linethickness', 'notation', 'width', 'height', 'depth', 'voffset', 'x', 'y', 'x1', 'y1', 'x2', 'y2', 'd', 'viewBox', 'viewbox', 'preserveAspectRatio', 'preserveaspectratio', 'xmlns'])
 
 /** Shiki colour tokens. */
 const SHIKI_STYLE_PROPERTY = /^(?:color|background-color|font-style|font-weight|text-decoration|opacity|--shiki-[a-z-]{1,32})$/
@@ -286,6 +292,26 @@ const safeClasses = (value: unknown, pattern: RegExp): string | null => {
   return valid.length > 0 ? valid.join(' ') : null
 }
 
+// No attribute or class in author content can opt into this profile. Only
+// object identities placed in mathNodes by the server renderer reach here.
+export const safeGeneratedMathProps = (value: unknown): SafeMarkdownProps => {
+  const source = isRecord(value) ? value : {}
+  const props: Record<string, string> = {}
+  const classes = safeClasses(source.className ?? source.class, KATEX_CLASS)
+  if (classes) props.class = classes
+  const style = safeStyle(source.style, KATEX_STYLE_PROPERTY, KATEX_STYLE_VALUE)
+  if (style) props.style = style
+  if (source['aria-hidden'] === 'true' || source.ariaHidden === 'true') props['aria-hidden'] = 'true'
+  for (const [key, raw] of Object.entries(source)) {
+    if (!MATH_ATTRIBUTES.has(key)) continue
+    const text = typeof raw === 'string' || typeof raw === 'number' || typeof raw === 'boolean' ? String(raw).replace(/\s+/g, ' ').trim() : ''
+    if (!text || text.length > (key === 'd' ? 65536 : 512) || /[<>]/.test(text) || hasControlCharacter(text)) continue
+    if (key === 'd' && !/^[a-z0-9\s.,+-]+$/i.test(text)) continue
+    props[key === 'viewbox' ? 'viewBox' : key === 'preserveaspectratio' ? 'preserveAspectRatio' : key] = text
+  }
+  return props
+}
+
 /** C0 controls and DEL, tested by code point (see `public-query.ts`). */
 const isControlCharacter = (codePoint: number): boolean => codePoint < 0x20 || codePoint === 0x7f
 
@@ -303,6 +329,7 @@ const slugify = (text: string): string =>
   text.toLowerCase().replace(/[^\w㐀-鿿-]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 60)
 
 interface SanitizeContext {
+  readonly mathNodes?: Pick<ReadonlySet<object>, 'has'>
   readonly usedIds: Set<string>
   readonly headings: MarkdownHeading[]
   /** In-article fragments that should resolve to a generated heading id. */
@@ -392,9 +419,10 @@ const sanitizeNode = (
     context.nodes += 1
     return checkbox
   }
-  if (!tag || DROPPED_TAGS.has(tag)) return null
+  const generatedMath = context.mathNodes?.has(value) === true && MATH_TAGS.has(tag)
+  if (!tag || (!generatedMath && DROPPED_TAGS.has(tag))) return null
   context.nodes += 1
-  if (!SAFE_TAGS.has(tag)) {
+  if (!SAFE_TAGS.has(tag) && !generatedMath) {
     // Unknown or custom tag: keep the readable content, drop the element and
     // every binding that came with it, so no registered component can render.
     const unwrapped = sanitizeChildren(node.children, context, inCode, depth)
@@ -403,7 +431,7 @@ const sanitizeNode = (
       ? (unwrapped[0] ?? null)
       : { type: 'element', tag: 'span', props: {}, children: unwrapped }
   }
-  const props = sanitizeProps(tag, node.props, inCode)
+  const props = generatedMath ? safeGeneratedMathProps(node.props) : sanitizeProps(tag, node.props, inCode)
   // An `<img>` whose source the deployment cannot display has no content left
   // to show, so the element itself is dropped rather than emitted as an empty
   // image the browser would paint as a broken placeholder.
@@ -416,7 +444,7 @@ const sanitizeNode = (
     context.headings.push({ id, text: title, depth: Number(tag.slice(1)) })
     return { type: 'element', tag, props: { ...props, id }, children }
   }
-  return { type: 'element', tag, props, children }
+  return { type: 'element', tag, props, children, ...(generatedMath ? { generatedMath: true as const } : {}) }
 }
 
 /**
@@ -508,16 +536,6 @@ const sanitizeProps = (tag: string, value: unknown, inCode: boolean): SafeMarkdo
     case 'code':
       return props
     case 'span': {
-      const katexClass = safeClasses(source.className ?? source.class, KATEX_CLASS)
-      if (katexClass) {
-        props.class = katexClass
-        const style = safeStyle(source.style, KATEX_STYLE_PROPERTY, KATEX_STYLE_VALUE)
-        if (style) props.style = style
-        if (source['aria-hidden'] === 'true' || source.ariaHidden === 'true') {
-          props['aria-hidden'] = 'true'
-        }
-        return props
-      }
       if (inCode) {
         const style = safeStyle(source.style, SHIKI_STYLE_PROPERTY, SHIKI_STYLE_VALUE)
         return style ? { style } : {}
@@ -576,8 +594,8 @@ const rewriteFragments = (
  * Reduce parser output to the allowlisted tree. `value` is the parser's
  * `body` node, its `children`, or a bare node list.
  */
-export function sanitizeMarkdownAst(value: unknown): SafeMarkdownResult {
-  const context: SanitizeContext = { usedIds: new Set(), headings: [], fragments: new Map(), nodes: 0, truncated: false }
+export function sanitizeMarkdownAst(value: unknown, mathNodes?: Pick<ReadonlySet<object>, 'has'>): SafeMarkdownResult {
+  const context: SanitizeContext = { mathNodes, usedIds: new Set(), headings: [], fragments: new Map(), nodes: 0, truncated: false }
   const children = isRecord(value) && Array.isArray(value.children)
     ? (value.children as unknown[])
     : (Array.isArray(value) ? (value as unknown[]) : [])
@@ -593,6 +611,7 @@ export function sanitizeMarkdownAst(value: unknown): SafeMarkdownResult {
 export const SAFE_MARKDOWN_TAGS: readonly string[] = Object.freeze([...SAFE_TAGS])
 
 export const isSafeMarkdownTag = (tag: string): boolean => SAFE_TAGS.has(tag)
+export const isGeneratedMathTag = (tag: string): boolean => MATH_TAGS.has(tag)
 
 /** Single paragraph of escaped plain text, used for whole-article fallbacks. */
 export function plainTextAst(value: string): SafeMarkdownNode[] {

@@ -2,14 +2,14 @@
 /**
  * Lazy, client-only Mermaid diagram renderer for public Markdown.
  *
- * `mermaid` is only imported dynamically when a document actually contains a
- * fenced `mermaid` code block. Initial cold route loads of `/activity/:id` for
- * articles without diagrams pay 0 bytes of client JavaScript.
+ * The parent mounts this component only after explicit reader activation.
+ * A fenced block alone never downloads the Mermaid engine; its readable
+ * source is already present in the server-rendered document.
  *
  * Strict mode, no HTML labels, unadopted stylesheet parsing and DOMPurify
  * sanitization mirror the admin editor runtime (`admin-editor-runtime.ts`).
  */
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 
 const props = defineProps<{
   code: string
@@ -28,11 +28,13 @@ const diagramPresentation = new Set([
 
 let observer: MutationObserver | null = null
 let currentRenderToken = 0
+let darkTheme = false
 
 const renderDiagram = async (): Promise<void> => {
   const token = ++currentRenderToken
   loading.value = true
   renderError.value = null
+  renderedSvg.value = ''
 
   const trimmed = props.code.trim()
   if (!trimmed) {
@@ -40,7 +42,13 @@ const renderDiagram = async (): Promise<void> => {
     renderedSvg.value = ''
     return
   }
+  if (trimmed.length > 50_000) {
+    renderError.value = '图表超过 50000 字符限制，请查看源码。'
+    loading.value = false
+    return
+  }
 
+  let scratch: HTMLDivElement | undefined
   try {
     const [mermaidModule, domPurifyModule] = await Promise.all([
       import('mermaid'),
@@ -68,7 +76,14 @@ const renderDiagram = async (): Promise<void> => {
     })
 
     const id = `mermaid-public-${Math.random().toString(36).slice(2, 9)}`
-    const { svg: rawSvg } = await mermaid.render(id, trimmed)
+    // Own and always remove the live measurement container, including syntax
+    // errors, superseded renders and navigation away while rendering.
+    scratch = document.createElement('div')
+    scratch.dataset.publicDiagramScratch = ''
+    scratch.setAttribute('aria-hidden', 'true')
+    Object.assign(scratch.style, { position: 'fixed', left: '-100000px', top: '0', visibility: 'hidden', width: `${document.documentElement.clientWidth}px` })
+    document.body.append(scratch)
+    const { svg: rawSvg } = await mermaid.render(id, trimmed, scratch)
 
     if (token !== currentRenderToken) return
 
@@ -119,6 +134,7 @@ const renderDiagram = async (): Promise<void> => {
     renderError.value = error instanceof Error ? error.message : '图表渲染失败'
   }
   finally {
+    scratch?.remove()
     if (token === currentRenderToken) {
       loading.value = false
     }
@@ -126,10 +142,14 @@ const renderDiagram = async (): Promise<void> => {
 }
 
 onMounted(() => {
-  renderDiagram()
+  darkTheme = document.documentElement.classList.contains('dark')
+  void renderDiagram()
   if (typeof document !== 'undefined') {
     observer = new MutationObserver(() => {
-      renderDiagram()
+      const next = document.documentElement.classList.contains('dark')
+      if (next === darkTheme) return
+      darkTheme = next
+      void renderDiagram()
     })
     observer.observe(document.documentElement, {
       attributes: true,
@@ -147,8 +167,8 @@ onBeforeUnmount(() => {
 })
 
 watch(() => props.code, () => {
-  nextTick(renderDiagram)
-})
+  void renderDiagram()
+}, { flush: 'sync' })
 </script>
 
 <template>

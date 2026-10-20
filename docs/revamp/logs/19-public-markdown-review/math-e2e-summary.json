@@ -1,0 +1,85 @@
+{
+  "generatedAt": "2026-10-20T08:01:36.914Z",
+  "workDir": "E:\\Taropoi\\workspace\\GuatSWR_Website\\web\\.e2e-isolated\\codex-markdown-gutter-math",
+  "totalShards": 2,
+  "maxPerBatch": 2,
+  "batches": [
+    {
+      "index": 1,
+      "exitCode": 0
+    },
+    {
+      "index": 2,
+      "exitCode": 0
+    }
+  ],
+  "merge": {
+    "ok": true,
+    "exitCode": 0,
+    "error": null,
+    "blobCount": 2,
+    "missingBlobs": []
+  },
+  "ok": true,
+  "declared": 4,
+  "counts": {
+    "passed": 4,
+    "expected": 4,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 4
+  },
+  "failedBatches": [],
+  "declaredSkips": [],
+  "tests": [
+    {
+      "identity": "desktop::public-math-visual.spec.ts::12:3::public-math-visual.spec.ts > formulas and prose match the actual archived renderer (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "desktop::public-math-visual.spec.ts::12:3::public-math-visual.spec.ts > formulas and prose match the actual archived renderer (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 1,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-math-visual.spec.ts::12:3::public-math-visual.spec.ts > formulas and prose match the actual archived renderer (dark)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    },
+    {
+      "identity": "mobile::public-math-visual.spec.ts::12:3::public-math-visual.spec.ts > formulas and prose match the actual archived renderer (light)",
+      "status": "expected",
+      "expectedStatus": "passed",
+      "attempts": 1,
+      "retries": 0,
+      "finalStatus": "passed",
+      "attachments": [],
+      "errors": [],
+      "batch": 2,
+      "exitCode": 0
+    }
+  ]
+}

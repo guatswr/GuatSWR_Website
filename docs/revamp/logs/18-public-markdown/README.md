@@ -1,5 +1,10 @@
 # Public Markdown KaTeX and Mermaid Parity — Acceptance
 
+**Independent review supersedes the acceptance claim:** nine regressions were
+reproduced and an actual diagram-bearing article exceeds the initial JS budget.
+See [log 19](../19-public-markdown-review/README.md). The original implementation
+report below is retained as handoff history, not final acceptance.
+
 2026-10-20, Antigravity pair programming. Workstream: Checklist #24.
 
 ## Objective & Scope

@@ -9,7 +9,7 @@
  * shown is the *actual* outcome (`app/utils/clipboard.ts`), reported through a
  * polite live region. Timers and callbacks are dropped after unmount.
  */
-import { computed, onBeforeUnmount, ref } from 'vue'
+import { computed, onBeforeUnmount, ref, useId, watch } from 'vue'
 import { copyText } from '~/utils/clipboard'
 import type { ClipboardAdapter } from '~/utils/clipboard'
 
@@ -22,6 +22,9 @@ const props = withDefaults(defineProps<{
 })
 
 const pre = ref<HTMLPreElement | null>(null)
+const diagramVisible = ref(false)
+const diagramId = useId()
+watch(() => props.rawCode, () => { diagramVisible.value = false }, { flush: 'sync' })
 const state = ref<'idle' | 'copied' | 'failed'>('idle')
 let resetTimer: ReturnType<typeof setTimeout> | undefined
 let disposed = false
@@ -94,26 +97,37 @@ onBeforeUnmount(() => {
 
 <template>
   <div v-if="language === 'mermaid'" class="md-mermaid-wrapper">
-    <ClientOnly>
-      <SafeMarkdownMermaid :code="rawCode" />
-      <template #fallback>
-        <div class="md-code">
-          <div class="md-code-head">
-            <span class="md-code-lang">mermaid</span>
-            <button
-              type="button"
-              class="md-code-copy"
-              aria-label="复制 mermaid 代码"
-              @click="copy"
-            >
-              {{ buttonLabel }}
-            </button>
-          </div>
-          <pre ref="pre"><slot /></pre>
-          <span class="md-code-status" role="status" aria-live="polite">{{ statusText }}</span>
+    <details :open="!diagramVisible" class="md-diagram-source">
+      <summary>Mermaid 图表源码</summary>
+      <div class="md-code">
+        <div class="md-code-head">
+          <span class="md-code-lang">mermaid</span>
+          <button
+            type="button"
+            class="md-code-copy"
+            aria-label="复制 mermaid 代码"
+            @click="copy"
+          >
+            {{ buttonLabel }}
+          </button>
         </div>
-      </template>
-    </ClientOnly>
+        <pre ref="pre"><slot /></pre>
+        <span class="md-code-status" role="status" aria-live="polite">{{ statusText }}</span>
+      </div>
+    </details>
+    <button
+      type="button"
+      class="md-diagram-toggle"
+      :aria-expanded="diagramVisible"
+      :aria-controls="diagramId"
+      @click="diagramVisible = !diagramVisible"
+    >{{ diagramVisible ? '隐藏图表' : '显示图表' }}</button>
+    <p class="md-diagram-help">图表源码可直接阅读与复制；启用 JavaScript 后可显示图表。</p>
+    <div :id="diagramId" :hidden="!diagramVisible">
+      <ClientOnly v-if="diagramVisible">
+        <SafeMarkdownMermaid :code="rawCode" />
+      </ClientOnly>
+    </div>
   </div>
   <div v-else class="md-code">
     <div class="md-code-head">
@@ -133,6 +147,25 @@ onBeforeUnmount(() => {
 </template>
 
 <style scoped>
+.md-diagram-source summary {
+  cursor: pointer;
+  min-height: 44px;
+  padding: 0.5rem 0;
+}
+.md-diagram-source .md-code-head { height: 44px; }
+.md-diagram-source .md-code-copy { min-height: 44px; }
+.md-diagram-help { font-size: 0.875em; }
+.md-diagram-toggle {
+  min-height: 44px;
+  padding: 0.5rem 0.875rem;
+  margin-bottom: 0.5rem;
+  border: 1px solid currentColor;
+  border-radius: 0.25rem;
+  color: #0369a1;
+  cursor: pointer;
+}
+.md-diagram-toggle:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.dark .md-diagram-toggle { color: #7dd3fc; }
 .md-code {
   position: relative;
   margin-bottom: 1.2em;
@@ -141,7 +174,7 @@ onBeforeUnmount(() => {
   background-color: #f3f4f6;
 }
 
-:global(.dark) .md-code {
+.dark .md-code {
   background-color: #111827;
 }
 
@@ -158,7 +191,7 @@ onBeforeUnmount(() => {
   color: #a9b7c6;
 }
 
-:global(.dark) .md-code-head {
+.dark .md-code-head {
   background-color: #1a1a1a;
 }
 

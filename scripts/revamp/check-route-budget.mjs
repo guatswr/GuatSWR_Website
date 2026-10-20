@@ -38,7 +38,7 @@ import {
 } from './route-budget.mjs'
 
 const FIXTURE_PORT = 3381
-const UPSTREAM_SCRIPT = 'web/tests/fixtures/upstream.mjs'
+const UPSTREAM_SCRIPT = 'web/tests/fixtures/budget-upstream.mjs'
 
 function fail(message) {
   console.error(`route-budget: ${message}`)

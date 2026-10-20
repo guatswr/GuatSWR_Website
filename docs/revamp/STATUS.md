@@ -2,9 +2,24 @@
 
 Updated: 2026-10-20 (Asia/Shanghai). Branch: `revamp/nuxt-foundation`.
 
-Latest accepted local improvement: public Markdown formula (KaTeX) and diagram (Mermaid) parity on `/activity/:id` (Checklist item #24 complete).
-Formulas are preprocessed and rendered to KaTeX HTML server-side with strict currency/code preservation and scoped style sanitization (0 client JS overhead). Mermaid diagrams are client-only lazy hydrated on demand via dynamic import and DOMPurify sanitization (0 KB initial JS overhead for articles without diagrams).
-Four recursive gates pass **774 units** (73 shared + 701 web, including 7 focused tests in `public-markdown-parity.test.ts`), lint 0 errors / 35 pre-existing warnings. All **14** initial JS graphs pass **119907–135910 B gzip**, zero maps. Activity detail and visual parity E2E passed. See [log 18](logs/18-public-markdown/README.md).
+Latest correction checkpoint: independent Markdown review of `11e9bcc`.
+The user's **click “显示图表” before downloading Mermaid** decision is verified,
+with readable SSR source and unchanged JS budget. Nine math regressions,
+generated-node provenance, MathML, typography, matrix clipping and dark CSS
+are corrected. Four recursive gates pass **783 units**; lint **0 errors / 34
+warnings**. **72/72** final E2E cases pass, 36 fresh batches, no retry/flaky/skip;
+**50** archive comparison regions have zero differing pixels. **15/15** JS
+graphs pass **122334–137112 B gzip**; advanced article **130206 B**, versus at
+least 360073 B of automatic scripts before explicit activation. Whole output
+contains **0 maps**; tooling **56/56**. See [log 19](logs/19-public-markdown-review/README.md).
+This verifies scoped interaction/common-formula corrections. Item #24 remains
+open for code-fence palette and additional math-style coverage; no palette or
+budget exception granted. Current local Lighthouse **fails**: home **1811.9 ms /
+99**, layout **1809.7 ms / 98**, all valid slow samples retained. Performance,
+broader accessibility/security/monitoring and final CI remain open.
+Incoming `11e9bcc` CI is checked: Windows and Linux container pass; Ubuntu
+E2E passes 254/254 without flakes, but home LCP remains **2486.9 ms**, above
+1800 ms. This is an open final acceptance blocker, not an all-green CI result.
 
 Previous accepted local improvement: native idle hydration for homepage interests/
 about and the shared footer, preserving complete SSR text, images and links.

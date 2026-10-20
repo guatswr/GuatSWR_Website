@@ -1,0 +1,471 @@
+{
+  "kind": "real public BFF advanced-content diagnostic; script gzip lower bound, not full route-graph acceptance",
+  "complete": true,
+  "source": "## 高阶公式与图表回归\n\n价格$5，公式$x+1$，结束。\n\n$\\sqrt{x}+\\frac{1}{2}$\n\n$$\\begin{pmatrix}a&b\\\\c&d\\end{pmatrix}$$\n\n```mermaid\n\ngraph TD\n\nA[开始] --> B[完成]\n\n```\n\n```mermaid\n\nsequenceDiagram\n\nA->>B: hello\n\n```",
+  "scripts": [
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BVFCwOLB.js",
+      "rawBytes": 75928,
+      "gzipBytes": 27993,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CfdtqJqy.js",
+      "rawBytes": 8155,
+      "gzipBytes": 3290,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DSJ9I3OW.js",
+      "rawBytes": 645,
+      "gzipBytes": 392,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/B6BQ63_j.js",
+      "rawBytes": 4473,
+      "gzipBytes": 1933,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BOyrFrfl.js",
+      "rawBytes": 7095,
+      "gzipBytes": 2857,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Sgx1EDkI.js",
+      "rawBytes": 5121,
+      "gzipBytes": 2355,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CMrBy46C.js",
+      "rawBytes": 25071,
+      "gzipBytes": 9767,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/D9D_YlD4.js",
+      "rawBytes": 87399,
+      "gzipBytes": 33623,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CRzLMJPS.js",
+      "rawBytes": 1534,
+      "gzipBytes": 798,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/5cp2QQHo.js",
+      "rawBytes": 8420,
+      "gzipBytes": 3001,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Z6wf_6C_.js",
+      "rawBytes": 14285,
+      "gzipBytes": 5456,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BYL4P5Fy.js",
+      "rawBytes": 14310,
+      "gzipBytes": 5612,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DaHURu0p.js",
+      "rawBytes": 2024,
+      "gzipBytes": 973,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Ctkmp6sU.js",
+      "rawBytes": 8743,
+      "gzipBytes": 3777,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/zpi1tOVb.js",
+      "rawBytes": 7343,
+      "gzipBytes": 2945,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Fm6F54P4.js",
+      "rawBytes": 354,
+      "gzipBytes": 238,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BT8SwSdH.js",
+      "rawBytes": 63,
+      "gzipBytes": 79,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BdxEFRlt.js",
+      "rawBytes": 7297,
+      "gzipBytes": 3402,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/D6kMY_Hi.js",
+      "rawBytes": 5975,
+      "gzipBytes": 2626,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/iPgA_P9M.js",
+      "rawBytes": 9301,
+      "gzipBytes": 4191,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BZvgyWoc.js",
+      "rawBytes": 8970,
+      "gzipBytes": 3598,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BmKZ6mk2.js",
+      "rawBytes": 49,
+      "gzipBytes": 67,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DJ-RaCFY.js",
+      "rawBytes": 87,
+      "gzipBytes": 97,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DM5ElrLI.js",
+      "rawBytes": 986,
+      "gzipBytes": 638,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/D9GtEUMG.js",
+      "rawBytes": 201,
+      "gzipBytes": 175,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DUXkNvXe.js",
+      "rawBytes": 14008,
+      "gzipBytes": 5074,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DxIMAfLU.js",
+      "rawBytes": 1706,
+      "gzipBytes": 836,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Bjn10C-V.js",
+      "rawBytes": 1061,
+      "gzipBytes": 680,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Dnl39Kfn.js",
+      "rawBytes": 1371,
+      "gzipBytes": 805,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BTWoYO0U.js",
+      "rawBytes": 1230,
+      "gzipBytes": 752,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/XKyaHtl9.js",
+      "rawBytes": 726,
+      "gzipBytes": 429,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DsF7k-Jl.js",
+      "rawBytes": 155,
+      "gzipBytes": 143,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CEKYzbOW.js",
+      "rawBytes": 29093,
+      "gzipBytes": 11432,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DgJ50xX3.js",
+      "rawBytes": 45637,
+      "gzipBytes": 15874,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CsIoZrv0.js",
+      "rawBytes": 77920,
+      "gzipBytes": 26091,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/C9aRIb-8.js",
+      "rawBytes": 207797,
+      "gzipBytes": 24829,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BVC9VJMa.js",
+      "rawBytes": 2156,
+      "gzipBytes": 967,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CWiCMZki.js",
+      "rawBytes": 2090,
+      "gzipBytes": 815,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DzAFac54.js",
+      "rawBytes": 923,
+      "gzipBytes": 559,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CTmqaEjo.js",
+      "rawBytes": 1819,
+      "gzipBytes": 880,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BHeW_MfU.js",
+      "rawBytes": 5799,
+      "gzipBytes": 2650,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DbEN-Lb9.js",
+      "rawBytes": 30720,
+      "gzipBytes": 8457,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/9ggsn7sG.js",
+      "rawBytes": 46130,
+      "gzipBytes": 14601,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DbN5JoZM.js",
+      "rawBytes": 917,
+      "gzipBytes": 444,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BifhSqXX.js",
+      "rawBytes": 107,
+      "gzipBytes": 112,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/fybaL0A-.js",
+      "rawBytes": 2278,
+      "gzipBytes": 977,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Dy-Kn_BL.js",
+      "rawBytes": 27109,
+      "gzipBytes": 8785,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/D8NXA4fh.js",
+      "rawBytes": 33817,
+      "gzipBytes": 7225,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CoDWxbjD.js",
+      "rawBytes": 101731,
+      "gzipBytes": 24603,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CjDORHx0.js",
+      "rawBytes": 1933,
+      "gzipBytes": 854,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DPN8fQkL.js",
+      "rawBytes": 243,
+      "gzipBytes": 208,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/B9Cm_dvm.js",
+      "rawBytes": 348,
+      "gzipBytes": 194,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DOg8FL_3.js",
+      "rawBytes": 540,
+      "gzipBytes": 372,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DDzIZD0p.js",
+      "rawBytes": 99,
+      "gzipBytes": 109,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CHdTS7qa.js",
+      "rawBytes": 347,
+      "gzipBytes": 257,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/D28aTC_e.js",
+      "rawBytes": 59997,
+      "gzipBytes": 19078,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/B8M5KNRf.js",
+      "rawBytes": 1960,
+      "gzipBytes": 1003,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Bg9n_c5T.js",
+      "rawBytes": 8629,
+      "gzipBytes": 3276,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DEJdukHB.js",
+      "rawBytes": 5688,
+      "gzipBytes": 2244,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CZSvJMeO.js",
+      "rawBytes": 4881,
+      "gzipBytes": 1971,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DpHvdM5u.js",
+      "rawBytes": 16492,
+      "gzipBytes": 5771,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DpkdgeRQ.js",
+      "rawBytes": 31542,
+      "gzipBytes": 11257,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/tgPDzVaV.js",
+      "rawBytes": 146,
+      "gzipBytes": 145,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DXeztbXo.js",
+      "rawBytes": 203,
+      "gzipBytes": 182,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/Bs6LyjzE.js",
+      "rawBytes": 748,
+      "gzipBytes": 448,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/B96UU-FA.js",
+      "rawBytes": 3532,
+      "gzipBytes": 1717,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/BCFn52e9.js",
+      "rawBytes": 6984,
+      "gzipBytes": 2637,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/CTgm3pse.js",
+      "rawBytes": 176,
+      "gzipBytes": 148,
+      "initialWindow": true
+    },
+    {
+      "url": "http://127.0.0.1:4500/_nuxt/DE9sR62r.js",
+      "rawBytes": 115647,
+      "gzipBytes": 30299,
+      "initialWindow": true
+    }
+  ],
+  "console": [],
+  "pageErrors": [],
+  "ssr": {
+    "mathml": true,
+    "containsSource": true
+  },
+  "initialScriptGzipBytes": 360073,
+  "allObservedScriptGzipBytes": 360073,
+  "dom": {
+    "mathml": 3,
+    "paths": [
+      {
+        "d": 487,
+        "width": 7050.44287109375
+      }
+    ],
+    "diagrams": 2,
+    "foreignObjects": 0,
+    "currency": true,
+    "fills": [
+      "rgb(51, 51, 51)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)",
+      "rgb(236, 236, 255)"
+    ]
+  },
+  "dark": {
+    "dark": true,
+    "diagrams": 2,
+    "fills": [
+      "rgb(204, 204, 204)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)",
+      "rgb(31, 32, 32)"
+    ]
+  }
+}

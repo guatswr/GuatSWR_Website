@@ -1,0 +1,162 @@
+[
+  {
+    "path": "docs/revamp/CHECKLIST.md",
+    "kind": "modified"
+  },
+  {
+    "path": "docs/revamp/STATUS.md",
+    "kind": "modified"
+  },
+  {
+    "path": "docs/revamp/logs/18-public-markdown/README.md",
+    "kind": "modified"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/README.md",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-dark-activated.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-dark.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-desktop-network.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-e2e-summary.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-light-activated.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-light.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-mobile-network.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/advanced-probe.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/evidence.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/files.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/incoming-ci.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/lighthouse-summary.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/math-e2e-summary.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/math-mobile-light-archive-raw.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/math-mobile-light-diff.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/math-mobile-light-nuxt-raw.png",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/regression-e2e-summary.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/19-public-markdown-review/route-budget.json",
+    "kind": "new"
+  },
+  {
+    "path": "docs/revamp/logs/README.md",
+    "kind": "modified"
+  },
+  {
+    "path": "scripts/revamp/check-route-budget.mjs",
+    "kind": "modified"
+  },
+  {
+    "path": "scripts/revamp/route-fixtures.json",
+    "kind": "modified"
+  },
+  {
+    "path": "web/app/components/SafeMarkdown.vue",
+    "kind": "modified"
+  },
+  {
+    "path": "web/app/components/SafeMarkdownMermaid.client.vue",
+    "kind": "modified"
+  },
+  {
+    "path": "web/app/components/SafeMarkdownPre.vue",
+    "kind": "modified"
+  },
+  {
+    "path": "web/app/utils/safe-markdown-render.ts",
+    "kind": "modified"
+  },
+  {
+    "path": "web/scripts/archive-math-reference.mjs",
+    "kind": "new"
+  },
+  {
+    "path": "web/server/utils/markdown.ts",
+    "kind": "modified"
+  },
+  {
+    "path": "web/server/utils/public-math.ts",
+    "kind": "new"
+  },
+  {
+    "path": "web/shared/markdown.ts",
+    "kind": "modified"
+  },
+  {
+    "path": "web/tests/e2e/public-markdown-advanced.spec.ts",
+    "kind": "new"
+  },
+  {
+    "path": "web/tests/e2e/public-math-visual.spec.ts",
+    "kind": "new"
+  },
+  {
+    "path": "web/tests/fixtures/auth-upstream.mjs",
+    "kind": "modified"
+  },
+  {
+    "path": "web/tests/fixtures/budget-upstream.mjs",
+    "kind": "new"
+  },
+  {
+    "path": "web/tests/fixtures/public-markdown-advanced.mjs",
+    "kind": "new"
+  },
+  {
+    "path": "web/tests/public-markdown-parity.test.ts",
+    "kind": "modified"
+  },
+  {
+    "path": "web/tests/public-markdown-review.test.ts",
+    "kind": "new"
+  }
+]

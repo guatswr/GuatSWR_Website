@@ -228,13 +228,17 @@ withDefaults(defineProps<{
 
 .safe-markdown :deep(.katex-display) {
   margin: 1em 0;
+  /* Scroll clipping must retain the last raster row of tall delimiters.
+     Trade one pixel of bottom margin for padding, preserving prose geometry. */
+  margin-bottom: calc(1em - 1px);
+  padding-bottom: 1px;
   overflow-x: auto;
   overflow-y: hidden;
-  padding: 0.5em 0;
 }
 
 .safe-markdown :deep(.katex) {
-  font-size: 1.1em;
+  /* Archived KaTeX stylesheet's 1.21em ratio; retain its glyph geometry. */
+  font-size: 1.21em;
   text-rendering: auto;
 }
 

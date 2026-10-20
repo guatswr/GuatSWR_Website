@@ -21,15 +21,13 @@
  * languages keep their plain text.
  */
 import { parseMarkdown } from '@nuxtjs/mdc/runtime'
-import katex from 'katex'
+import { prepareMath, attachGeneratedMath } from './public-math'
 import { plainTextAst, sanitizeMarkdownAst } from '#shared/markdown'
 import type { RawMarkdownNode, SafeMarkdownResult } from '#shared/markdown'
 import { highlightCode } from './highlight'
 
 /** Parse bound: protects the render path from one oversized record. */
 const MAX_PARSE_LENGTH = 200_000
-/** Bound on individual math formula expression length (CPU DoS defence). */
-const MAX_FORMULA_LENGTH = 10_000
 /** Bound on highlighting work per document (CPU, not correctness). */
 const MAX_HIGHLIGHTED_BLOCKS = 24
 /**
@@ -85,70 +83,6 @@ const textOf = (node: RawMarkdownNode): string => {
   return children.map(textOf).join('')
 }
 
-const renderKatex = (formula: string, displayMode: boolean): string => {
-  if (formula.length > MAX_FORMULA_LENGTH) {
-    return displayMode ? `$$\n${formula}\n$$` : `$${formula}$`
-  }
-  try {
-    return katex.renderToString(formula, {
-      displayMode,
-      output: 'html',
-      throwOnError: false,
-      trust: false,
-      maxSize: 20,
-      maxExpand: 1000,
-    })
-  }
-  catch {
-    return displayMode ? `$$\n${formula}\n$$` : `$${formula}$`
-  }
-}
-
-/**
- * Replace authored math syntax with server-rendered KaTeX HTML before passing
- * to `@nuxtjs/mdc`'s `parseMarkdown`. Code blocks (```, ~~~), inline code (`),
- * escaped dollar signs (\$) and plain currency prices ($5) are preserved.
- */
-export function preprocessMath(markdown: string): string {
-  const combined = /(```(?:math|katex)\r?\n([\s\S]*?)\r?\n```|```[\s\S]*?```|~~~[\s\S]*?~~~|`[^`\r\n]+`|\\\$|\$\$([\s\S]+?)\$\$|\$([^$\r\n]+?)\$)/g
-  let result = ''
-  let lastIndex = 0
-  let match: RegExpExecArray | null
-  while ((match = combined.exec(markdown)) !== null) {
-    const matchedText = match[0]
-    result += markdown.slice(lastIndex, match.index)
-    lastIndex = match.index + matchedText.length
-    if (match[2] !== undefined) {
-      // ```math or ```katex fenced block
-      const formula = match[2].trim()
-      result += `\n\n${renderKatex(formula, true)}\n\n`
-    }
-    else if (matchedText.startsWith('```') || matchedText.startsWith('~~~') || matchedText.startsWith('`') || matchedText === '\\$') {
-      // Ordinary code fence, inline code span or escaped dollar: preserve as-is
-      result += matchedText
-    }
-    else if (match[3] !== undefined) {
-      // Display math $$...$$
-      const formula = match[3].trim()
-      result += `\n\n${renderKatex(formula, true)}\n\n`
-    }
-    else if (match[4] !== undefined) {
-      // Inline math $...$
-      const content = match[4]
-      // Pandoc/CommonMark math rules: inline math cannot start or end with a space,
-      // and plain digits ($5 or $10.50) are currency, not math.
-      if (content.startsWith(' ') || content.endsWith(' ') || /^\d+(?:[.,]\d+)?$/.test(content)) {
-        result += matchedText
-      }
-      else {
-        result += renderKatex(content.trim(), false)
-      }
-    }
-  }
-  result += markdown.slice(lastIndex)
-  return result
-}
-
 const languageOf = (node: RawMarkdownNode): string | null => {
   const props = isRecord(node.props) ? node.props : {}
   if (typeof props.language === 'string' && props.language) return props.language
@@ -201,19 +135,20 @@ export async function renderSafeMarkdown(markdown: string): Promise<SafeMarkdown
   // Not truncated: the caller falls back to the whole text.
   if (source.length > MAX_PARSE_LENGTH) return plainResult(source)
   try {
-    const preprocessed = preprocessMath(source)
+    const prepared = prepareMath(source)
     // MDC's own highlight plugin stays off (it is disabled in this project's
     // module defaults anyway); `./highlight` colours the fences explicitly.
-    const parsed = await parseMarkdown(preprocessed, { highlight: false, configs: [{
+    const parsed = await parseMarkdown(prepared.markdown, { highlight: false, configs: [{
       unified: { post: processor => processor.use(preserveRootProse) },
     }] })
     // `parsed.data` (frontmatter) is intentionally ignored: it is parser output
     // from user content, never render configuration.
     // Refuse to walk a pathological tree: the whole article is returned as
     // escaped plain text by the caller instead of being silently cut short.
+    const mathNodes = await attachGeneratedMath(parsed.body, prepared.formulas)
     if (!astWithinBudget(parsed.body)) return plainResult(source)
     await highlightBlocks(parsed.body, { blocks: 0 })
-    const result = sanitizeMarkdownAst(parsed.body)
+    const result = sanitizeMarkdownAst(parsed.body, mathNodes)
     return result.complete ? result : plainResult(source)
   }
   catch {

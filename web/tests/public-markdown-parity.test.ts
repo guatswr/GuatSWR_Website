@@ -13,7 +13,8 @@
  * 5. Formula errors degrade gracefully with error tokens, never throwing 500/502.
  */
 import { describe, expect, it } from 'vitest'
-import { preprocessMath, renderSafeMarkdown } from '../server/utils/markdown'
+import { renderSafeMarkdown } from '../server/utils/markdown'
+import { preprocessMath } from '../server/utils/public-math'
 import type { SafeMarkdownNode } from '../shared/markdown'
 
 const flatten = (nodes: readonly SafeMarkdownNode[]): string => nodes

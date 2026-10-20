@@ -3,6 +3,7 @@
     { "name": "home", "path": "/", "mainContent": "桂航绯想天" },
     { "name": "activities", "path": "/activities", "mainContent": "社团活动记录" },
     { "name": "activity detail", "path": "/activity/1", "mainContent": "秋季例会" },
+    { "name": "advanced activity detail (math and diagrams before activation)", "path": "/activity/991", "mainContent": "高阶公式与图表回归" },
     { "name": "members", "path": "/members", "mainContent": "绯想天住民名录" },
     { "name": "history", "path": "/history", "mainContent": "绯想天群史" },
     { "name": "logs", "path": "/logs", "mainContent": "日志档案" },

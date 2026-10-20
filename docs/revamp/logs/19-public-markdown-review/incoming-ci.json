@@ -1,0 +1,34 @@
+{
+  "revision": "11e9bcc6914ef9b5002b52ec7e4c78a04282e23c",
+  "runId": 39382869333,
+  "url": "https://github.com/guatswr/GuatSWR_Website/actions/runs/39382869333",
+  "jobs": [
+    {
+      "id": 118495766527,
+      "name": "foundation (windows-latest)",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 118495766820,
+      "name": "foundation (ubuntu-latest)",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 118495766921,
+      "name": "linux-container",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ],
+  "ubuntuKeyLogLines": [
+    "2026-10-20T07:09:40.3970342Z passed 254/254, flaky 0, failed 0, skipped 0",
+    "2026-10-20T07:11:09.2336583Z           \"lcpMs\": 2756.524375",
+    "2026-10-20T07:11:09.2337946Z           \"lcpMs\": 2038.8377",
+    "2026-10-20T07:11:09.2339232Z           \"lcpMs\": 2486.8903",
+    "2026-10-20T07:11:09.2340853Z         \"lcpMs\": 2486.8903",
+    "2026-10-20T07:11:09.2821147Z Error: Mobile performance budget exceeded — / median 2486.9 ms, score 97 | /__revamp/layout median 1066.8 ms, score 99",
+    "2026-10-20T07:11:09.4115014Z ##[error]Mobile performance budget exceeded — / median 2486.9 ms, score 97 | /__revamp/layout median 1066.8 ms, score 99 / median 2486.9 ms score 97 runs [2757/2039/2487] || /__revamp/layout median 1066.8 ms score 99 runs [1067/1668/1066]"
+  ]
+}
