@@ -50,11 +50,11 @@ export default defineConfig({
     port: 5173,
     proxy: {
       '/api': {
-        target: process.env.DEV_API_TARGET || 'http://localhost:8080',
+        target: process.env.DEV_API_TARGET || 'http://localhost:8088',
         changeOrigin: true,
       },
       '/uploads': {
-        target: process.env.DEV_API_TARGET || 'http://localhost:8080',
+        target: process.env.DEV_API_TARGET || 'http://localhost:8088',
         changeOrigin: true,
       }
     }

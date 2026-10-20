@@ -31,7 +31,7 @@ export default defineNuxtConfig({
     tsConfig: { compilerOptions: { noUncheckedIndexedAccess: true } },
   },
   runtimeConfig: {
-    apiBase: 'http://127.0.0.1:8080',
+    apiBase: 'http://127.0.0.1:8088',
     session: {
       password: '',
       name: 'guatswr-next',
@@ -131,6 +131,7 @@ export default defineNuxtConfig({
     '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
   security: {
+    rateLimiter: false,
     headers: {
       contentSecurityPolicy: {
         'img-src': ["'self'", 'data:'],

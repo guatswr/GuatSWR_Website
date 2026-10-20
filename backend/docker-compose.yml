@@ -3,13 +3,11 @@ services:
     build:
       context: .
       args:
-        IMAGE_REGISTRY: docker.1panel.live/library/
-        APT_MIRROR: http://mirrors.aliyun.com/debian
-        APT_SECURITY_MIRROR: http://mirrors.aliyun.com/debian-security
+        IMAGE_REGISTRY: ""
     container_name: guatswr_backend
     restart: always
     ports:
-      - "8080:3000"
+      - "8088:3000"
     volumes:
       - ./:/app
       - /app/node_modules
