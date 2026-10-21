@@ -64,18 +64,33 @@ function handleOutside(event: Event) {
 function handleActivityFocusOut(event: FocusEvent) {
   if (event.currentTarget instanceof HTMLElement && (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node))) isActivitiesOpen.value = false
 }
-function handleScroll() {
+let scrollFrame: number | null = null
+
+function updateScrollState() {
+  scrollFrame = null
+  const scrollY = window.scrollY
   const threshold = route.path === '/' ? Math.max(64, window.innerHeight * 0.6) : 16
-  isScrolled.value = window.scrollY > threshold
+  const nextScrolled = scrollY > threshold
+  if (isScrolled.value !== nextScrolled) {
+    isScrolled.value = nextScrolled
+  }
   const scrollable = document.documentElement.scrollHeight - window.innerHeight
-  readingProgress.value = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0
+  const nextProgress = scrollable > 0 ? Math.min(1, Math.max(0, scrollY / scrollable)) : 0
+  if (Math.abs(readingProgress.value - nextProgress) > 0.002) {
+    readingProgress.value = nextProgress
+  }
+}
+
+function handleScroll() {
+  if (scrollFrame !== null) return
+  scrollFrame = window.requestAnimationFrame(updateScrollState)
 }
 watch(() => route.fullPath, () => {
   closeMenus()
-  if (import.meta.client) window.requestAnimationFrame(handleScroll)
+  if (import.meta.client) window.requestAnimationFrame(updateScrollState)
 })
 onMounted(() => {
-  handleScroll()
+  updateScrollState()
   desktopQuery = window.matchMedia('(min-width: 1024px)')
   desktopQuery.addEventListener('change', closeMenus)
   window.addEventListener('scroll', handleScroll, { passive: true })
@@ -85,6 +100,10 @@ onMounted(() => {
   document.addEventListener('keydown', handleEscape)
 })
 onBeforeUnmount(() => {
+  if (scrollFrame !== null) {
+    window.cancelAnimationFrame(scrollFrame)
+    scrollFrame = null
+  }
   desktopQuery?.removeEventListener('change', closeMenus)
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('resize', handleScroll)
@@ -466,6 +485,7 @@ v-for="link in navLinks"
   background: rgb(251 251 248 / 0.96);
   border-bottom: 1px solid rgb(148 163 184 / 0.22);
   backdrop-filter: blur(14px);
+  transform: translateZ(0);
   transition:
     background-color 250ms ease,
     color 250ms ease,

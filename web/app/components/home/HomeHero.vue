@@ -264,7 +264,6 @@ defineProps({
   .club-banner {
     min-height: 100vh;
     min-height: 100svh;
-    min-height: 100dvh;
     padding-top: max(4rem, calc(env(safe-area-inset-top) + 4rem));
   }
   .club-banner-shade {
