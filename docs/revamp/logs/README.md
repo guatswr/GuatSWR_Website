@@ -31,6 +31,7 @@ accepted; these logs are the evidence behind them.
 
 | Workstream | Directory | State |
 | --- | --- | --- |
+| Structure / import boundaries / fixture ownership | [`26-structure-improvements/`](26-structure-improvements/README.md) | 793 units after retained limiter timeout, 65 tooling tests, 127 import scans, 58/58 E2E and 54 zero-difference regions; old backend/frontend/config and active previews preserved; full migration remains open |
 | Public navigation progress feedback | [`25-route-progress/`](25-route-progress/README.md) | 791 units, 16/16 progress + 26/26 mixed regression E2E, 30 zero-difference regions, 15 JS graphs and zero maps; updated local 3101 preview, original 3100 preserved |
 | Public page navigation continuity | [`24-page-transitions/`](24-page-transitions/README.md) | 16/16 normal/reduced-motion navigation checks, 28/28 existing regression, 62 zero-difference regions, 785 units, 15 JS graphs and zero maps; separate local preview on 3101, original 3100 preserved |
 | Approved public accessibility colours / targets | [`23-approved-accessibility/`](23-approved-accessibility/README.md) | 785 units, 132/132 regression, 98 approved-reference zero-difference regions, 15 JS graphs; 56 closed + 11 interaction states strictly pass; empty-board/dark-rules diagnostics and complete #80 remain open |

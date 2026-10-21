@@ -1,3 +1,4 @@
+import { isPublicFixtureActivity, projectFixtureActivityDetail, projectFixtureMember, compareFixtureHistory, parseList } from './public-contract.mjs'
 import { readFileSync } from 'node:fs'
 
 /**
@@ -416,12 +417,6 @@ export const publicUmamiFixture = {
 const PUBLIC_EVENT_STATUSES = ['published', 'ongoing', 'ended', 'settled']
 const SIGNUP_TYPES = ['STG', '则则']
 
-/** Author id -> public display columns, mirroring the archived joins. */
-const FIXTURE_USERS = {
-  1: { username: 'Taropoi', avatar: '/uploads/img/user/1-thumb.webp' },
-  2: { username: 'Cirno', avatar: '/uploads/img/user/2-thumb.webp' },
-}
-
 /** Observable fixture state for in-process tests (E2E reads the config marker). */
 export const publicFixtureState = { requests: [], credentialHeaders: [] }
 
@@ -439,29 +434,6 @@ const json = (response, status, body) => {
 
 const notFound = response => json(response, 404, { message: 'Not Found' })
 
-const parseList = (raw) => {
-  if (Array.isArray(raw)) return raw
-  if (typeof raw !== 'string' || !raw) return []
-  try {
-    const parsed = JSON.parse(raw)
-    return Array.isArray(parsed) ? parsed : []
-  }
-  catch {
-    return []
-  }
-}
-
-/** `buildThumbUrl` from the archived members route, without touching the disk. */
-const thumbnailUrl = (url) => {
-  if (!url || typeof url !== 'string' || url.includes('-thumb.webp') || url.endsWith('.svg')) return url
-  const clean = url.split(/[?#]/)[0]
-  const slash = clean.lastIndexOf('/')
-  if (slash === -1) return url
-  const name = clean.slice(slash + 1)
-  const dot = name.lastIndexOf('.')
-  return `${clean.slice(0, slash)}/${dot > 0 ? name.slice(0, dot) : name}-thumb.webp`
-}
-
 const paging = (url, defaultLimit = 20) => {
   const page = Math.max(1, Number.parseInt(url.searchParams.get('page') ?? '', 10) || 1)
   const limit = Math.min(100, Math.max(1, Number.parseInt(url.searchParams.get('limit') ?? '', 10) || defaultLimit))
@@ -469,7 +441,7 @@ const paging = (url, defaultLimit = 20) => {
 }
 
 const visibleActivities = () => publicActivitiesFixture
-  .filter(row => row.deleted_at === null && (row.status === null || row.status === 'published'))
+  .filter(isPublicFixtureActivity)
   .map(row => ({ ...row, images: parseList(row.images) }))
 
 const handleActivities = (url, response) => {
@@ -488,19 +460,8 @@ const handleActivities = (url, response) => {
     }
     const row = publicActivitiesFixture.find(item => item.id === Number(detail[1]))
     if (!row || row.deleted_at !== null || row.status === 'draft') return notFound(response)
-    const author = FIXTURE_USERS[row.created_by] ?? null
-    const editor = FIXTURE_USERS[row.updated_by] ?? null
     // The archived detail route aliases `created_by`/`updated_by` to display names.
-    return json(response, 200, {
-      ...row,
-      images: parseList(row.images),
-      created_by: author?.username ?? null,
-      created_by_avatar: author?.avatar ?? null,
-      created_by_name: author?.username ?? null,
-      updated_by: editor?.username ?? null,
-      updated_by_avatar: editor?.avatar ?? null,
-      updated_by_name: editor?.username ?? null,
-    })
+    return json(response, 200, projectFixtureActivityDetail(row))
   }
   if (url.pathname !== '/api/activities') return false
   const { page, limit, offset } = paging(url)
@@ -524,16 +485,8 @@ const handleMembers = (url, response) => {
   const school = url.searchParams.get('school')
   const rows = publicMembersFixture
     .filter(row => row.deleted_at === null && (!school || row.school === school))
-    .map(row => ({
-      ...row,
-      tags: parseList(row.tags),
-      avatar_thumb: thumbnailUrl(row.avatar),
-      avatar_original: row.avatar,
-    }))
-  const list = url.searchParams.get('original') === '1'
-    ? rows
-    : rows.map(row => ({ ...row, avatar: row.avatar_thumb || row.avatar }))
-  return json(response, 200, list)
+    .map(row => projectFixtureMember(row, url.searchParams.get('original') === '1'))
+  return json(response, 200, rows)
 }
 
 const handleEvents = (url, response) => {
@@ -639,7 +592,7 @@ export const handlePublicFixture = (request, response) => {
   if (url.pathname === '/api/history') {
     const rows = publicHistoryFixture
       .filter(row => row.deleted_at === null)
-      .sort((a, b) => String(a.date).localeCompare(String(b.date)) || a.sort_order - b.sort_order)
+      .sort(compareFixtureHistory)
     return json(response, 200, rows)
   }
   return (url.pathname.startsWith('/api/activities') && handleActivities(url, response))

@@ -1,3 +1,9 @@
+import { upstreamUnavailable, publicNotFound } from '../lib/public-read/errors'
+import { cancelUpstreamBody, readCappedText, readUpstreamJson, resolveUpstreamTimeout } from '../lib/public-read/transport'
+import type { PublicReadContext } from '../lib/public-read/transport'
+import { projectLog, projectLogStat } from '../lib/public-read/log-projection'
+import type { PublicPageQuery, PublicLogQuery, PublicUmamiQuery } from '../lib/public-read/query'
+
 import {
   PUBLIC_EVENT_STATUSES,
   activityDetailRowSchema,
@@ -38,7 +44,6 @@ import type {
   PublicEventParticipant,
   PublicEventsPage,
   PublicHistoryEntry,
-  PublicLog,
   PublicLogStat,
   PublicLogsPage,
   PublicMember,
@@ -50,6 +55,12 @@ import type {
 import { createError } from 'h3'
 import { assertUpstreamOrigin, upstreamUrl } from './upstream'
 
+// Stable public facade: callers and existing contract tests keep these imports.
+export * from '../lib/public-read/query'
+export { resolveUpstreamTimeout } from '../lib/public-read/transport'
+export type { PublicReadContext } from '../lib/public-read/transport'
+export { MAX_PUBLIC_LOG_DETAILS_LENGTH, PUBLIC_LOG_DETAILS_OMITTED } from '../lib/public-read/log-projection'
+
 /**
  * Read-only public adapters for the frozen v1 API.
  *
@@ -60,290 +71,15 @@ import { assertUpstreamOrigin, upstreamUrl } from './upstream'
  * allowlist and only then serializes the exported public DTO.
  */
 
-const DEFAULT_LIMIT = 20
-const MIN_LIMIT = 1
-const MAX_LIMIT = 100
-const MAX_PAGE = 100_000
-const MAX_QUERY_DIGITS = 9
-const MAX_TIMESTAMP_DIGITS = 15
-const MAX_FILTER_LENGTH = 50
-const MAX_TYPE_LENGTH = 32
-/**
- * Public audit-log descriptions are bounded before any redaction regex runs.
- * Every frozen `addLog` call site is a short sentence; 4096 UTF-16 code units
- * is far above legitimate data while keeping defensive scanning predictable.
- */
-export const MAX_PUBLIC_LOG_DETAILS_LENGTH = 4_096
-/** Fixed replacement for an over-bound log description (never a partial copy). */
-export const PUBLIC_LOG_DETAILS_OMITTED = '日志详情过长，已省略'
-/** Corruption guard only: legitimate lists are preserved in full. */
-const MAX_JSON_BYTES = 8 * 1024 * 1024
-const UPSTREAM_TIMEOUT_MS = 8_000
-
-const UMAMI_UNITS = new Set(['hour', 'day', 'month', 'year'])
-const UMAMI_ENV_TYPES = new Set(['browser', 'os', 'device'])
-
-/** Public readers never learn whether an unpublished id exists. */
-const upstreamUnavailable = () => createError({
-  statusCode: 502,
-  statusMessage: 'Public data unavailable',
-  message: '公开数据暂时无法加载，请稍后重试。',
-})
-
-const publicNotFound = () => createError({
-  statusCode: 404,
-  statusMessage: 'Not Found',
-  message: '内容不存在或未公开。',
-})
-
-const invalidQuery = (message: string) => createError({
-  statusCode: 400,
-  statusMessage: 'Invalid query',
-  message,
-})
-
 const unsupportedSignupList = () => createError({
   statusCode: 400,
   statusMessage: 'Unsupported event type',
   message: '该活动不支持公开报名名单。',
 })
 
-export interface PublicPageQuery {
-  page: number
-  limit: number
-}
-
-export interface PublicLogQuery extends PublicPageQuery {
-  username?: string | undefined
-  action?: string | undefined
-}
-
-export interface PublicUmamiQuery {
-  /** Omitted keeps the frozen route's last-seven-days default; explicit 0 asks for all time. */
-  startAt?: number | undefined
-  endAt?: number | undefined
-  unit: string
-  limit: number
-  envType: string
-}
-
-export type QuerySource = Record<string, unknown>
-
-const readScalar = (query: QuerySource, key: string): string | undefined => {
-  const value = query[key]
-  if (value === undefined || value === null || value === '') return undefined
-  if (Array.isArray(value)) throw invalidQuery(`参数 ${key} 只能传入一次`)
-  if (typeof value !== 'string') throw invalidQuery(`参数 ${key} 格式不正确`)
-  return value
-}
-
-const readDigits = (query: QuerySource, key: string, maxDigits: number): number | undefined => {
-  const raw = readScalar(query, key)
-  if (raw === undefined) return undefined
-  if (!/^\d+$/.test(raw) || raw.length > maxDigits) throw invalidQuery(`参数 ${key} 必须是数字`)
-  return Number(raw)
-}
-
-const readFilter = (query: QuerySource, key: string, maxLength: number): string | undefined => {
-  const raw = readScalar(query, key)
-  if (raw === undefined) return undefined
-  const value = raw.trim()
-  if (!value) return undefined
-  if (value.length > maxLength || /\p{Cc}/u.test(value)) {
-    throw invalidQuery(`参数 ${key} 不合法`)
-  }
-  return value
-}
-
-/**
- * Mirror the frozen v1 clamping (`page >= 1`, `1 <= limit <= 100`). Browser
- * filters such as `all`, `includeDeleted`, `original` and `status` are simply
- * not part of this query surface, so they can never reach the upstream read.
- */
-export const parsePageQuery = (query: QuerySource): PublicPageQuery => ({
-  page: Math.min(MAX_PAGE, Math.max(1, readDigits(query, 'page', MAX_QUERY_DIGITS) ?? 1)),
-  limit: Math.min(MAX_LIMIT, Math.max(MIN_LIMIT, readDigits(query, 'limit', MAX_QUERY_DIGITS) ?? DEFAULT_LIMIT)),
-})
-
-export const parseLogQuery = (query: QuerySource): PublicLogQuery => ({
-  ...parsePageQuery(query),
-  username: readFilter(query, 'username', MAX_FILTER_LENGTH),
-  action: readFilter(query, 'action', MAX_FILTER_LENGTH),
-})
-
-export const parseSchoolQuery = (query: QuerySource): string | undefined =>
-  readFilter(query, 'school', MAX_FILTER_LENGTH)
-
-export const parseEventTypeQuery = (query: QuerySource): string | undefined =>
-  readFilter(query, 'type', MAX_TYPE_LENGTH)
-
-/** Unknown analytics units and environments fall back exactly like the frozen route. */
-export const parseUmamiQuery = (query: QuerySource): PublicUmamiQuery => {
-  const startAt = readDigits(query, 'startAt', MAX_TIMESTAMP_DIGITS)
-  const endAt = readDigits(query, 'endAt', MAX_TIMESTAMP_DIGITS)
-  if (startAt !== undefined && endAt !== undefined && startAt > endAt) {
-    throw invalidQuery('参数 startAt 不能晚于 endAt')
-  }
-  const unit = readFilter(query, 'unit', MAX_TYPE_LENGTH)
-  const envType = readFilter(query, 'envType', MAX_TYPE_LENGTH)
-  return {
-    // Omitted timestamps must stay omitted so the frozen route keeps computing
-    // its last-seven-days window; only an explicit 0 requests the full range.
-    startAt,
-    endAt,
-    unit: unit && UMAMI_UNITS.has(unit) ? unit : 'day',
-    limit: Math.min(50, Math.max(1, readDigits(query, 'limit', MAX_QUERY_DIGITS) ?? 10)),
-    envType: envType && UMAMI_ENV_TYPES.has(envType) ? envType : 'browser',
-  }
-}
-
-/** Contribution ranking length, clamped like the frozen route. */
-export const parseStatsLimit = (query: QuerySource): number =>
-  Math.min(50, Math.max(1, readDigits(query, 'limit', MAX_QUERY_DIGITS) ?? 10))
-
-/** Path parameters are validated before any upstream request is made. */
-export const parsePublicId = (raw: string | undefined): number => {
-  if (raw === undefined || !/^\d{1,15}$/.test(raw)) throw invalidQuery('资源编号不合法')
-  const id = Number(raw)
-  if (!Number.isSafeInteger(id) || id <= 0) throw invalidQuery('资源编号不合法')
-  return id
-}
-
-export interface PublicReadContext {
-  /** Administrator-configured private origin; never derived from the request. */
-  apiBase: string
-  /**
-   * Private deadline override for tests and constrained callers. It can only
-   * shorten the production deadline: absent, non-finite, non-positive or larger
-   * than `UPSTREAM_TIMEOUT_MS` all fall back to the 8 s default. It is never
-   * built from browser input.
-   */
-  timeoutMs?: number | undefined
-}
-
-/**
- * Effective upstream deadline in milliseconds. Only the private context may
- * lower it; a browser query value can never reach this function.
- */
-export const resolveUpstreamTimeout = (ctx: PublicReadContext): number => {
-  const injected = ctx.timeoutMs
-  if (typeof injected !== 'number' || !Number.isFinite(injected)
-    || injected <= 0 || injected > UPSTREAM_TIMEOUT_MS) {
-    return UPSTREAM_TIMEOUT_MS
-  }
-  return injected
-}
-
-interface ReadOptions {
-  query?: Record<string, string | number | undefined> | undefined
-  /** Legacy statuses that carry public meaning for one specific route. */
-  statusOverrides?: Record<number, () => Error> | undefined
-}
-
 interface UpstreamEnvelope {
   total: number
   rows: unknown[]
-}
-
-const cancelUpstreamBody = (response: Response): void => {
-  // Release the upstream socket when the body is rejected unread.
-  void response.body?.cancel().catch(() => {})
-}
-
-const concatChunks = (chunks: Uint8Array[]): Uint8Array => {
-  let total = 0
-  for (const chunk of chunks) total += chunk.byteLength
-  const merged = new Uint8Array(total)
-  let offset = 0
-  for (const chunk of chunks) {
-    merged.set(chunk, offset)
-    offset += chunk.byteLength
-  }
-  return merged
-}
-
-/**
- * Read the body through the byte budget. The cap is enforced while reading (not
- * after buffering) and the upstream stream is cancelled as soon as it is
- * exceeded, so a runaway response cannot be allocated in full.
- */
-const readCappedText = async (response: Response): Promise<string> => {
-  const declaredLength = Number(response.headers.get('content-length') ?? '')
-  if (Number.isFinite(declaredLength) && declaredLength > MAX_JSON_BYTES) {
-    cancelUpstreamBody(response)
-    throw upstreamUnavailable()
-  }
-  const body = response.body
-  if (!body) throw upstreamUnavailable()
-  const reader = body.getReader()
-  const chunks: Uint8Array[] = []
-  let total = 0
-  for (;;) {
-    let result: { done: boolean, value?: Uint8Array }
-    try {
-      result = await reader.read()
-    }
-    catch {
-      throw upstreamUnavailable()
-    }
-    if (result.done) break
-    const chunk = result.value
-    if (!chunk) continue
-    total += chunk.byteLength
-    if (total > MAX_JSON_BYTES) {
-      await reader.cancel().catch(() => {})
-      throw upstreamUnavailable()
-    }
-    chunks.push(chunk)
-  }
-  return new TextDecoder().decode(concatChunks(chunks))
-}
-
-const readUpstreamJson = async (
-  ctx: PublicReadContext,
-  path: string,
-  options: ReadOptions = {},
-): Promise<unknown> => {
-  let response: Response
-  try {
-    // The query is serialized here (native fetch has no `query` option) from the
-    // validated allowlist only: no browser parameter is forwarded verbatim, and
-    // a misconfigured origin resolves to the same 502 as the config route.
-    const target = new URL(upstreamUrl(ctx.apiBase, path))
-    for (const [key, value] of Object.entries(options.query ?? {})) {
-      if (value === undefined) continue
-      target.searchParams.set(key, String(value))
-    }
-    response = await fetch(target, {
-      // Only a fixed Accept header: browser credentials, cookies, Origin and
-      // forwarding headers must never reach a shared public read.
-      headers: { accept: 'application/json' },
-      signal: AbortSignal.timeout(resolveUpstreamTimeout(ctx)),
-      redirect: 'error',
-    })
-  }
-  catch {
-    throw upstreamUnavailable()
-  }
-  // Upstream 403 means "not public"; public readers must not learn the difference.
-  if (response.status === 404 || response.status === 403) {
-    cancelUpstreamBody(response)
-    throw publicNotFound()
-  }
-  if (!response.ok) {
-    const override = options.statusOverrides?.[response.status]
-    cancelUpstreamBody(response)
-    throw override ? override() : upstreamUnavailable()
-  }
-  const body = await readCappedText(response)
-  let parsed: unknown
-  try {
-    parsed = JSON.parse(body)
-  }
-  catch {
-    throw upstreamUnavailable()
-  }
-  return parsed
 }
 
 const readRecord = (value: unknown): Record<string, unknown> => {
@@ -592,149 +328,6 @@ const projectParticipant = (row: EventParticipantRow): PublicEventParticipant =>
   pilot_source: row.pilot_source,
   machine_sign: row.machine_sign,
   created_at: row.created_at,
-})
-
-/**
- * Security and admin-only actions whose frozen descriptions embed the caller
- * IP, credential values or failing internal details (`addLog` call sites in
- * `backend/src/routes` and `backend/src/middlewares/ban.js`, for example
- * `登录成功 (IP: ${clientIp})` and `IP ${clientIp} 锁定`). Public readers get
- * fixed safe text instead; ordinary content actions keep their title/name.
- */
-const PUBLIC_LOG_DETAILS = new Map<string, string>([
-  ['LOGIN', '登录成功'],
-  ['LOGIN_LOCK', '登录尝试过多，已临时锁定'],
-  ['BAN_IP', '封禁了一个访问来源'],
-  ['UNBAN_IP', '解除了一个访问来源的封禁'],
-  ['RESET_PWD', '重置了管理员密码'],
-  ['RESET_2FA', '重置了管理员二步验证'],
-  ['REFRESH_TOKEN_VERSION', '强制刷新了登录凭证'],
-  ['UPDATE_BACKUP_SETTINGS', '更新了自动备份设置'],
-  ['DOWNLOAD_BACKUP', '下载了一次备份'],
-  ['DELETE_BACKUP', '删除了一次备份'],
-  ['AUTO_BACKUP', '执行了自动备份'],
-  ['AUTO_BACKUP_FAILED', '自动备份失败'],
-  ['DELETE_EVENT_FILE_FAIL', '清理事件文件失败'],
-])
-
-/** `site_config` keys that are already public through `/api/config`. */
-const PUBLIC_CONFIG_KEYS = new Set([
-  'home_bg',
-  'join_bg',
-  'banner_text',
-  'badge_image',
-  'mascot_image',
-  'qq_qr_image',
-  'qq_group_number',
-  'qq_join_url',
-  'join_question',
-  'home_links',
-])
-
-const JWT_PATTERN = /\beyJ[A-Za-z0-9_-]{4,}\.[A-Za-z0-9_-]{4,}(?:\.[A-Za-z0-9_-]+)?/g
-const LABELLED_CREDENTIAL_PATTERN = /(?<![a-z0-9])(?:password|passwd|pwd|secret|token(?:_version)?|api[_-]?key|authorization|bearer|credential|jwt)\b\s*[:=]\s*\S+/gi
-const IPV4_PATTERN = /\b\d{1,3}(?:\.\d{1,3}){3}\b/g
-const IPV6_PATTERN = /(?:[0-9a-f]{0,4}:){3,7}[0-9a-f]{0,4}(?![:0-9a-f])|(?:[0-9a-f]{0,4}:){0,3}[0-9a-f]{0,4}::(?:[0-9a-f]{0,4}:){0,3}[0-9a-f]{0,4}/gi
-
-const isTokenCharacter = (code: number): boolean =>
-  (code >= 48 && code <= 57)
-  || (code >= 65 && code <= 90)
-  || (code >= 97 && code <= 122)
-  || code === 43 // '+'
-  || code === 47 // '/'
-
-const isHexCharacter = (code: number): boolean =>
-  (code >= 48 && code <= 57)
-  || (code >= 65 && code <= 70)
-  || (code >= 97 && code <= 102)
-
-/**
- * Linear replacement for the previous long-token regex. A single pass over
- * maximal `[A-Za-z0-9+/]+` runs redacts base64-shaped runs (>= 40 chars) and
- * hex runs (>= 32 chars) including any `=` padding. That avoids the regex's
- * super-linear backtracking on a long token ending in `===` while redacting a
- * superset of the old matches (only ever safer).
- */
-const redactLongTokens = (details: string): string => {
-  let result = ''
-  let index = 0
-  while (index < details.length) {
-    if (!isTokenCharacter(details.charCodeAt(index))) {
-      result += details.charAt(index)
-      index += 1
-      continue
-    }
-    const start = index
-    let end = index + 1
-    while (end < details.length && isTokenCharacter(details.charCodeAt(end))) end += 1
-    let paddingEnd = end
-    while (paddingEnd < details.length && details.charCodeAt(paddingEnd) === 61) paddingEnd += 1
-
-    let hex = end - start >= 32
-    if (hex) {
-      for (let cursor = start; cursor < end; cursor += 1) {
-        if (!isHexCharacter(details.charCodeAt(cursor))) {
-          hex = false
-          break
-        }
-      }
-    }
-    result += (end - start >= 40 || hex) ? '[redacted]' : details.slice(start, paddingEnd)
-    index = paddingEnd
-  }
-  return result
-}
-
-/**
- * Bounded defence in depth for descriptions that are retained verbatim. This is
- * deliberately *not* a claim that arbitrary text is sanitized: the primary
- * guarantee is the fixed per-action text above. Anything that still matches an
- * address or credential shape is replaced wholesale so a decoy value cannot
- * leak through a retained title.
- */
-const redactLogDetails = (details: string): string =>
-  redactLongTokens(
-    details
-      .replace(JWT_PATTERN, '[redacted]')
-      .replace(LABELLED_CREDENTIAL_PATTERN, '[redacted]'),
-  )
-    .replace(IPV4_PATTERN, '[ip]')
-    .replace(IPV6_PATTERN, '[ip]')
-
-/**
- * Security actions get fixed text; public config keys survive, others do not.
- * The Map is an own-key lookup: actions named `constructor`, `__proto__` or
- * `toString` cannot inherit a response from `Object.prototype`.
- */
-const projectLogDetails = (action: string, details: string): string => {
-  const fixed = PUBLIC_LOG_DETAILS.get(action)
-  if (fixed !== undefined) return fixed
-  // Bound before parsing/redaction; over-bound text becomes a fixed placeholder
-  // rather than a truncated fragment that could look like real content.
-  if (details.length > MAX_PUBLIC_LOG_DETAILS_LENGTH) return PUBLIC_LOG_DETAILS_OMITTED
-  if (action === 'UPDATE_CONFIG') {
-    const separator = details.lastIndexOf(': ')
-    const key = separator === -1 ? '' : details.slice(separator + 2).trim()
-    return PUBLIC_CONFIG_KEYS.has(key) ? details : '修改了站点配置'
-  }
-  return details
-}
-
-const projectLog = (row: LogRow): PublicLog => ({
-  id: row.id,
-  username: row.username,
-  action: row.action,
-  // Frozen v1 published these verbatim, including client IPs; the public
-  // contract deliberately differs (see docs/revamp/PUBLIC-DATA.md).
-  details: redactLogDetails(projectLogDetails(row.action, row.details)),
-  created_at: row.created_at,
-  user_avatar: row.user_avatar,
-})
-
-const projectLogStat = (row: LogStatRow): PublicLogStat => ({
-  username: row.username,
-  count: row.count,
-  user_avatar: row.user_avatar,
 })
 
 /**

@@ -1,0 +1,460 @@
+{
+  "generatedAt": "2026-10-21T07:07:50.421Z",
+  "baseRevision": "304f57930c3367dcde2c7ad7d32ee2577d9fbed0",
+  "branch": "revamp/nuxt-foundation",
+  "scope": "Local structure/import-boundary and fixture-contract maintenance; whole migration remains unaccepted",
+  "runtime": {
+    "node": "v24.16.0",
+    "pnpm": "11.25.0"
+  },
+  "gates": {
+    "typecheck": 0,
+    "lint": {
+      "errors": 0,
+      "warnings": 34
+    },
+    "units": {
+      "shared": 73,
+      "web": 720,
+      "total": 793,
+      "log": ".tools/structure-improvements/test-final.log"
+    },
+    "tooling": {
+      "passed": 65
+    },
+    "boundaries": {
+      "checkedFiles": 127,
+      "violations": []
+    }
+  },
+  "build": {
+    "command": "shared build + isolated Nuxt build",
+    "log": ".tools/structure-improvements/build.log",
+    "sha256": "7e1d12cb0c002d21413590eedb7e29ee704fd0986bd7be78fa93d3055d899047",
+    "output": ".tools/structure-improvements/.output",
+    "config": "304f579:web/nuxt.config.ts",
+    "globalRateLimiter": false,
+    "productionSecurityAcceptance": false
+  },
+  "e2e": {
+    "path": "web/.e2e-isolated/structure-improvements/summary.json",
+    "sha256": "d406188ca4db0bce87ec1f45fa50315a80e47df87cd1631075f945343d6c251c",
+    "declared": 58,
+    "passed": 58,
+    "expected": 58,
+    "flaky": 0,
+    "failed": 0,
+    "skipped": 0,
+    "allDeclared": 58,
+    "retries": 0,
+    "batches": 29
+  },
+  "visual": {
+    "regions": 54,
+    "differingPixels": 0,
+    "comparisons": [
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-02/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/about-light-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "128ea51f853101ab5fdf3f864955ed0ab7946401c1888f98fa00368c054f9475"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-02/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/archive-light-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "da6a69a415483bd09866cbfadd5fa7df2a7952073f5262ee75665fc196dec458"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-02/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/community-light-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "feaa341dc7482c58906c0799772aab35b24d6d16c75a9ac7688c6d6be9acd6c4"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-02/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/hero-light-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "f514fa84d4f766b84926e72c4a5fa4c65b12539259b089d16a0248234007a4f7"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-02/test-results/homepage-visual-homepage-matches-the-archived-light-layout-desktop/interests-light-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "cbd17236e11f10e97d21c649d20c1624311763e7d1a164704bb6dec84456f049"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-03/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/about-dark-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "c71452887a897caeb7b3e7d8613908de28345661218ee3f401fb7816a5ff4fb4"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-03/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/archive-dark-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "08d3c4ac91b0ca0017b303692add5e497f0f144eb45ed347780e60c1890f018a"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-03/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/community-dark-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "e2e76c4af41e0afbce12d7b2de8366973a427c12f420729d2a9af414e36623e9"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-03/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/hero-dark-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "17f0d3e5a655e644f6c49b185ccf56a483d49d0ef667d1eec8c9e1903ecfbffe"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-03/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-desktop/interests-dark-desktop-comparison.json",
+        "differingPixels": 0,
+        "sha256": "ef9e31f24925389bd125a08f000fd91a468358871b4da11613118aa9bced9a67"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-10/test-results/public-pages-visual-parity-4bdee--matches-the-archive-light--desktop/activities-grid-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "059c7fb3d0383cf93bf1724925428277b2d62602fa3c3307f84e272757166177"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-11/test-results/public-pages-visual-parity-222c2--matches-the-archive-light--desktop/history-month-rail-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "3fc632f125466174abd03165e91e9150fad37c1bb03d42b0175e412e4403ae31"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-11/test-results/public-pages-visual-parity-222c2--matches-the-archive-light--desktop/history-timeline-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "0ef738ac9c6bc3333ca66ff1b9f1aa66dfe5d38849d4f4b73ebdd2143ad7e169"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-11/test-results/public-pages-visual-parity-efb11--matches-the-archive-light--desktop/activity-1-article-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "151a7ace34636aa96914af75fe482b5ccd9626344f87358fe8e35575bd1ed859"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-11/test-results/public-pages-visual-parity-efb11--matches-the-archive-light--desktop/activity-1-prose-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "8e24f7d80bef87a47c95b1d3f1be36aeb5f596416faf59ddcb0a9bfba0c0c387"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-12/test-results/public-pages-visual-parity-034bf--matches-the-archive-light--desktop/logs-statistics-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "98bbf7801fec7cb3d9999af38f2141bf90e506336f0c2bb4ae94ab7942bbe910"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-12/test-results/public-pages-visual-parity-034bf--matches-the-archive-light--desktop/logs-table-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "b42043e7a52d964c523c4f6c2f10d4cc942b8aa4245cf6e5123b3926f776b50b"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-12/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--desktop/members-chart-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "58df60599e3bd582352dca85747911361c5de2967fa7e0173027b9a656e6596b"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-12/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--desktop/members-grid-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "0157e6d3fb2ff0d2c088a744cc0e5249a5ede2d26c8be245a9bd55db57bc0def"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-13/test-results/public-pages-visual-parity-2fe6a-s-matches-the-archive-dark--desktop/activities-grid-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "b169e9087ed44bedc5a231215378176dbfc1d797869399ef12c719b0afae019a"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-13/test-results/public-pages-visual-parity-5d473-1-matches-the-archive-dark--desktop/activity-1-article-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "80613eaba721438e8301b865aa93155324863473ed160aaf5952e9d6f6fe21b5"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-13/test-results/public-pages-visual-parity-5d473-1-matches-the-archive-dark--desktop/activity-1-prose-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "ad8a18b52e46b4095cf19364e5d4201d2088a73421c3b7a0045994899047f20e"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-14/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--desktop/members-chart-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "8a397443d2ab156aef29b1a6a03eb2a71fedc18148cce3a01e8f55dfd6b5e488"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-14/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--desktop/members-grid-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "599f0f0b11028f81b417bb1da757ff4fd7137b8ae7aaecb45c837d1244710940"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-14/test-results/public-pages-visual-parity-8a07a-y-matches-the-archive-dark--desktop/history-month-rail-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "8fc157c5cbb4532b1fbd3c334db024b91d65a0db53e1cca80280d38deb4f3251"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-14/test-results/public-pages-visual-parity-8a07a-y-matches-the-archive-dark--desktop/history-timeline-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "06e6a1a9aa48a0d348178d352d805ceca64040ede46036f8c44fc2fe9ad44929"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-15/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--desktop/logs-statistics-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "65ffde2cc66b22e8c4170c845483923e7d813fe76b35d5d3af3554c98dcfe8e7"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-15/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--desktop/logs-table-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "b639019a67bfa30a3cbdb835b0f178fafa47f28b2fb4c5fa034dbdee6caeb68b"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/about-dark-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "c1462db79190bd4b8f5f317caa56731a90a3a91d9e932b8361723d8a290bca22"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/archive-dark-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "251cee67a32812c67b9585cf6dadd83411b253c807412889ffd0bdfa6b354db8"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/community-dark-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "37431dd65feec0cf27a3a49f0dd8d0e7f5e95494e0c292b0dbb0e5babf2e5838"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/hero-dark-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "5b0c69a1314fdd294bd897c2d34a8e4d98b834f72e54e98ae32115bdaee58c08"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-dark-layout-mobile/interests-dark-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "3c6afacf9423faaf15b46e0a19c61dc374799c767ff9d866774b1bb9e22be8ab"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/about-light-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "c18bc373714726af42ccacee386e9cc87b57c3d6f84d2c53f5d572c7d3231d40"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/archive-light-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "6e7a17f2810ab6cb6222f9f4c7032b4354ee2aeffc75dd354026c1b714ce8b3d"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/community-light-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "7fed565b1ada9c542c5e1617e262aa73ed3563bfbc44debf7792233fce03de07"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/hero-light-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "f197c47f01b21e32206ebd0ee02ac2071881d663241f5120c20afea14e7451f5"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-17/test-results/homepage-visual-homepage-matches-the-archived-light-layout-mobile/interests-light-mobile-comparison.json",
+        "differingPixels": 0,
+        "sha256": "cbf19402537e4c9d77da281885eb570080d4e4ffcaede5240488042e827f364c"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-25/test-results/public-pages-visual-parity-4bdee--matches-the-archive-light--mobile/activities-grid-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "7b101579e26218afea0fc894238a1e4e89cd570a57386d21814ed4e530cf4eb3"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-25/test-results/public-pages-visual-parity-efb11--matches-the-archive-light--mobile/activity-1-article-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "ad4fc99cc5251ac95469a6a876d1b98b53b31bc2c34b04d5004a22b1ac91bda7"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-25/test-results/public-pages-visual-parity-efb11--matches-the-archive-light--mobile/activity-1-prose-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "3de963cacb678cddb31d03786ed914a3ddc27ecb60457bf26089a86af2f4eb8f"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-26/test-results/public-pages-visual-parity-222c2--matches-the-archive-light--mobile/history-timeline-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "81bf3299cb85079dd368d3f4f51fd295bc0fd5ff7e788fcbd3f32ff83805ab99"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-26/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--mobile/members-chart-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "5b167769f0539475c7bcd8a1a4feb65bae74783675cbab20c936daa4d5bb89fe"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-26/test-results/public-pages-visual-parity-7144f--matches-the-archive-light--mobile/members-grid-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "d613178530c26561e31ebd681df813181ec8725bd8385f07b2a00deb38d34853"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-27/test-results/public-pages-visual-parity-034bf--matches-the-archive-light--mobile/logs-statistics-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "859d1bf8c0df24958589ed9164711b5ca27137db7aa99fd9a40c0f7f077b0d89"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-27/test-results/public-pages-visual-parity-034bf--matches-the-archive-light--mobile/logs-table-light-comparison.json",
+        "differingPixels": 0,
+        "sha256": "daef12535c143649901a1dc53c125e4156e8d0d93c53c15ccbad32e1dbef1e5e"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-27/test-results/public-pages-visual-parity-2fe6a-s-matches-the-archive-dark--mobile/activities-grid-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "ba927aa4c25994a42c4ad1520b03a9ffe27b6722cf64e3f91eb684a67aef1faf"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-28/test-results/public-pages-visual-parity-5d473-1-matches-the-archive-dark--mobile/activity-1-article-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "4cdc3f0259226ce06bb476f00319fc9bd4d4025c32bb0de6d6606e507282c116"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-28/test-results/public-pages-visual-parity-5d473-1-matches-the-archive-dark--mobile/activity-1-prose-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "f05232ecaf21a7875ef0e5b8240b01213e2222d796a6c6484f65a6e8499fe1c0"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-28/test-results/public-pages-visual-parity-8a07a-y-matches-the-archive-dark--mobile/history-timeline-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "4580ce4dc214660389084ccc1971ff25d3bf24c512df637e9b620499ca4ededb"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-29/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile/logs-statistics-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "d699f1c549e6705c8dce3fcc25d08bd1152ceb91cd9597bc0f651c27f81b2df1"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-29/test-results/public-pages-visual-parity-1c403-s-matches-the-archive-dark--mobile/logs-table-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "ef620d9a0d1d4b09af85fcc931ee9d2968976a29093414db6256a07ee2d31e9d"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-29/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--mobile/members-chart-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "ddec2ad5184e53c8e06b09e36729097fd757b32b235bed9dd54ade9b8319163e"
+      },
+      {
+        "path": "web/.e2e-isolated/structure-improvements/batch-29/test-results/public-pages-visual-parity-864a8-s-matches-the-archive-dark--mobile/members-grid-dark-comparison.json",
+        "differingPixels": 0,
+        "sha256": "52c5f61956dadb888cb987af3e872ceac4d1ddbc592ccdfa80675648482e4602"
+      }
+    ]
+  },
+  "budget": {
+    "path": ".tools/structure-improvements/budget.json",
+    "sha256": "f6bad916cf0e13d1fe4019713b7e8f73648b103eac005f3525720daf10ec6ec2",
+    "routes": 15,
+    "min": 122487,
+    "max": 137385,
+    "budgetBytes": 153600,
+    "sourceMaps": 0
+  },
+  "protectedSources": {
+    "checkedFiles": 139,
+    "unchanged": true,
+    "snapshot": ".tools/structure-improvements/protected-hashes.json"
+  },
+  "history": {
+    "path": "docs/revamp/STATUS-HISTORY-2026-10-21.md",
+    "sha256": "21f5503172153f658115fd8c01cd407b3eb0b9df77f6f1876bc59da062a007d7",
+    "matchesOriginalCommittedText": true,
+    "initialWorkingTreeByteEqualityCheckedBeforeReplacingStatus": true
+  },
+  "preview": {
+    "original3100Pid": 56840,
+    "current3101Pid": 34924,
+    "restarted": false,
+    "outputReplaced": false
+  },
+  "retainedFailures": [
+    {
+      "path": ".tools/structure-improvements/focused-before.log",
+      "reason": "legacy-null detail 404 and author projection mismatch"
+    },
+    {
+      "path": ".tools/structure-improvements/focused-after.log",
+      "reason": "member thumbnails and history ordering mismatch"
+    },
+    {
+      "path": ".tools/structure-improvements/focused-final.log",
+      "reason": "intermediate fixture-state extraction corrected; owned process stopped"
+    },
+    {
+      "path": ".tools/structure-improvements/test.log",
+      "reason": "unchanged limiter stress test exceeded 5s; 792/793 passed"
+    }
+  ],
+  "verificationNotes": [
+    "No timeout, retry, screenshot threshold or scheduling setting was relaxed.",
+    "Same-batch Playwright server state is still shared; use independent resources or max-per-batch 1 for conflicting mutations.",
+    "No backend/frontend source, API, config, lockfile, infrastructure or deployment changes.",
+    "Full migration performance/security/a11y and exact-head cross-platform CI remain open."
+  ],
+  "files": [
+    {
+      "path": ".github/workflows/revamp.yml",
+      "sha256": "74ee473ddbc3376a6841ab1b4b744f24844a16f2a9b5793be92e9e0dc1b871f3"
+    },
+    {
+      "path": "README.md",
+      "sha256": "e2d405e36d1a97743efeb5024d390dfa1595a0d77eefbd29ba490566d924c580"
+    },
+    {
+      "path": "docs/ARCHITECTURE.md",
+      "sha256": "ea952914fb24f3c9d3d1220e25f1603decc2dc05bd5aa7fa3b4b6884e8f66113"
+    },
+    {
+      "path": "docs/revamp/STATUS-HISTORY-2026-10-21.md",
+      "sha256": "21f5503172153f658115fd8c01cd407b3eb0b9df77f6f1876bc59da062a007d7"
+    },
+    {
+      "path": "docs/revamp/STATUS.md",
+      "sha256": "5403185482b3621bf47c8081fc9f96820938a101f7e025dabcbe799a034536a6"
+    },
+    {
+      "path": "docs/revamp/logs/26-structure-improvements/README.md",
+      "sha256": "cfb2a5b25fd63c9a47b51e440b3fd972a673ffdf7e5bce113d143701c192546d"
+    },
+    {
+      "path": "docs/revamp/logs/README.md",
+      "sha256": "ca66a76ea9161d4d2c74f326fae250c17411d93a762235c4969bed7fe2aaaedf"
+    },
+    {
+      "path": "package.json",
+      "sha256": "0c8ca41a2b971491d53385939dc0ae9b183203885c0a270a885db50257146338"
+    },
+    {
+      "path": "scripts/README.md",
+      "sha256": "0fa2e578e1a9b6d92d1d643b917aa67e77508b1c90b4fdd12e8ef14ac3082417"
+    },
+    {
+      "path": "scripts/revamp/boundaries.test.mjs",
+      "sha256": "4bb2cbb1a17b79cb00c11ef7ec8695a60718e7d918df7f8fe0c4b1d5cb9e7754"
+    },
+    {
+      "path": "scripts/revamp/check-boundaries.mjs",
+      "sha256": "dd8a0786f3762845057217d5c0020d757fda314d099df4d6196882559f488558"
+    },
+    {
+      "path": "web/server/lib/public-read/errors.ts",
+      "sha256": "66bc5a4e43ab0c009e8c9c3ecfceb5aeffd00662b0af402fd808936b33fa9c6f"
+    },
+    {
+      "path": "web/server/lib/public-read/log-projection.ts",
+      "sha256": "b2896af15dfdf300416efe00019693b27d0dedf60e5d7161f4a85ab6eb932416"
+    },
+    {
+      "path": "web/server/lib/public-read/query.ts",
+      "sha256": "699961b50f8ece5a20095535cc8d1e263e8743bc9b15a4ba57ce6abb6d5fce22"
+    },
+    {
+      "path": "web/server/lib/public-read/transport.ts",
+      "sha256": "8a30bd044e698d7989b5617e6a6b09fc5d41cdc4d638150b6b30fae167f6c667"
+    },
+    {
+      "path": "web/server/utils/public-read.ts",
+      "sha256": "d5bd2d7c812a6793714c60bd7ece4f07b44d6f1727900be535e39e523d57ed6d"
+    },
+    {
+      "path": "web/tests/fixture-boundaries.test.ts",
+      "sha256": "838c36b8dacee794c5575466325df3de956ee581468a8f11088db59155f5effa"
+    },
+    {
+      "path": "web/tests/fixtures/admin-upstream.mjs",
+      "sha256": "6870892eb06934edcabdc60e574557430f3bf1c9ae7340f5c9e63334ea511e5e"
+    },
+    {
+      "path": "web/tests/fixtures/public-contract.mjs",
+      "sha256": "e2c9b0bc3eb505861db10e1c2f9e24b50508c4ab2e53daf6964c7fec05a9665e"
+    },
+    {
+      "path": "web/tests/fixtures/public-data.mjs",
+      "sha256": "4eb7e3a18686048cf8d13f675d47ade2bd8e0da92768db7f8020e01697d11add"
+    }
+  ]
+}

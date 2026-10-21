@@ -1,6 +1,7 @@
 import { createServer } from 'node:http'
 import { pathToFileURL } from 'node:url'
 import { gzipSync } from 'node:zlib'
+import { isPublicFixtureActivity, projectFixtureActivityDetail, projectFixtureMember, compareFixtureHistory } from './public-contract.mjs'
 
 // Deterministic in-memory admin fixture for the protected BFF tests. Separate
 // from upstream.mjs / auth-upstream.mjs; it never touches the real backend and
@@ -181,8 +182,7 @@ export function createAdminUpstreamFixture() {
       const page = Number.parseInt(url.searchParams.get('page') ?? '1', 10) || 1
       const limit = Math.min(100, Number.parseInt(url.searchParams.get('limit') ?? '20', 10) || 20)
       const items = state.activities.filter(activity => (includeDeleted || activity.deleted_at === null)
-        // Frozen public reads also include legacy rows with a null status.
-        && (!publicRead || activity.status === null || activity.status === 'published'))
+        && (!publicRead || isPublicFixtureActivity(activity)))
       return send(response, 200, { total: items.length, page, limit, items: items.slice((page - 1) * limit, page * limit) })
     }
     if (url.pathname === '/api/activities/draft' && request.method === 'POST') {
@@ -206,9 +206,9 @@ export function createAdminUpstreamFixture() {
       const id = Number(activityId[1])
       const index = state.activities.findIndex(activity => activity.id === id)
       if (index === -1) return send(response, 404, { message: 'Not Found' })
-      if (publicRead && (state.activities[index].deleted_at || state.activities[index].status !== 'published'))
+      if (publicRead && !isPublicFixtureActivity(state.activities[index]))
         return send(response, 404, { message: 'Not Found' })
-      if (request.method === 'GET') return send(response, 200, state.activities[index])
+      if (request.method === 'GET') return send(response, 200, publicRead ? projectFixtureActivityDetail(state.activities[index]) : state.activities[index])
       if (request.method === 'PUT') {
         const body = await readJsonBody(request)
         state.activities[index] = { ...state.activities[index], ...body, status: 'published' }
@@ -232,8 +232,9 @@ export function createAdminUpstreamFixture() {
       const includeDeleted = url.searchParams.get('includeDeleted') === '1'
       const original = url.searchParams.get('original') === '1'
       const items = state.members
-        .filter(member => includeDeleted || member.deleted_at === null)
-        .map(member => ({ ...member, tags: Array.isArray(member.tags) ? member.tags : (() => { try { return JSON.parse(member.tags || '[]') } catch { return [] } })(), avatar_thumb: member.avatar, avatar_original: member.avatar, avatar: original ? member.avatar : member.avatar }))
+        .filter(member => (includeDeleted || member.deleted_at === null) && (!url.searchParams.get('school') || member.school === url.searchParams.get('school')))
+        .sort((a, b) => a.sort_order - b.sort_order || a.id - b.id)
+        .map(member => projectFixtureMember(member, original))
       return send(response, 200, items)
     }
     if (url.pathname === '/api/members' && request.method === 'POST') {
@@ -268,7 +269,7 @@ export function createAdminUpstreamFixture() {
     // ---------------------------------------------------------------- history
     if (url.pathname === '/api/history' && request.method === 'GET') {
       const includeDeleted = url.searchParams.get('includeDeleted') === '1'
-      return send(response, 200, state.history.filter(entry => includeDeleted || entry.deleted_at === null))
+      return send(response, 200, state.history.filter(entry => includeDeleted || entry.deleted_at === null).sort(compareFixtureHistory))
     }
     if (url.pathname === '/api/history' && request.method === 'POST') {
       const body = await readJsonBody(request)

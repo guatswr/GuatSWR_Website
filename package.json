@@ -18,6 +18,7 @@
     "test:legacy": "node --test frontend/src/components/events/eventFormModel.test.js frontend/src/components/home/freezeInteraction.test.js frontend/src/components/home/iceThaw.test.js frontend/src/components/ProgressiveImage.test.js frontend/src/directives/motion.test.js frontend/src/directives/scrollMotion.test.js frontend/src/utils/community.test.js frontend/src/utils/imageLoader.test.js",
     "check:artifacts": "node scripts/revamp/check-artifacts.mjs",
     "check:routes": "node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json",
-    "test:tooling": "node --test scripts/revamp/route-budget.test.mjs web/scripts/e2e-isolated.test.mjs web/scripts/performance-metrics.test.mjs"
+    "check:boundaries": "node scripts/revamp/check-boundaries.mjs",
+    "test:tooling": "node --test scripts/revamp/boundaries.test.mjs scripts/revamp/route-budget.test.mjs web/scripts/e2e-isolated.test.mjs web/scripts/performance-metrics.test.mjs"
   }
 }
