@@ -1,488 +1,236 @@
-# 桂航绯想天社团门户 (GuatSWR Website)
+<p align="center">
+  <img src="web/public/brand/group-avatar.webp" alt="桂航绯想天社团头像" width="112" height="112">
+</p>
 
-> 桂林航天工业学院 · 绯想天社团官方综合服务门户与全功能运营后台
+<h1 align="center">桂航绯想天 · GuatSWR Website</h1>
 
-[![Node.js](https://img.shields.io/badge/Node.js-%E2%89%A520.0.0-339933?style=flat-square&logo=nodedotjs&logoColor=white)](https://nodejs.org)
-[![Vue 3](https://img.shields.io/badge/Vue.js-3.x-4FC08D?style=flat-square&logo=vuedotjs&logoColor=white)](https://vuejs.org)
-[![Nuxt 3](https://img.shields.io/badge/Nuxt-3.x-00DC82?style=flat-square&logo=nuxtdotjs&logoColor=white)](https://nuxt.com)
-[![Express](https://img.shields.io/badge/Express-4.x-000000?style=flat-square&logo=express&logoColor=white)](https://expressjs.com)
-[![SQLite3](https://img.shields.io/badge/SQLite3-WAL_Mode-003B57?style=flat-square&logo=sqlite&logoColor=white)](https://www.sqlite.org)
-[![Docker](https://img.shields.io/badge/Docker-Compose_Ready-2496ED?style=flat-square&logo=docker&logoColor=white)](https://www.docker.com)
+<p align="center">桂林航天工业学院东方同好社群的网站：活动、报名、住民名册与群史。</p>
 
----
+<p align="center">
+  <img src="https://img.shields.io/badge/Node.js-24.16.0-339933?style=flat-square" alt="Node.js 24.16.0">
+  <img src="https://img.shields.io/badge/pnpm-11.25.0-F69220?style=flat-square" alt="pnpm 11.25.0">
+  <img src="https://img.shields.io/badge/Nuxt-4.6.2-00DC82?style=flat-square" alt="Nuxt 4.6.2">
+  <img src="https://img.shields.io/badge/SQLite-WAL-003B57?style=flat-square" alt="SQLite WAL">
+</p>
 
-## 一、项目概况
+<p align="center">
+  <a href="#快速开始">本地运行</a> ·
+  <a href="docs/ARCHITECTURE.md">架构说明</a> ·
+  <a href="docs/revamp/STATUS.md">改版进度</a> ·
+  <a href="https://github.com/guatswr/GuatSWR_Website/issues">问题反馈</a>
+</p>
 
-**GuatSWR Website** 是桂林航天工业学院·绯想天社团的官方门户系统。前台负责展示社群入口、最新活动排期与报名、往期活动回顾、成员名册分布图与群史纪事；后台提供活动发布、成员管理、全局站点配置（群号/加群直链/Logo）、系统日志审计与数据备份调度。
+这个仓库包含公开网站和管理后台。社群成员可以浏览活动记录、参与报名、查看住民资料与群史；管理员可以发布文章、审核活动、维护站点内容和管理备份。
 
-### 架构设计与职责分工
+**当前处于新版迁移验收阶段。** 页面代码已迁入 `web/`，性能、无障碍、安全与部署验收仍有未完成项。新版默认禁止搜索引擎索引，站点地图暂未启用。当前结论与验收证据见 [STATUS.md](docs/revamp/STATUS.md)，详细条目见 [CHECKLIST.md](docs/revamp/CHECKLIST.md)。
 
-系统采用分层解耦的现代化全栈架构：
+## 目录
 
-1. **Nuxt 3 统一全栈应用 (`web/`)**
-   - 基于 Nuxt 3 + Nitro 全栈框架，兼任统一前端与 BFF（Backend for Frontend）。
-   - 公开页面支持服务端渲染（SSR）与边缘数据缓存（SWR），大幅提升首屏加载速度与搜索引擎收录效果（SEO）。
-   - 内置安全会话管理、CSRF 校验、敏感数据脱敏与接口适配层。
-   - 使用原生 `IntersectionObserver` 实现了轻量级视口揭示动效，并严格遵循无障碍（a11y）标准。
-2. **业务后端核心服务 (`backend/`)**
-   - 基于 Node.js + Express 的 RESTful API 核心业务服务。
-   - 使用 SQLite3（开启 WAL 模式）持久化业务数据与操作审计日志，内置 Sharp 图像缩略图处理、JWT 鉴权与免停机一致性备份调度。
-3. **独立共享契约包 (`packages/shared/`)**
-   - 统一维护前后端共用的 TypeScript 强类型定义与 Zod 校验 Schema，保障模块导入边界与类型安全。
+- [功能与页面](#功能与页面)
+- [项目结构](#项目结构)
+- [快速开始](#快速开始)
+- [配置说明](#配置说明)
+- [开发与检查](#开发与检查)
+- [构建与部署](#构建与部署)
+- [数据与备份](#数据与备份)
+- [参与维护与权利声明](#参与维护与权利声明)
 
-> [!NOTE]
-> 原旧版 Vue 3 SPA（`frontend/`）已顺利完成全量功能迁移与验收收尾，主线已彻底移除旧目录。完整历史保留在 Git 标签 `v1-archive` 中。
+## 功能与页面
 
----
+| 入口 | 可以做什么 |
+| --- | --- |
+| 首页 `/` | 了解社群、查看近期活动与活动回顾、访问常用社群链接 |
+| 活动文章 `/activities` | 阅读活动记录；正文支持 Markdown、代码高亮、公式与 Mermaid 图表 |
+| 活动中心 `/events` | 查看悬赏令、非想天则、东方 STG、聚会与竞猜；按活动类型投稿或报名 |
+| 住民与群史 `/members`、`/history` | 浏览成员资料、学校分布与社群时间轴 |
+| 社群入口 `/social`、`/join` | 查看社群信息与入群指引 |
+| 公开日志 `/logs` | 查看经过脱敏处理的公开日志 |
+| 管理后台 `/admin` | 管理文章、活动、成员、群史、站点设置、账号权限和备份；入口权限按角色控制 |
 
-## 二、项目目录树与职责
+界面支持浅色与深色主题、移动端布局和减少动态效果偏好。公开页面使用 SSR；后台通过同源 BFF（前端服务层）访问业务后端，后端 JWT 保存在服务端。
 
-仓库采用 Monorepo 混合结构组织，前后端源码、持久化数据与运维工具边界明确：
+## 项目结构
 
 ```text
 GuatSWR_Website/
-├── backend/                      # 业务后端（独立 Node.js / Express 项目）
-│   ├── data/                     # 生产持久化数据（SQLite 数据库与上传资源）
-│   │   ├── guatswr_web_main.db   # 业务主数据库（成员、活动、站点配置等）
-│   │   ├── guatswr_web_logs.db   # 审计与系统安全操作日志数据库
-│   │   └── public/               # 上传的图片原图与缩略图存储目录
-│   ├── src/                      # 后端核心源码（路由 routes、模型 models、中间件、工具函数）
-│   ├── scripts/                  # 容器镜像内部独立的备份/恢复脚本
-│   ├── Dockerfile                # 后端 Docker 容器构建文件
-│   ├── docker-compose.yml        # 后端容器编排配置（映射宿主机 8088 端口）
-│   └── package.json              # 后端 npm 依赖配置
-│
-├── web/                          # Nuxt 3 全栈应用（统一前端 SSR + Nitro BFF）
-│   ├── app/                      # 页面 pages、布局 layouts、组件 components 与状态
-│   ├── server/                   # Nitro 服务端路由、BFF 接口适配与会话管理
-│   ├── shared/                   # Web 应用内公共 DTO 与纯数据转换
-│   ├── tests/                    # 单元测试、集成测试、Playwright E2E 测试
-│   └── Dockerfile                # 基于 Node 24 Alpine 的轻量无特权生产容器
-│
-├── packages/
-│   └── shared/                   # 前后端共享契约（独立 TypeScript 类型与 Zod 校验）
-│
-├── scripts/                      # 宿主机运维与工程治理脚本
-│   ├── db_backup.sh              # 数据库一致性安全备份（WAL 快照导出）
-│   ├── uploads_backup.sh         # 上传媒体目录打包备份
-│   ├── backup_all.sh             # 全量归档脚本（生成 SHA-256 清单并自动轮换）
-│   ├── restore.sh                # 灾难恢复脚本（解压、覆盖并自动清理脏索引）
-│   ├── cron.example              # Linux 定时任务（crontab）模板文件
-│   └── revamp/                   # 代码边界规范检查、路由预算与安全门禁
-│
-├── docs/                         # 系统架构设计规范与改版进度台账
-├── .env.example                  # 后端通用环境变量示例
-├── pnpm-workspace.yaml           # pnpm 工作区配置（管理 web 与 packages/shared）
-└── package.json                  # 根项目统一指令与代码规范配置
+├── web/                      # Nuxt 4 + Vue 3 + TypeScript
+│   ├── app/                  # 页面、布局、组件和浏览器交互
+│   ├── server/               # Nitro BFF、会话、公开数据适配与渲染
+│   ├── shared/               # 仅此 Nuxt 应用共用的类型和纯逻辑
+│   └── tests/                # Vitest、HTTP 集成测试、Playwright E2E
+├── backend/                  # Express 4 + SQLite，独立 npm/Docker 项目
+│   ├── src/                  # 业务接口、鉴权、数据库与上传处理
+│   ├── data/                 # 运行时数据库与上传资源，不入库
+│   └── docs/openapi.yaml     # 现有业务 API 契约
+├── packages/shared/          # TypeScript 类型与 Zod 校验契约
+├── scripts/                  # 仓库级检查、备份与恢复工具
+└── docs/                     # 架构、迁移设计与验收记录
 ```
 
----
+pnpm 工作区包含 `web/` 和 `packages/*`。`backend/` 使用自己的 `package-lock.json`，单独通过 npm 安装。`packages/shared/` 供新版应用使用，现有 Express 后端仍保留原接口实现。
 
-## 三、快速开始与本地开发
+目录边界与测试夹具约定见 [架构说明](docs/ARCHITECTURE.md)。旧版 `frontend/` 源码保留在本地 Git 标签 `v1-archive` 中。
 
-### 3.1 环境准备
-- **Node.js**：需 Node.js `>= 24.16.0 < 25`（参见 `.node-version`，推荐使用 nvm 或 fnm 管理）。
-- **包管理器**：`pnpm >= 11.25.0`（工作区统一管理）与 `npm`（后端构建）。
+## 快速开始
 
-### 3.2 本地双端启动开发流
+### 1. 准备环境与依赖
 
-本地开发建议分别在两个终端拉起业务后端与 Nuxt 前端：
+- Node.js **24.16.0**，与 [`.node-version`](.node-version) 一致；工作区要求 `>=24.16.0 <25`。
+- pnpm **11.25.0**，以及 Node.js 自带的 npm。
 
-```bash
-# 终端 1：启动业务后端 (Express)
-cd backend
-cp ../.env.example .env
-npm install
-npm run dev
-# 后端默认监听 http://localhost:3000
+以下步骤对应当前新版分支 `revamp/nuxt-foundation`：
 
-# 终端 2：启动全栈前端 (Nuxt 3)
-# 在仓库根目录下安装工作区依赖并拉起开发环境
+```sh
+git clone --branch revamp/nuxt-foundation https://github.com/guatswr/GuatSWR_Website.git
+cd GuatSWR_Website
+npm install --global pnpm@11.25.0
 pnpm install --frozen-lockfile
-pnpm dev
-# 前端默认监听 http://127.0.0.1:3100，自动同源反代 /api 与 /uploads 至后端
+npm --prefix backend ci
 ```
 
-代码质量与契约校验：
-```bash
-pnpm check:boundaries  # 检查模块导入边界规范（禁止越级导入）
-pnpm -r typecheck      # TypeScript 强类型校验
-pnpm -r test           # 运行全工作区自动化单元测试
-```
+`sqlite3` 和 `sharp` 包含原生依赖；若安装进入源码编译，需要 Python 和对应平台的 C/C++ 编译工具。
 
----
+### 2. 配置本地环境
 
-## 四、生产部署教程（着重）
+首次运行时复制配置；已有 `.env` 时直接编辑原文件。以下 `cp` 命令也可在 Windows PowerShell 中使用。
 
-### 4.1 环境要求与端口规划
-
-- **操作系统**：Linux 服务器（Ubuntu 22.04 LTS / Debian 12 / 1Panel 运行环境）。
-- **依赖软件**：Docker `>= 24.0`、Docker Compose V2、Nginx、Git、`sqlite3` 命令行工具。
-- **端口分配规划**：
-  - 宿主机 `8088`：后端 Express 容器对外端口（由 `backend/docker-compose.yml` 定义）。
-  - 宿主机 `3100`：Nuxt 3 统一前端服务端口（由 `web/Dockerfile` 或 PM2 启动）。
-  - 宿主机 `80 / 443`：Nginx 统一对外服务端口与 SSL 终止。
-
----
-
-### 4.2 环境变量配置清单
-
-复制根目录 `.env.example` 到 `backend/.env` 并按需调整：
-
-```bash
+```sh
 cp .env.example backend/.env
+cp web/.env.example web/.env
 ```
 
-| 变量名 | 必填 | 默认推荐值 | 说明 |
-| :--- | :---: | :---: | :--- |
-| `PORT` | 否 | `3000` | 容器内部 Node 服务监听端口 |
-| `NODE_ENV` | 是 | `production` | 运行环境，生产环境填 `production` |
-| `JWT_SECRET` | **必须** | - | **JWT 签名密钥**（建议 ≥ 32 位随机字符）。**未填会导致后端主动退出** |
-| `SUPER_ADMIN_USERNAME`| 是 | `admin` | 初始化超级管理员用户名 |
-| `SUPER_ADMIN_PASSWORD`| 是 | - | 初始化超级管理员密码 |
-| `CORS_ORIGINS` | 是 | - | 允许跨域的前端域名（逗号分隔），例如 `https://guatswr.top,https://admin.guatswr.top` |
-| `SITE_URL` | 是 | `https://guatswr.top` | 站点公开访问地址（末尾不要加斜杠） |
-| `MAX_BODY_SIZE` | 否 | `50mb` | 文件上传与 JSON 请求体体积上限（需与 Nginx 保持同步） |
-| `STAGING_TTL_MS` | 否 | `172800000` | 上传临时文件保留时间（默认 48 小时） |
+编辑 `backend/.env`，设置自己的 `SUPER_ADMIN_USERNAME`、`SUPER_ADMIN_PASSWORD` 和随机 `JWT_SECRET`，再调整以下开发配置：
 
-> [!WARNING]
-> 请勿将包含真实生产密钥的 `.env` 提交到 Git 仓库。`JWT_SECRET` 一旦泄露会导致 Token 被伪造。
-
----
-
-### 4.3 方案 A：Docker 容器化部署（推荐）
-
-#### 第一步：创建数据持久化目录与权限
-在服务器项目根目录下执行：
-```bash
-mkdir -p backend/data backend/uploads backups/full
-chmod -R 755 backend/data backend/uploads
+```dotenv
+NODE_ENV=development
+PORT=3000
+SITE_URL=http://127.0.0.1:3100
+CORS_ORIGINS=http://127.0.0.1:3100
 ```
 
-#### 第二步：启动业务后端容器
-后端使用 `backend/docker-compose.yml`，映射宿主机端口 `8088:3000` 并挂载数据目录：
+编辑 `web/.env`，设置独立的随机 `NUXT_SESSION_PASSWORD`（至少 32 个字符），并加入或修改：
 
-```bash
-cd backend
-docker compose up -d --build
+```dotenv
+NUXT_API_BASE=http://127.0.0.1:3000
+NUXT_BFF_AUTH_ALLOWED_ORIGINS=["http://127.0.0.1:3100"]
+NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES=true
+HOST=127.0.0.1
+PORT=3100
 ```
 
-验证后端是否正常运行：
-```bash
-curl http://127.0.0.1:8088/api/version
-# 返回类似: {"version":"4.0.0","status":"healthy"} 代表后端启动成功
+`web/.env.example` 的上游示例端口是 `8080`，这里按本地后端的 `3000` 改写。明文 Cookie 开关只供非生产环境的回环地址调试；正式服务使用 HTTPS。
+
+### 3. 分别启动后端和网站
+
+在仓库根目录打开两个终端。终端一启动业务后端：
+
+```sh
+npm --prefix backend run dev
 ```
 
-> [!TIP]
-> **中国大陆服务器构建加速**：若服务器拉取 Debian 官方源缓慢，可指定清华源构建参数：
-> ```bash
-> docker compose build --build-arg APT_MIRROR=http://mirrors.tuna.tsinghua.edu.cn/debian
-> ```
+终端二启动 Nuxt；根目录脚本会先构建共享包：
 
-#### 第三步：构建并部署 Nuxt 3 全栈前端
-Nuxt 3 前端提供专属的生产 Dockerfile（基于 Node 24 Alpine，多阶段优化构建，采用非 root 用户运行）：
-
-```bash
-cd ../web
-# 构建前端生产镜像
-docker build -t guatswr-web:latest .
-
-# 启动前端容器（映射宿主机 3100 端口）
-docker run -d \
-  --name guatswr_web \
-  --restart always \
-  -p 127.0.0.1:3100:3000 \
-  -e NODE_ENV=production \
-  -e NUXT_PUBLIC_API_BASE=http://127.0.0.1:8088 \
-  guatswr-web:latest
+```sh
+pnpm dev
 ```
 
----
+| 地址 | 用途 |
+| --- | --- |
+| [http://127.0.0.1:3100](http://127.0.0.1:3100) | 公开网站，浏览器请统一使用此地址 |
+| [http://127.0.0.1:3100/login](http://127.0.0.1:3100/login) | 使用配置的站长账号登录后台 |
+| [http://127.0.0.1:3100/api/health](http://127.0.0.1:3100/api/health) | Nuxt 服务存活检查，不代表后端或数据库健康 |
+| [http://127.0.0.1:3000/api/version](http://127.0.0.1:3000/api/version) | Express 版本接口，返回 `version: "4.0"`、`status: "online"` |
+| [http://127.0.0.1:3000/api/docs](http://127.0.0.1:3000/api/docs) | 现有后端 Swagger 文档 |
 
-### 4.4 方案 B：宿主机原生部署（PM2）
+首次启动会创建数据库和配置的站长账号。已有同名账号的密码不会因修改环境变量而重置。新数据库不含历史社群内容，需要从后台录入或按运维流程恢复数据。
 
-若不使用 Docker，可以使用进程管理器 **PM2** 直接运行：
+## 配置说明
 
-```bash
-# 1. 全局安装 PM2
-npm install -g pm2
+后端读取 `backend/.env`；Nuxt 开发模式读取 `web/.env`。**Nuxt 构建产物启动时不自动读取 `.env`**，运行配置需要由进程环境或部署平台注入。真实 `.env` 文件不提交到 Git。
 
-# 2. 部署后端 (Express)
-cd backend
-npm ci --omit=dev
-pm2 start server.js --name "guatswr-backend"
-pm2 save
+| 变量 | 位置 | 说明 |
+| --- | --- | --- |
+| `JWT_SECRET` | 后端 | JWT 签名密钥；缺少时后端退出 |
+| `SUPER_ADMIN_USERNAME` / `SUPER_ADMIN_PASSWORD` | 后端 | 初始化站长账号，首次配置时替换示例内容 |
+| `PORT` / `NODE_ENV` | 两端分别配置 | 本地后端 `3000`、网站 `3100`；开发与生产分别使用 `development`、`production` |
+| `SITE_URL` | 后端 | 后端生成公开链接时使用的站点地址 |
+| `CORS_ORIGINS` | 后端 | 生产环境跨域来源白名单，逗号分隔；与 BFF 来源白名单分别配置 |
+| `MAX_BODY_SIZE` / `STAGING_TTL_MS` | 后端 | 请求体默认 `50mb`；暂存上传默认保留 48 小时 |
+| `DB_PATH` / `LOG_DB_PATH` | 后端 | 可选数据库路径；相对路径基于 `backend/data/` |
+| `NUXT_API_BASE` | Nuxt | 服务端可达的 Express origin，不带 `/api` 路径；保存在私有运行配置中 |
+| `NUXT_SESSION_PASSWORD` | Nuxt | 至少 32 个字符的随机会话密钥，与 `JWT_SECRET` 分别生成 |
+| `NUXT_BFF_AUTH_ALLOWED_ORIGINS` | Nuxt | 精确匹配的写请求来源，使用 JSON 数组；默认空列表会拒绝写操作 |
+| `NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS` | Nuxt | 实际可信反向代理的 CIDR 数组，默认不信任转发的客户端 IP |
+| `NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES` | Nuxt | 默认 `false`；仅非生产、回环连接及回环 Host 下允许 HTTP Cookie |
 
-# 3. 部署全栈前端 (Nuxt 3)
-cd ../web
-pnpm install --frozen-lockfile
+当前登录会话与游客草稿保存在单进程内存中，重启会丢失；多实例运行需要先补齐共享存储。会话、来源检查与代理配置详见 [鉴权说明](docs/revamp/AUTH.md) 和 [游客流程](docs/revamp/GUEST.md)。
+
+## 开发与检查
+
+在仓库根目录执行：
+
+| 命令 | 检查内容 |
+| --- | --- |
+| `pnpm typecheck` | 工作区 TypeScript 类型 |
+| `pnpm lint` | 工作区 ESLint 规则 |
+| `pnpm test` | 共享包与 Nuxt 的单元、集成测试 |
+| `pnpm test:tooling` | 仓库检查工具、E2E 执行器和性能指标工具 |
+| `pnpm check:boundaries` | 共享包、浏览器代码和服务端代码的导入边界 |
+| `pnpm build` | 构建共享包和 Nuxt 生产产物 |
+| `pnpm check:artifacts` | 检查构建产物，需要先构建 |
+| `pnpm check:routes` | 检查路由初始 JavaScript 体积，需要构建产物及 Chromium |
+
+Playwright E2E 使用隔离测试服务与内存数据。先构建，再安装 Chromium 并运行：
+
+```sh
 pnpm build
-PORT=3100 pm2 start .output/server/index.mjs --name "guatswr-web"
-pm2 save
-pm2 startup
+pnpm --filter @guatswr/web exec playwright install chromium
+pnpm test:e2e
 ```
 
----
+E2E 默认使用 `3100`、`3181`、`3182` 端口，运行前需确保这些端口空闲。Linux 主机还需安装浏览器系统依赖与中文字体，具体步骤见 [CI 工作流](.github/workflows/revamp.yml)。测试数据和隔离规则见 [夹具说明](web/tests/fixtures/README.md)。
 
-### 4.5 Nginx 反向代理与 SSL 配置
+工作区命令覆盖 `web/` 与 `packages/*`，后端有独立生命周期。CI 包含 Windows、Linux 和容器检查；完整迁移验收状态以 [验收清单](docs/revamp/CHECKLIST.md) 为准。
 
-创建 Nginx 站点配置文件（例如 `/etc/nginx/conf.d/guatswr.conf`）：
+## 构建与部署
 
-```nginx
-# HTTP 自动重定向至 HTTPS
-server {
-    listen 80;
-    server_name guatswr.top www.guatswr.top;
-    return 301 https://$host$request_uri;
-}
+Nuxt 生产产物位于 `web/.output/`。原生 Node 服务的入口是 `web/.output/server/index.mjs`，可在注入运行环境后通过 `pnpm --filter @guatswr/web preview` 启动。
 
-# HTTPS 主站点配置
-server {
-    listen 443 ssl http2;
-    server_name guatswr.top www.guatswr.top;
+构建 Nuxt 容器镜像时，**从仓库根目录执行**：
 
-    # SSL 证书配置
-    ssl_certificate /etc/letsencrypt/live/guatswr.top/fullchain.pem;
-    ssl_certificate_key /etc/letsencrypt/live/guatswr.top/privkey.pem;
-    ssl_protocols TLSv1.2 TLSv1.3;
-    ssl_ciphers HIGH:!aNULL:!MD5;
-
-    # 上传文件大小限制（与后端 MAX_BODY_SIZE=50mb 保持一致）
-    client_max_body_size 50m;
-
-    # 1. Nuxt 静态资源分发（长期不可变缓存）
-    location /_nuxt/ {
-        alias /var/www/GuatSWR_Website/web/.output/public/_nuxt/;
-        expires 30d;
-        add_header Cache-Control "public, max-age=2592000, immutable";
-    }
-
-    # 2. 上传资源目录静态分发（直读磁盘，降低 Node 负载）
-    location /uploads/ {
-        alias /var/www/GuatSWR_Website/backend/data/public/;
-        expires 7d;
-        add_header Cache-Control "public";
-    }
-
-    # 3. 后端 RESTful API 反向代理
-    location /api/ {
-        proxy_pass http://127.0.0.1:8088;
-        
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
-    # 4. Nuxt 3 SSR 服务端反向代理（承接所有前端路由）
-    location / {
-        proxy_pass http://127.0.0.1:3100;
-
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        proxy_connect_timeout 60s;
-        proxy_send_timeout 60s;
-        proxy_read_timeout 60s;
-    }
-
-    # 安全防护响应头
-    add_header X-Frame-Options "SAMEORIGIN" always;
-    add_header X-Content-Type-Options "nosniff" always;
-    add_header X-XSS-Protection "1; mode=block" always;
-}
+```sh
+docker build --file web/Dockerfile --tag guatswr-web:local .
 ```
 
-测试并重载 Nginx：
-```bash
-sudo nginx -t && sudo systemctl reload nginx
+Dockerfile 会安装锁定依赖、运行类型检查、lint、测试、构建和产物检查；最终镜像以 `node` 用户运行，监听容器内 `3100` 端口。Express 使用独立的 [Compose 配置](backend/docker-compose.yml)，当前映射宿主机 `8088` 至容器 `3000`。
+
+接入服务器时需要对齐以下配置：
+
+- 反向代理将网站页面、`/api/*` 和 `/uploads/*` 交给 Nitro；其中 `/api/bff/*` 由新版会话层处理。
+- `NUXT_API_BASE` 使用 Nitro 所在网络能够访问的后端地址。独立容器之间应使用容器网络中的服务地址；容器内 `127.0.0.1` 指向本容器。
+- 为真实 HTTPS 站点配置写请求来源、会话密钥及实际可信代理网段。
+- 公开 HTML 每次请求重新渲染，数据 SWR 在服务端适配层；API 和私有路由保留各自的缓存控制策略。
+
+当前部署方案仍处于待执行状态，服务器、域名和流量切换的步骤见 [部署提案](docs/revamp/STAGING.md)。搜索索引与站点地图的启用要求见 [SEO 说明](docs/revamp/SEO.md)。
+
+## 数据与备份
+
+默认持久化数据位于：
+
+| 路径 | 内容 |
+| --- | --- |
+| `backend/data/guatswr_web_main.db` | 成员、文章、活动、账号与站点配置 |
+| `backend/data/guatswr_web_logs.db` | 审计日志 |
+| `backend/data/public/` | 上传图片、缩略图与公开资源 |
+
+仓库级备份脚本在 Linux/Bash 环境使用，需要 `sqlite3`、`tar` 和 `sha256sum`：
+
+```sh
+bash scripts/backup_all.sh
 ```
 
----
+全量归档写入 `backups/full/`，附带 SHA-256 完整性清单，并清理超过 30 天的全量归档及清单。定时任务模板见 [cron.example](scripts/cron.example)。
 
-## 五、后期维护与运维指南（着重）
+SQLite 使用 WAL 模式。运行中应通过 SQLite `.backup` 导出快照；现有数据库脚本在缺少 `sqlite3` 时会退回普通文件复制，因此热备前必须确认该命令可用。恢复脚本会覆盖数据库和公开资源，执行前需停止后端、校验归档并保留当前数据副本。
 
-### 5.1 SQLite WAL 模式机制与维护要点
-
-本项目 SQLite 数据库启用了 **WAL（Write-Ahead Logging）预写日志模式**。
-- **运行特征**：主库文件旁会存在 `guatswr_web_main.db-wal`（事务增量文件）与 `guatswr_web_main.db-shm`（共享内存索引文件）。写入操作优先进入 `-wal`，在 Checkpoint 触发或连接关闭时才合入主 `.db` 文件。
-
-> [!CAUTION]
-> **运维维护红线：**
-> 1. **严禁在服务运行中直接通过 `cp main.db` 进行热备份**：由于数据仍滞留在 `-wal` 缓冲区，直接拷贝主文件会导致数据丢失或备份文件损坏。
-> 2. **严禁在运行中手动删除 `-wal` 或 `-shm`**：删除会导致未合并事务破坏、数据库索引损坏。
-> 3. 必须通过内置脚本或 `sqlite3 db.db ".backup 'target.db'"` 机制导出快照。
-
----
-
-### 5.2 自动化备份与防篡改策略
-
-项目在 `scripts/` 下提供免停机的一致性备份工具链：
-
-| 脚本路径 | 备份对象 | 数据源路径 | 产物输出路径 |
-| :--- | :--- | :--- | :--- |
-| `scripts/db_backup.sh` | 数据库安全快照 | `backend/data/*.db` | `backups/db/db_*.tar.gz` |
-| `scripts/uploads_backup.sh` | 上传媒体与图片 | `backend/data/public` | `backups/uploads/uploads_*.tar.gz` |
-| `scripts/backup_all.sh` | 全量打包归档 | 上述两项组合打包 | `backups/full/full_*.tar.gz` |
-
-#### 防篡改与滚动淘汰机制
-- **SHA-256 完整性清单**：每次备份均自动生成配套的 `.sha256` 校验和文件（如 `full_20261021_023000.sha256`），防止备份介质位损坏或恶意篡改。
-- **自动归档滚动清理**：`backup_all.sh` 脚本执行后，会自动清理 `backups/full/` 目录下创建超过 **30 天** 的旧备份与对应哈希文件，防止磁盘占满。
-
-#### 配置 Linux Crontab 定时备份
-在宿主机执行 `crontab -e`，添加每日定时任务（请替换为实际项目绝对路径）：
-
-```cron
-# 每日凌晨 02:30 执行全量自动备份并记录执行日志
-30 2 * * * /bin/bash /var/www/GuatSWR_Website/scripts/backup_all.sh >> /var/log/guatswr_backup.log 2>&1
-```
-
-> [!NOTE]
-> **宿主机与容器脚本区别**：宿主机 Crontab 必须执行根目录下的 `scripts/*.sh`；`backend/scripts/` 仅供 Docker 容器内部上下文调用，二者路径基准不同。
-
----
-
-### 5.3 灾难恢复与数据还原 SOP
-
-当发生误删数据、主机迁移或系统故障时，请遵循以下 5 步恢复 SOP：
-
-#### 步骤 1：停止后端服务（避免写入冲突）
-```bash
-# Docker 停止后端
-docker compose -f backend/docker-compose.yml stop guiair-backend
-
-# 或 PM2 停止后端
-pm2 stop guatswr-backend
-```
-
-#### 步骤 2：校验备份归档完整性
-```bash
-cd backups/full
-sha256sum -c full_YYYYMMDD_HHMMSS.sha256
-# 看到控制台输出 ": 成功" 或 ": OK" 再继续
-```
-
-#### 步骤 3：对当前故障现场建立保底副本
-```bash
-mkdir -p /tmp/guatswr_crash_bak
-cp -r backend/data /tmp/guatswr_crash_bak/
-```
-
-#### 步骤 4：运行一键还原脚本
-```bash
-# 传入指定的全量备份归档文件
-./scripts/restore.sh backups/full/full_20261021_023000.tar.gz
-
-# 脚本会自动完成：
-# 1. 解压备份包内的数据库与上传媒体
-# 2. 覆盖写入 main.db 与 logs.db
-# 3. 清除残留的 -wal 与 -shm 脏索引
-# 4. 覆盖还原 data/public 资源
-```
-
-#### 步骤 5：修复文件归属权限并验证启动
-```bash
-# 确保运行用户拥有数据目录读写权
-chown -R 1000:1000 backend/data backend/uploads
-chmod -R 755 backend/data backend/uploads
-
-# 启动服务
-docker compose -f backend/docker-compose.yml start guiair-backend
-# 或 pm2 start guatswr-backend
-
-# 验证健康状态
-curl http://127.0.0.1:8088/api/version
-```
-
----
-
-### 5.4 服务监控、健康检查与排障
-
-#### 1. 健康检查探针
-- 后端主探针：`curl http://127.0.0.1:8088/api/version`
-- Nuxt BFF 探针：`curl http://127.0.0.1:3100/api/health`
-
-#### 2. 服务运行日志查看
-```bash
-# 查看后端 Docker 容器实时日志
-docker logs -f guatswr_backend --tail=100
-
-# 查看 PM2 进程日志
-pm2 logs guatswr-backend --lines 100
-```
-
-#### 3. 常见异常排查清单
-- **问题 1：容器启动即挂掉，报错 `未设置 JWT_SECRET`**  
-  *原因*：缺少关键安全变量。核对 `backend/.env` 中是否存在 `JWT_SECRET`，并确认 `docker-compose.yml` 引入了 `env_file: - .env`。
-- **问题 2：后台上传大图报错 `413 Payload Too Large`**  
-  *原因*：Nginx 默认限制为 1MB。核对 Nginx 配置中是否有 `client_max_body_size 50m;`，同时核对后端 `.env` 中 `MAX_BODY_SIZE=50mb`。
-- **问题 3：前端页面刷新直接出现 Nginx 404**  
-  *原因*：缺少 SPA 路由 fallback。确认 Nginx 中包含 `try_files $uri $uri/ /index.html;`。
-
----
-
-### 5.5 版本升级与更新流程
-
-当需要部署新特性或安全补丁时：
-
-```bash
-# 1. 拉取最新代码
-git pull origin <release-branch>
-
-# 2. 依赖检查与质量门禁（工作区模式）
-pnpm install --frozen-lockfile
-pnpm check:boundaries
-pnpm -r test
-
-# 3. 重新构建 Nuxt 3 前端
-pnpm --filter @guatswr/web build
-
-# 4. 重构并平滑拉起后端容器与前端服务
-cd backend
-docker compose up -d --build
-cd ..
-# 若前端使用 Docker：
-# cd web && docker build -t guatswr-web:latest . && docker restart guatswr_web && cd ..
-# 若前端使用 PM2：
-# pm2 restart guatswr-web
-
-# 5. 线上验证
-curl -I https://guatswr.top/api/version
-curl -I https://guatswr.top/api/health
-```
-
----
-
-## 六、特色功能与业务特性
-
-### 1. 入群配置与二维码管理
-- 管理员可在管理后台「全局配置」修改 **QQ 群号**、**加群 HTTP(S) 链接** 以及 **入群问卷说明**。
-- 前台优先呈现加群直链；未配置直链时自动呈现二维码。
-- 二维码图片上传时系统自动保留原图无损存储，杜绝有损压缩导致扫码识别失败。
-
-### 2. 首页事件与活动排期
-- 首页清晰划分为 **可参与事件（近期活动 / 报名）** 与 **历史活动回顾**。
-- 无时区日期的活动统一按 **北京时间（UTC+8）** 进行解析计算；已截止的事件自动从推荐板块中移除，无需管理员手动下架。
-
-### 3. 视口动效与无障碍支持
-- **首屏揭示 (`v-reveal`)**：基于共享 `IntersectionObserver` 实现，单卡片错峰 90~100ms 平滑入场，手机端自动减半过渡时长。
-- **无障碍兼容**：系统开启「减少动态效果（prefers-reduced-motion）」或处于打印预览模式时，动效自动停用并直接呈现完全可见的静态内容。
-- **彩蛋交互**：连续点击 9 次社团头像（或输入 `baka`）将触发冰冻彩蛋，用户可通过自然向下滚动滚轮完成解冻，保证无障碍键盘焦点不锁死。
-
----
-
-## 📜 许可证与维护声明
-
-本项目由桂林航天工业学院·绯想天社团内部技术组维护。保留所有权利。未经授权请勿商用。
+`scripts/` 和 `backend/scripts/` 使用不同的数据根目录，自动备份与宿主机定时任务也可能写往不同位置。恢复与挂载前先核对 [脚本职责和备份入口](scripts/README.md)。
