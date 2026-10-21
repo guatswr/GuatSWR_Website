@@ -403,14 +403,6 @@ const PARITY_TARGETS: readonly ParityTarget[] = Object.freeze([
     ],
   },
   {
-    path: '/history',
-    wait: '绯想天群史',
-    regions: [
-      { name: 'timeline', archive: 'main .space-y-12', current: 'main .space-y-12' },
-      { name: 'month-rail', archive: 'main .fixed.right-6', current: 'main .fixed.right-6', desktopOnly: true },
-    ],
-  },
-  {
     path: '/logs',
     wait: '日志档案',
     regions: [

@@ -46,3 +46,57 @@ export function monthRailHeight(count: number): number {
 export function historyAnchor(index: number): string {
   return `history-${index}`
 }
+
+/** 4-digit year string (`YYYY`) extracted from a history date, or `''`. */
+export function yearKey(dateText: string | null | undefined): string {
+  if (!dateText || typeof dateText !== 'string') return ''
+  const matched = dateText.match(/(\d{4})/)
+  return matched?.[1] ?? ''
+}
+
+export interface YearMonthItem {
+  readonly month: string
+  readonly label: string
+  readonly index: number
+}
+
+export interface YearChapterItem {
+  readonly year: string
+  readonly index: number
+  readonly count: number
+  readonly months: readonly YearMonthItem[]
+}
+
+/** Distinct year chapters with their first entry index, entry count, and months. */
+export function yearItems(entries: readonly { readonly date: string }[]): YearChapterItem[] {
+  const chapters = new Map<string, { index: number, count: number, months: Map<string, YearMonthItem> }>()
+  entries.forEach((entry, index) => {
+    const year = yearKey(entry.date)
+    if (!year) return
+    let chapter = chapters.get(year)
+    if (!chapter) {
+      chapter = { index, count: 0, months: new Map() }
+      chapters.set(year, chapter)
+    }
+    chapter.count += 1
+    const mKey = monthKey(entry.date)
+    if (mKey && mKey.startsWith(`${year}-`) && !chapter.months.has(mKey)) {
+      const monthPart = mKey.slice(5)
+      chapter.months.set(mKey, {
+        month: mKey,
+        label: `${monthPart}月`,
+        index,
+      })
+    }
+  })
+  return [...chapters.entries()].map(([year, meta]) => ({
+    year,
+    index: meta.index,
+    count: meta.count,
+    months: [...meta.months.values()],
+  }))
+}
+
+export function formatHistoryOrdinal(index: number): string {
+  return String(Math.max(1, index + 1)).padStart(2, '0')
+}

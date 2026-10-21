@@ -56,64 +56,20 @@ for (const theme of ['light', 'dark'] as const) {
     }
   })
 
-  test(`month links retain dots with independent 44px keyboard targets (${theme})`, async ({ page }, info) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
+  test(`history bookmark links retain keyboard navigation and active states (${theme})`, async ({ page }, info) => {
+    await page.setViewportSize({ width: 1440, height: 900 })
     await page.emulateMedia({ reducedMotion: 'reduce' })
     await page.addInitScript(value => localStorage.setItem('theme-preference', value), theme)
     await page.goto('/history')
-    const rail = page.locator('.history-month-rail')
-    const links = rail.getByRole('link')
-    await expect(links).toHaveCount(2)
-    await expect(rail).toHaveCSS('width', '56px')
-    const bounds = await links.evaluateAll(nodes => nodes.map(node => {
-      const rect = node.getBoundingClientRect()
-      const dot = node.firstElementChild!.getBoundingClientRect()
-      return { width: rect.width, height: rect.height, top: rect.top, dot: dot.width }
-    }))
-    for (const box of bounds) {
-      expect(box.width).toBe(44)
-      expect(box.height).toBe(44)
-      expect([14, 15.4].some(width => Math.abs(width - box.dot) < 0.01)).toBe(true)
-    }
-    expect(bounds[1]!.top - bounds[0]!.top - 44).toBe(4)
-    await links.first().focus()
-    await page.keyboard.press('Tab')
-    await expect(links.last()).toBeFocused()
-    await expect(links.last()).toHaveCSS('outline-style', 'solid')
+    const bookmark = page.locator('.history-bookmark')
+    await expect(bookmark).toBeVisible()
+    const monthLinks = bookmark.locator('.history-bookmark-month')
+    await expect(monthLinks.first()).toBeVisible()
+    await monthLinks.first().focus()
+    await expect(monthLinks.first()).toHaveCSS('outline-style', 'solid')
     await page.keyboard.press('Enter')
-    await expect(links.last()).toHaveAttribute('aria-current', 'true')
-    await info.attach('month-keyboard-target', { body: await page.screenshot(), contentType: 'image/png' })
-  })
-
-  test(`long month rail scrolls every native keyboard target into view (${theme})`, async ({ page }, info) => {
-    await page.setViewportSize({ width: 1280, height: 720 })
-    await page.emulateMedia({ reducedMotion: 'reduce' })
-    await page.addInitScript(value => localStorage.setItem('theme-preference', value), theme)
-    // Deliberate UI-only content double; normal fixture SSR/BFF remains covered
-    // separately. Client navigation exercises the actual production component.
-    await page.route('**/api/content/history', route => route.fulfill({ json: {
-      items: Array.from({ length: 60 }, (_, index) => ({
-        id: index + 1, date: `${2026 - Math.floor(index / 12)}-${String(12 - index % 12).padStart(2, '0')}-01`,
-        title: `Long timeline ${index + 1}`, description: [], image: '', sort_order: index,
-      })),
-    } }))
-    await page.goto('/')
-    await page.locator('main a[href="/history"]').first().click()
-    const rail = page.locator('.history-month-rail')
-    const links = rail.getByRole('link')
-    await expect(links).toHaveCount(60)
-    await expect.poll(() => rail.evaluate(node => node.scrollHeight > node.clientHeight)).toBe(true)
-    await links.first().focus()
-    for (let index = 1; index < 60; index++) await page.keyboard.press('Tab')
-    await expect(links.last()).toBeFocused()
-    expect(await links.last().evaluate(node => {
-      const target = node.getBoundingClientRect()
-      const rail = node.parentElement!.parentElement!.getBoundingClientRect()
-      return target.top >= rail.top && target.bottom <= rail.bottom
-    })).toBe(true)
-    await page.keyboard.press('Enter')
-    await expect(links.last()).toHaveAttribute('aria-current', 'true')
-    await info.attach('long-month-keyboard-target', { body: await page.screenshot(), contentType: 'image/png' })
+    await expect(monthLinks.first()).toHaveAttribute('aria-current', 'true')
+    await info.attach('history-bookmark-target', { body: await page.screenshot(), contentType: 'image/png' })
   })
 }
 

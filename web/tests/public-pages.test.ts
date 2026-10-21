@@ -37,7 +37,15 @@ import {
 } from '../app/utils/members'
 import type { MemberSortKey } from '../shared/content'
 import { parliamentSeats, parliamentTotal } from '../app/utils/parliament'
-import { historyAnchor, monthItems, monthKey, monthRailHeight } from '../app/utils/history'
+import {
+  formatHistoryOrdinal,
+  historyAnchor,
+  monthItems,
+  monthKey,
+  monthRailHeight,
+  yearItems,
+  yearKey,
+} from '../app/utils/history'
 import {
   actionStyleClass,
   averageDuration,
@@ -527,6 +535,40 @@ describe('history timeline', () => {
     expect(monthRailHeight(1)).toBe(58)
     expect(monthRailHeight(4)).toBe(4 * 44 + 3 * 4 + 14)
     expect(historyAnchor(3)).toBe('history-3')
+  })
+
+  it('groups entries into year chapters with counts and ordinals', () => {
+    expect(yearKey('2023-11-10')).toBe('2023')
+    expect(yearKey('2026年1月1日')).toBe('2026')
+    expect(yearKey('')).toBe('')
+    expect(yearKey(null)).toBe('')
+
+    const entries = [
+      { date: '2023-11-10' },
+      { date: '2023-12-22' },
+      { date: '2024-01-01' },
+    ]
+    expect(yearItems(entries)).toEqual([
+      {
+        year: '2023',
+        index: 0,
+        count: 2,
+        months: [
+          { month: '2023-11', label: '11月', index: 0 },
+          { month: '2023-12', label: '12月', index: 1 },
+        ],
+      },
+      {
+        year: '2024',
+        index: 2,
+        count: 1,
+        months: [
+          { month: '2024-01', label: '01月', index: 2 },
+        ],
+      },
+    ])
+    expect(formatHistoryOrdinal(0)).toBe('01')
+    expect(formatHistoryOrdinal(11)).toBe('12')
   })
 })
 
