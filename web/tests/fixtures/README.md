@@ -20,11 +20,6 @@
 * `upstream.mjs` — the isolated v1 upstream server used by Playwright and the
   performance harness. It delegates to `handlePublicFixture` and keeps the
   existing `/health`, config credential-leak marker and private decoy keys.
-* `legacy.mjs` — serves the already-built archived Vue frontend read-only,
-  without loading Vite config or creating files in `frontend/`.
-
-Visual tests render the archive and Nuxt UI in the same browser/device/theme,
-using native fonts on that host, and require zero differing component pixels.
 
 The WebP fixture bytes come from `web/public/brand/group-avatar.webp` because
 this workspace has no WebP encoder; swap in a generated minimal WebP when one

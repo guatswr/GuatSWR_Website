@@ -7,8 +7,7 @@
 ```text
 GuatSWR_Website/
 ├── backend/                  现有 Express 业务后端，独立 npm/Docker 生命周期
-├── frontend/                 旧版 Vue/Vite，部署回滚与视觉参照
-├── web/                      新版 Nuxt 应用
+├── web/                      新版 Nuxt 应用（统一前端与 BFF）
 │   ├── app/                  页面、布局、组件、客户端状态与交互
 │   ├── server/               BFF、会话、公开接口适配与服务端渲染工具
 │   │   ├── api/              按 URL/HTTP 方法组织的薄路由入口
@@ -24,9 +23,10 @@ GuatSWR_Website/
 └── .tools/                   本机运行时、临时构建和调试证据，不入库
 ```
 
-`pnpm-workspace.yaml` 只纳入 `web` 和 `packages/*`。旧前后端的 npm
-锁文件仍是各自安装的依据；迁移期间不能删除它们或把旧系统强行纳入 pnpm。
-`backend/`、`frontend/` 保留现有路径和部署方式，目录整理不修改 API 契约。
+`pnpm-workspace.yaml` 只纳入 `web` 和 `packages/*`。旧后端的 npm
+锁文件仍是其安装的依据。旧版纯前端（原 `frontend/`）已全量迁移至 `web/`，
+旧前端代码历史完整保留在 `v1-archive` Git 标签中，主线目录现已移除。
+`backend/` 保留现有路径和部署方式，目录整理不修改 API 契约。
 
 ## 两种 shared 的区别
 

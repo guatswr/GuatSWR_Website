@@ -3,13 +3,12 @@ import { defineConfig, devices } from '@playwright/test'
 /**
  * The fixture/app ports are derived from one base so that parallel workers on
  * the same machine never collide. The defaults reproduce the original fixed
- * ports exactly (3100 / 3181 / 5174), with the authentication fixture on 3182.
+ * ports exactly (3100 / 3181), with the authentication fixture on 3182.
  */
 const portBase = Number(process.env.E2E_PORT_BASE ?? 3100)
 const appPort = portBase
 const upstreamPort = portBase + 81
 const authPort = portBase + 82
-const legacyPort = portBase + 2074
 const origin = (port: number) => `http://127.0.0.1:${port}`
 
 /**
@@ -36,12 +35,6 @@ export default defineConfig({
     { name: 'mobile', use: { ...devices['Pixel 7'] } },
   ],
   webServer: [
-    {
-      command: 'node tests/fixtures/legacy.mjs',
-      url: `${origin(legacyPort)}/social`,
-      reuseExistingServer: false,
-      env: { PORT: String(legacyPort) },
-    },
     {
       // The archived app's reads and uploads, served to the archive pages.
       command: 'node tests/fixtures/upstream.mjs',

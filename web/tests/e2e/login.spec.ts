@@ -1,8 +1,5 @@
 import { expect, test } from '@playwright/test'
-import type { Page, TestInfo } from '@playwright/test'
-import pixelmatch from 'pixelmatch'
-import { PNG } from 'pngjs'
-import { writeFileSync } from 'node:fs'
+import type { Page } from '@playwright/test'
 
 /**
  * Login / client-session E2E.
@@ -18,7 +15,6 @@ test.describe('login and client session boundary', () => {
   const portBase = Number(process.env.E2E_PORT_BASE ?? 3100)
   const AUTH_FIXTURE = `http://127.0.0.1:${portBase + 82}`
   const ORIGIN = `http://127.0.0.1:${portBase}`
-  const ARCHIVE_ORIGIN = `http://127.0.0.1:${portBase + 2074}`
   const JWT_PATTERN = /eyJ[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}\.[A-Za-z0-9_-]{8,}/
 
   async function resetFixture(request: { post: (url: string, options?: object) => Promise<unknown> }) {
@@ -187,56 +183,4 @@ test.describe('login and client session boundary', () => {
     await expect(page.getByLabel('Username')).toHaveAttribute('aria-invalid', 'true')
     await expect(page.locator('#login-username-error')).toContainText('用户名')
   })
-
-    test('matches the archived login visuals', async ({ context, page, isMobile }, info: TestInfo) => {
-      const project = isMobile ? 'mobile' : 'desktop'
-      // Same seeded randomness for both apps so the same archived image bytes
-      // are compared (index 1 -> /login-bg/2.jpg).
-      await context.addInitScript(() => {
-        Math.random = () => 0.5
-      })
-      const archive = await context.newPage()
-
-      await archive.emulateMedia({ reducedMotion: 'reduce' })
-      await page.emulateMedia({ reducedMotion: 'reduce' })
-
-      // Align navbar/footer branding: the archive gets the same public config
-      // the Nuxt app sees, exactly like the shared-layout comparison.
-      const configResponse = await page.request.get('/api/config')
-      const config = configResponse.ok() ? await configResponse.json() : {}
-      await archive.route('**/api/**', route => route.fulfill({ json: config }))
-      // The config points at `/uploads/img/config/badge.svg`, which the archived
-      // bundle cannot serve (it is not part of `frontend/dist`): the archive's
-      // ClubAvatar would 404 and fall back to its bundled
-      // `/brand/group-avatar.webp`, while the new app renders the configured
-      // badge. Serve the archive's uploads from the same origin the new app
-      // reads them from, exactly as `support/public-parity.ts` does for every
-      // other archived comparison, so both navbars render the same bytes.
-      await archive.route('**/uploads/**', async (route) => {
-        const path = new URL(route.request().url()).pathname
-        await route.fulfill({ response: await route.fetch({ url: `${ORIGIN}${path}` }) })
-      })
-
-      await archive.goto(`${ARCHIVE_ORIGIN}/login`)
-      await page.goto('/login')
-      await expect(page.getByRole('heading', { name: '博丽神社办事处' })).toBeVisible()
-      await expect(archive.getByRole('heading', { name: '博丽神社办事处' })).toBeVisible()
-      await page.waitForLoadState('networkidle')
-      await archive.waitForLoadState('networkidle')
-
-      const oldBytes = await archive.screenshot({ fullPage: true, animations: 'disabled' })
-      const newBytes = await page.screenshot({ fullPage: true, animations: 'disabled' })
-      writeFileSync(info.outputPath(`login-${project}-archive.png`), oldBytes)
-      writeFileSync(info.outputPath(`login-${project}-nuxt.png`), newBytes)
-
-      const oldImage = PNG.sync.read(oldBytes)
-      const newImage = PNG.sync.read(newBytes)
-      expect({ width: newImage.width, height: newImage.height }).toEqual({ width: oldImage.width, height: oldImage.height })
-      const diff = new PNG({ width: oldImage.width, height: oldImage.height })
-      const pixels = pixelmatch(oldImage.data, newImage.data, diff.data, oldImage.width, oldImage.height, { threshold: 0.1 })
-      writeFileSync(info.outputPath(`login-${project}-diff.png`), PNG.sync.write(diff))
-      expect(pixels, `login ${project}: pixels different from the archived login page`).toBe(0)
-
-      await archive.close()
-    })
 })

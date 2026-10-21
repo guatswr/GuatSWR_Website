@@ -84,10 +84,6 @@ jobs:
           sudo apt-get update
           sudo apt-get install --yes fonts-noto-cjk
           pnpm --filter @guatswr/web exec playwright install --with-deps chromium
-      - name: Build read-only legacy reference for layout comparisons
-        run: |
-          npm --prefix frontend ci
-          npm --prefix frontend run build
       - run: pnpm test:e2e
       - name: Account initial route JavaScript
         id: route-budget
