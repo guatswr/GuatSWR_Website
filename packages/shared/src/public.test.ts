@@ -150,7 +150,7 @@ describe('frozen v1 member, history and school rows', () => {
       deleted_at: null,
       deleted_by: 1,
     })
-    expect(row).toMatchObject({ bio: '', school: '', sort_order: 0, tags: ['STG', '东方'] })
+    expect(row).toMatchObject({ school: '', sort_order: 0, tags: ['STG', '东方'] })
     expect(row).not.toHaveProperty('deleted_by')
     expect(publicMembersSchema.parse([row])).toHaveLength(1)
   })

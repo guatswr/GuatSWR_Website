@@ -47,8 +47,9 @@ export const projectFixtureActivityDetail = row => {
 }
 
 export const projectFixtureMember = (row, original = false) => {
+  const { bio: _bio, ...rest } = row
   const avatar_thumb = thumbnailUrl(row.avatar)
-  return { ...row, tags: parseList(row.tags), avatar_thumb, avatar_original: row.avatar, avatar: original ? row.avatar : avatar_thumb || row.avatar }
+  return { ...rest, tags: parseList(row.tags), avatar_thumb, avatar_original: row.avatar, avatar: original ? row.avatar : avatar_thumb || row.avatar }
 }
 
 export const compareFixtureHistory = (a, b) => String(a.date).localeCompare(String(b.date)) || a.sort_order - b.sort_order

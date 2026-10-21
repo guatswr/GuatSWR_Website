@@ -29,7 +29,6 @@ export type ActivityInput = z.infer<typeof activityInputSchema>
 export const memberInputSchema = z.object({
   name: z.string().trim().min(1, '姓名不能为空').max(50),
   role: z.string().trim().min(1, '角色不能为空').max(50),
-  bio: z.string().max(2000).optional().nullable(),
   avatar: z.string().max(500).optional().nullable(),
   school: z.string().max(50).optional().nullable(),
   tags: z.array(z.string().trim().max(30)).optional().default([]),
@@ -195,7 +194,6 @@ export const adminMemberRowSchema = z.object({
   id: z.number().int().positive(),
   name: stringOrEmpty,
   role: stringOrEmpty,
-  bio: stringOrEmpty,
   avatar: stringOrEmpty,
   school: stringOrEmpty,
   tags: imagesSchema,

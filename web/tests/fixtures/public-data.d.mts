@@ -31,7 +31,7 @@ export interface FixtureMemberRow {
   id: number
   name: string
   role: string
-  bio: string
+
   avatar: string
   school: string
   tags: string

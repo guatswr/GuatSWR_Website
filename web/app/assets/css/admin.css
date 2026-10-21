@@ -1,13 +1,8 @@
-/* Reference tokens alone: main.css excludes private source paths, and those
-   exclusions would otherwise cancel this stylesheet's explicit inclusions. */
+/* Reference tokens alone so admin styles never emit unlayered global utilities
+   that would override @layer utilities rules (such as lg:hidden) in main.css. */
 @reference "tailwindcss/theme.css";
 @reference "./legacy-palette.css";
 @reference "./typography.css";
-@import "tailwindcss/utilities" source(none);
-@custom-variant dark (&:where(.dark, .dark *));
-@source "../../pages/admin";
-@source "../../components/admin";
-@source "../../layouts/admin.vue";
 
 @layer base {
   /* v1 preflight supplied gray-200 for controls with a plain `border`.

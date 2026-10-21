@@ -1486,7 +1486,7 @@ components:
           type: integer
     MemberInput:
       type: object
-      required: [name, role, bio, avatar]
+      required: [name, role, avatar]
       properties:
         name:
           type: string

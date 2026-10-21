@@ -33,11 +33,34 @@ export const SCHOOL_OPTIONS: readonly SchoolOption[] = Object.freeze([
 ])
 
 const FALLBACK_SCHOOL_COLOR = '#9ca3af'
+const FALLBACK_SCHOOL_DARK_COLOR = '#cbd5e1'
 const ALL_TAB_COLOR = '#38bdf8'
+
+/** High-contrast dark-mode counterparts for dark-tinted school colours. */
+const SCHOOL_DARK_COLORS: Readonly<Record<string, string>> = Object.freeze({
+  桂航: '#60a5fa',
+  桂电: '#818cf8',
+  师大: '#c084fc',
+  桂师: '#fb7185',
+  桂信: '#fbbf24',
+  漓院: '#22d3ee',
+  桂理: '#94a3b8',
+  桂旅: '#2dd4bf',
+  桂医: '#4ade80',
+  联外: '#f87171',
+  bot: '#cbd5e1',
+})
 
 export function getSchoolColor(schoolName: string): string {
   const school = SCHOOL_OPTIONS.find(option => option.value === schoolName)
   return school ? school.color : FALLBACK_SCHOOL_COLOR
+}
+
+export function getSchoolDarkColor(schoolName: string): string {
+  if (!schoolName) return ALL_TAB_COLOR
+  return Object.hasOwn(SCHOOL_DARK_COLORS, schoolName)
+    ? SCHOOL_DARK_COLORS[schoolName]!
+    : FALLBACK_SCHOOL_DARK_COLOR
 }
 
 export function getMemberTags(tags: readonly string[] | null | undefined): string[] {
@@ -121,4 +144,23 @@ export function sortMembersByKeys<T extends { readonly id: number, readonly name
     })
     .sort((a, b) => compareMemberNames(a.key, b.key) || a.index - b.index)
     .map(entry => entry.member)
+}
+
+/**
+ * Uppercase initial badge (A-Z or '#') derived from the server sort key, used
+ * by the editorial member dossier header.
+ */
+export function memberInitialLetter(
+  memberId: number | string,
+  sortKeys: Readonly<Record<string, MemberSortKey>>,
+): string {
+  const id = String(memberId)
+  const entry = Object.hasOwn(sortKeys, id) ? sortKeys[id] : undefined
+  if (!entry || entry.category === 2) return '#'
+  const first = entry.key.trim().charAt(0).toUpperCase()
+  return /^[A-Z]$/.test(first) ? first : '#'
+}
+
+export function formatMemberOrdinal(index: number): string {
+  return String(Math.max(1, index + 1)).padStart(2, '0')
 }

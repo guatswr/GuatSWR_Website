@@ -20,7 +20,7 @@ const processingId = ref(null)
 // 头像上传状态
 const isUploadingAvatar = ref(false)
 
-const memForm = reactive({ id: null, name: '', role: '', bio: '', avatar: '', school: '', tags: [], sort_order: 0 })
+const memForm = reactive({ id: null, name: '', role: '', avatar: '', school: '', tags: [], sort_order: 0 })
 
 const tagsText = computed({
   get() {
@@ -82,7 +82,7 @@ const uploadFile = async (file) => {
 
 const resetMemForm = () => {
   isEditingMember.value = false
-  Object.assign(memForm, { id: null, name: '', role: '', bio: '', avatar: '', school: '', tags: [], sort_order: 0 })
+  Object.assign(memForm, { id: null, name: '', role: '', avatar: '', school: '', tags: [], sort_order: 0 })
 }
 
 const handleAvatarUpload = async (e) => {
@@ -230,8 +230,8 @@ const getSchoolColor = (n) => {
           </div>
         
         <div>
-            <label class="text-xs text-gray-500 block mb-1">简介</label>
-            <textarea v-model="memForm.bio" class="w-full border rounded px-3 py-2 focus:ring-2 focus:ring-blue-100 outline-none text-sm" rows="3" placeholder="一句话介绍..."></textarea>
+
+
         </div>
 
         <!-- 头像上传 -->

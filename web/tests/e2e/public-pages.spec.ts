@@ -278,6 +278,21 @@ test.describe('filter and page reactivity', () => {
     await expect(canonical).toHaveAttribute('href', new RegExp(`school=${encodeURIComponent(OTHER_SCHOOL)}`))
   })
 
+  test('members editorial layout links the parliament chart and school filter', async ({ page }) => {
+    await page.goto('/members')
+    await expect(memberBody(page).getByRole('heading', { name: '绯想天住民名录', exact: true })).toBeVisible()
+    await expect(memberBody(page).getByText('收录细则', { exact: true })).toBeVisible()
+    await expect(memberBody(page).locator('.member-dossier')).toHaveCount(2)
+    await expect(memberBody(page).locator('.member-dossier-index').first()).toContainText('C · 01')
+
+    const circles = memberBody(page).locator('.parliament-chart-container svg circle')
+    expect(await circles.count()).toBeGreaterThan(0)
+
+    await page.locator('a[href*="school="]').filter({ hasText: FIXTURE_MEMBER_SCHOOL }).first().click()
+    await expect(memberBody(page).locator('.parliament-chart-container svg circle.is-highlighted').first()).toBeVisible()
+    await expect(memberBody(page).locator('.parliament-chart-container svg circle.is-dimmed').first()).toBeVisible()
+  })
+
   test('page and range navigation update the body and the canonical URL', async ({ page }) => {
     const canonical = page.locator('link[rel="canonical"]')
     await page.goto('/logs')
@@ -393,14 +408,6 @@ const PARITY_TARGETS: readonly ParityTarget[] = Object.freeze([
     regions: [
       { name: 'timeline', archive: 'main .space-y-12', current: 'main .space-y-12' },
       { name: 'month-rail', archive: 'main .fixed.right-6', current: 'main .fixed.right-6', desktopOnly: true },
-    ],
-  },
-  {
-    path: '/members',
-    wait: '绯想天住民名录',
-    regions: [
-      { name: 'chart', archive: 'main .parliament-chart-container', current: 'main .parliament-chart-container' },
-      { name: 'grid', archive: 'main .grid.grid-cols-1', current: 'main .grid.grid-cols-1' },
     ],
   },
   {

@@ -127,7 +127,7 @@ export const memberRowSchema = z.object({
   id: publicIdSchema,
   name: publicTextSchema,
   role: publicTextSchema,
-  bio: publicTextSchema,
+
   avatar: publicTextSchema,
   avatar_thumb: publicTextSchema,
   avatar_original: publicTextSchema,
@@ -141,7 +141,7 @@ export const publicMemberSchema = z.object({
   id: publicIdSchema,
   name: z.string(),
   role: z.string(),
-  bio: z.string(),
+
   avatar: z.string(),
   avatar_thumb: z.string(),
   avatar_original: z.string(),

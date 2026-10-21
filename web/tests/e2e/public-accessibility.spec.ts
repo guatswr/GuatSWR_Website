@@ -19,7 +19,7 @@ for (const theme of ['light', 'dark'] as const) {
       await page.locator('main a[href*="school="]').filter({ hasText: school }).first().click()
       const selected = page.locator('main a[aria-current="page"]')
       await expect(selected).toContainText(school)
-      await expect(selected).toHaveCSS('background-color', 'rgb(7, 89, 133)')
+      await expect(selected).toHaveClass(/is-selected/)
       await auditAccessibility(page, info, `school-${school}`)
     }
     await page.goto('/logs')

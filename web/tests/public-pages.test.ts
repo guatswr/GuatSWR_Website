@@ -28,8 +28,11 @@ import {
   buildMemberFilterTabs,
   buildParliamentData,
   compareMemberNames,
+  formatMemberOrdinal,
   getMemberTags,
   getSchoolColor,
+  getSchoolDarkColor,
+  memberInitialLetter,
   sortMembersByKeys,
 } from '../app/utils/members'
 import type { MemberSortKey } from '../shared/content'
@@ -433,7 +436,20 @@ describe('members', () => {
     expect(buildParliamentData([])).toEqual([])
     expect(getSchoolColor('桂航')).toBe('#2B65EC')
     expect(getSchoolColor('其他')).toBe('#9ca3af')
+    expect(getSchoolDarkColor('桂电')).toBe('#818cf8')
+    expect(getSchoolDarkColor('联外')).toBe('#f87171')
+    expect(getSchoolDarkColor('其他')).toBe('#cbd5e1')
     expect(getMemberTags([' STG ', '', '  '])).toEqual(['STG'])
+  })
+
+  it('derives initial letters and zero-padded ordinals for editorial dossier badges', () => {
+    expect(memberInitialLetter(1, serverKeys)).toBe('C')
+    expect(memberInitialLetter(2, serverKeys)).toBe('A')
+    expect(memberInitialLetter(3, serverKeys)).toBe('#')
+    expect(memberInitialLetter(99, serverKeys)).toBe('#')
+    expect(formatMemberOrdinal(0)).toBe('01')
+    expect(formatMemberOrdinal(8)).toBe('09')
+    expect(formatMemberOrdinal(14)).toBe('15')
   })
 })
 
@@ -463,6 +479,26 @@ describe('parliament chart geometry', () => {
     for (const seat of seats) {
       expect(Number.isFinite(seat.x)).toBe(true)
       expect(Number.isFinite(seat.y)).toBe(true)
+    }
+  })
+
+  it('guarantees non-overlapping clearance across adjacent rings even at 139 seats', () => {
+    const dense = parliamentSeats([
+      { label: '桂航', value: 63, color: '#2B65EC' },
+      { label: '联外', value: 33, color: '#800000' },
+      { label: '桂电', value: 16, color: '#002060' },
+      { label: 'bot', value: 10, color: '#424242' },
+      { label: '其他', value: 17, color: '#9ca3af' },
+    ])
+    expect(dense).toHaveLength(139)
+    for (let i = 0; i < dense.length; i += 1) {
+      const a = dense[i]!
+      for (let j = i + 1; j < dense.length; j += 1) {
+        const b = dense[j]!
+        const distance = Math.hypot(a.x - b.x, a.y - b.y)
+        // Even with a 1.03x highlight scale and 1.5px stroke, circles must keep a positive gap.
+        expect(distance).toBeGreaterThan((a.r + b.r) * 1.15)
+      }
     }
   })
 })

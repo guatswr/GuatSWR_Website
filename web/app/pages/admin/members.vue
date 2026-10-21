@@ -25,7 +25,7 @@ const submitLoading = ref(false)
 const isEditingMember = ref(false)
 const processingId = ref<number | null>(null)
 const isUploadingAvatar = ref(false)
-const emptyForm = () => ({ id: null as number | null, name: '', role: '', bio: '', avatar: '', school: '', tags: [] as string[], sort_order: 0 })
+const emptyForm = () => ({ id: null as number | null, name: '', role: '', avatar: '', school: '', tags: [] as string[], sort_order: 0 })
 const memForm = reactive(emptyForm())
 const tagsText = computed({ get: () => memForm.tags.join('、'), set: (value: string) => {
   memForm.tags = [...new Set(value.split(/[,，、|/]/).map(tag => tag.trim()).filter(Boolean))]
@@ -109,7 +109,7 @@ const filteredMembers = computed(() => members.value.filter(member => [member.na
           <div class="admin-field"><label for="member-order">排序值</label><input id="member-order" v-model.number="memForm.sort_order" type="number" step="1" ></div>
         </div>
         <div class="admin-field"><label for="member-tags">成分标签</label><input id="member-tags" v-model="tagsText" placeholder="如：STG高手、COS大手子" aria-describedby="member-tags-help" ><small id="member-tags-help">多个标签用顿号、逗号或竖线分隔。</small></div>
-        <div class="admin-field"><label for="member-bio">简介</label><textarea id="member-bio" v-model="memForm.bio" rows="3" placeholder="一句话介绍..." /></div>
+
         <div class="admin-upload-row"><AdminAvatar :src="memForm.avatar" :name="memForm.name" /><div class="admin-field"><label for="member-avatar">头像</label><input id="member-avatar" type="file" accept="image/*" :disabled="isUploadingAvatar || submitLoading" @change="handleAvatarUpload" ><small role="status">{{ isUploadingAvatar ? '头像上传中…' : '建议使用正方形图片。' }}</small></div></div>
         <button class="admin-button admin-button--primary" :disabled="submitLoading || isUploadingAvatar" type="submit">{{ submitLoading ? '提交中…' : isEditingMember ? '保存修改' : '添加成员' }}</button>
       </form>
@@ -123,7 +123,7 @@ const filteredMembers = computed(() => members.value.filter(member => [member.na
       <div v-else class="admin-member-list">
         <article v-for="mem in filteredMembers" :key="mem.id" data-testid="admin-member-card" class="admin-resource-card">
           <div class="admin-member-summary"><AdminAvatar :src="getThumbUrl(mem.avatar)" :name="mem.name" /><div class="admin-member-info"><h3>{{ mem.name }}</h3><p>{{ mem.role || '成员' }}<span v-if="mem.school"> · {{ mem.school }}</span></p><div class="admin-tags"><span v-if="mem.deleted_at" class="admin-badge admin-badge--danger">已删</span><span v-for="tag in mem.tags" :key="tag" class="admin-badge">{{ tag }}</span></div></div></div>
-          <p v-if="mem.bio" class="admin-resource-description">{{ mem.bio }}</p>
+
           <div class="admin-row-actions"><template v-if="!mem.deleted_at"><button class="admin-button admin-button--secondary" title="编辑" @click="editMember(mem)">编辑</button><button class="admin-button admin-button--quiet" title="上移" :disabled="processingId !== null" @click="updateOrder(mem, 'up')">上移</button><button class="admin-button admin-button--quiet" title="下移" :disabled="processingId !== null" @click="updateOrder(mem, 'down')">下移</button><button class="admin-button admin-button--danger" title="删除" :disabled="processingId !== null" @click="deleteMember(mem.id)">删除</button></template><button v-else-if="isSuperAdmin" class="admin-button admin-button--secondary" :disabled="processingId !== null" @click="restoreMember(mem.id)">恢复</button></div>
         </article>
       </div>

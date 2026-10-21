@@ -113,7 +113,7 @@ const initDb = () => {
       }
     });
     
-    db.run(`CREATE TABLE IF NOT EXISTS members (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, role TEXT, bio TEXT, avatar TEXT, school TEXT, tags TEXT, sort_order INTEGER DEFAULT 0, deleted_at DATETIME, deleted_by INTEGER)`, (err) => {
+    db.run(`CREATE TABLE IF NOT EXISTS members (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, role TEXT, avatar TEXT, school TEXT, tags TEXT, sort_order INTEGER DEFAULT 0, deleted_at DATETIME, deleted_by INTEGER)`, (err) => {
       if(!err) {
         addColumnSafe('members', 'school TEXT');
         addColumnSafe('members', 'tags TEXT');

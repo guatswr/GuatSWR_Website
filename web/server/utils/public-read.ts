@@ -211,7 +211,6 @@ const projectMember = (row: MemberRow): PublicMember => ({
   id: row.id,
   name: row.name,
   role: row.role,
-  bio: row.bio,
   avatar: row.avatar,
   avatar_thumb: row.avatar_thumb,
   avatar_original: row.avatar_original,

@@ -348,13 +348,13 @@ const sortedMembers = computed(() => {
               </span>
             </div>
             <p
+              v-if="false"
               class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed italic border-t border-dashed border-gray-200 dark:border-slate-700 pt-4 relative"
             >
               <span
                 class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-900 px-2 text-gray-300 dark:text-gray-400 text-xs"
                 >Spell Card</span
               >
-              "{{ member.bio }}"
             </p>
           </div>
           <div

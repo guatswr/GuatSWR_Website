@@ -93,10 +93,7 @@ export function parliamentSeats(
   })
   if (!Number.isFinite(minArcPerDot)) minArcPerDot = DEFAULT_MIN_ARC
 
-  const maxDiameter = Math.min(minArcPerDot, dr) * 0.85
-  const dotRadius = Math.max(MIN_DOT_RADIUS, Math.min(MAX_DOT_RADIUS, maxDiameter / 2))
-
-  const generated: { x: number, y: number, angle: number, r: number }[] = []
+  const generated: { x: number, y: number, angle: number }[] = []
   rowCounts.forEach((count, rowIndex) => {
     if (count === 0) return
     const radius = rowRadii[rowIndex]
@@ -106,7 +103,6 @@ export function parliamentSeats(
         x: config.centerX + radius * Math.cos(Math.PI / 2),
         y: config.centerY - radius * Math.sin(Math.PI / 2),
         angle: Math.PI / 2,
-        r: dotRadius,
       })
       return
     }
@@ -117,15 +113,31 @@ export function parliamentSeats(
         x: config.centerX + radius * Math.cos(angle),
         y: config.centerY - radius * Math.sin(angle),
         angle,
-        r: dotRadius,
       })
     }
   })
+
+  // Measure the true minimum Euclidean distance across all seat pairs (including
+  // phase-shifted seats on adjacent concentric rings) so circles never collide.
+  let minPairDistance = Number.POSITIVE_INFINITY
+  for (let i = 0; i < generated.length; i += 1) {
+    const a = generated[i]!
+    for (let j = i + 1; j < generated.length; j += 1) {
+      const b = generated[j]!
+      const dist = Math.hypot(a.x - b.x, a.y - b.y)
+      if (dist > 0 && dist < minPairDistance) minPairDistance = dist
+    }
+  }
+
+  const spacingBound = Math.min(minArcPerDot, dr, minPairDistance)
+  const maxDiameter = spacingBound * 0.72
+  const dotRadius = Math.max(MIN_DOT_RADIUS, Math.min(MAX_DOT_RADIUS, maxDiameter / 2))
 
   // Left to right, then paint in the configured group order (as archived).
   generated.sort((a, b) => b.angle - a.angle)
   return generated.map((seat, index) => ({
     ...seat,
+    r: dotRadius,
     color: dotList[index]?.color ?? '#e5e7eb',
     label: dotList[index]?.label ?? '',
   }))

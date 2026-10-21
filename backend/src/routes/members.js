@@ -103,7 +103,7 @@ router.get('/', optionalAuth, (req, res) => {
   db.all(query, params, (err, rows) => {
     if (err) return res.status(500).json({ error: err.message }); // 增加简单的错误处理
 
-    const list = (rows || []).map((row) => ({
+    const list = (rows || []).map(({ bio: _bio, ...row }) => ({
       ...row,
       tags: parseTags(row.tags),
       avatar_thumb: buildThumbUrl(row.avatar),
@@ -120,12 +120,12 @@ router.get('/', optionalAuth, (req, res) => {
 router.post('/', authenticateToken, (req, res) => {
   const validated = validate(memberSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
-  const { name, role, bio, avatar, school, sort_order, tags } = validated.data;
+  const { name, role, avatar, school, sort_order, tags } = validated.data;
   const userDir = path.join(IMG_ROOT_DIR, 'user');
   (async () => {
     const movedAvatar = await moveStagedFile(avatar, userDir);
     const tagsText = JSON.stringify(normalizeTags(tags));
-    db.run("INSERT INTO members (name, role, bio, avatar, school, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?, ?)", [name, role, bio, movedAvatar, school || '', tagsText, sort_order || 0], function(err) {
+    db.run("INSERT INTO members (name, role, avatar, school, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?)", [name, role, movedAvatar, school || '', tagsText, sort_order || 0], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       addLog(req.user.username, 'CREATE_MEMBER', `添加成员: ${name}`);
       notifyMemberAdded({
@@ -143,12 +143,12 @@ router.post('/', authenticateToken, (req, res) => {
 router.put('/:id', authenticateToken, (req, res) => {
   const validated = validate(memberSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
-  const { name, role, bio, avatar, school, sort_order, tags } = validated.data;
+  const { name, role, avatar, school, sort_order, tags } = validated.data;
   const userDir = path.join(IMG_ROOT_DIR, 'user');
   (async () => {
     const movedAvatar = await moveStagedFile(avatar, userDir);
     const tagsText = JSON.stringify(normalizeTags(tags));
-    db.run("UPDATE members SET name=?, role=?, bio=?, avatar=?, school=?, tags=?, sort_order=? WHERE id=?", [name, role, bio, movedAvatar, school || '', tagsText, sort_order || 0, req.params.id], function(err) {
+    db.run("UPDATE members SET name=?, role=?, avatar=?, school=?, tags=?, sort_order=? WHERE id=?", [name, role, movedAvatar, school || '', tagsText, sort_order || 0, req.params.id], function(err) {
       if (err) return res.status(500).json({ error: err.message });
       addLog(req.user.username, 'UPDATE_MEMBER', `更新成员: ${name}`);
       res.json({ message: "成员更新成功" });

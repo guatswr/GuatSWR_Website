@@ -37,7 +37,7 @@ const activitySchema = z.object({
 const memberSchema = z.object({
   name: z.string().trim().min(1, '姓名不能为空').max(50),
   role: z.string().trim().min(1, '角色不能为空').max(50),
-  bio: z.string().max(2000).optional().nullable(),
+  /* bio removed */
   avatar: z.string().max(500).optional().nullable(),
   school: z.string().max(50).optional().nullable(),
   tags: z.array(z.string().trim().max(30)).optional().default([]),

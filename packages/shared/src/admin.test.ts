@@ -103,7 +103,7 @@ describe('admin response projections strip private and unknown fields', () => {
   })
 
   it('projects members, logs and users with the SQLite 0/1 flags normalized', () => {
-    const member = adminMemberRowSchema.parse({ id: 1, name: 'a', role: 'b', bio: null, avatar: null, school: null, tags: '["x","x"]', sort_order: 2, deleted_at: null, deleted_by: 4 })
+    const member = adminMemberRowSchema.parse({ id: 1, name: 'a', role: 'b', avatar: null, school: null, tags: '["x","x"]', sort_order: 2, deleted_at: null, deleted_by: 4 })
     expect(member.tags).toEqual(['x', 'x'])
     expect(member).not.toHaveProperty('deleted_by')
 

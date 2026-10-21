@@ -1,12 +1,12 @@
 <script setup lang="ts">
 /**
- * `/members` - archived `views/public/Members.vue`.
+ * `/members` — Editorial Gensokyo Residents Registry (`绯想天住民名录`).
  *
  * The selected school lives in the URL (`?school=桂航`), so the filtered list
  * is server-rendered and works without JavaScript. An empty `school` value is
- * treated as "全部", matching the backend's truthiness check (an empty string
- * is ignored there too). Pinyin sort keys come from the server with the list,
- * exactly as the archived `Members.vue` sorted with `pinyin-pro`.
+ * treated as "全部", matching the backend's truthiness check. Pinyin sort keys
+ * come from the server with the list, so no pinyin library is shipped to the
+ * client and SSR order is replayed unchanged on hydration.
  */
 import type { MembersContentResponse } from '#shared/content'
 import type { PublicSchoolStat } from '@guatswr/shared'
@@ -15,19 +15,28 @@ import { beijingDateString } from '~/utils/beijing-time'
 import {
   buildMemberFilterTabs,
   buildParliamentData,
+  formatMemberOrdinal,
   getMemberTags,
   getSchoolColor,
+  getSchoolDarkColor,
+  memberInitialLetter,
   sortMembersByKeys,
 } from '~/utils/members'
 import { buildPublicPath, queryValue, stripControlCharacters } from '~/utils/public-query'
 import { displayImageSource, displayThumbSource } from '~/utils/public-image'
 
 const route = useRoute()
+const router = useRouter()
 
 /** Bounded arbitrary school value; never a recognized filter unless present. */
 const selectedSchool = computed(() => stripControlCharacters(queryValue(route.query.school) ?? '')
   .trim()
   .slice(0, 32))
+
+const hoveredSchool = ref<string | null>(null)
+const activeChartSchool = computed(() =>
+  hoveredSchool.value !== null ? hoveredSchool.value : selectedSchool.value,
+)
 
 // One request returns both the projected members and the server-derived sort
 // keys; the browser never computes pinyin.
@@ -60,6 +69,12 @@ const errorMessage = computed(() => (membersError.value ? '后端连接异常，
 
 const tabLink = (value: string): string => buildPublicPath('/members', { school: value || undefined })
 
+const onSelectChartSchool = async (school: string): Promise<void> => {
+  const nextSchool = selectedSchool.value === school ? '' : school
+  hoveredSchool.value = nextSchool
+  await router.push(tabLink(nextSchool))
+}
+
 // A getter, so the canonical URL follows the selected school.
 usePublicPageSeo(() => ({
   title: '绯想天住民名录',
@@ -70,141 +85,552 @@ usePublicPageSeo(() => ({
 </script>
 
 <template>
-  <div class="min-h-screen bg-[#f0f9ff] dark:bg-slate-950 py-12 px-4 relative overflow-hidden font-sans">
-    <div class="absolute top-0 right-0 w-96 h-96 bg-blue-200/20 rounded-full blur-3xl -mr-20 -mt-20 pointer-events-none"/>
-    <div class="absolute bottom-0 left-0 w-96 h-96 bg-red-200/20 rounded-full blur-3xl -ml-20 -mb-20 pointer-events-none"/>
-    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[20rem] font-bold text-white opacity-40 select-none pointer-events-none font-serif">
-      ⑨
-    </div>
-
-    <div class="max-w-7xl mx-auto relative z-10">
-      <div class="text-center mb-8">
-        <h1 class="text-4xl font-bold text-sky-600 dark:text-sky-400 font-serif mb-4 flex justify-center items-center gap-2">
-          绯想天住民名录
-        </h1>
-
-        <div class="flex flex-wrap justify-center gap-3 mb-4">
-          <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-full border border-blue-100 dark:border-slate-800 shadow-sm transition hover:scale-105 cursor-default select-none">
-            <div class="w-1.5 h-1.5 rounded-full bg-amber-400 shadow-[0_0_5px_rgba(251,191,36,0.5)]"/>
-            <span>小号不列入统计</span>
-          </div>
-          <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-full border border-blue-100 dark:border-slate-800 shadow-sm transition hover:scale-105 cursor-default select-none">
-            <div class="w-1.5 h-1.5 rounded-full bg-pink-400 shadow-[0_0_5px_rgba(244,114,182,0.5)]"/>
-            <span>按首字母排序</span>
-          </div>
-          <div class="flex items-center gap-1.5 px-3 py-1 text-xs font-medium text-gray-500 dark:text-gray-400 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md rounded-full border border-blue-100 dark:border-slate-800 shadow-sm transition hover:scale-105 cursor-default select-none">
-            <div class="w-1.5 h-1.5 rounded-full bg-sky-500 shadow-[0_0_5px_rgba(14,165,233,0.5)]"/>
-            <span>如需修改信息请联系管理员</span>
-          </div>
+  <div class="club-paper min-h-screen font-sans">
+    <div class="club-container py-5 sm:py-8">
+      <header class="mb-3 flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-slate-200/80 pb-3 dark:border-slate-800">
+        <div class="flex flex-wrap items-baseline gap-3">
+          <h1 class="font-serif text-2xl font-semibold tracking-wide text-slate-900 sm:text-3xl dark:text-slate-100">
+            绯想天住民名录
+          </h1>
         </div>
-      </div>
+      </header>
 
-      <div v-if="parliamentData.length > 0" class="mb-12">
-        <ParliamentChart
-          :data="parliamentData"
-          title="桂航绯想天"
-          :sub-title="currentDate"
-        />
-      </div>
+      <section
+        aria-label="住民席位分布与院校筛选"
+        class="mb-10 border-b border-slate-200 pb-7 dark:border-slate-800"
+      >
+        <div v-if="parliamentData.length > 0" class="mb-5">
+          <ParliamentChart
+            :data="parliamentData"
+            title="桂航绯想天"
+            :sub-title="currentDate"
+            :active-school="activeChartSchool"
+            @hover="hoveredSchool = $event || null"
+            @select="onSelectChartSchool"
+          />
+        </div>
 
-      <div class="mb-12 flex flex-wrap justify-center gap-3 px-2">
-        <NuxtLink
-          v-for="tab in filterTabs"
-          :key="tab.value"
-          :to="tabLink(tab.value)"
-          class="relative px-4 py-2 rounded-full text-sm font-bold transition-all duration-300 flex items-center gap-2 shadow-sm hover:-translate-y-0.5"
-          :class="[
-            selectedSchool === tab.value
-              ? 'text-white shadow-md ring-2 ring-offset-2 ring-offset-[#f0f9ff] dark:ring-offset-slate-950'
-              : 'bg-white/60 dark:bg-slate-800/60 text-gray-600 dark:text-gray-300 hover:bg-white dark:hover:bg-slate-800',
-          ]"
-          :style="{
-            backgroundColor: selectedSchool === tab.value ? '#075985' : '',
-            borderColor: selectedSchool === tab.value ? '#075985' : 'transparent',
-            '--tw-ring-color': tab.color,
-          }"
-          :aria-current="selectedSchool === tab.value ? 'page' : undefined"
+        <nav
+          aria-label="按院校筛选住民"
+          class="member-filter-bar"
+          @mouseleave="hoveredSchool = null"
         >
-          <span>{{ tab.label }}</span>
-          <span
-            class="px-1.5 py-0.5 rounded-full text-[10px] min-w-[1.2rem] flex items-center justify-center transition-colors"
-            :class="
-              selectedSchool === tab.value
-                ? 'bg-white/20 text-white'
-                : 'bg-gray-200/50 dark:bg-gray-700/50 text-gray-500 dark:text-gray-400'
-            "
+          <NuxtLink
+            v-for="tab in filterTabs"
+            :key="tab.value || 'all'"
+            :to="tabLink(tab.value)"
+            class="member-filter-tab"
+            :class="{
+              'is-selected': selectedSchool === tab.value,
+              'is-zero': tab.count === 0 && selectedSchool !== tab.value,
+            }"
+            :style="{
+              '--tab-color': tab.value ? tab.color : '#0369a1',
+              '--tab-dark-color': tab.value ? getSchoolDarkColor(tab.value) : '#38bdf8',
+            }"
+            :aria-current="selectedSchool === tab.value ? 'page' : undefined"
+            @mouseenter="hoveredSchool = tab.value"
           >
-            {{ tab.count }}
-          </span>
-        </NuxtLink>
+            <span
+              class="member-filter-swatch"
+              aria-hidden="true"
+            />
+            <span class="member-filter-label">{{ tab.label }}</span>
+            <span class="member-filter-count">{{ tab.count }}</span>
+          </NuxtLink>
+        </nav>
+      </section>
+
+      <div
+        v-if="loading"
+        class="py-20 text-center text-sm text-slate-600 dark:text-slate-300"
+        role="status"
+      >
+        正在从红魔馆图书馆调取档案…
       </div>
 
-      <div v-if="loading" class="text-center py-20">
-        <div class="animate-spin text-blue-400 text-3xl">❄️</div>
-        <p class="text-gray-400 dark:text-gray-300 mt-2">
-          正在从红魔馆图书馆调取档案...
-        </p>
+      <div
+        v-else-if="errorMessage"
+        class="club-empty text-center text-red-700 dark:text-red-300"
+        role="alert"
+      >
+        <p class="font-semibold">{{ errorMessage }}</p>
+        <button type="button" class="club-text-link mt-3" @click="refreshMembers()">
+          重新加载
+        </button>
       </div>
 
-      <div v-else-if="errorMessage" class="text-center py-20 text-red-500">
-        <p class="font-bold">{{ errorMessage }}</p>
-        <button type="button" class="club-text-link mt-4" @click="refreshMembers()">重新加载</button>
+      <div
+        v-else-if="sortedMembers.length === 0"
+        class="club-empty text-center"
+        role="status"
+      >
+        <p class="text-base text-slate-600 dark:text-slate-300">该区域暂未发现住民出没...</p>
       </div>
 
-      <div v-else-if="sortedMembers.length === 0" class="text-center py-20 text-gray-400 dark:text-gray-500">
-        <p class="text-lg">该区域暂未发现住民出没...</p>
-      </div>
-
-      <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
-        <div
-          v-for="member in sortedMembers"
-          :key="member.id"
-          class="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm rounded-2xl p-6 shadow-sm hover:shadow-lg transition transform hover:-translate-y-2 border border-blue-50 dark:border-slate-800 relative group"
+      <div
+        v-else
+        class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+      >
+        <article
+          v-for="(member, index) in sortedMembers"
+          :key="`${selectedSchool || 'all'}-${member.id}`"
+          class="member-dossier group"
+          :style="{
+            '--school-accent': member.school ? getSchoolColor(member.school) : '#0369a1',
+            '--school-accent-dark': member.school ? getSchoolDarkColor(member.school) : '#38bdf8',
+            '--card-delay': `${Math.min(index, 15) * 32}ms`,
+          }"
         >
-          <div class="relative w-24 h-24 mx-auto mb-4">
-            <div class="w-full h-full rounded-full p-1 bg-gradient-to-tr from-blue-300 to-pink-300 shadow-inner overflow-hidden">
+          <div class="member-dossier-meta">
+            <span class="member-dossier-index" aria-hidden="true">
+              {{ memberInitialLetter(member.id, memberContent.sortKeys) }} · {{ formatMemberOrdinal(index) }}
+            </span>
+            <span v-if="member.school" class="member-dossier-school">
+              <span
+                class="member-dossier-school-dot"
+                aria-hidden="true"
+              />
+              {{ member.school }}
+            </span>
+          </div>
+
+          <div class="member-dossier-profile">
+            <div class="member-dossier-avatar-frame">
               <ProgressiveImage
                 :src="displayImageSource(member.avatar) ?? ''"
                 :thumb="displayImageSource(member.avatar_thumb) ?? displayThumbSource(member.avatar) ?? undefined"
-                alt="Avatar"
-                wrapper-class="w-full h-full"
-                img-class="w-full h-full object-cover rounded-full block transform group-hover:scale-110 transition duration-500"
+                :alt="`${member.name}头像`"
+                wrapper-class="h-full w-full"
+                img-class="h-full w-full rounded-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
               />
             </div>
 
-            <div
-              v-if="member.school"
-              class="absolute -bottom-1 -right-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-md border-2 border-white transform rotate-[-5deg] group-hover:rotate-0 transition duration-300"
-              :style="{ backgroundColor: getSchoolColor(member.school) }"
-            >
-              {{ member.school }}
+            <div class="min-w-0 flex-1">
+              <h2 class="member-dossier-name">
+                {{ member.name }}
+              </h2>
+              <div v-if="member.role" class="mt-1.5">
+                <span class="member-dossier-role">{{ member.role }}</span>
+              </div>
             </div>
           </div>
 
-          <div class="text-center">
-            <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-1 font-serif">
-              {{ member.name }}
-            </h2>
-            <span class="inline-block px-3 py-1 bg-blue-100 dark:bg-slate-800 text-blue-600 dark:text-blue-200 text-xs rounded-full font-bold mb-2 border border-blue-200 dark:border-slate-700">
-              {{ member.role }}
+          <div v-if="getMemberTags(member.tags).length > 0" class="member-dossier-tags">
+            <span
+              v-for="tag in getMemberTags(member.tags)"
+              :key="tag"
+              class="member-dossier-tag"
+            >
+              {{ tag }}
             </span>
-            <div class="flex flex-wrap justify-center gap-1.5 mb-4 min-h-[18px]">
-              <span
-                v-for="tag in getMemberTags(member.tags)"
-                :key="tag"
-                class="px-2.5 py-0.5 rounded-full text-[10px] font-semibold bg-violet-100 text-violet-600 border border-violet-200/70 dark:bg-violet-900/30 dark:text-violet-200 dark:border-violet-800/60"
-              >
-                {{ tag }}
-              </span>
-            </div>
-            <p class="text-sm text-gray-600 dark:text-gray-300 leading-relaxed italic border-t border-dashed border-gray-200 dark:border-slate-700 pt-4 relative">
-              <span class="absolute -top-3 left-1/2 transform -translate-x-1/2 bg-white dark:bg-slate-900 px-2 text-gray-300 dark:text-gray-400 text-xs">Spell Card</span>
-              "{{ member.bio }}"
-            </p>
           </div>
-          <div class="absolute inset-0 rounded-2xl border-2 border-transparent group-hover:border-blue-300 transition pointer-events-none"/>
-        </div>
+        </article>
       </div>
+
+      <footer aria-label="名录收录细则" class="member-colophon">
+        <span class="member-colophon-title">收录细则</span>
+        <ul class="member-colophon-list">
+          <li>
+            <span class="member-colophon-num" aria-hidden="true">01</span>
+            <span>小号不列入统计</span>
+          </li>
+          <li>
+            <span class="member-colophon-num" aria-hidden="true">02</span>
+            <span>按首字母排序</span>
+          </li>
+          <li>
+            <span class="member-colophon-num" aria-hidden="true">03</span>
+            <span>如需修改信息请联系管理员</span>
+          </li>
+        </ul>
+      </footer>
     </div>
   </div>
 </template>
+
+<style scoped>
+.member-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.member-filter-tab {
+  position: relative;
+  display: inline-flex;
+  min-height: 2.375rem;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.375rem 0.75rem;
+  border: 1px solid #dce4e8;
+  border-top: 2px solid var(--tab-color, #0369a1);
+  background-color: #f4f5f0;
+  color: #334155;
+  font-size: 0.8125rem;
+  transition:
+    background-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    border-color 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    color 220ms ease,
+    box-shadow 220ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.member-filter-tab:hover {
+  background-color: #ffffff;
+  border-color: #94a3b8;
+  border-top-color: var(--tab-color, #0369a1);
+  color: #0f172a;
+  transform: translateY(-2px);
+}
+
+.member-filter-tab.is-zero {
+  border-style: dashed;
+  border-top-style: solid;
+  background-color: #fbfbf8;
+  color: #475569;
+}
+
+.member-filter-tab.is-selected {
+  background-color: #ffffff;
+  border-color: #0369a1;
+  border-top: 2px solid var(--tab-color, #0369a1);
+  color: #0f172a;
+  transform: translateY(-2px);
+  box-shadow:
+    inset 0 1px 0 0 var(--tab-color, #0369a1),
+    0 8px 18px -8px rgb(15 23 42 / 0.18);
+}
+
+.member-filter-swatch {
+  width: 0.375rem;
+  height: 0.375rem;
+  flex-shrink: 0;
+  background-color: var(--tab-color, #0369a1);
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+:global(.dark .member-filter-swatch) {
+  background-color: var(--tab-dark-color, #38bdf8);
+}
+
+.member-filter-tab:hover .member-filter-swatch,
+.member-filter-tab.is-selected .member-filter-swatch {
+  transform: scale(1.25) rotate(45deg);
+}
+
+.member-filter-label {
+  font-family: var(--club-serif);
+  font-weight: 600;
+  letter-spacing: 0.03em;
+}
+
+.member-filter-count {
+  padding-left: 0.375rem;
+  border-left: 1px solid #cbd5e1;
+  color: #475569;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+.member-filter-tab.is-selected .member-filter-count {
+  border-left-color: #94a3b8;
+  color: #0369a1;
+}
+
+:global(.dark .member-filter-tab) {
+  background-color: #131e2a;
+  border-color: #293847;
+  border-top-color: var(--tab-dark-color, #38bdf8);
+  color: #cbd5e1;
+}
+
+:global(.dark .member-filter-tab:hover) {
+  background-color: #182635;
+  border-color: #475569;
+  border-top-color: var(--tab-dark-color, #38bdf8);
+  color: #f8fafc;
+}
+
+:global(.dark .member-filter-tab.is-zero) {
+  background-color: #101923;
+  color: #94a3b8;
+}
+
+:global(.dark .member-filter-tab.is-selected) {
+  background-color: #1a2a3a;
+  border-color: #7dd3fc;
+  border-top-color: var(--tab-dark-color, #38bdf8);
+  color: #ffffff;
+  box-shadow:
+    inset 0 1px 0 0 var(--tab-dark-color, #38bdf8),
+    0 10px 22px -8px rgb(2 6 23 / 0.6);
+}
+
+:global(.dark .member-filter-count) {
+  border-left-color: #334155;
+  color: #94a3b8;
+}
+
+:global(.dark .member-filter-tab.is-selected .member-filter-count) {
+  border-left-color: #475569;
+  color: #7dd3fc;
+}
+
+.member-dossier {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  padding: 1.25rem 1.375rem;
+  background-color: #ffffff;
+  border: 1px solid #dce4e8;
+  border-top: 2px solid var(--school-accent, #0369a1);
+  animation: dossier-enter 440ms cubic-bezier(0.22, 1, 0.36, 1) var(--card-delay, 0ms) backwards;
+  transition:
+    border-color 220ms ease,
+    box-shadow 220ms ease,
+    transform 220ms ease;
+}
+
+.member-dossier:hover {
+  border-color: #94a3b8;
+  border-top-color: var(--school-accent, #0369a1);
+  box-shadow: 0 10px 26px -14px rgb(15 23 42 / 0.14);
+  transform: translateY(-3px);
+}
+
+:global(.dark .member-dossier) {
+  background-color: #14202b;
+  border-color: #293847;
+  border-top-color: var(--school-accent-dark, #38bdf8);
+}
+
+:global(.dark .member-dossier:hover) {
+  border-color: #475569;
+  border-top-color: var(--school-accent-dark, #38bdf8);
+  box-shadow: 0 12px 28px -14px rgb(2 6 23 / 0.55);
+}
+
+.member-dossier-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px solid #eef2f5;
+}
+
+:global(.dark .member-dossier-meta) {
+  border-bottom-color: #1e2d3d;
+}
+
+.member-dossier-index {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #475569;
+}
+
+:global(.dark .member-dossier-index) {
+  color: #94a3b8;
+}
+
+.member-dossier-school {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  color: #334155;
+  font-size: 0.6875rem;
+  font-weight: 600;
+}
+
+:global(.dark .member-dossier-school) {
+  border-color: #334155;
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.member-dossier-school-dot {
+  width: 0.4375rem;
+  height: 0.4375rem;
+  border-radius: 9999px;
+  flex-shrink: 0;
+  background-color: var(--school-accent, #0369a1);
+}
+
+:global(.dark .member-dossier-school-dot) {
+  background-color: var(--school-accent-dark, #38bdf8);
+}
+
+.member-dossier-profile {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.member-dossier-avatar-frame {
+  width: 4rem;
+  height: 4rem;
+  flex-shrink: 0;
+  padding: 0.1875rem;
+  border-radius: 9999px;
+  border: 1px solid #cbd5e1;
+  background-color: #fbfbf8;
+  overflow: hidden;
+}
+
+:global(.dark .member-dossier-avatar-frame) {
+  border-color: #334155;
+  background-color: #0f172a;
+}
+
+.member-dossier-name {
+  font-family: var(--club-serif);
+  font-size: 1.1875rem;
+  font-weight: 600;
+  line-height: 1.35;
+  color: #0f172a;
+  word-break: break-word;
+  transition: color 180ms ease;
+}
+
+.member-dossier:hover .member-dossier-name {
+  color: #0369a1;
+}
+
+:global(.dark .member-dossier-name) {
+  color: #f1f5f9;
+}
+
+:global(.dark .member-dossier:hover .member-dossier-name) {
+  color: #7dd3fc;
+}
+
+.member-dossier-role {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  border: 1px solid #bae6fd;
+  background-color: #f0f9ff;
+  color: #075985;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+
+:global(.dark .member-dossier-role) {
+  border-color: #0369a1;
+  background-color: #0c4a6e;
+  color: #e0f2fe;
+}
+
+.member-dossier-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-top: 0.875rem;
+}
+
+.member-dossier-tag {
+  padding: 0.125rem 0.5rem;
+  border: 1px solid #e2e8f0;
+  background-color: #f1f5f9;
+  color: #334155;
+  font-size: 0.6875rem;
+  font-weight: 500;
+}
+
+:global(.dark .member-dossier-tag) {
+  border-color: #334155;
+  background-color: #1e293b;
+  color: #e2e8f0;
+}
+
+.member-colophon {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem 2rem;
+  margin-top: 3.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid #dce4e8;
+  color: #475569;
+  font-size: 0.75rem;
+}
+
+:global(.dark .member-colophon) {
+  border-top-color: #293847;
+  color: #94a3b8;
+}
+
+.member-colophon-title {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  color: #475569;
+}
+
+:global(.dark .member-colophon-title) {
+  color: #94a3b8;
+}
+
+.member-colophon-list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem 1.5rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  font-family: var(--club-serif);
+  letter-spacing: 0.03em;
+}
+
+.member-colophon-list li {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.375rem;
+}
+
+.member-colophon-num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #0369a1;
+}
+
+:global(.dark .member-colophon-num) {
+  color: #7dd3fc;
+}
+
+@keyframes dossier-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(18px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .member-filter-tab,
+  .member-filter-swatch,
+  .member-dossier,
+  .member-dossier-name {
+    animation: none;
+    transition: none;
+    transform: none;
+  }
+}
+</style>
