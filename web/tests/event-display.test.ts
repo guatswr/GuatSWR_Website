@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import type { PublicEvent, PublicEventContent } from '@guatswr/shared'
+import { eventAcceptingParticipants, eventCategory, eventSupportsSignup } from '../app/utils/event-center'
 import {
   eventCountdown,
   eventCoverThumb,
@@ -72,7 +73,8 @@ describe('event display helpers', () => {
   it('keeps free-form schedules verbatim and formats parseable ones', () => {
     expect(eventDeadlineText('下周六下午')).toBe('下周六下午')
     expect(eventDeadlineText('')).toBe('')
-    expect(eventDeadlineText('2026-11-01T14:00')).not.toBe('')
+    expect(eventDeadlineText('2026-11-01T14:00')).toBe('2026年11月1日 14:00')
+    expect(eventDeadlineText('2026-11-01T06:00:00Z')).toBe('2026年11月1日 14:00')
   })
 
   it('counts down with the Beijing rule instead of the visitor timezone', () => {
@@ -111,5 +113,24 @@ describe('event display helpers', () => {
     expect(eventStatusText(event({ type: '则则', status: 'published' }))).toBe('报名中')
     expect(eventStatusText(event({ type: '线下聚会', status: 'published' }))).toBe('倒计时')
     expect(eventStatusText(event({ type: '悬赏令', status: 'settled' }))).toBe('已验收')
+  })
+
+  it('closes expired published events as well as ended and settled events', () => {
+    const now = Date.parse('2026-11-01T12:00:00+08:00')
+    expect(eventAcceptingParticipants(event({ content: baseContent({ deadline: '2026-11-01T12:00' }) }), now)).toBe(false)
+    expect(eventAcceptingParticipants(event({ content: baseContent({ deadline: '2026-11-01T12:01' }) }), now)).toBe(true)
+    expect(eventAcceptingParticipants(event({ status: 'ongoing' }), now)).toBe(true)
+    expect(eventAcceptingParticipants(event({ status: 'ended' }), now)).toBe(false)
+    expect(eventAcceptingParticipants(event({ status: 'settled' }), now)).toBe(false)
+    expect(eventAcceptingParticipants(event({ content: baseContent({ deadline: '下周六下午' }) }), now)).toBe(true)
+  })
+
+  it('keeps Chinese category labels separate from backend types and signup permissions', () => {
+    expect(eventCategory('STG')).toMatchObject({ label: '东方弹幕', path: '/events/stg' })
+    expect(eventCategory('则则').label).toBe('非想天则')
+    expect(eventCategory('unknown').path).toBe('/events')
+    expect(eventSupportsSignup(event())).toBe(true)
+    expect(eventSupportsSignup(event({ type: '则则' }))).toBe(true)
+    expect(eventSupportsSignup(event({ type: '悬赏令' }))).toBe(false)
   })
 })

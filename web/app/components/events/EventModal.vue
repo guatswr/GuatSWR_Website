@@ -10,8 +10,6 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
  * `cancel` event, and the opener gets focus back on close. Scroll lock and
  * cleanup are explicit; nothing here uses timers.
  */
-// Declared for the template bindings (`title` / `maxWidth`); the script itself
-// never reads them, so the call is intentionally not assigned.
 defineProps({
   title: { type: String, required: true },
   maxWidth: { type: String, default: '640px' }
@@ -61,26 +59,17 @@ onBeforeUnmount(() => {
     data-testid="event-modal"
     @cancel.prevent="close"
   >
-    <div
-      class="event-modal-panel overflow-hidden rounded-xl bg-white dark:bg-slate-950"
-      :style="{ maxWidth }"
-    >
-      <header
-        class="event-modal-header flex items-center justify-between border-b border-sky-100 bg-sky-50 px-6 py-4 dark:border-slate-800 dark:bg-[#0b1220]"
-      >
-        <h2 :id="titleId" class="text-[1.1rem] font-semibold leading-6 text-sky-700 dark:text-sky-200">
-          {{ title }}
-        </h2>
-        <button
-          type="button"
-          class="rounded text-sky-700/70 transition-colors hover:text-sky-900 focus-visible:outline focus-visible:outline-2 focus-visible:outline-sky-700 dark:text-sky-200/70 dark:hover:text-sky-100"
-          aria-label="关闭对话框"
-          @click="close"
-        >
-          <span aria-hidden="true" class="text-xl leading-none">×</span>
+    <div class="event-modal-panel" :style="{ maxWidth }">
+      <header class="event-modal-header">
+        <div class="event-modal-title-wrap">
+          <span class="event-modal-seal" aria-hidden="true">牒</span>
+          <h2 :id="titleId">{{ title }}</h2>
+        </div>
+        <button type="button" aria-label="关闭对话框" @click="close">
+          <span aria-hidden="true">×</span>
         </button>
       </header>
-      <div data-region="modal-body" class="max-h-[70vh] overflow-y-auto overscroll-contain px-6 py-5">
+      <div data-region="modal-body" class="event-modal-body">
         <slot />
       </div>
     </div>
@@ -90,19 +79,10 @@ onBeforeUnmount(() => {
 <style scoped>
 .event-modal {
   z-index: 60;
-  width: 92vw;
-  /* The UA stylesheet caps a dialog at `calc(100% - 6px - 2em)`; the archived
-     Element Plus dialog is a plain 92vw box centred in the viewport, so the
-     panel must be centred on the viewport (not on a shrunken dialog) for the
-     body region to land on the archived box. */
+  width: min(92vw, 48rem);
   max-width: none;
-  max-height: 92vh;
-  /* Element Plus's `.el-dialog` is top-anchored, not centred:
-     `margin: var(--el-dialog-margin-top, 15vh) auto 50px`. The visual spec
-     compares the modal body box, and a different vertical position changes the
-     device-pixel phase the element screenshot is snapped to (the text rasterises
-     one row lower), so the archived rule is reproduced verbatim. */
-  margin: 15vh auto 50px;
+  max-height: 90svh;
+  margin: 7svh auto;
   padding: 0;
   border: 0;
   background: transparent;
@@ -110,32 +90,114 @@ onBeforeUnmount(() => {
   overflow: visible;
 }
 .event-modal::backdrop {
-  background: rgb(2 6 23 / 0.55);
+  background: rgb(8 15 26 / 0.62);
+  backdrop-filter: blur(4px);
 }
 .event-modal-panel {
-  width: 92vw;
+  position: relative;
+  width: 100%;
   margin-inline: auto;
-  /* `.el-dialog` pads its content box by 16px, so the archived
-     `.el-dialog__body` is 92vw - 32px wide in both themes. The event visual spec
-     compares that body box against `[data-region="modal-body"]`, so the panel
-     reproduces it. */
-  padding: 16px;
-  box-shadow: 0 24px 64px rgb(2 6 23 / 0.28);
+  border: 1px solid #d5dfe7;
+  border-top: 2px solid #0369a1;
+  background: #fbfbf8;
+  color: #1e293b;
+  box-shadow: 0 24px 64px rgb(8 15 26 / 0.28);
 }
-/*
- * No dark border: the archived `:deep(.dark .touhou-dialog) { border: 1px solid
- * #1e293b }` compiles to `[data-v-bd090f2b] .dark .touhou-dialog`, and Element
- * Plus teleports the dialog to <body>, so the archived dialog never has that
- * ancestor and renders borderless in both themes. Reproducing it keeps the body
- * box identical (verified: the dark body box is 347.03 x 565, the same as light).
- */
-/*
- * `.el-dialog__header` is a 58px box (16px padding + the 24px title line + the
- * 1px bottom border). The body's y is `dialog.y + 16px panel padding + header`,
- * so a header of a different height moves the body's device-pixel phase and the
- * text rasterises on a different row than the archived capture.
- */
 .event-modal-header {
-  height: 58px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  border-bottom: 1px solid #e2e8f0;
+  background: rgb(255 255 255 / 0.65);
+}
+.event-modal-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+.event-modal-seal {
+  display: inline-grid;
+  place-items: center;
+  width: 1.4rem;
+  height: 1.4rem;
+  border: 1px solid rgb(163 78 71 / 0.45);
+  background: rgb(163 78 71 / 0.08);
+  color: #a34e47;
+  font-family: var(--club-serif);
+  font-size: 0.72rem;
+  font-weight: 700;
+}
+.event-modal-header h2 {
+  margin: 0;
+  font-family: var(--club-serif);
+  font-size: 1.2rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+.event-modal-header button {
+  display: grid;
+  place-items: center;
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  border: 1px solid transparent;
+  color: #475569;
+  font-size: 1.4rem;
+  line-height: 1;
+  transition:
+    background-color 160ms ease,
+    border-color 160ms ease,
+    color 160ms ease;
+}
+.event-modal-header button:hover {
+  border-color: #cbd5e1;
+  background: #f1f5f9;
+  color: #0f172a;
+}
+.event-modal-header button:focus-visible {
+  outline: 2px solid #0369a1;
+  outline-offset: 2px;
+}
+.event-modal-body {
+  max-height: 72svh;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 1.35rem 1.5rem;
+}
+:global(html.dark .event-modal-panel) {
+  background: #131e2a;
+  border-color: #293849;
+  border-top-color: #38bdf8;
+  color: #e2e8f0;
+}
+:global(html.dark .event-modal-header) {
+  border-color: #263545;
+  background: rgb(15 23 34 / 0.65);
+}
+:global(html.dark .event-modal-seal) {
+  border-color: rgb(251 113 133 / 0.45);
+  background: rgb(251 113 133 / 0.12);
+  color: #fda4af;
+}
+:global(html.dark .event-modal-header button) {
+  color: #94a3b8;
+}
+:global(html.dark .event-modal-header button:hover) {
+  border-color: #334155;
+  background: #1e293b;
+  color: #f8fafc;
+}
+@media (max-width: 640px) {
+  .event-modal {
+    margin-block: 4svh;
+  }
+  .event-modal-header {
+    padding: 0.85rem 1.1rem;
+  }
+  .event-modal-body {
+    padding: 1.1rem;
+    max-height: 75svh;
+  }
 }
 </style>

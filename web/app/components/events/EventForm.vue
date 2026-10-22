@@ -242,7 +242,7 @@ function handleSubmit(): void {
     <div
       v-if="loadError"
       role="alert"
-      class="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
+      class="border-l-2 border-rose-500 bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
     >
       {{ loadError }}
       <button type="button" class="ml-2 min-h-11 underline" @click="loadInitial">重新读取</button>
@@ -336,14 +336,14 @@ function handleSubmit(): void {
                   v-if="field.state.value"
                   :src="String(field.state.value)"
                   :alt="item.label + '预览'"
-                  class="h-16 w-16 rounded-lg border border-slate-200 object-cover dark:border-slate-700"
+                  class="h-16 w-16 border border-slate-200 object-cover dark:border-slate-700"
                 />
                 <button
                   type="button"
                   :name="item.key"
                   :aria-label="'上传' + item.label"
                   :aria-invalid="invalidField === item.key"
-                  class="min-h-11 rounded-lg bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800"
+                  class="min-h-11 border border-sky-700 bg-sky-700 px-4 py-2 text-sm font-medium text-white hover:bg-sky-800"
                   @click="chooseImage(item.key)"
                 >
                   {{
@@ -444,7 +444,7 @@ function handleSubmit(): void {
     <p
       v-if="errorMessage"
       role="alert"
-      class="rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
+      class="border-l-2 border-rose-500 bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
     >
       {{ errorMessage }}
     </p>
@@ -456,7 +456,7 @@ function handleSubmit(): void {
       type="submit"
       :disabled="busy || uploadLocked || !typeOptions.length"
       :aria-busy="loading"
-      class="min-h-11 w-full rounded-xl bg-sky-700 px-5 py-3 font-semibold text-white transition-colors hover:bg-sky-800 disabled:cursor-wait disabled:opacity-60"
+      class="min-h-11 w-full border border-sky-700 bg-sky-700 px-5 py-3 tracking-wider font-semibold text-white transition-colors hover:bg-sky-800 disabled:cursor-wait disabled:opacity-60"
     >
       {{
         loading
@@ -476,7 +476,7 @@ function handleSubmit(): void {
   width: 100%;
   min-height: 44px;
   border: 1px solid #cbd5e1;
-  border-radius: 0.5rem;
+  border-radius: 0.125rem;
   padding: 0.625rem 0.75rem;
   background: #fff;
   color: #0f172a;

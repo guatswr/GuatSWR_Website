@@ -15,7 +15,7 @@ test('keyboard navigation and Reka dialog return focus without CSP or hydration 
   else {
     const trigger = page.locator('#desktop-activities-trigger')
     await trigger.click()
-    await expect(page.getByRole('link', { name: /进行中的活动/ })).toBeVisible()
+    await expect(page.getByRole('link', { name: /活动中心/ })).toBeVisible()
     await page.keyboard.press('Escape')
     await expect(trigger).toBeFocused()
   }

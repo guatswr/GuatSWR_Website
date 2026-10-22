@@ -97,7 +97,7 @@ test('nested event navigation fades only the board and preserves the category sh
   await ready(page, '/events/bounty')
   await observe(page)
   await page.locator('main a[href="/events/stg"]').filter({ visible: true }).click()
-  await expect(page.getByRole('heading', { level: 1, name: 'STG', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2, name: '东方弹幕', exact: true })).toBeVisible()
   await settled(page)
   const samples = await frames(page, info)
   expect(samples.some(frame => frame.transitions.some(node => node.opacity > 0 && node.opacity < 1))).toBe(true)

@@ -160,7 +160,7 @@ test('nested categories also show progress and complete without a second bar', a
   await ready(page, '/events/bounty')
   await observe(page)
   await page.locator('main a[href="/events/stg"]').filter({ visible: true }).click()
-  await expect(page.getByRole('heading', { name: 'STG', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '东方弹幕', exact: true })).toBeVisible()
   await expect(bar(page)).toHaveCSS('opacity', '0')
   expect((await page.evaluate(() => window.routeProgressFrames)).some(frame => frame.opacity > 0.5 && frame.scale > 0)).toBe(true)
   await expect(bar(page)).toHaveCount(1)

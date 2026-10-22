@@ -22,7 +22,7 @@ const themeLabel = computed(() => {
   return `当前${current}模式，切换为${isDark.value ? '日间' : '夜间'}模式`
 })
 const activityLinks = [
-  { name: '进行中的活动', path: '/events', desc: '联机、挑战与线下相聚', tag: '异变进行时' },
+  { name: '活动中心', path: '/events', desc: '联机、挑战与线下相聚', tag: '异变进行时' },
   { name: '往期活动回顾', path: '/activities', desc: '照片、记录与共同的回忆', tag: '记忆碎片' },
 ]
 const navLinks = [

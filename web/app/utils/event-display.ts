@@ -29,15 +29,16 @@ export function eventDeadlineValue(content: PublicEventContent | undefined): str
   return content.deadline || content.time || content.end_time || ''
 }
 
-/**
- * The archived card renders the stored value through `Date#toLocaleString` and
- * keeps free text untouched. Kept verbatim for pixel parity.
- */
+/** Schedules use Beijing time on both the server and the client. */
 export function eventDeadlineText(value: string): string {
   if (!value) return ''
-  const date = new Date(value)
+  const date = new Date(parseClubTime(value))
   if (Number.isNaN(date.getTime())) return value
-  return date.toLocaleString()
+  return new Intl.DateTimeFormat('zh-CN', {
+    timeZone: 'Asia/Shanghai',
+    year: 'numeric', month: 'long', day: 'numeric',
+    hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).format(date)
 }
 
 /**

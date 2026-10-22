@@ -154,11 +154,11 @@ onBeforeUnmount(() => {
 
 <template>
   <div
-    class="bg-slate-50 dark:bg-white/5 border border-slate-200/60 dark:border-white/10 rounded-2xl p-4 sm:p-5"
+    class="border border-slate-200 border-t-2 border-t-sky-700 bg-white/70 p-4 sm:p-5 dark:border-slate-800 dark:border-t-sky-400 dark:bg-slate-900/40"
   >
-    <div class="flex items-center justify-between mb-4">
+    <div class="flex items-center justify-between mb-4 border-b border-dashed border-slate-200 pb-3 dark:border-slate-700">
       <div>
-        <h4 class="text-base font-semibold text-slate-900 dark:text-white">报名信息</h4>
+        <h4 class="font-serif text-base font-bold text-slate-900 dark:text-white">报名信息</h4>
         <p class="text-xs text-slate-500 dark:text-slate-400">
           保存后会记忆该设备上的填写内容
         </p>
@@ -175,7 +175,7 @@ onBeforeUnmount(() => {
 
     <p
       v-if="uploadLocked"
-      class="mb-3 rounded-lg bg-slate-100 px-3 py-2 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300"
+      class="mb-3 border-l-2 border-slate-400 bg-slate-100 px-3 py-2 text-xs text-slate-600 dark:bg-slate-800 dark:text-slate-300"
       role="status"
     >
       报名已截止
@@ -195,7 +195,7 @@ onBeforeUnmount(() => {
           v-model="form.common_id"
           name="common_id"
           :aria-invalid="invalidField === 'common_id'"
-          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         />
       </label>
@@ -204,7 +204,7 @@ onBeforeUnmount(() => {
         <input
           v-model="form.machine_sign"
           name="machine_sign"
-          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         />
       </label>
@@ -213,7 +213,7 @@ onBeforeUnmount(() => {
         <select
           v-model="form.pilot_source"
           name="pilot_source"
-          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         >
           <option value="">请选择</option>
@@ -235,7 +235,7 @@ onBeforeUnmount(() => {
           v-model="form.qq"
           name="qq"
           :aria-invalid="invalidField === 'qq'"
-          class="mt-1 w-full rounded-lg border border-slate-200/70 bg-white/80 px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
+          class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
         />
       </label>
@@ -252,7 +252,7 @@ onBeforeUnmount(() => {
     >
       <button
         type="button"
-        class="w-full sm:w-auto px-3 py-2 rounded-full bg-slate-900 text-white text-xs dark:bg-slate-100 dark:text-slate-900"
+        class="w-full sm:w-auto px-3 py-2 border border-slate-300 bg-white text-slate-700 text-xs font-medium hover:border-sky-600 hover:text-sky-700 disabled:opacity-60 dark:border-slate-600 dark:bg-slate-900 dark:text-slate-200 dark:hover:border-sky-400 dark:hover:text-sky-300"
         :disabled="uploading || uploadLocked"
         @click="chooseAvatar"
       >
@@ -274,7 +274,7 @@ onBeforeUnmount(() => {
 
     <div
       v-if="uploading"
-      class="mt-2 h-1.5 rounded-full bg-slate-200 overflow-hidden dark:bg-slate-800"
+      class="mt-2 h-1 bg-slate-200 overflow-hidden dark:bg-slate-800"
       role="progressbar"
       :aria-valuenow="uploadPercent"
       aria-valuemin="0"
@@ -295,7 +295,7 @@ onBeforeUnmount(() => {
     <div class="mt-4 flex flex-wrap gap-3">
       <button
         type="button"
-        class="w-full sm:w-auto px-4 py-2 rounded-full bg-slate-900 text-white text-sm hover:bg-slate-800 disabled:opacity-60 dark:bg-slate-100 dark:text-slate-900 dark:hover:bg-slate-200"
+        class="w-full sm:w-auto px-5 py-2 border border-sky-700 bg-sky-700 text-white text-sm font-semibold hover:bg-sky-800 disabled:opacity-60 dark:border-sky-500 dark:bg-sky-600 dark:hover:bg-sky-700"
         :disabled="loading || uploadLocked"
         :aria-busy="loading"
         @click="handleSubmit"
@@ -314,7 +314,7 @@ onBeforeUnmount(() => {
     </p>
     <p
       v-if="errorMessage"
-      class="mt-3 rounded-lg bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
+      class="mt-3 border-l-2 border-rose-500 bg-rose-50 p-3 text-sm text-rose-700 dark:bg-rose-950/40 dark:text-rose-200"
       role="alert"
     >
       {{ errorMessage }}

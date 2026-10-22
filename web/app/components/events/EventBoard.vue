@@ -1,46 +1,95 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { PublicEvent, PublicEventParticipant, PublicEventsPage } from '@guatswr/shared'
 import EventCard from './EventCard.vue'
+import ClubIcon from '~/components/ClubIcon.vue'
+import ImageLightbox from '~/components/ImageLightbox.vue'
 import EventModal from './EventModal.vue'
+import {
+  eventAcceptingParticipants,
+  eventCategory,
+  eventSupportsSignup,
+} from '~/utils/event-center'
+import { parsePageParam } from '~/utils/public-query'
 import { eventSeoNode } from '#shared/seo'
 import { useSchemaOrg } from '#schema-org/app'
 
-/**
- * Public event board. Titles, copy, statuses and the card layout are the archived
- * ones; the three dialogs are native and the interactive forms load on intent, so
- * the public route never imports form/upload code eagerly.
- */
 const props = defineProps({
-  type: { type: String, required: true },
-  title: { type: String, default: '' },
-  subtitle: { type: String, default: '' },
+  type: { type: String, default: '' },
+  title: { type: String, default: '全部活动' },
   enableSignup: { type: Boolean, default: false },
   allowCreateMode: { type: String, default: 'visitor' },
-  /**
-   * UI hint only, supplied by the future admin route from its BFF session. The
-   * backend stays the authority for publishing.
-   */
-  admin: { type: Boolean, default: false }
+  admin: { type: Boolean, default: false },
 })
-
 const EventForm = defineAsyncComponent({
   loader: () => import('./EventForm.vue'),
-  suspensible: false
+  suspensible: false,
 })
 const EventSignup = defineAsyncComponent({
   loader: () => import('./EventSignup.vue'),
-  suspensible: false
+  suspensible: false,
 })
-
-const { data, error, pending, refresh } = await useFetch<PublicEventsPage>('/api/event', {
-  key: `event-board:${props.type}`,
-  query: { type: props.type, limit: 50 },
-  default: () => ({ total: 0, page: 1, limit: 50, items: [] })
-})
-const items = computed<PublicEvent[]>(() => data.value.items)
 const route = useRoute()
-usePublicSeo({ title: props.title, description: props.subtitle, path: route.path })
+const page = computed(() => parsePageParam(route.query.page) ?? 1)
+const now = useState('event-center-now', () => Date.now())
+const boardEntered = ref(false)
+let clock: ReturnType<typeof setInterval> | undefined
+onMounted(() => {
+  now.value = Date.now()
+  clock = setInterval(() => {
+    now.value = Date.now()
+  }, 30_000)
+  requestAnimationFrame(() => {
+    boardEntered.value = true
+  })
+})
+const { data, error, pending, refresh } = await useFetch<PublicEventsPage>('/api/event', {
+  key: () => `event-board:${props.type}:${page.value}`,
+  query: computed(() => ({
+    ...(props.type ? { type: props.type } : {}),
+    page: page.value,
+    limit: 50,
+  })),
+  default: () => ({ total: 0, page: 1, limit: 50, items: [] }),
+})
+const items = computed(() => data.value.items)
+const currentCategory = computed(() => eventCategory(props.type))
+const filter = ref('all')
+const activeCount = computed(
+  () => items.value.filter(event => eventAcceptingParticipants(event, now.value)).length
+)
+const endedCount = computed(() => items.value.length - activeCount.value)
+const filters = computed(() => [
+  { value: 'all', label: '全部', count: items.value.length },
+  { value: 'active', label: '进行中', count: activeCount.value },
+  { value: 'ended', label: '已结束', count: endedCount.value },
+])
+const visibleItems = computed(() =>
+  items.value
+    .filter(
+      event =>
+        filter.value === 'all' ||
+        eventAcceptingParticipants(event, now.value) === (filter.value === 'active')
+    )
+    .toSorted(
+      (a, b) =>
+        Number(eventAcceptingParticipants(b, now.value)) -
+        Number(eventAcceptingParticipants(a, now.value))
+    )
+)
+const pageCount = computed(() => Math.ceil(data.value.total / 50))
+const pageLink = (value: number) => ({
+  path: route.path,
+  query: { ...route.query, page: value > 1 ? String(value) : undefined },
+})
+watch(page, () => {
+  filter.value = 'all'
+})
+usePublicSeo({
+  title: props.type ? props.title : '活动中心',
+  description: '桂航绯想天的赛事、挑战与线下聚会。',
+  path: route.path,
+})
 if (import.meta.server) {
   useSchemaOrg(items.value.map(event => eventSeoNode(event, route.path, useSiteConfig().url)))
 }
@@ -54,19 +103,28 @@ const previewError = ref('')
 const previewItems = ref<PublicEventParticipant[]>([])
 let previewVersion = 0
 
+const lightboxOpen = ref(false)
+const lightboxSrc = ref('')
+const lightboxAlt = ref('')
+
 const canCreate = computed(
-  () =>
-    props.allowCreateMode === 'visitor' ||
-    (props.allowCreateMode === 'admin' && props.admin)
+  () => props.allowCreateMode === 'visitor' || (props.allowCreateMode === 'admin' && props.admin)
 )
-const formTypes = computed(() => [props.type])
+const formTypes = computed(() => (props.type ? [props.type] : ['悬赏令', '对赌协议']))
 const signupDisabled = computed(
-  () => !selected.value || !['published', 'ongoing'].includes(selected.value.status)
+  () => !selected.value || !eventAcceptingParticipants(selected.value, now.value)
 )
+const supportsSignup = (event: PublicEvent) => props.enableSignup || eventSupportsSignup(event)
 
 function openSignup(event: PublicEvent): void {
   selected.value = event
   signupOpen.value = true
+}
+
+function openImagePreview(payload: { src: string; alt: string }): void {
+  lightboxSrc.value = payload.src
+  lightboxAlt.value = payload.alt
+  lightboxOpen.value = true
 }
 
 async function openPreview(event: PublicEvent): Promise<void> {
@@ -77,10 +135,6 @@ async function openPreview(event: PublicEvent): Promise<void> {
   previewError.value = ''
   previewItems.value = []
   try {
-    // `retry: 0` — ofetch (Nuxt's `$fetch`) retries a failed GET once by default,
-    // and with the default `retryDelay` of 0 that retry is immediate. The archived
-    // page used axios and surfaced the first failure so the visitor could retry by
-    // hand; a transparent retry hides it and drops the archived error state.
     const response = await $fetch<PublicEventParticipant[]>(
       `/api/event/${event.id}/participants/public`,
       { retry: 0 }
@@ -93,92 +147,138 @@ async function openPreview(event: PublicEvent): Promise<void> {
     if (version === previewVersion) previewLoading.value = false
   }
 }
-
 onBeforeUnmount(() => {
   previewVersion += 1
+  if (clock) clearInterval(clock)
 })
 </script>
 
 <template>
-  <div class="space-y-8 relative">
-    <!-- 顶部横幅：琪露诺(Cirno) 冰雪主题风格 -->
-    <header class="border-b border-slate-200 pb-8 dark:border-slate-800">
-      <p class="club-eyebrow">LET'S MEET</p>
-      <!--
-        `md:leading-10` reproduces the archived cascade: Tailwind 3 emitted
-        `md:text-4xl{font-size:2.25rem;line-height:2.5rem}` after `.leading-relaxed`
-        so the variant's own line-height won from `md` up. Tailwind 4 routes the
-        line height through `--tw-leading`, which `leading-relaxed` sets, so
-        `leading-relaxed` would otherwise win at every breakpoint (1.625 x 2.25rem
-        = 58.5px instead of 40px) and shift the whole board.
-      -->
-      <h1 class="mt-4 font-serif text-3xl font-semibold leading-relaxed md:text-4xl md:leading-10">
-        {{ title }}
-      </h1>
-      <p class="mt-4 max-w-2xl text-sm leading-8 text-slate-500 dark:text-slate-400">
-        {{ subtitle }}
-      </p>
-    </header>
+  <section
+    class="events-board"
+    :class="{ 'is-board-entered': boardEntered }"
+    aria-labelledby="events-board-title"
+    :style="{
+      '--board-color': currentCategory.color,
+      '--board-dark-color': currentCategory.darkColor,
+    }"
+  >
+    <header class="events-board-header">
+      <div class="events-board-title">
+        <span class="events-board-seal" aria-hidden="true">{{ currentCategory.seal }}</span>
+        <h2 id="events-board-title">{{ title }}</h2>
+        <span v-if="!pending && !error" class="events-total">共 {{ data.total }} 项</span>
+      </div>
 
-    <!-- 加载状态 -->
-    <div v-if="pending" class="flex justify-center py-12">
-      <div
-        class="animate-spin rounded-full h-8 w-8 border-b-2 border-sky-500 dark:border-sky-400"
-        role="status"
-        aria-label="正在加载活动"
-      />
-    </div>
-
-    <div v-else-if="error" class="club-empty" role="alert">
-      <p>活动列表暂时没有加载出来。</p>
-      <button type="button" class="club-text-link mt-3 min-h-11" @click="refresh()">
-        重新加载
-      </button>
-    </div>
-
-    <!-- 内容列表 -->
-    <div
-      v-else
-      class="grid grid-cols-[repeat(auto-fit,minmax(min(100%,17rem),1fr))] gap-6 items-start relative z-0"
-    >
-      <EventCard
-        v-for="event in items"
-        :key="event.id"
-        :event="event"
-        :clickable="enableSignup"
-        class="group border-t border-slate-300 dark:border-slate-700"
-        @preview="openPreview(event)"
-      >
-        <template v-if="enableSignup" #actions>
-          <div
-            class="flex flex-wrap gap-2 items-center justify-between w-full mt-3 pt-3 border-t border-slate-50 dark:border-slate-800"
-          >
-            <span class="text-xs text-slate-500 dark:text-slate-400">活动参与</span>
+      <div class="events-board-controls">
+        <div v-if="items.length && !error" class="events-filterbar">
+          <div class="events-filters" aria-label="活动状态">
             <button
-              class="relative px-5 py-1.5 rounded-full text-sm font-medium transition-all duration-300"
-              :class="
-                ['published', 'ongoing'].includes(event.status)
-                  ? 'bg-sky-50 text-sky-700 hover:bg-sky-500 hover:text-white dark:bg-sky-900/40 dark:text-sky-200 dark:hover:bg-sky-600'
-                  : 'bg-slate-100 text-slate-400 cursor-not-allowed dark:bg-slate-800 dark:text-slate-500'
-              "
-              :disabled="!['published', 'ongoing'].includes(event.status)"
-              @click.stop="openSignup(event)"
+              v-for="(item, i) in filters"
+              :key="item.value"
+              type="button"
+              :style="{ '--filter-index': i }"
+              :aria-pressed="filter === item.value"
+              @click="filter = item.value"
             >
-              <span>{{
-                ['published', 'ongoing'].includes(event.status) ? '我要参加' : '已结束'
-              }}</span>
+              {{ item.label }}<span>{{ item.count }}</span>
             </button>
           </div>
-        </template>
-      </EventCard>
+          <span v-if="pageCount > 1" class="events-page-hint">第 {{ page }} / {{ pageCount }} 页</span>
+        </div>
 
-      <div v-if="!items.length" class="col-span-full py-12 text-center">
-        <div class="text-sky-200 text-4xl mb-2 dark:text-sky-400">❄</div>
-        <p class="text-slate-400 text-sm dark:text-slate-500">
-          这里冷冷清清的，什么都没有发生呢...
-        </p>
+        <button v-if="canCreate" type="button" class="events-publish" @click="formOpen = true">
+          <span aria-hidden="true">＋</span>发布活动
+        </button>
       </div>
+    </header>
+
+    <div v-if="pending" class="events-loading" role="status" aria-label="正在加载活动">
+      <span v-for="item in 2" :key="item" />
     </div>
+    <div v-else-if="error" class="events-empty" role="alert">
+      <div class="events-empty-symbol" aria-hidden="true"><ClubIcon name="calendar" /></div>
+      <h3>活动暂时无法加载</h3>
+      <button type="button" class="events-inline-link" @click="refresh()">
+        重新加载 <span aria-hidden="true">↻</span>
+      </button>
+    </div>
+    <template v-else>
+      <div v-if="visibleItems.length" :key="`${props.type || 'all'}-${filter}-${page}`" class="events-grid">
+        <EventCard
+          v-for="(event, index) in visibleItems"
+          :key="event.id"
+          :event="event"
+          :now="now"
+          :style="{ '--card-index': Math.min(index, 10) }"
+          @preview-image="openImagePreview"
+        >
+          <template #actions>
+            <template v-if="supportsSignup(event)">
+              <button type="button" class="events-inline-link" @click="openPreview(event)">
+                参赛名单 <span aria-hidden="true">↗</span>
+              </button>
+              <button
+                type="button"
+                class="events-signup"
+                :disabled="!eventAcceptingParticipants(event, now)"
+                @click="openSignup(event)"
+              >
+                {{ eventAcceptingParticipants(event, now) ? '我要参加' : '报名已结束' }}
+              </button>
+            </template>
+            <NuxtLink v-else-if="!type" :to="eventCategory(event.type).path" class="events-inline-link">
+              查看{{ eventCategory(event.type).label }} <span aria-hidden="true">→</span>
+            </NuxtLink>
+          </template>
+        </EventCard>
+      </div>
+      <div v-else class="events-empty">
+        <div class="events-empty-symbol" aria-hidden="true"><ClubIcon name="calendar" /></div>
+        <h3>
+          {{
+            filter === 'active'
+              ? '暂无进行中的活动'
+              : filter === 'ended'
+                ? '暂无已结束的活动'
+                : '暂无公开活动'
+          }}
+        </h3>
+        <p class="events-empty-desc">
+          {{
+            filter === 'all'
+              ? '当前分类尚未收录公开条目，不妨翻阅社团往期记录，或加入同好群获取最新情报。'
+              : '可切换筛选条件查看其他状态的活动条目。'
+          }}
+        </p>
+        <div class="events-empty-links">
+          <button
+            v-if="filter !== 'all'"
+            type="button"
+            class="events-inline-link"
+            @click="filter = 'all'"
+          >
+            查看全部活动 <span aria-hidden="true">→</span>
+          </button>
+          <NuxtLink to="/activities" class="events-inline-link">
+            往期回顾 <span aria-hidden="true">↗</span>
+          </NuxtLink>
+          <NuxtLink to="/join" class="events-inline-link">
+            加入同好群 <span aria-hidden="true">↗</span>
+          </NuxtLink>
+        </div>
+      </div>
+
+      <nav v-if="pageCount > 1" class="events-pagination" aria-label="活动分页">
+        <NuxtLink v-if="page > 1" :to="pageLink(page - 1)" class="events-inline-link">
+          ← 上一页
+        </NuxtLink>
+        <span>{{ page }} / {{ pageCount }}</span>
+        <NuxtLink v-if="page < pageCount" :to="pageLink(page + 1)" class="events-inline-link">
+          下一页 →
+        </NuxtLink>
+      </nav>
+    </template>
 
     <!-- 弹窗组件（表单/上传等交互依赖按需加载） -->
     <EventModal
@@ -215,10 +315,18 @@ onBeforeUnmount(() => {
       max-width="640px"
       @close="previewOpen = false"
     >
-      <div v-if="previewLoading" class="text-sm text-slate-400 text-center py-4 dark:text-slate-500" role="status">
+      <div
+        v-if="previewLoading"
+        class="py-6 text-center text-sm text-slate-500 dark:text-slate-400"
+        role="status"
+      >
         正在读取...
       </div>
-      <div v-else-if="previewError" class="py-4 text-center text-sm text-rose-600 dark:text-rose-300" role="alert">
+      <div
+        v-else-if="previewError"
+        class="py-6 text-center text-sm text-rose-600 dark:text-rose-300"
+        role="alert"
+      >
         <p>{{ previewError }}</p>
         <button type="button" class="club-text-link mt-2 min-h-11" @click="openPreview(selected)">
           重新读取
@@ -226,55 +334,56 @@ onBeforeUnmount(() => {
       </div>
       <div
         v-else-if="!previewItems.length"
-        class="text-sm text-slate-400 text-center py-4 dark:text-slate-500"
+        class="py-6 text-center text-sm text-slate-500 dark:text-slate-400"
       >
         暂无报名人员
       </div>
       <div
         v-else
-        class="space-y-3 text-sm text-slate-700 max-h-[60vh] overflow-y-auto pr-2 dark:text-slate-200"
+        class="max-h-[60vh] space-y-3 overflow-y-auto pr-2 text-sm text-slate-700 dark:text-slate-200"
       >
-        <div class="flex items-center justify-between px-1 mb-2">
+        <div class="mb-2 flex items-center justify-between border-b border-slate-200/80 pb-2 dark:border-slate-800">
           <span
-            class="text-xs font-bold text-sky-700 bg-sky-50 px-2 py-0.5 rounded dark:bg-sky-900/40 dark:text-sky-200"
-            >Total: {{ previewItems.length }}</span
+            class="inline-flex items-center border border-sky-200 bg-sky-50/80 px-2.5 py-0.5 text-xs font-bold text-sky-800 dark:border-sky-800/60 dark:bg-sky-950/50 dark:text-sky-200"
           >
+            共 {{ previewItems.length }} 人
+          </span>
         </div>
-        <div class="grid gap-3">
+        <div class="grid gap-2.5">
           <div
             v-for="item in previewItems"
             :key="item.id"
-            class="flex items-center gap-3 rounded-lg border border-slate-100 bg-white p-3 hover:border-sky-200 transition-colors dark:bg-slate-900/60 dark:border-slate-800 dark:hover:border-sky-700"
+            class="flex items-center gap-3.5 border border-slate-200/90 border-l-2 border-l-sky-600 bg-white/90 p-3 transition-colors hover:border-sky-300 dark:border-slate-800 dark:border-l-sky-400 dark:bg-slate-900/70 dark:hover:border-sky-700"
           >
-            <div class="relative">
+            <div class="relative shrink-0">
               <img
                 v-if="item.avatar"
                 :src="item.avatar"
                 alt=""
-                class="w-10 h-10 rounded-full object-cover border border-slate-100 dark:border-slate-800"
-              />
+                class="h-10 w-10 rounded-full border border-slate-200 object-cover dark:border-slate-700"
+              >
               <div
                 v-else
-                class="w-10 h-10 rounded-full bg-slate-50 flex items-center justify-center text-slate-300 text-xs dark:bg-slate-800 dark:text-slate-500"
+                class="flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-xs font-serif text-slate-400 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-400"
               >
                 无
               </div>
             </div>
-            <div class="flex-1 min-w-0">
-              <div class="font-semibold truncate text-slate-700 dark:text-slate-100">
+            <div class="min-w-0 flex-1">
+              <div class="truncate font-serif font-semibold text-slate-900 dark:text-slate-100">
                 {{ item.common_id || '用户' }}
               </div>
-              <div class="text-xs text-slate-400 dark:text-slate-500">
-                QQ: {{ item.qq || '未公开' }}
+              <div class="mt-0.5 font-mono text-xs text-slate-500 dark:text-slate-400">
+                QQ：{{ item.qq || '未公开' }}
               </div>
             </div>
-            <div class="text-xs text-right space-y-0.5">
+            <div class="space-y-0.5 text-right text-xs">
               <div
-                class="text-sky-700 bg-sky-50 px-2 py-0.5 rounded inline-block dark:bg-sky-900/40 dark:text-sky-200"
+                class="inline-block border border-sky-200/80 bg-sky-50/70 px-2 py-0.5 font-medium text-sky-800 dark:border-sky-800/60 dark:bg-sky-950/50 dark:text-sky-200"
               >
                 {{ item.pilot_source || '未知来源' }}
               </div>
-              <div class="text-slate-400 dark:text-slate-500">
+              <div class="text-slate-500 dark:text-slate-400">
                 {{ item.machine_sign || '-' }}
               </div>
             </div>
@@ -283,16 +392,11 @@ onBeforeUnmount(() => {
       </div>
     </EventModal>
 
-    <!-- 悬浮发布按钮 -->
-    <div v-if="canCreate" class="sticky bottom-8 z-40 flex justify-end">
-      <button
-        type="button"
-        class="mr-8 flex items-center gap-2 px-6 py-3 rounded-full shadow-lg shadow-sky-500/20 transition-all duration-300 bg-gradient-to-r from-sky-400 to-blue-500 text-white hover:brightness-105 hover:-translate-y-0.5 active:scale-95 dark:from-sky-600 dark:to-blue-700 dark:shadow-sky-900/40"
-        @click="formOpen = true"
-      >
-        <span class="text-xl leading-none font-light" aria-hidden="true">＋</span>
-        <span class="font-medium text-sm">发布活动</span>
-      </button>
-    </div>
-  </div>
+    <ImageLightbox
+      :open="lightboxOpen"
+      :src="lightboxSrc"
+      :alt="lightboxAlt"
+      @update:open="lightboxOpen = $event"
+    />
+  </section>
 </template>

@@ -7,13 +7,15 @@ import { EVENT_CATEGORIES, upstreamEventsPage, stubGuestBff } from './support/ev
 const BASE_URL = `http://127.0.0.1:${Number(process.env.E2E_PORT_BASE ?? 3100)}`
 
 test.describe('event routes', () => {
-  test('redirects /events to the archived default category', async ({ request }) => {
+  test('renders an activity overview without redirecting', async ({ request }) => {
     const response = await request.get('/events', { maxRedirects: 0 })
-    expect([301, 302, 307, 308]).toContain(response.status())
-    expect(response.headers().location).toContain('/events/bounty')
+    expect(response.status()).toBe(200)
+    const html = await response.text()
+    expect(html).toContain('全部活动')
+    for (const category of EVENT_CATEGORIES) expect(html).toContain(category.title)
   })
 
-  test('renders all five categories with their archived copy and public rows', async ({
+  test('renders all five categories with Chinese titles and public rows', async ({
     request
   }) => {
     for (const category of EVENT_CATEGORIES) {
@@ -22,7 +24,7 @@ test.describe('event routes', () => {
       expect(response.ok()).toBe(true)
       const html = await response.text()
       expect(html).toContain(category.title)
-      expect(html).toContain(category.subtitle)
+      expect(html).not.toContain("LET'S MEET")
       // Only the frozen public statuses are ever projected into the page.
       for (const item of page.items) {
         expect(html).toContain(item.title)
@@ -40,15 +42,15 @@ test.describe('event routes', () => {
     })
     const page = await context.newPage()
     await page.goto('/events/stg')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('STG')
-    await expect(page.getByText('欢迎STGer报名参加！')).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('活动中心')
+    await expect(page.getByRole('heading', { level: 2, name: '东方弹幕' })).toBeVisible()
     const cards = page.locator('article')
     expect(await cards.count()).toBeGreaterThan(0)
     for (let index = 0; index < (await cards.count()); index++) {
-      await expect(cards.nth(index).getByRole('heading', { level: 2 })).not.toBeEmpty()
+      await expect(cards.nth(index).getByRole('heading', { level: 3 })).not.toBeEmpty()
     }
     // The archived status labels and signup button are server-rendered.
-    await expect(page.getByRole('button', { name: /我要参加|已结束/ }).first()).toBeVisible()
+    await expect(page.getByRole('button', { name: /我要参加|报名已结束/ }).first()).toBeVisible()
     // No interactive form chunk was needed to read the page.
     await expect(page.locator('[data-testid="event-modal"]')).toHaveCount(0)
     await context.close()
@@ -58,19 +60,49 @@ test.describe('event routes', () => {
 async function openCategoryFromClient(page: Page, isMobile: boolean, label: string) {
   await page.getByRole('button', { name: isMobile ? '打开导航菜单' : '活动' }).click()
   if (isMobile) await page.getByRole('button', { name: '活动' }).click()
-  await page.getByRole('link', { name: '进行中的活动' }).click()
-  await expect(page.getByRole('heading', { level: 1 })).toHaveText('悬赏令')
-  await page.getByRole('link', { name: label }).first().click()
+  await page.getByRole('link', { name: '活动中心' }).click()
+  await expect(page.getByRole('heading', { level: 1, name: '活动中心', exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 1, name: '桂航绯想天', exact: true })).toHaveCount(0)
+  await page.getByRole('navigation', { name: '活动种类' }).getByRole('link', { name: label, exact: true }).click()
+  await expect(page.getByRole('heading', { level: 2, name: label, exact: true })).toBeVisible()
+  await expect(page.locator('.events-board')).toHaveCount(1)
 }
 
 test.describe('event board interactions', () => {
-  test('keeps the archived empty state', async ({ page, isMobile }) => {
+  test('provides useful links when a category has no events', async ({ page, isMobile }) => {
     await page.goto('/')
     await page.route('**/api/event?*', (route) =>
       route.fulfill({ json: { total: 0, page: 1, limit: 50, items: [] } })
     )
-    await openCategoryFromClient(page, isMobile, '则则')
-    await expect(page.getByText('这里冷冷清清的，什么都没有发生呢...')).toBeVisible()
+    await openCategoryFromClient(page, isMobile, '非想天则')
+    await expect(page.getByRole('heading', { name: '暂无公开活动' })).toBeVisible()
+    await expect(page.getByRole('link', { name: '往期回顾', exact: true })).toBeVisible()
+    await expect(page.getByRole('link', { name: '加入同好群', exact: true })).toBeVisible()
+  })
+
+  test('filters mixed event statuses and keeps every category accessible', async ({ page, isMobile }) => {
+    await page.goto('/')
+    await page.route('**/api/event?*', route => route.fulfill({ json: {
+      total: 3, page: 1, limit: 50,
+      items: [
+        { id: 91, type: '悬赏令', title: '已截止悬赏', status: 'published', content: { deadline: '2020-01-01T00:00', reward: '徽章' } },
+        { id: 92, type: 'STG', title: '可报名比赛', status: 'published', content: { deadline: '2099-01-01T00:00', rules: '不续关通关' } },
+        { id: 93, type: '线下聚会', title: '已结束聚会', status: 'ended', content: { location: '校园' } },
+      ],
+    } }))
+    await openCategoryFromClient(page, isMobile, '全部活动')
+    await expect(page.locator('article')).toHaveCount(3)
+    await expect(page.locator('article').first().getByRole('heading', { level: 3 })).toHaveText('可报名比赛')
+    await page.getByRole('button', { name: /^进行中\s*1$/ }).click()
+    await expect(page.locator('article')).toHaveCount(1)
+    await expect(page.getByRole('button', { name: '我要参加' })).toBeEnabled()
+    await page.getByRole('button', { name: /^已结束\s*2$/ }).click()
+    await expect(page.locator('article')).toHaveCount(2)
+    await expect(page.getByRole('heading', { name: '可报名比赛' })).toHaveCount(0)
+    const categories = page.getByRole('navigation', { name: '活动种类' })
+    await expect(categories.getByRole('link')).toHaveCount(6)
+    await expect(categories.getByRole('link', { name: '线下聚会' })).toBeVisible()
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true)
   })
 
   test('opens the signup modal from mouse and keyboard, traps focus and returns it', async ({
@@ -260,15 +292,15 @@ test.describe('event board interactions', () => {
         ]
       })
     })
-    await openCategoryFromClient(page, isMobile, 'STG')
+    await openCategoryFromClient(page, isMobile, '东方弹幕')
     const card = page.locator('article').first()
     test.skip((await card.count()) === 0, 'fixture has no STG event')
-    await card.click()
+    await card.getByRole('button', { name: '参赛名单' }).click()
     const modal = page.getByTestId('event-modal')
     await expect(modal.getByText('参赛名单读取失败，请重试')).toBeVisible()
     await modal.getByRole('button', { name: '重新读取' }).click()
-    await expect(modal.getByText('Total: 1')).toBeVisible()
-    await expect(modal.getByText('QQ: 123456')).toBeVisible()
+    await expect(modal.getByText('共 1 人')).toBeVisible()
+    await expect(modal.getByText('QQ：123456')).toBeVisible()
   })
 
   test('stops accepting signups after the Beijing deadline', async ({ page, isMobile }) => {
@@ -295,10 +327,9 @@ test.describe('event board interactions', () => {
         }
       })
     )
-    await openCategoryFromClient(page, isMobile, 'STG')
-    await page.getByRole('button', { name: '我要参加' }).first().click()
-    const modal = page.getByTestId('event-modal')
-    await expect(modal.getByText('报名已截止')).toBeVisible()
-    await expect(modal.getByRole('button', { name: '保存报名' })).toBeDisabled()
+    await openCategoryFromClient(page, isMobile, '东方弹幕')
+    await expect(page.getByRole('button', { name: '报名已结束' })).toBeDisabled()
+    await expect(page.locator('.event-card-status')).toHaveText('已截止')
+    await expect(page.getByTestId('event-modal')).toHaveCount(0)
   })
 })
