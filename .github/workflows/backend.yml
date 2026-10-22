@@ -47,6 +47,8 @@ jobs:
       - run: node backend/scripts/prepare-test-context.cjs "$RUNNER_TEMP/backend-context"
       - run: docker build -t guatswr-backend-test "$RUNNER_TEMP/backend-context"
       - run: docker run --rm --network none guatswr-backend-test
+      - run: docker build -t guatswr-backend-runtime backend
+      - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
   real-bff:
     runs-on: ubuntu-latest
     timeout-minutes: 30

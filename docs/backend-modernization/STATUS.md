@@ -2,7 +2,7 @@
 
 更新：2026-10-23（Asia/Shanghai）。实施分支：`codex/backend-modernization`。
 
-当前启动 M0（可测），尚未完成 M0，也未进入生产迁移。
+M0（可测）已通过本地与远程门禁，开始 M1（安全与恢复）。尚未进入生产迁移。
 
 | 节点 | 状态 | 交付与下一步 |
 | --- | --- | --- |
@@ -10,10 +10,11 @@
 | BM-00b 运行契约基线 | DONE | 71 操作首批运行基线；外部成功/完整恢复仍归后续任务 |
 | BM-01 隔离启动 | DONE | Windows/Linux Node 24.16.0 各 17/17 通过；见 [证据](evidence/BM-01.md) |
 | BM-02 行为测试 | DONE | Windows/Linux 各173项；真实BFF脚手架1项通过；见 [证据](evidence/BM-02.md) |
-| BM-03 后端 CI | REVIEW | Linux/Windows/容器/真实BFF workflow已接入；等待远程结果；见 [证据](evidence/BM-03.md) |
-| BM-04～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
+| BM-03 后端 CI | DONE | 精确提交 f89777d 的 Windows/Linux/容器/真实BFF 全通过；见 [证据](evidence/BM-03.md) |
+| BM-04 Node24 | DONE | 生产镜像确定安装/真实启动通过；审计13项待分批修复；见 [证据](evidence/BM-04.md) |
+| BM-05～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
-已推送基线提交：`9fcbb6c`；BM-01 实现提交见当前分支 Git 历史。正在推进 BM-03 后端CI；完整 M0 门禁尚未关闭。
+M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当前推进 BM-04 Node24生产镜像与依赖审计，再进入 BM-05～10。
 
 阶段调整：原 BM-00 同时要求运行响应，而原系统 import 会打开默认库，BM-01 又依赖 BM-00。因此先验收纯静态 BM-00a，再建立隔离入口；BM-00b 的运行基线随 BM-02 验收。不得将静态登记当作运行验证。
 

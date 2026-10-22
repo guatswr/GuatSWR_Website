@@ -1,4 +1,10 @@
 node_modules
 data
 backups
+uploads
 .env
+.env.*
+!.env.example
+test-results
+.cache
+coverage
