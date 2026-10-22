@@ -175,6 +175,7 @@ app.use((err, req, res, next) => {
   if (err?.code === 'LIMIT_FILE_SIZE') {
     return res.status(413).json({ message: '文件过大' });
   }
+  if (err instanceof require('multer').MulterError) return res.status(400).json({ message: '上传参数无效' });
   console.error(err);
   res.status(500).json({ message: '服务器错误' });
 });

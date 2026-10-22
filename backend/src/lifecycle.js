@@ -51,7 +51,7 @@ const createApplication = async (options = {}) => {
   };
   try {
     for (const [key, filename] of [
-      ['storage', './utils/storage'], ['backup', './utils/backup'], ['bot', './utils/bot'],
+      ['storage', './utils/storage'], ['images', './utils/imageUpload'], ['backup', './utils/backup'], ['bot', './utils/bot'],
       ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['limiter', './middlewares/limiter'],
       ['upload', './middlewares/upload'], ['scheduler', './utils/backupScheduler']
     ]) context[key] = require(filename)(context);

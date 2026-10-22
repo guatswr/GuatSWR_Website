@@ -4,6 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { upload } = context.upload;
 const sharp = require('sharp');
+const { positiveId } = require('../utils/storageBoundary');
 const { uploadLimiter } = context.limiter;
 const { db, IMG_ROOT_DIR } = context; // 引入 IMG_ROOT_DIR
 
@@ -18,27 +19,7 @@ if (!fs.existsSync(EVENT_IMG_ROOT)) {
 }
 
 // 基础文件校验
-const isMagicValid = (buffer, mimetype) => {
-  if (!buffer || buffer.length < 4) return false;
-  const sig = buffer;
-  if (mimetype === 'image/jpeg') return sig[0] === 0xff && sig[1] === 0xd8 && sig[2] === 0xff;
-  if (mimetype === 'image/png') return sig.slice(0, 8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]));
-  if (mimetype === 'image/gif') return sig.slice(0, 6).toString('ascii') === 'GIF87a' || sig.slice(0, 6).toString('ascii') === 'GIF89a';
-  if (mimetype === 'image/webp') return sig.slice(0, 4).toString('ascii') === 'RIFF' && sig.slice(8, 12).toString('ascii') === 'WEBP';
-  if (mimetype === 'image/svg+xml') return sig.toString('utf8').toLowerCase().includes('<svg');
-  return false;
-};
-
-const validateUploadedFile = async (file) => {
-  const filePath = file.path;
-  const fd = await fs.promises.open(filePath, 'r');
-  try {
-    const { buffer } = await fd.read(Buffer.alloc(256), 0, 256, 0);
-    return isMagicValid(buffer, file.mimetype);
-  } finally {
-    await fd.close();
-  }
-};
+const { validateUploadedFile, moveVerifiedFile } = context.images;
 
 /**
  * 校验 EID 是否允许上传
@@ -46,7 +27,7 @@ const validateUploadedFile = async (file) => {
  */
 const checkEidAllowed = (eid) => {
   return new Promise((resolve, reject) => {
-    if (!eid || isNaN(eid)) return resolve({ allowed: false, msg: 'Invalid EID' });
+    if (!positiveId(String(eid || ''))) return resolve({ allowed: false, msg: 'Invalid EID' });
     
     db.get("SELECT id, status FROM events WHERE id = ?", [eid], (err, row) => {
       if (err) return reject(err);
@@ -72,7 +53,7 @@ router.post('/', uploadLimiter, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: '文件上传失败' });
 
   const eid = req.body.eid || req.query.eid;
-  if (!eid) {
+  if (!positiveId(String(eid || ''))) {
     await cleanup();
     return res.status(400).json({ message: '缺少 Event ID' });
   }
@@ -114,14 +95,14 @@ router.post('/', uploadLimiter, upload.single('file'), async (req, res) => {
 
     const finalFileName = req.file.filename;
     const finalFilePath = path.join(eventDir, finalFileName);
-    await fs.promises.rename(req.file.path, finalFilePath);
+    await moveVerifiedFile(req.file.path, finalFilePath);
     await fs.promises.chmod(finalFilePath, 0o644);
 
     let finalThumbName = null;
     if (thumbPathTmp && fs.existsSync(thumbPathTmp)) {
       finalThumbName = path.basename(thumbPathTmp);
       const finalThumbPath = path.join(eventDir, finalThumbName);
-      await fs.promises.rename(thumbPathTmp, finalThumbPath);
+      await moveVerifiedFile(thumbPathTmp, finalThumbPath);
       await fs.promises.chmod(finalThumbPath, 0o644);
     }
 
@@ -154,7 +135,7 @@ router.post('/avatar', uploadLimiter, upload.single('file'), async (req, res) =>
   if (!req.file) return res.status(400).json({ message: '文件上传失败' });
 
   const eid = req.body.eid || req.query.eid;
-  if (!eid) {
+  if (!positiveId(String(eid || ''))) {
     await cleanup();
     return res.status(400).json({ message: '缺少 Event ID' });
   }
@@ -190,7 +171,7 @@ router.post('/avatar', uploadLimiter, upload.single('file'), async (req, res) =>
 
     const finalFileName = req.file.filename;
     const finalFilePath = path.join(avatarDir, finalFileName);
-    await fs.promises.rename(req.file.path, finalFilePath);
+    await moveVerifiedFile(req.file.path, finalFilePath);
     await fs.promises.chmod(finalFilePath, 0o644);
 
     const publicUrlBase = `/uploads/img/events/${eid}/avatars`;

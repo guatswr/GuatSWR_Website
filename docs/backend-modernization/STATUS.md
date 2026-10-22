@@ -13,7 +13,7 @@ M0（可测）已通过本地与远程门禁，开始 M1（安全与恢复）。
 | BM-03 后端 CI | DONE | 精确提交 f89777d 的 Windows/Linux/容器/真实BFF 全通过；见 [证据](evidence/BM-03.md) |
 | BM-04 Node24 | DONE | 生产镜像确定安装/真实启动通过；审计13项待分批修复；见 [证据](evidence/BM-04.md) |
 | BM-05 代理网络 | DONE（本地） | 默认不信任、显式CIDR、loopback发布；生产拓扑仍待实测；见 [证据](evidence/BM-05.md) |
-| BM-06 上传安全 | DOING | 路径/selector边界180项通过；继续私有暂存及依赖修复；见 [证据](evidence/BM-06.md) |
+| BM-06 上传安全 | DONE（本地） | 路径/私有暂存/资源限制/Multer/sharp已落地；Windows/Linux190项+BFF通过，新增并发测试通过；见 [证据](evidence/BM-06.md) |
 | BM-07～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
 M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当前推进 BM-04 Node24生产镜像与依赖审计，再进入 BM-05～10。

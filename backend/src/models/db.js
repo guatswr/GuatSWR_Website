@@ -9,6 +9,7 @@ const resolvePaths = (env, paths = {}) => {
     DATA_DIR, PUBLIC_DIR,
     BACKUP_ROOT: path.resolve(paths.backups || path.join(__dirname, '..', '..', 'backups')),
     UPLOADS_DIR: path.join(PUBLIC_DIR, 'upload'),
+    PRIVATE_UPLOADS_DIR: path.join(DATA_DIR, 'private-upload'),
     IMG_ROOT_DIR: path.join(PUBLIC_DIR, 'img'),
     HISTORY_ROOT_DIR: path.join(PUBLIC_DIR, 'img', 'History'),
     ICON_SVG_DIR: path.join(PUBLIC_DIR, 'icon_svg'),
@@ -44,8 +45,8 @@ const createDatabase = async ({ env, paths }) => {
     return closed;
   };
   try {
-    for (const key of ['DATA_DIR', 'PUBLIC_DIR', 'UPLOADS_DIR', 'IMG_ROOT_DIR', 'HISTORY_ROOT_DIR', 'ICON_SVG_DIR']) {
-      await fs.mkdir(resolved[key], { recursive: true });
+    for (const key of ['DATA_DIR', 'PUBLIC_DIR', 'UPLOADS_DIR', 'IMG_ROOT_DIR', 'HISTORY_ROOT_DIR', 'ICON_SVG_DIR', 'PRIVATE_UPLOADS_DIR']) {
+      await fs.mkdir(resolved[key], { recursive: true, mode: key === 'PRIVATE_UPLOADS_DIR' ? 0o700 : 0o755 });
     }
     const db = await open(resolved.dbPath);
     const logDb = await open(resolved.logDbPath);

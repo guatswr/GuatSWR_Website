@@ -168,6 +168,14 @@ const cleanupStaging = async (ttlMs) => {
       // ignore
     }
   }));
+  if (context.PRIVATE_UPLOADS_DIR) {
+    for (const name of await fs.promises.readdir(context.PRIVATE_UPLOADS_DIR)) {
+      const candidate = path.join(context.PRIVATE_UPLOADS_DIR, name);
+      if (!isSafePath(context.PRIVATE_UPLOADS_DIR, candidate)) continue;
+      const stat = await fs.promises.lstat(candidate);
+      if (stat.isFile() && now - stat.mtimeMs > ttlMs) await fs.promises.unlink(candidate);
+    }
+  }
 };
 
 const moveStagedUrlsInText = async (text, targetDir) => {

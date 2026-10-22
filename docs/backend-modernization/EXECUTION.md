@@ -14,7 +14,7 @@
 | BM-03 / P0 后端 CI（DONE） | 02 | 新增后端 workflow；backend/shared/部署/脚本变更触发；Linux 原生模块与 Windows 文件路径检查 | npm ci、测试、后续类型/lint/build、容器 smoke；单改 backend 的 PR 确实触发；保留前端门禁 | 未引入的命令不得伪造通过；根 pnpm test 暂不覆盖后端 |
 | BM-04 / P0 Node 24（DONE） | 03 | backend/Dockerfile/package：只升级运行时和可复现安装，npm install 改 npm ci 单独审查；核验 sqlite3/sharp 原生构建 | 精确 Node、镜像 digest、SQLite CLI/嵌入引擎版本、锁审计结果；A/L/N 测试 | 不合并 Express/驱动升级；旧镜像+原挂载可回退 |
 | BM-05 / P0 代理网络（本地DONE，生产待核） | 04 | app trust proxy、Compose、Nuxt IP 配置：列实际链路；按 CIDR 信任；覆盖 XFF；关闭公网直连或明确 loopback | 代理拓扑、各入口 req.ip 结果；伪造/短链/IPv6、登录/封禁/报名回显测试 N01 | 无生产事实仅能本地验收；不能把所有请求变成 BFF IP |
-| BM-06 / P0 上传路径安全 | 04 | storage/upload/visitor：正整数选择器、路径分隔符边界和真实路径检查；Multer 安全升级独立子 PR；私有验证区、资源上限、失败清理 | F01～F04；SVG 服务策略和兼容例外；每个上传入口真实 multipart | 保留 URL 和 50MiB 兼容；防同前缀目录、symlink、半成品公开；不批量搬历史文件 |
+| BM-06 / P0 上传路径安全（本地DONE） | 04 | storage/upload/visitor：正整数选择器、路径分隔符边界和真实路径检查；Multer 安全升级独立子 PR；私有验证区、资源上限、失败清理 | F01～F04；SVG 服务策略和兼容例外；每个上传入口真实 multipart | 保留 URL 和 50MiB 兼容；防同前缀目录、symlink、半成品公开；不批量搬历史文件 |
 | BM-07 / P0 最小认证修复 | 04 | auth middleware/admin/auth：有效 JWT 后查当前用户/角色；版本库错误 fail closed；原子递增全局版本；删除管理员保护；修复二步密码错误计数和解密异常 | EX 登记；A02/A03/A04；删用户旧 token、降权、DB 故障、并发删除负例 | 不换密钥/哈希/声明；错误状态调整单列；用户级撤销 schema 留 BM-31 |
 | BM-08 / P0 游客入口边界 | 05、02 | guest-bff/event/upload_visitor：盘点旧直连客户端，形成 ADR-11；封闭绕过 BFF 的入口；复核 BFF 草稿 ownership 和上传归属 | 同 IP 两游客、异 IP、猜 EID、重放的直连/BFF 双层测试；明确暂未解决的后端证明 | 不能声称 IP 即个人身份；需要旧客户端适配时先产出迁移方案；证明实现归 BM-24 |
 | BM-09 / P0 投影与配置权限 | 07、02 | config/logs/event：公开字段白名单；普通 admin 禁写 token_version/backup_* 等内部键；原始 SQL 错误不出公网 | A05、A08；EX 字段差异、BFF 消费验证；敏感种子不能进入公开缓存 | 不能直接套 BFF DTO 删除所有历史字段；批准例外后更新契约 |
