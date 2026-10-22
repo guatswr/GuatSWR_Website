@@ -20,9 +20,12 @@ const props = defineProps({
   eager: { type: Boolean, default: false },
   preloadMargin: { type: String, default: '600px 0px' },
   rise: { type: Boolean, default: false },
+  revealMode: { type: String as PropType<'fade' | 'uncover'>, default: 'fade' },
   width: { type: Number, default: undefined },
   height: { type: Number, default: undefined }
 })
+
+const emit = defineEmits<{ ready: [] }>()
 
 const wrapperRef = ref<HTMLElement | null>(null)
 const imageRef = ref<HTMLImageElement | null>(null)
@@ -52,6 +55,9 @@ const config = computed<ImageLoaderConfig>(() => ({
 /** Template style bindings widen string literals, so the fit is typed here. */
 const fitStyle = computed<CSSProperties>(() => ({ objectFit: props.fit }))
 const ready = computed(() => image.value.status === 'ready')
+watch(ready, (isReady) => {
+  if (isReady) emit('ready')
+}, { flush: 'post' })
 const busy = computed(() =>
   ['loading', 'decoding', 'retrying'].includes(image.value.status)
 )
@@ -151,6 +157,7 @@ onBeforeUnmount(() => {
     :class="wrapperClass"
     :data-image-state="image.status"
     :data-image-managed="managed ? 'true' : 'false'"
+    :data-image-reveal="revealMode"
     :aria-busy="managed && busy ? 'true' : undefined"
     :style="{
       aspectRatio: width && height ? `${width} / ${height}` : undefined,
@@ -163,6 +170,7 @@ onBeforeUnmount(() => {
         'is-managed': managed,
         'is-ready': managed && ready,
         'has-rise': rise,
+        'is-uncover': revealMode === 'uncover',
         'is-eager': eager
       }"
     >
@@ -176,7 +184,7 @@ onBeforeUnmount(() => {
           class="pi-preview"
           :style="fitStyle"
           @error="thumbFailed = true"
-        />
+        >
         <div v-else class="pi-poster">
           <svg viewBox="0 0 48 36" fill="none" class="pi-poster-icon">
             <rect x="1" y="1" width="46" height="34" rx="3" />
@@ -199,7 +207,7 @@ onBeforeUnmount(() => {
         decoding="async"
         :class="['pi-full', imgClass]"
         :style="fitStyle"
-      />
+      >
       <span
         v-if="managed && message"
         class="sr-only"
@@ -312,6 +320,22 @@ html.dark .pi-message {
 }
 .pi-surface.is-managed.is-eager .pi-full {
   transition-duration: 600ms;
+}
+/* Touch readers uncover the decoded bitmap with a fading poster. The bitmap
+   itself stays in normal paint flow throughout loading, scrolling and focus. */
+.pi-surface.is-managed.is-uncover .pi-full {
+  opacity: 1;
+  transition: none;
+}
+.pi-surface.is-uncover .pi-full {
+  transform: none;
+}
+.pi-surface.is-managed.is-uncover img.pi-full {
+  translate: none;
+  scale: none;
+}
+.pi-surface.is-uncover .pi-placeholder {
+  transition: opacity 320ms ease-out;
 }
 @keyframes pi-shimmer {
   to {

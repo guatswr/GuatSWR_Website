@@ -18,6 +18,7 @@ import {
   yearKey,
 } from '~/utils/history'
 import { displayImageSource, displayThumbSource } from '~/utils/public-image'
+import '~/assets/css/history-touch.css'
 
 const { data, error, status, refresh } = await useFetch<HistoryContentResponse>('/api/content/history', {
   key: 'public-history',
@@ -34,10 +35,12 @@ const currentMonth = ref(months.value[0]?.month ?? '')
 const hoveredBookmarkYear = ref<string | null>(null)
 const activeIndex = ref(0)
 const hoveredIndex = ref<number | null>(null)
-const spineProgress = ref(0)
-const revealedSet = ref<Set<number>>(new Set([0, 1, 2]))
+const spinePercent = ref(0)
+const revealedSet = ref<Set<number>>(new Set([0]))
 const motionReady = ref(false)
 const pageEntered = ref(false)
+// Default to readable touch surfaces in SSR; pointer choreography opts in on mount.
+const touchMode = ref(true)
 const displayedTotal = ref(entries.value.length)
 let totalFrame: number | null = null
 
@@ -80,6 +83,10 @@ const activeYear = computed(() => {
   return yearKey(entries.value[activeIndex.value]?.date) || (years.value[0]?.year ?? '')
 })
 const expandedBookmarkYear = computed(() => hoveredBookmarkYear.value ?? activeYear.value)
+const activeChapterIndex = computed(() => years.value.findIndex(chapter => chapter.year === activeYear.value))
+const previousChapter = computed(() => years.value[activeChapterIndex.value - 1])
+const nextChapter = computed(() => years.value[activeChapterIndex.value + 1])
+const touchDockVisible = ref(false)
 
 const loading = computed(() => status.value === 'pending')
 const failed = computed(() => Boolean(error.value))
@@ -141,9 +148,103 @@ const openLightbox = (src: string): void => {
 
 // --- Timeline scroll & reveal ---------------------------------------------
 const timeline = ref<HTMLElement | null>(null)
+const ambient = ref<HTMLElement | null>(null)
+const spineFill = ref<HTMLElement | null>(null)
+const dockProgress = ref<HTMLElement | null>(null)
 let revealObserver: IntersectionObserver | null = null
+let contentRevealObserver: IntersectionObserver | null = null
+let contentInView = new WeakSet<HTMLElement>()
 let ticking = false
 let frame: number | null = null
+let touchFocusTimer: number | null = null
+let touchMedia: MediaQueryList | null = null
+let touchContactActive = false
+let jumpObserver: ResizeObserver | null = null
+let jumpTimer: number | null = null
+let touchJump: { index: number, settled: boolean } | null = null
+
+const cancelTouchJump = (): void => {
+  jumpObserver?.disconnect()
+  jumpObserver = null
+  if (jumpTimer !== null) window.clearTimeout(jumpTimer)
+  jumpTimer = null
+  touchJump = null
+}
+
+const alignTouchJump = (): void => {
+  if (!touchJump?.settled || touchContactActive) return
+  const target = timeline.value?.querySelector<HTMLElement>(`[data-history-index="${touchJump.index}"]`)
+  if (!target) return
+  const difference = target.getBoundingClientRect().top - window.innerHeight * 0.24
+  if (Math.abs(difference) > 2) window.scrollBy({ top: difference, behavior: 'instant' })
+}
+
+const setTouchMode = (touch: boolean): void => {
+  const changed = touchMode.value !== touch
+  touchMode.value = touch
+  hoveredIndex.value = null
+  if (changed && pageEntered.value) void nextTick(initContentReveals)
+}
+
+const syncTouchMode = (): void => setTouchMode(touchMedia?.matches ?? true)
+
+const onStagePointerDown = (event: PointerEvent): void => {
+  cancelTouchJump()
+  if (event.pointerType === 'touch') setTouchMode(true)
+  else if (event.pointerType === 'mouse' && !touchMedia?.matches) setTouchMode(false)
+}
+
+const clearTouchFocus = (): void => {
+  if (touchFocusTimer !== null) window.clearTimeout(touchFocusTimer)
+  touchFocusTimer = null
+}
+
+const scheduleTouchFocus = (): void => {
+  clearTouchFocus()
+  touchFocusTimer = window.setTimeout(() => {
+    touchFocusTimer = null
+    if (!touchContactActive) {
+      if (touchJump) touchJump.settled = true
+      alignTouchJump()
+      updateFromViewport()
+    }
+  }, 120)
+}
+
+const onTouchStart = (): void => {
+  cancelTouchJump()
+  touchContactActive = true
+  clearTouchFocus()
+}
+
+const onTouchEnd = (event: TouchEvent): void => {
+  touchContactActive = event.touches.length > 0
+  if (touchMode.value && !touchContactActive) scheduleTouchFocus()
+}
+
+const onEntryPointerEnter = (event: PointerEvent, index: number): void => {
+  // A touch's compatibility mouse events must not pin the reading focus.
+  if (!touchMode.value && event.pointerType === 'mouse') hoveredIndex.value = index
+}
+
+const updateSpineProgress = (progress: number, updateLabel: boolean): void => {
+  // Progress only touches decorative surfaces. During a touch gesture, the
+  // bookmark's hidden percentage label doesn't need to trigger a Vue render.
+  ambient.value?.style.setProperty('--spine-progress', String(progress))
+  if (spineFill.value) spineFill.value.style.transform = `scaleY(${progress})`
+  if (dockProgress.value) dockProgress.value.style.transform = `scaleX(${progress})`
+  if (updateLabel) spinePercent.value = Math.round(progress * 100)
+}
+
+const updateTimelineProgress = (updateLabel = true): void => {
+  if (!timeline.value) return
+  const viewportH = window.innerHeight
+  const rect = timeline.value.getBoundingClientRect()
+  const total = Math.max(1, rect.height - viewportH * 0.35)
+  const passed = viewportH * 0.36 - rect.top
+  updateSpineProgress(Math.min(1, Math.max(0.03, passed / total)), updateLabel)
+  touchDockVisible.value = rect.top < viewportH * 0.28 && rect.bottom > viewportH * 0.22
+}
 
 const monthElements = (): HTMLElement[] =>
   timeline.value ? Array.from(timeline.value.querySelectorAll<HTMLElement>('[data-history-index]')) : []
@@ -155,9 +256,10 @@ const setActiveFromIndex = (index: number): void => {
   if (key) currentMonth.value = key
 }
 
-const updateFromViewport = (): void => {
+const updateFromViewport = (updateFocus = true): void => {
   const elements = monthElements()
   if (elements.length === 0) return
+  const bounds = elements.map(element => ({ element, rect: element.getBoundingClientRect() }))
   const viewportH = window.innerHeight
   const anchor = viewportH * 0.36
   const scrollTop = window.scrollY || document.documentElement.scrollTop
@@ -172,8 +274,7 @@ const updateFromViewport = (): void => {
   }
   else {
     let bestDistance = Number.POSITIVE_INFINITY
-    for (const element of elements) {
-      const rect = element.getBoundingClientRect()
+    for (const { element, rect } of bounds) {
       const idx = Number(element.dataset.historyIndex)
       if (!Number.isFinite(idx)) continue
 
@@ -188,8 +289,7 @@ const updateFromViewport = (): void => {
     }
   }
 
-  for (const element of elements) {
-    const rect = element.getBoundingClientRect()
+  for (const { element, rect } of bounds) {
     if (rect.top < viewportH * 0.9) {
       const idx = Number(element.dataset.historyIndex)
       if (Number.isFinite(idx) && !revealedSet.value.has(idx)) {
@@ -198,19 +298,58 @@ const updateFromViewport = (): void => {
     }
   }
 
-  setActiveFromIndex(bestIndex)
+  if (updateFocus) setActiveFromIndex(bestIndex)
 
-  if (timeline.value) {
-    const rect = timeline.value.getBoundingClientRect()
-    const total = Math.max(1, rect.height - viewportH * 0.35)
-    const passed = anchor - rect.top
-    spineProgress.value = Math.min(1, Math.max(0.03, passed / total))
-  }
+  updateTimelineProgress(updateFocus)
 }
 
 const disconnectObservers = (): void => {
   revealObserver?.disconnect()
   revealObserver = null
+  contentRevealObserver?.disconnect()
+  contentRevealObserver = null
+  contentInView = new WeakSet<HTMLElement>()
+}
+
+const revealContent = (element: HTMLElement): void => {
+  if (!touchMode.value || !pageEntered.value
+    || element.dataset.revealState !== 'pending' || !contentInView.has(element)) return
+  if (element.dataset.historyReveal === 'image'
+    && element.querySelector<HTMLElement>('.progressive-image')?.dataset.imageState !== 'ready') return
+  element.dataset.revealState = 'visible'
+  contentRevealObserver?.unobserve(element)
+}
+
+const onContentImageReady = (index: number): void => {
+  const element = timeline.value?.querySelector<HTMLElement>(`[data-history-index="${index}"] [data-history-reveal="image"]`)
+  if (element) revealContent(element)
+}
+
+const initContentReveals = (): void => {
+  contentRevealObserver?.disconnect()
+  contentRevealObserver = null
+  contentInView = new WeakSet<HTMLElement>()
+  if (!touchMode.value || !pageEntered.value || typeof IntersectionObserver === 'undefined') return
+
+  contentRevealObserver = new IntersectionObserver((records) => {
+    for (const record of records) {
+      const element = record.target as HTMLElement
+      if (!record.isIntersecting) {
+        contentInView.delete(element)
+        continue
+      }
+      contentInView.add(element)
+      revealContent(element)
+    }
+  }, { rootMargin: '0px 0px -16% 0px', threshold: 0 })
+
+  for (const element of timeline.value?.querySelectorAll<HTMLElement>('[data-history-reveal]') ?? []) {
+    if (element.dataset.revealState === 'visible') continue
+    // Include the first view. Each piece plays inside the viewport, and photos
+    // wait for decoded pixels rather than spending their entrance on a poster.
+    element.dataset.revealState = 'pending'
+    contentRevealObserver.observe(element)
+  }
 }
 
 const initObservers = (): void => {
@@ -232,27 +371,43 @@ const initObservers = (): void => {
   for (const element of elements) {
     revealObserver.observe(element)
   }
+  initContentReveals()
 }
 
 const onScroll = (): void => {
   if (hoveredBookmarkYear.value !== null) {
     hoveredBookmarkYear.value = null
   }
+  if (touchMode.value) {
+    // Finger scrolling advances progress; reading focus settles afterwards.
+    scheduleTouchFocus()
+  }
   if (ticking) return
   ticking = true
   frame = window.requestAnimationFrame(() => {
     frame = null
     ticking = false
-    updateFromViewport()
+    if (touchMode.value && revealObserver) {
+      // IntersectionObserver handles reveals without measuring every card on
+      // every frame. The full scan runs after the gesture, or as a fallback
+      // when the browser has no observer support.
+      updateTimelineProgress(false)
+    }
+    else updateFromViewport(!touchMode.value)
   })
 }
 
 const onResize = (): void => {
-  initObservers()
-  updateFromViewport()
+  // The observer follows viewport changes itself. Android's collapsing browser
+  // toolbar can resize the viewport during a fling; keep that path light too.
+  const updateFocus = touchFocusTimer === null && !touchContactActive
+  if (touchMode.value && !updateFocus && revealObserver) updateTimelineProgress(false)
+  else updateFromViewport(updateFocus)
 }
 
 const scrollToEntry = (index: number): void => {
+  cancelTouchJump()
+  clearTouchFocus()
   hoveredBookmarkYear.value = null
   revealedSet.value.add(index)
   setActiveFromIndex(index)
@@ -261,11 +416,24 @@ const scrollToEntry = (index: number): void => {
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   const rect = target.getBoundingClientRect()
   const targetTop = Math.max(0, window.scrollY + rect.top - window.innerHeight * 0.24)
+  if (touchMode.value) {
+    // Lazy images along a long jump can resize the timeline after scrolling.
+    // Briefly retain the requested anchor, then release it; a new gesture
+    // cancels this immediately so reading never fights the user's finger.
+    touchJump = { index, settled: false }
+    if (typeof ResizeObserver !== 'undefined' && timeline.value) {
+      jumpObserver = new ResizeObserver(alignTouchJump)
+      jumpObserver.observe(timeline.value)
+    }
+    jumpTimer = window.setTimeout(cancelTouchJump, 2200)
+    scheduleTouchFocus()
+  }
   window.scrollTo({ top: targetTop, behavior: reduced ? 'auto' : 'smooth' })
 }
 
 const scrollToTop = (): void => {
   if (typeof window === 'undefined') return
+  cancelTouchJump()
   hoveredBookmarkYear.value = null
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   window.scrollTo({ top: 0, behavior: reduced ? 'auto' : 'smooth' })
@@ -280,6 +448,10 @@ watch(entries, async (next) => {
 })
 
 onMounted(() => {
+  touchMedia = window.matchMedia('(hover: none), (pointer: coarse)')
+  syncTouchMode()
+  if (!touchMode.value) [1, 2].forEach(index => revealedSet.value.add(index))
+  touchMedia.addEventListener('change', syncTouchMode)
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches
   if (reduced) {
     entries.value.forEach((_entry, idx) => revealedSet.value.add(idx))
@@ -294,12 +466,23 @@ onMounted(() => {
   updateFromViewport()
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onResize)
+  window.addEventListener('touchstart', onTouchStart, { passive: true })
+  window.addEventListener('touchend', onTouchEnd, { passive: true })
+  window.addEventListener('touchcancel', onTouchEnd, { passive: true })
+  window.addEventListener('wheel', cancelTouchJump, { passive: true })
 })
 
 onBeforeUnmount(() => {
+  cancelTouchJump()
   disconnectObservers()
+  clearTouchFocus()
+  touchMedia?.removeEventListener('change', syncTouchMode)
   window.removeEventListener('scroll', onScroll)
   window.removeEventListener('resize', onResize)
+  window.removeEventListener('touchstart', onTouchStart)
+  window.removeEventListener('touchend', onTouchEnd)
+  window.removeEventListener('touchcancel', onTouchEnd)
+  window.removeEventListener('wheel', cancelTouchJump)
   if (frame !== null) window.cancelAnimationFrame(frame)
   if (totalFrame !== null) window.cancelAnimationFrame(totalFrame)
   frame = null
@@ -318,9 +501,10 @@ usePublicPageSeo({
   <div
     class="club-paper history-stage min-h-screen font-sans relative"
     :class="{ 'is-entered': pageEntered }"
-    :style="{ '--spine-progress': spineProgress }"
+    :data-history-motion="touchMode ? 'touch' : 'pointer'"
+    @pointerdown.capture="onStagePointerDown"
   >
-    <div class="history-ambient" aria-hidden="true">
+    <div ref="ambient" class="history-ambient" aria-hidden="true">
       <div class="history-glow history-glow-vermilion" />
       <div class="history-glow history-glow-sky" />
       <div class="history-glow history-glow-amber" />
@@ -450,11 +634,10 @@ usePublicPageSeo({
         <div
           ref="timeline"
           class="history-timeline relative min-w-0"
-          :style="{ '--spine-progress': spineProgress }"
         >
           <div class="history-spine" aria-hidden="true">
             <div class="history-spine-track" />
-            <div class="history-spine-progress" />
+            <div ref="spineFill" class="history-spine-progress" />
           </div>
 
           <div class="space-y-12">
@@ -473,14 +656,14 @@ usePublicPageSeo({
                 'is-revealed': !motionReady || revealedSet.has(index),
               }"
               :style="{ '--entry-delay': `${index < 3 ? 220 + index * 140 : 0}ms` }"
-              @mouseenter="hoveredIndex = index"
-              @mouseleave="hoveredIndex = null"
+              @pointerenter="onEntryPointerEnter($event, index)"
+              @pointerleave="hoveredIndex = null"
             >
               <div
                 v-if="isYearStart(index) && yearChapterMeta(index)"
                 class="history-year-divider"
               >
-                <div class="history-year-banner">
+                <div class="history-year-banner" data-history-reveal="year">
                   <span class="history-year-banner-seal" aria-hidden="true">卷</span>
                   <span class="history-year-banner-title">{{ yearChapterMeta(index)?.year }} 年纪</span>
                   <span class="history-year-banner-meta">共 {{ yearChapterMeta(index)?.count }} 录</span>
@@ -532,7 +715,7 @@ usePublicPageSeo({
                     aria-hidden="true"
                   />
 
-                  <div class="history-card-meta">
+                  <div class="history-card-meta" data-history-reveal="date">
                     <div class="history-date-badge">
                       <span class="history-date-seal" aria-hidden="true">记</span>
                       <time class="history-date-text">{{ event.date }}</time>
@@ -542,7 +725,7 @@ usePublicPageSeo({
                     </span>
                   </div>
 
-                  <h2 class="history-card-title">
+                  <h2 class="history-card-title" data-history-reveal="title">
                     {{ event.title }}
                   </h2>
 
@@ -550,6 +733,7 @@ usePublicPageSeo({
                     v-if="displayImageSource(event.image)"
                     :href="displayImageSource(event.image) ?? '#'"
                     class="history-figure"
+                    data-history-reveal="image"
                     :aria-label="`查看大图：${event.title}`"
                     @click.prevent="openLightbox(displayImageSource(event.image) ?? '')"
                   >
@@ -558,13 +742,15 @@ usePublicPageSeo({
                       :thumb="displayThumbSource(event.image) ?? undefined"
                       :alt="event.title"
                       fit="contain"
+                      :reveal-mode="touchMode ? 'uncover' : 'fade'"
                       wrapper-class="w-full"
                       img-class="history-figure-img w-full h-auto max-h-[380px] object-contain mx-auto"
+                      @ready="onContentImageReady(index)"
                     />
                     <span class="history-figure-hint" aria-hidden="true">点击展开画卷</span>
                   </a>
 
-                  <div class="history-prose-box">
+                  <div class="history-prose-box" data-history-reveal="body">
                     <span class="history-prose-watermark" aria-hidden="true">⑨</span>
                     <div class="history-description relative text-slate-700 dark:text-slate-200 leading-7 md:leading-8 text-[15px] md:text-base whitespace-pre-line break-words">
                       <SafeMarkdown :nodes="event.description" inherit-typography />
@@ -591,7 +777,7 @@ usePublicPageSeo({
         >
           <div class="history-bookmark-head">
             <span class="history-bookmark-seal" aria-hidden="true">卷目</span>
-            <span class="history-bookmark-progress">{{ Math.round(spineProgress * 100) }}%</span>
+            <span class="history-bookmark-progress">{{ spinePercent }}%</span>
           </div>
 
           <div class="history-bookmark-tree">
@@ -654,6 +840,38 @@ usePublicPageSeo({
         </aside>
       </div>
     </div>
+
+    <nav
+      v-if="years.length > 0 && !loading && !failed"
+      class="history-touch-dock"
+      :class="{ 'is-visible': touchMode && touchDockVisible && !lightboxOpen }"
+      :inert="!touchMode || !touchDockVisible || lightboxOpen"
+      aria-label="群史章节导航"
+    >
+      <button
+        type="button"
+        :disabled="!previousChapter"
+        aria-label="上一年卷"
+        @click="previousChapter && scrollToEntry(previousChapter.index)"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m14 7-5 5 5 5" /></svg>
+      </button>
+      <div class="history-touch-dock-label">
+        <Transition name="history-chapter" mode="out-in">
+          <span :key="activeYear" class="history-touch-dock-year">{{ activeYear }} 年卷</span>
+        </Transition>
+        <span class="history-touch-dock-count">{{ activeIndex + 1 }} / {{ entries.length }}</span>
+        <span class="history-touch-dock-track" aria-hidden="true"><span ref="dockProgress" /></span>
+      </div>
+      <button
+        type="button"
+        :disabled="!nextChapter"
+        aria-label="下一年卷"
+        @click="nextChapter && scrollToEntry(nextChapter.index)"
+      >
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m10 7 5 5-5 5" /></svg>
+      </button>
+    </nav>
 
     <ImageLightbox
       v-model:open="lightboxOpen"
@@ -1240,7 +1458,7 @@ usePublicPageSeo({
     var(--chronicle-sky) 92%,
     transparent 100%
   );
-  transform: scaleY(var(--spine-progress, 0.05));
+  transform: scaleY(0);
   transform-origin: top;
   transition: transform 140ms ease-out;
 }
@@ -1522,7 +1740,7 @@ usePublicPageSeo({
   box-shadow: var(--chronicle-card-shadow);
   transition:
     opacity 540ms cubic-bezier(0.22, 1, 0.36, 1),
-    transform 540ms cubic-bezier(0.22, 1, 0.36, 1),
+    translate 540ms cubic-bezier(0.22, 1, 0.36, 1),
     background-color 260ms ease,
     border-color 260ms ease,
     box-shadow 260ms ease;
@@ -1547,18 +1765,32 @@ usePublicPageSeo({
   transition: opacity 260ms ease;
 }
 
-.history-entry.is-active .history-card,
-.history-card:hover {
+.history-stage[data-history-motion='pointer'] .history-entry.is-active .history-card {
   background-color: var(--chronicle-card-active-bg);
   border-color: var(--chronicle-border-strong);
   border-top-color: var(--chronicle-vermilion);
   box-shadow: var(--chronicle-card-active-shadow);
-  transform: translateY(-3px);
+  /* Entrance owns transform; focus owns translate so neither retargets the
+     other's animation when a card becomes active during its entrance. */
+  translate: 0 -3px;
 }
 
-.history-entry.is-active .history-card::before,
-.history-card:hover::before {
+.history-stage[data-history-motion='pointer'] .history-entry.is-active .history-card::before {
   opacity: 0.55;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .history-stage[data-history-motion='pointer'] .history-card:hover {
+    background-color: var(--chronicle-card-active-bg);
+    border-color: var(--chronicle-border-strong);
+    border-top-color: var(--chronicle-vermilion);
+    box-shadow: var(--chronicle-card-active-shadow);
+    translate: 0 -3px;
+  }
+
+  .history-stage[data-history-motion='pointer'] .history-card:hover::before {
+    opacity: 0.55;
+  }
 }
 
 /* Page-enter & Scroll-reveal Choreography */
@@ -1600,7 +1832,7 @@ usePublicPageSeo({
   animation: history-tab-rise 440ms cubic-bezier(0.22, 1, 0.36, 1) var(--bm-delay, 320ms) backwards;
 }
 
-.history-entry.is-unrevealed .history-year-banner,
+.history-stage[data-history-motion='pointer'] .history-entry.is-unrevealed .history-year-banner,
 .history-entry.is-unrevealed .history-node,
 .history-entry.is-unrevealed .history-card,
 .history-entry.is-unrevealed .history-counter,
@@ -1608,7 +1840,7 @@ usePublicPageSeo({
   opacity: 0;
 }
 
-.history-stage.is-entered .history-entry.is-revealed .history-year-banner {
+.history-stage.is-entered[data-history-motion='pointer'] .history-entry.is-revealed .history-year-banner {
   animation: history-banner-enter 540ms cubic-bezier(0.22, 1, 0.36, 1) var(--entry-delay, 0ms) backwards;
 }
 
@@ -1616,15 +1848,15 @@ usePublicPageSeo({
   animation: history-node-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--entry-delay, 0ms) + 60ms) backwards;
 }
 
-.history-stage.is-entered .history-entry.is-revealed .history-card {
+.history-stage.is-entered[data-history-motion='pointer'] .history-entry.is-revealed .history-card {
   animation: history-card-enter-mobile 600ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--entry-delay, 0ms) + 80ms) backwards;
 }
 
 @media (min-width: 768px) {
-  .history-stage.is-entered .history-entry.is-even.is-revealed .history-card {
+  .history-stage.is-entered[data-history-motion='pointer'] .history-entry.is-even.is-revealed .history-card {
     animation: history-card-enter-even 620ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--entry-delay, 0ms) + 80ms) backwards;
   }
-  .history-stage.is-entered .history-entry.is-odd.is-revealed .history-card {
+  .history-stage.is-entered[data-history-motion='pointer'] .history-entry.is-odd.is-revealed .history-card {
     animation: history-card-enter-odd 620ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--entry-delay, 0ms) + 80ms) backwards;
   }
   .history-stage.is-entered .history-entry.is-revealed .history-connector {
@@ -1691,9 +1923,14 @@ usePublicPageSeo({
   transition: color 220ms ease;
 }
 
-.history-entry.is-active .history-card-title,
-.history-card:hover .history-card-title {
+.history-stage[data-history-motion='pointer'] .history-entry.is-active .history-card-title {
   color: var(--chronicle-vermilion);
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .history-stage[data-history-motion='pointer'] .history-card:hover .history-card-title {
+    color: var(--chronicle-vermilion);
+  }
 }
 
 .history-figure {
@@ -1716,8 +1953,10 @@ usePublicPageSeo({
   transition: transform 480ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.history-figure:hover :deep(.history-figure-img) {
-  transform: scale(1.025);
+@media (hover: hover) and (pointer: fine) {
+  .history-stage[data-history-motion='pointer'] .history-figure:hover :deep(.history-figure-img) {
+    transform: scale(1.025);
+  }
 }
 
 .history-figure-hint {
@@ -1738,9 +1977,11 @@ usePublicPageSeo({
     transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.history-figure:hover .history-figure-hint {
-  opacity: 1;
-  transform: translateY(0);
+@media (hover: hover) and (pointer: fine) {
+  .history-stage[data-history-motion='pointer'] .history-figure:hover .history-figure-hint {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .history-prose-box {
@@ -2049,6 +2290,9 @@ usePublicPageSeo({
     animation: none !important;
     transition: none !important;
     transform: none !important;
+  }
+  .history-stage .history-card {
+    translate: none !important;
   }
   .history-entry.is-unrevealed .history-year-banner,
   .history-entry.is-unrevealed .history-node,
