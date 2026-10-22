@@ -59,4 +59,3 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  expect(list.response.status,JSON.stringify(list.data)).toBe(200)
  expect(JSON.stringify(list.data)).toContain('real BFF integration')
 })
-

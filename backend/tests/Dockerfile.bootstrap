@@ -5,4 +5,3 @@ RUN npm ci --no-audit --no-fund
 COPY backend ./
 COPY docs /work/docs
 CMD ["npm", "test"]
-

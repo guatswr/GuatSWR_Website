@@ -10,7 +10,7 @@
 | BM-00b 运行契约基线 | DONE | 71 操作首批运行基线；外部成功/完整恢复仍归后续任务 |
 | BM-01 隔离启动 | DONE | Windows/Linux Node 24.16.0 各 17/17 通过；见 [证据](evidence/BM-01.md) |
 | BM-02 行为测试 | DONE | Windows/Linux 各173项；真实BFF脚手架1项通过；见 [证据](evidence/BM-02.md) |
-| BM-03 后端 CI | TODO | Linux/Windows 独立门禁，完成后验收 M0 |
+| BM-03 后端 CI | REVIEW | Linux/Windows/容器/真实BFF workflow已接入；等待远程结果；见 [证据](evidence/BM-03.md) |
 | BM-04～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
 已推送基线提交：`9fcbb6c`；BM-01 实现提交见当前分支 Git 历史。正在推进 BM-03 后端CI；完整 M0 门禁尚未关闭。

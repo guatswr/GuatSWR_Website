@@ -1,0 +1,71 @@
+name: Backend migration gates
+on:
+  push:
+    branches: ['codex/backend-modernization', 'revamp/**', main]
+    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.gitattributes', '.github/workflows/backend.yml', 'docs/backend-modernization/**']
+  pull_request:
+    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.gitattributes', '.github/workflows/backend.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: backend-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - run: npm --prefix backend ci
+      - run: npm --prefix backend run test:unit
+      - run: npm --prefix backend run test:integration -- --reporter=default --reporter=json --outputFile=test-results/integration.json
+      - run: npm --prefix backend run test:contracts -- --reporter=default --reporter=json --outputFile=test-results/contracts.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-tests-${{ runner.os }}
+          path: backend/test-results
+          retention-days: 14
+  container:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+      - run: node backend/scripts/prepare-test-context.cjs "$RUNNER_TEMP/backend-context"
+      - run: docker build -t guatswr-backend-test "$RUNNER_TEMP/backend-context"
+      - run: docker run --rm --network none guatswr-backend-test
+  real-bff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check:security
+      - run: pnpm --filter @guatswr/shared build
+      - run: pnpm --filter @guatswr/web build
+      - run: npm --prefix backend ci
+      - run: npm --prefix backend run test:bff -- --reporter=default --reporter=json --outputFile=test-results/bff.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-real-bff
+          path: backend/test-results
+          retention-days: 14
