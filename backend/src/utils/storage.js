@@ -2,6 +2,7 @@ module.exports = (context) => {
 const fs = require('fs');
 const path = require('path');
 const { PUBLIC_DIR, IMG_ROOT_DIR } = context;
+const { isSafePath } = require('./storageBoundary');
 
 const PUBLIC_DIR_RESOLVED = path.resolve(PUBLIC_DIR);
 
@@ -10,6 +11,7 @@ const ensureDir = async (dir) => {
 };
 
 const toUploadsUrl = (absPath) => {
+  if (!isSafePath(PUBLIC_DIR_RESOLVED, absPath)) throw new Error('Unsafe storage path');
   const rel = path.relative(PUBLIC_DIR, absPath).split(path.sep).join('/');
   return `/uploads/${rel}`;
 };
@@ -17,10 +19,12 @@ const toUploadsUrl = (absPath) => {
 const resolveUploadsPath = (url) => {
   if (!url || typeof url !== 'string') return null;
   if (!url.startsWith('/uploads/')) return null;
-  const rel = url.replace(/^\/uploads\//, '');
-  const abs = path.resolve(PUBLIC_DIR, rel);
-  if (!abs.startsWith(PUBLIC_DIR_RESOLVED)) return null;
-  return abs;
+  try {
+    const rel = decodeURIComponent(url.slice('/uploads/'.length));
+    if (!rel || rel.includes('\\') || /[\0?#]/.test(rel) || rel.split('/').some(part => part === '.' || part === '..')) return null;
+    const abs = path.resolve(PUBLIC_DIR, rel);
+    return isSafePath(PUBLIC_DIR_RESOLVED, abs) ? abs : null;
+  } catch { return null; }
 };
 
 const isStagingUrl = (url) => typeof url === 'string' && url.startsWith('/uploads/upload/');
@@ -54,7 +58,9 @@ const moveStagedFile = async (url, targetDir) => {
   if (!srcPath) return url;
   if (!fs.existsSync(srcPath)) return url;
 
+  if (!isSafePath(PUBLIC_DIR_RESOLVED, targetDir)) throw new Error('Unsafe storage path');
   await ensureDir(targetDir);
+  if (!isSafePath(PUBLIC_DIR_RESOLVED, targetDir)) throw new Error('Unsafe storage path');
   const filename = path.basename(srcPath);
   const isThumb = filename.endsWith('-thumb.webp');
   const base = isThumb ? filename.replace(/-thumb\.webp$/i, '') : path.parse(filename).name;
@@ -127,7 +133,7 @@ const getHistoryDir = (dateStr) => {
 
 const deletePathSafe = async (absPath) => {
   if (!absPath) return;
-  if (!absPath.startsWith(PUBLIC_DIR_RESOLVED)) return;
+  if (!isSafePath(PUBLIC_DIR_RESOLVED, absPath)) return;
   if (!fs.existsSync(absPath)) return;
   const stat = await fs.promises.lstat(absPath);
   if (stat.isDirectory()) {

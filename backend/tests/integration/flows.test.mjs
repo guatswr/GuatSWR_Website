@@ -83,8 +83,8 @@ describe('registered legacy defect reproductions', () => {
    expect((await f.http.get('/api/event')).body.items[0]).toHaveProperty('visitor_ip')
    expect((await f.http.get('/api/logs')).body.logs[0]).toHaveProperty('details','synthetic details')
  })
- it('EX-07 string prefix currently accepts a sibling of public',async()=>{
+ it('EX-07 regression rejects a sibling of public',async()=>{
    const f=await fixture()
-   expect(f.context.storage.resolveUploadsPath('/uploads/../public-sibling/file')).not.toBeNull()
+   expect(f.context.storage.resolveUploadsPath('/uploads/../public-sibling/file')).toBeNull()
  })
 })

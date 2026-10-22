@@ -54,7 +54,12 @@ app.use(cors({
 }));
 app.use(express.json({ limit: MAX_BODY_SIZE }));
 app.use(express.urlencoded({ extended: true, limit: MAX_BODY_SIZE }));
-app.use('/uploads', express.static(PUBLIC_DIR));
+app.use('/uploads', helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' }, contentSecurityPolicy: false }), (req, res, next) => {
+  if (!context.storage.resolveUploadsPath(`/uploads${req.path}`)) return res.status(404).json({ message: 'Not Found' });
+  next();
+}, express.static(PUBLIC_DIR, { setHeaders(res, filename) {
+  if (/\.svg$/i.test(filename)) res.setHeader('Content-Security-Policy', "sandbox; default-src 'none'; style-src 'unsafe-inline'");
+} }));
 
 const openapiPath = path.join(__dirname, '..', 'docs', 'openapi.yaml');
 if (fs.existsSync(openapiPath)) {

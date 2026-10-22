@@ -8,6 +8,7 @@ const { uploadLimiter } = context.limiter;
 const { authenticateToken } = context.auth;
 const { addLog, IMG_ROOT_DIR, ICON_SVG_DIR } = context;
 const { moveStagedFile } = context.storage;
+const { positiveId } = require('../utils/storageBoundary');
 
 const router = express.Router();
 
@@ -38,7 +39,10 @@ const validateUploadedFile = async (file) => {
   }
 };
 
-router.post('/', authenticateToken, uploadLimiter, upload.single('file'), async (req, res) => {
+router.post('/', authenticateToken, uploadLimiter, (req, res, next) => {
+  if (req.query.activityId !== undefined && !positiveId(req.query.activityId)) return res.status(400).json({ message: 'Invalid activity id' });
+  next();
+}, upload.single('file'), async (req, res) => {
   if (!req.file) return res.status(400).json({ message: '文件上传失败' });
   let thumbUrl = null;
   const activityId = req.query.activityId;
