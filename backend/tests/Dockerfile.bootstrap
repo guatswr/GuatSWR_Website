@@ -4,4 +4,5 @@ COPY backend/package*.json ./
 RUN npm ci --no-audit --no-fund
 COPY backend ./
 COPY docs /work/docs
-CMD ["npm", "run", "test:bootstrap"]
+CMD ["npm", "test"]
+
