@@ -1,7 +1,9 @@
+module.exports = (context) => {
+  const env = context.env;
 const jwt = require('jsonwebtoken');
-const { db } = require('../models/db');
+const { db } = context;
 
-const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = env.JWT_SECRET;
 if (!SECRET_KEY) {
   throw new Error('JWT_SECRET is required');
 }
@@ -61,4 +63,6 @@ const requireAdmin = (req, res, next) => {
   }
 };
 
-module.exports = { authenticateToken, requireSuperAdmin, requireAdmin, optionalAuth };
+return { authenticateToken, requireSuperAdmin, requireAdmin, optionalAuth };
+
+};

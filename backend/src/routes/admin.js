@@ -1,16 +1,17 @@
+module.exports = (context) => {
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
 const net = require('net');
 const bcrypt = require('bcryptjs');
-const { db, logDb, addLog, IMG_ROOT_DIR } = require('../models/db');
-const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
+const { db, logDb, addLog, IMG_ROOT_DIR } = context;
+const { authenticateToken, requireSuperAdmin } = context.auth;
 const { validate, normalizeImages } = require('../utils');
-const { deleteByUrl, deletePathSafe } = require('../utils/storage');
-const { listBackups, resolveBackupPath, ensureBackupDirs } = require('../utils/backup');
-const { runAutoBackup } = require('../utils/backupScheduler');
+const { deleteByUrl, deletePathSafe } = context.storage;
+const { listBackups, resolveBackupPath, ensureBackupDirs } = context.backup;
+const { runAutoBackup } = context.scheduler;
 const { resetPasswordSchema } = require('../controllers/schemas');
-const { banIp, unbanIp, cleanupExpired } = require('../middlewares/ban');
+const { banIp, unbanIp, cleanupExpired } = context.ban;
 
 const router = express.Router();
 
@@ -414,4 +415,5 @@ router.delete('/events/:id', authenticateToken, requireSuperAdmin, (req, res) =>
   });
 });
 
-module.exports = router;
+return router;
+};

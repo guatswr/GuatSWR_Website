@@ -1,6 +1,7 @@
+module.exports = (context) => {
 const multer = require('multer');
 const path = require('path');
-const { UPLOADS_DIR } = require('../models/db');
+const { UPLOADS_DIR } = context;
 
 const ALLOWED_MIME_TYPES = new Set([
   'image/jpeg',
@@ -31,4 +32,6 @@ const upload = multer({
   }
 });
 
-module.exports = { upload };
+return { upload };
+
+};

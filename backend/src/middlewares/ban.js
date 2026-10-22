@@ -1,4 +1,5 @@
-const { db, addLog } = require('../models/db');
+module.exports = (context) => {
+const { db, addLog } = context;
 
 const cleanupExpired = (cb) => {
   const now = Date.now();
@@ -39,4 +40,6 @@ const unbanIp = (ip, operator = 'ATRI', cb) => {
   });
 };
 
-module.exports = { banGuard, banIp, unbanIp, cleanupExpired };
+return { banGuard, banIp, unbanIp, cleanupExpired };
+
+};

@@ -1,17 +1,19 @@
+module.exports = (context) => {
+  const env = context.env;
 const express = require('express');
 const http = require('http');
 const https = require('https');
 const { URL } = require('url');
-const { db, logDb } = require('../models/db');
+const { db, logDb } = context;
 
 const router = express.Router();
 
-const UMAMI_BASE_URL = (process.env.UMAMI_BASE_URL || 'http://localhost:3036').replace(/\/+$/, '');
-const UMAMI_USERNAME = process.env.UMAMI_USERNAME || '';
-const UMAMI_PASSWORD = process.env.UMAMI_PASSWORD || '';
-const UMAMI_WEBSITE_ID = process.env.UMAMI_WEBSITE_ID || '';
-const UMAMI_CACHE_TTL_MS = Number(process.env.UMAMI_CACHE_TTL_MS || 60 * 1000);
-const UMAMI_TIMEOUT_MS = Number(process.env.UMAMI_TIMEOUT_MS || 8000);
+const UMAMI_BASE_URL = (env.UMAMI_BASE_URL || 'http://localhost:3036').replace(/\/+$/, '');
+const UMAMI_USERNAME = env.UMAMI_USERNAME || '';
+const UMAMI_PASSWORD = env.UMAMI_PASSWORD || '';
+const UMAMI_WEBSITE_ID = env.UMAMI_WEBSITE_ID || '';
+const UMAMI_CACHE_TTL_MS = Number(env.UMAMI_CACHE_TTL_MS || 60 * 1000);
+const UMAMI_TIMEOUT_MS = Number(env.UMAMI_TIMEOUT_MS || 8000);
 
 const umamiCache = new Map();
 const umamiTokenCache = { token: '', exp: 0 };
@@ -242,4 +244,6 @@ router.get('/umami', async (req, res) => {
   }
 });
 
-module.exports = router;
+return router;
+
+};

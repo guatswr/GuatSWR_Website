@@ -1,8 +1,9 @@
+module.exports = (context) => {
 const express = require('express');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken } = context.auth;
 const { validate } = require('../utils');
 const { z } = require('zod');
-const { notifyActivityPublished, notifyHistoryUpdated, notifyMemberAdded } = require('../utils/bot');
+const { notifyActivityPublished, notifyHistoryUpdated, notifyMemberAdded } = context.bot;
 
 const router = express.Router();
 
@@ -67,4 +68,6 @@ router.post('/notify/member', authenticateToken, async (req, res) => {
   }
 });
 
-module.exports = router;
+return router;
+
+};

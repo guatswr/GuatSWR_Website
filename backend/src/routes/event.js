@@ -1,8 +1,9 @@
+module.exports = (context) => {
 const express = require('express');
-const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
-const { authenticateToken, optionalAuth, requireAdmin } = require('../middlewares/auth');
+const { db, addLog, IMG_ROOT_DIR } = context;
+const { authenticateToken, optionalAuth, requireAdmin } = context.auth;
 const { callBotHook } = require('../utils/botHooks');
-const { moveStagedFile } = require('../utils/storage');
+const { moveStagedFile } = context.storage;
 const { createEventContentPersister } = require('../utils/eventContentStorage');
 
 const router = express.Router();
@@ -50,47 +51,6 @@ const toParticipantPublic = (row) => ({
   machine_sign: row.machine_sign,
   created_at: row.created_at
 });
-
-// 初始化 events 表
-db.run(`
-  CREATE TABLE IF NOT EXISTS events (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    type TEXT NOT NULL DEFAULT 'general',
-    title TEXT,
-    content TEXT DEFAULT '{}',
-    status TEXT DEFAULT 'draft',
-    created_by INTEGER,
-    visitor_ip TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP
-  )
-`, (err) => {
-  if (err) console.error('Failed to create events table:', err);
-});
-
-db.run(`
-  CREATE TABLE IF NOT EXISTS event_participants (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    event_id INTEGER NOT NULL,
-    user_id INTEGER,
-    visitor_ip TEXT,
-    common_id TEXT,
-    machine_sign TEXT,
-    pilot_source TEXT,
-    qq TEXT,
-    avatar TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    UNIQUE(event_id, user_id),
-    UNIQUE(event_id, visitor_ip),
-    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
-  )
-`, (err) => {
-  if (err) console.error('Failed to create event_participants table:', err);
-});
-db.run('CREATE INDEX IF NOT EXISTS idx_event_participants_event ON event_participants(event_id)');
-db.run('CREATE INDEX IF NOT EXISTS idx_event_participants_user ON event_participants(user_id)');
-db.run('CREATE INDEX IF NOT EXISTS idx_event_participants_ip ON event_participants(visitor_ip)');
 
 // ==========================================
 //  访客/公共接口
@@ -550,4 +510,6 @@ router.get('/:id/participants', authenticateToken, requireAdmin, async (req, res
   }
 });
 
-module.exports = router;
+return router;
+
+};

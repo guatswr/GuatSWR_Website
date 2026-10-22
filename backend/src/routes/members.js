@@ -1,12 +1,13 @@
+module.exports = (context) => {
 const express = require('express');
 const path = require('path');
 const fs = require('fs');
-const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
-const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middlewares/auth');
+const { db, addLog, IMG_ROOT_DIR } = context;
+const { authenticateToken, optionalAuth, requireSuperAdmin } = context.auth;
 const { validate } = require('../utils');
 const { memberSchema } = require('../controllers/schemas');
-const { moveStagedFile, resolveUploadsPath, toUploadsUrl } = require('../utils/storage');
-const { notifyMemberAdded } = require('../utils/bot');
+const { moveStagedFile, resolveUploadsPath, toUploadsUrl } = context.storage;
+const { notifyMemberAdded } = context.bot;
 
 const router = express.Router();
 
@@ -178,4 +179,5 @@ router.post('/:id/restore', authenticateToken, requireSuperAdmin, (req, res) => 
   });
 });
 
-module.exports = router;
+return router;
+};

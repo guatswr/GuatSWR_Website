@@ -1,11 +1,20 @@
+module.exports = (context) => {
+  const env = context.env;
 const rateLimit = require('express-rate-limit');
-const { banIp } = require('./ban');
+const { banIp } = context.ban;
 
-const DEFAULT_BAN_MINUTES = Number(process.env.BAN_MINUTES || 5);
+const createStore = () => {
+  const store = new rateLimit.MemoryStore();
+  context.disposers.push(() => store.shutdown());
+  return store;
+};
+
+const DEFAULT_BAN_MINUTES = Number(env.BAN_MINUTES || 5);
 
 const globalLimiter = rateLimit({
+  store: createStore(),
   windowMs: 60 * 1000,
-  max: Number(process.env.GLOBAL_RATE_LIMIT || 600),
+  max: Number(env.GLOBAL_RATE_LIMIT || 600),
   standardHeaders: true,
   legacyHeaders: false,
   skip: (req) => req.path.startsWith('/api/bot'),
@@ -17,6 +26,7 @@ const globalLimiter = rateLimit({
 });
 
 const authLimiter = rateLimit({
+  store: createStore(),
   windowMs: 15 * 60 * 1000,
   max: 120,
   standardHeaders: true,
@@ -25,6 +35,7 @@ const authLimiter = rateLimit({
 });
 
 const loginLimiter = rateLimit({
+  store: createStore(),
   windowMs: 60 * 1000,
   max: 10,
   standardHeaders: true,
@@ -33,6 +44,7 @@ const loginLimiter = rateLimit({
 });
 
 const uploadLimiter = rateLimit({
+  store: createStore(),
   windowMs: 60 * 1000,
   max: 30,
   standardHeaders: true,
@@ -40,4 +52,6 @@ const uploadLimiter = rateLimit({
   message: { message: '上传过于频繁，请稍后再试' }
 });
 
-module.exports = { globalLimiter, authLimiter, loginLimiter, uploadLimiter };
+return { globalLimiter, authLimiter, loginLimiter, uploadLimiter };
+
+};

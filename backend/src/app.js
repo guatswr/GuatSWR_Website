@@ -1,4 +1,5 @@
-require('dotenv').config();
+const buildApp = (context) => {
+const env = context.env;
 const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
@@ -7,44 +8,38 @@ const fs = require('fs');
 const yaml = require('js-yaml');
 const swaggerUi = require('swagger-ui-express');
 
-const { initDb, PUBLIC_DIR, db } = require('./models/db');
-const { cleanupStaging } = require('./utils/storage');
-const { startBackupScheduler } = require('./utils/backupScheduler');
-const { authLimiter, globalLimiter } = require('./middlewares/limiter');
-const { banGuard } = require('./middlewares/ban');
+const { PUBLIC_DIR, db } = context;
+const { cleanupStaging } = context.storage;
+const { authLimiter, globalLimiter } = context.limiter;
+const { banGuard } = context.ban;
 
-const authRoutes = require('./routes/auth');
-const adminRoutes = require('./routes/admin');
-const activitiesRoutes = require('./routes/activities');
-const membersRoutes = require('./routes/members');
-const historyRoutes = require('./routes/history');
-const configRoutes = require('./routes/config');
-const uploadRoutes = require('./routes/upload');
-const uploadVisitorRoutes = require('./routes/upload_visitor');
-const logsRoutes = require('./routes/logs');
-const botRoutes = require('./routes/bot');
+const authRoutes = require('./routes/auth')(context);
+const adminRoutes = require('./routes/admin')(context);
+const activitiesRoutes = require('./routes/activities')(context);
+const membersRoutes = require('./routes/members')(context);
+const historyRoutes = require('./routes/history')(context);
+const configRoutes = require('./routes/config')(context);
+const uploadRoutes = require('./routes/upload')(context);
+const uploadVisitorRoutes = require('./routes/upload_visitor')(context);
+const logsRoutes = require('./routes/logs')(context);
+const botRoutes = require('./routes/bot')(context);
 // 引入新创建的 event 路由
-const eventRoutes = require('./routes/event');
+const eventRoutes = require('./routes/event')(context);
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
-const NODE_ENV = process.env.NODE_ENV || 'development';
+const PORT = env.PORT || 3000;
+const NODE_ENV = env.NODE_ENV || 'development';
 const isProd = NODE_ENV === 'production';
-const MAX_BODY_SIZE = process.env.MAX_BODY_SIZE || '50mb';
-const CORS_ORIGINS = (process.env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
+const MAX_BODY_SIZE = env.MAX_BODY_SIZE || '50mb';
+const CORS_ORIGINS = (env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
-const SITE_URL = (process.env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
+const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', true);
 app.disable('x-powered-by');
-
-if (!process.env.JWT_SECRET) {
-  console.error('[安全错误] 未设置 JWT_SECRET，应用已退出');
-  process.exit(1);
-}
 
 app.use(banGuard);
 app.use(globalLimiter);
@@ -73,19 +68,14 @@ if (fs.existsSync(openapiPath)) {
 
 app.use(helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' } }));
 
-initDb();
-startBackupScheduler();
-
 // 定期清理暂存区 (默认保留 48 小时)
-const STAGING_TTL_MS = Number(process.env.STAGING_TTL_MS || 48 * 60 * 60 * 1000);
-setInterval(() => {
-  cleanupStaging(STAGING_TTL_MS).catch(() => {});
-}, 60 * 60 * 1000);
+const STAGING_TTL_MS = Number(env.STAGING_TTL_MS || 48 * 60 * 60 * 1000);
+context.startStagingCleanup = () => context.every(() => cleanupStaging(STAGING_TTL_MS), 60 * 60 * 1000);
 
 app.get('/api/version', (req, res) => res.json({ version: '4.0', status: 'online' }));
 
 app.get('/sitemap.xml', (req, res) => {
-  const resolvedSiteUrl = (process.env.SITE_URL || `${req.protocol}://${req.get('host')}`)
+  const resolvedSiteUrl = (env.SITE_URL || `${req.protocol}://${req.get('host')}`)
     .replace(/\/+$/, '');
   const staticUrls = [
     { loc: '/', changefreq: 'daily', priority: 1.0 },
@@ -184,4 +174,7 @@ app.use((err, req, res, next) => {
   res.status(500).json({ message: '服务器错误' });
 });
 
-module.exports = { app, PORT };
+return { app, PORT };
+};
+
+module.exports = { createApplication: require('./lifecycle').createApplication, buildApp };

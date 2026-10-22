@@ -1,9 +1,10 @@
+module.exports = (context) => {
 const express = require('express');
-const { db, addLog } = require('../models/db');
-const { authenticateToken, requireAdmin, optionalAuth } = require('../middlewares/auth');
+const { db, addLog } = context;
+const { authenticateToken, requireAdmin, optionalAuth } = context.auth;
 const { validate } = require('../utils');
 const { configSchema } = require('../controllers/schemas');
-const { moveStagedFile, getConfigDir, isStagingUrl } = require('../utils/storage');
+const { moveStagedFile, getConfigDir, isStagingUrl } = context.storage;
 
 const router = express.Router();
 
@@ -56,4 +57,6 @@ router.post('/', authenticateToken, requireAdmin, (req, res) => {
   })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));
 });
 
-module.exports = router;
+return router;
+
+};

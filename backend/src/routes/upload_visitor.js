@@ -1,10 +1,11 @@
+module.exports = (context) => {
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { upload } = require('../middlewares/upload');
+const { upload } = context.upload;
 const sharp = require('sharp');
-const { uploadLimiter } = require('../middlewares/limiter');
-const { db, IMG_ROOT_DIR } = require('../models/db'); // 引入 IMG_ROOT_DIR
+const { uploadLimiter } = context.limiter;
+const { db, IMG_ROOT_DIR } = context; // 引入 IMG_ROOT_DIR
 
 const router = express.Router();
 
@@ -205,4 +206,5 @@ router.post('/avatar', uploadLimiter, upload.single('file'), async (req, res) =>
   }
 });
 
-module.exports = router;
+return router;
+};

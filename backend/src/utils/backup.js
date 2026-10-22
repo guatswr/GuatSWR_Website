@@ -1,3 +1,4 @@
+module.exports = (context) => {
 const path = require('path');
 const fs = require('fs');
 
@@ -24,7 +25,7 @@ const findProjectRoot = () => {
 };
 
 const ROOT_DIR = findProjectRoot();
-const BACKUP_ROOT = path.join(ROOT_DIR, 'backups');
+const BACKUP_ROOT = context.BACKUP_ROOT;
 const DB_BACKUP_DIR = path.join(BACKUP_ROOT, 'db');
 const UPLOADS_BACKUP_DIR = path.join(BACKUP_ROOT, 'uploads');
 const FULL_BACKUP_DIR = path.join(BACKUP_ROOT, 'full');
@@ -85,7 +86,7 @@ const resolveBackupPath = (type, filename) => {
   return { filePath, fileName: safeName, type: targetType };
 };
 
-module.exports = {
+return {
   ROOT_DIR,
   BACKUP_ROOT,
   DB_BACKUP_DIR,
@@ -97,4 +98,6 @@ module.exports = {
   ensureBackupDirs,
   listBackups,
   resolveBackupPath
+};
+
 };

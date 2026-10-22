@@ -1,4 +1,6 @@
-const DEFAULT_TIMEOUT_MS = Number(process.env.ASTRBOT_TIMEOUT_MS || 5000);
+module.exports = (context) => {
+  const env = context.env;
+const DEFAULT_TIMEOUT_MS = Number(env.ASTRBOT_TIMEOUT_MS || 5000);
 
 const getFetch = () => {
   if (typeof fetch !== 'function') {
@@ -8,8 +10,8 @@ const getFetch = () => {
 };
 
 const getWebhookConfig = () => {
-  const url = process.env.ASTRBOT_WEBHOOK_URL || '';
-  const token = process.env.ASTRBOT_TOKEN || '';
+  const url = env.ASTRBOT_WEBHOOK_URL || '';
+  const token = env.ASTRBOT_TOKEN || '';
   return { url, token };
 };
 
@@ -20,6 +22,7 @@ const buildHeaders = (token) => {
 };
 
 const postWebhook = async (payload) => {
+  if (!context.externalServices) return { skipped: true, reason: 'External services disabled' };
   const { url, token } = getWebhookConfig();
   if (!url) return { skipped: true, reason: 'ASTRBOT_WEBHOOK_URL 未配置' };
 
@@ -84,8 +87,10 @@ const notifyMemberAdded = async (member, actor) => postWebhook(
   }, actor)
 );
 
-module.exports = {
+return {
   notifyActivityPublished,
   notifyHistoryUpdated,
   notifyMemberAdded
+};
+
 };

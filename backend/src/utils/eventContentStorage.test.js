@@ -17,7 +17,7 @@ const loadStorage = (publicDir) => {
     : nativeRequire(name);
   const source = fs.readFileSync(filename, 'utf8');
   vm.runInThisContext(`(function(require, module, exports) { ${source}\n})`, { filename })(load, module, module.exports);
-  return module.exports;
+  return module.exports({ PUBLIC_DIR: publicDir, IMG_ROOT_DIR: path.join(publicDir, 'img') });
 };
 
 test('admin content images and thumbnails persist outside staging and survive its cleanup', async (t) => {
@@ -105,6 +105,7 @@ const loadEventRoute = (moveStagedFile) => {
   vm.runInThisContext(`(function(require, module, exports) { ${source}\n})`, { filename })(
     (name) => mocks[name] || nativeRequire(name), module, module.exports
   );
+  module.exports({ ...mocks['../models/db'], auth: {}, storage: mocks['../utils/storage'] });
   writes.length = 0;
   return {
     writes, notifications,

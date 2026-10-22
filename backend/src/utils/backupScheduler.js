@@ -1,6 +1,8 @@
+module.exports = (context) => {
+  const env = context.env;
 const { execFile } = require('child_process');
-const { db, addLog } = require('../models/db');
-const { FULL_BACKUP_SCRIPT } = require('./backup');
+const { db, addLog } = context;
+const { FULL_BACKUP_SCRIPT } = context.backup;
 
 const CHECK_INTERVAL_MS = 30 * 1000;
 let timer = null;
@@ -26,7 +28,7 @@ const setSetting = async (key, value) => {
 };
 
 const runScript = (scriptPath) => new Promise((resolve, reject) => {
-  execFile('/bin/bash', [scriptPath], { env: process.env }, (err, stdout, stderr) => {
+  execFile('/bin/bash', [scriptPath], { env: env }, (err, stdout, stderr) => {
     if (err) return reject(new Error(stderr || err.message));
     resolve(stdout);
   });
@@ -40,6 +42,7 @@ const getLocalDate = (date = new Date()) => {
 };
 
 const runAutoBackup = async (trigger = 'schedule') => {
+  if (!context.externalServices) throw new Error('External services disabled');
   await runScript(FULL_BACKUP_SCRIPT);
   const today = getLocalDate();
   await setSetting('backup_last_run', today);
@@ -75,8 +78,10 @@ const checkAndRun = async () => {
 
 const startBackupScheduler = () => {
   if (timer) return;
-  timer = setInterval(checkAndRun, CHECK_INTERVAL_MS);
-  checkAndRun();
+  timer = context.every(checkAndRun, CHECK_INTERVAL_MS);
+  context.track(checkAndRun());
 };
 
-module.exports = { startBackupScheduler, runAutoBackup };
+return { startBackupScheduler, runAutoBackup };
+
+};

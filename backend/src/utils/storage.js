@@ -1,6 +1,7 @@
+module.exports = (context) => {
 const fs = require('fs');
 const path = require('path');
-const { PUBLIC_DIR, IMG_ROOT_DIR } = require('../models/db');
+const { PUBLIC_DIR, IMG_ROOT_DIR } = context;
 
 const PUBLIC_DIR_RESOLVED = path.resolve(PUBLIC_DIR);
 
@@ -188,7 +189,7 @@ const getConfigDir = (key) => {
   return map[key] || path.join(IMG_ROOT_DIR, 'assets', 'misc');
 };
 
-module.exports = {
+return {
   moveStagedFile,
   moveStagedFiles,
   moveStagedUrlsInText,
@@ -200,4 +201,6 @@ module.exports = {
   deletePathSafe,
   resolveUploadsPath,
   toUploadsUrl
+};
+
 };

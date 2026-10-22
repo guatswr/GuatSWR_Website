@@ -1,10 +1,11 @@
+module.exports = (context) => {
 const express = require('express');
-const { db, addLog } = require('../models/db');
-const { authenticateToken, optionalAuth, requireSuperAdmin } = require('../middlewares/auth');
+const { db, addLog } = context;
+const { authenticateToken, optionalAuth, requireSuperAdmin } = context.auth;
 const { validate } = require('../utils');
 const { historySchema } = require('../controllers/schemas');
-const { moveStagedFile, getHistoryDir } = require('../utils/storage');
-const { notifyHistoryUpdated } = require('../utils/bot');
+const { moveStagedFile, getHistoryDir } = context.storage;
+const { notifyHistoryUpdated } = context.bot;
 
 const router = express.Router();
 
@@ -86,4 +87,6 @@ router.post('/:id/restore', authenticateToken, requireSuperAdmin, (req, res) => 
   });
 });
 
-module.exports = router;
+return router;
+
+};

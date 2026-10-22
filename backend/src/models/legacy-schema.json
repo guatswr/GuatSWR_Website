@@ -1,0 +1,106 @@
+{
+  "main": [
+    "CREATE TABLE IF NOT EXISTS users (\n      id INTEGER PRIMARY KEY AUTOINCREMENT, \n      username TEXT UNIQUE, \n      password TEXT,\n      role TEXT DEFAULT 'admin',\n      avatar TEXT,\n      twofa_secret TEXT,\n      twofa_enabled INTEGER DEFAULT 0\n    )",
+    "CREATE TABLE IF NOT EXISTS activities (\n      id INTEGER PRIMARY KEY AUTOINCREMENT, \n      title TEXT, \n      tag TEXT,\n      date TEXT, \n      description TEXT, \n      content TEXT, \n      cover_image TEXT, \n      images TEXT, \n      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n      created_by INTEGER,\n      updated_by INTEGER,\n      status TEXT DEFAULT 'published',\n      deleted_at DATETIME,\n      deleted_by INTEGER\n    )",
+    "CREATE TABLE IF NOT EXISTS members (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, role TEXT, avatar TEXT, school TEXT, tags TEXT, sort_order INTEGER DEFAULT 0, deleted_at DATETIME, deleted_by INTEGER)",
+    "CREATE TABLE IF NOT EXISTS site_config (key TEXT PRIMARY KEY, value TEXT)",
+    "CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, title TEXT, description TEXT, image TEXT, sort_order INTEGER DEFAULT 0, deleted_at DATETIME, deleted_by INTEGER)",
+    "CREATE TABLE IF NOT EXISTS login_attempts (\n      ip TEXT PRIMARY KEY,\n      count INTEGER NOT NULL DEFAULT 0,\n      lock_until INTEGER NOT NULL DEFAULT 0,\n      updated_at INTEGER NOT NULL DEFAULT 0\n    )",
+    "CREATE TABLE IF NOT EXISTS banned_ips (\n      ip TEXT PRIMARY KEY,\n      reason TEXT,\n      created_at INTEGER,\n      expires_at INTEGER,\n      created_by TEXT\n    )",
+    "CREATE TABLE IF NOT EXISTS events (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    type TEXT NOT NULL DEFAULT 'general',\n    title TEXT,\n    content TEXT DEFAULT '{}',\n    status TEXT DEFAULT 'draft',\n    created_by INTEGER,\n    visitor_ip TEXT,\n    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP\n  )\n",
+    "CREATE TABLE IF NOT EXISTS event_participants (\n    id INTEGER PRIMARY KEY AUTOINCREMENT,\n    event_id INTEGER NOT NULL,\n    user_id INTEGER,\n    visitor_ip TEXT,\n    common_id TEXT,\n    machine_sign TEXT,\n    pilot_source TEXT,\n    qq TEXT,\n    avatar TEXT,\n    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,\n    UNIQUE(event_id, user_id),\n    UNIQUE(event_id, visitor_ip),\n    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE\n  )\n"
+  ],
+  "columns": [
+    [
+      "users",
+      "role TEXT DEFAULT 'admin'"
+    ],
+    [
+      "users",
+      "avatar TEXT"
+    ],
+    [
+      "users",
+      "twofa_secret TEXT"
+    ],
+    [
+      "users",
+      "twofa_enabled INTEGER DEFAULT 0"
+    ],
+    [
+      "activities",
+      "tag TEXT"
+    ],
+    [
+      "activities",
+      "images TEXT"
+    ],
+    [
+      "activities",
+      "created_by INTEGER"
+    ],
+    [
+      "activities",
+      "updated_by INTEGER"
+    ],
+    [
+      "activities",
+      "status TEXT DEFAULT 'published'"
+    ],
+    [
+      "activities",
+      "deleted_at DATETIME"
+    ],
+    [
+      "activities",
+      "deleted_by INTEGER"
+    ],
+    [
+      "members",
+      "school TEXT"
+    ],
+    [
+      "members",
+      "tags TEXT"
+    ],
+    [
+      "members",
+      "sort_order INTEGER DEFAULT 0"
+    ],
+    [
+      "members",
+      "deleted_at DATETIME"
+    ],
+    [
+      "members",
+      "deleted_by INTEGER"
+    ],
+    [
+      "history",
+      "deleted_at DATETIME"
+    ],
+    [
+      "history",
+      "deleted_by INTEGER"
+    ]
+  ],
+  "indexes": [
+    "CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)",
+    "CREATE INDEX IF NOT EXISTS idx_activities_date ON activities(date)",
+    "CREATE INDEX IF NOT EXISTS idx_activities_created_at ON activities(created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_activities_deleted_at ON activities(deleted_at)",
+    "CREATE INDEX IF NOT EXISTS idx_history_date ON history(date)",
+    "CREATE INDEX IF NOT EXISTS idx_history_sort ON history(sort_order)",
+    "CREATE INDEX IF NOT EXISTS idx_history_deleted_at ON history(deleted_at)",
+    "CREATE INDEX IF NOT EXISTS idx_members_name ON members(name)",
+    "CREATE INDEX IF NOT EXISTS idx_members_deleted_at ON members(deleted_at)",
+    "CREATE INDEX IF NOT EXISTS idx_event_participants_event ON event_participants(event_id)",
+    "CREATE INDEX IF NOT EXISTS idx_event_participants_user ON event_participants(user_id)",
+    "CREATE INDEX IF NOT EXISTS idx_event_participants_ip ON event_participants(visitor_ip)"
+  ],
+  "audit": [
+    "CREATE TABLE IF NOT EXISTS audit_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, action TEXT, details TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)",
+    "CREATE INDEX IF NOT EXISTS idx_logs_created_at ON audit_logs(created_at)",
+    "CREATE INDEX IF NOT EXISTS idx_logs_username ON audit_logs(username)"
+  ]
+}

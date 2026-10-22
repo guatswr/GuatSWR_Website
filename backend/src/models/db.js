@@ -1,184 +1,86 @@
-const sqlite3 = require('sqlite3').verbose();
-const path = require('path');
-const fs = require('fs');
-const bcrypt = require('bcryptjs');
+const path = require('node:path');
+const fs = require('node:fs/promises');
 
-const DATA_DIR = path.join(__dirname, '..', '..', 'data');
-const PUBLIC_DIR = path.join(DATA_DIR, 'public');
-const UPLOADS_DIR = path.join(PUBLIC_DIR, 'upload');
-const IMG_ROOT_DIR = path.join(PUBLIC_DIR, 'img');
-const HISTORY_ROOT_DIR = path.join(IMG_ROOT_DIR, 'History');
-const ICON_SVG_DIR = path.join(PUBLIC_DIR, 'icon_svg');
-if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-if (!fs.existsSync(PUBLIC_DIR)) fs.mkdirSync(PUBLIC_DIR, { recursive: true });
-if (!fs.existsSync(UPLOADS_DIR)) fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-if (!fs.existsSync(IMG_ROOT_DIR)) fs.mkdirSync(IMG_ROOT_DIR, { recursive: true });
-if (!fs.existsSync(HISTORY_ROOT_DIR)) fs.mkdirSync(HISTORY_ROOT_DIR, { recursive: true });
-if (!fs.existsSync(ICON_SVG_DIR)) fs.mkdirSync(ICON_SVG_DIR, { recursive: true });
-
-const resolveDbPath = (envValue, fallbackFile) => {
-  if (!envValue) return path.join(DATA_DIR, fallbackFile);
-  return path.isAbsolute(envValue) ? envValue : path.join(DATA_DIR, envValue);
+const resolvePaths = (env, paths = {}) => {
+  const DATA_DIR = path.resolve(paths.data || path.join(__dirname, '..', '..', 'data'));
+  const PUBLIC_DIR = path.resolve(paths.public || path.join(DATA_DIR, 'public'));
+  const resolveDb = (value, fallback) => path.resolve(DATA_DIR, value || fallback);
+  return {
+    DATA_DIR, PUBLIC_DIR,
+    BACKUP_ROOT: path.resolve(paths.backups || path.join(__dirname, '..', '..', 'backups')),
+    UPLOADS_DIR: path.join(PUBLIC_DIR, 'upload'),
+    IMG_ROOT_DIR: path.join(PUBLIC_DIR, 'img'),
+    HISTORY_ROOT_DIR: path.join(PUBLIC_DIR, 'img', 'History'),
+    ICON_SVG_DIR: path.join(PUBLIC_DIR, 'icon_svg'),
+    dbPath: resolveDb(env.DB_PATH, 'guatswr_web_main.db'),
+    logDbPath: resolveDb(env.LOG_DB_PATH, 'guatswr_web_logs.db')
+  };
 };
-const dbPath = resolveDbPath(process.env.DB_PATH, 'guatswr_web_main.db');
-const logDbPath = resolveDbPath(process.env.LOG_DB_PATH, 'guatswr_web_logs.db');
-
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) console.error('业务数据库错误:', err.message);
-  else console.log('已连接业务库');
+const run = (db, sql, params = []) => new Promise((resolve, reject) => {
+  db.run(sql, params, function (error) { error ? reject(error) : resolve(this); });
 });
-const logDb = new sqlite3.Database(logDbPath, (err) => {
-  if (err) console.error('日志数据库错误:', err.message);
-  else console.log('已连接日志库');
+const get = (db, sql, params = []) => new Promise((resolve, reject) => {
+  db.get(sql, params, (error, row) => error ? reject(error) : resolve(row));
 });
+const close = (db) => new Promise((resolve, reject) => db.close((error) => error ? reject(error) : resolve()));
 
-const applyPragmas = (database) => {
-  database.serialize(() => {
-    database.run('PRAGMA journal_mode = WAL');
-    database.run('PRAGMA synchronous = NORMAL');
-    database.run('PRAGMA foreign_keys = ON');
-    database.run('PRAGMA busy_timeout = 5000');
+const createDatabase = async ({ env, paths }) => {
+  const resolved = resolvePaths(env, paths);
+  if (resolved.dbPath === resolved.logDbPath) throw new Error('Main and audit databases must be different files');
+  const sqlite3 = require('sqlite3').verbose();
+  const bcrypt = require('bcryptjs');
+  const schema = require('./legacy-schema.json');
+  const connections = [];
+  const open = (filename) => new Promise((resolve, reject) => {
+    const connection = new sqlite3.Database(filename, (error) => {
+      if (error) return reject(error);
+      connections.push(connection);
+      resolve(connection);
+    });
   });
-};
-
-applyPragmas(db);
-applyPragmas(logDb);
-
-// --- 日志记录 ---
-const addLog = (username, action, details) => {
-  const stmt = logDb.prepare("INSERT INTO audit_logs (username, action, details) VALUES (?, ?, ?)");
-  stmt.run(username || 'System', action, details);
-  stmt.finalize();
-};
-
-// --- 数据库初始化与迁移 ---
-const initDb = () => {
-  db.serialize(() => {
-    const addColumnSafe = (table, columnDef) => {
-      db.run(`ALTER TABLE ${table} ADD COLUMN ${columnDef}`, (err) => {
-        if (!err) return;
-        if (/duplicate column name/i.test(err.message)) return;
-        console.warn(`[DB] 添加列失败: ${table}.${columnDef} -> ${err.message}`);
-      });
-    };
-
-    const createIndexSafe = (sql) => {
-      db.run(sql, (err) => {
-        if (!err) return;
-        if (/no such column/i.test(err.message)) return;
-        console.warn(`[DB] 创建索引失败: ${sql} -> ${err.message}`);
-      });
-    };
-    db.run(`CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT, 
-      username TEXT UNIQUE, 
-      password TEXT,
-      role TEXT DEFAULT 'admin',
-      avatar TEXT,
-      twofa_secret TEXT,
-      twofa_enabled INTEGER DEFAULT 0
-    )`, (err) => {
-      if (!err) {
-        addColumnSafe('users', "role TEXT DEFAULT 'admin'");
-        addColumnSafe('users', 'avatar TEXT');
-        addColumnSafe('users', 'twofa_secret TEXT');
-        addColumnSafe('users', 'twofa_enabled INTEGER DEFAULT 0');
-      }
-    });
-
-    db.run(`CREATE TABLE IF NOT EXISTS activities (
-      id INTEGER PRIMARY KEY AUTOINCREMENT, 
-      title TEXT, 
-      tag TEXT,
-      date TEXT, 
-      description TEXT, 
-      content TEXT, 
-      cover_image TEXT, 
-      images TEXT, 
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      created_by INTEGER,
-      updated_by INTEGER,
-      status TEXT DEFAULT 'published',
-      deleted_at DATETIME,
-      deleted_by INTEGER
-    )`, (err) => {
-      if (!err) {
-        addColumnSafe('activities', 'tag TEXT');
-        addColumnSafe('activities', 'images TEXT');
-        addColumnSafe('activities', 'created_by INTEGER');
-        addColumnSafe('activities', 'updated_by INTEGER');
-        addColumnSafe('activities', "status TEXT DEFAULT 'published'");
-        addColumnSafe('activities', 'deleted_at DATETIME');
-        addColumnSafe('activities', 'deleted_by INTEGER');
-      }
-    });
-    
-    db.run(`CREATE TABLE IF NOT EXISTS members (id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT, role TEXT, avatar TEXT, school TEXT, tags TEXT, sort_order INTEGER DEFAULT 0, deleted_at DATETIME, deleted_by INTEGER)`, (err) => {
-      if(!err) {
-        addColumnSafe('members', 'school TEXT');
-        addColumnSafe('members', 'tags TEXT');
-        addColumnSafe('members', 'sort_order INTEGER DEFAULT 0');
-        addColumnSafe('members', 'deleted_at DATETIME');
-        addColumnSafe('members', 'deleted_by INTEGER');
-      }
-    });
-    db.run(`CREATE TABLE IF NOT EXISTS site_config (key TEXT PRIMARY KEY, value TEXT)`);
-    db.run(`CREATE TABLE IF NOT EXISTS history (id INTEGER PRIMARY KEY AUTOINCREMENT, date TEXT, title TEXT, description TEXT, image TEXT, sort_order INTEGER DEFAULT 0, deleted_at DATETIME, deleted_by INTEGER)`, (err) => {
-      if (!err) {
-        addColumnSafe('history', 'deleted_at DATETIME');
-        addColumnSafe('history', 'deleted_by INTEGER');
-      }
-    });
-
-    db.run(`CREATE TABLE IF NOT EXISTS login_attempts (
-      ip TEXT PRIMARY KEY,
-      count INTEGER NOT NULL DEFAULT 0,
-      lock_until INTEGER NOT NULL DEFAULT 0,
-      updated_at INTEGER NOT NULL DEFAULT 0
-    )`);
-
-    db.run(`CREATE TABLE IF NOT EXISTS banned_ips (
-      ip TEXT PRIMARY KEY,
-      reason TEXT,
-      created_at INTEGER,
-      expires_at INTEGER,
-      created_by TEXT
-    )`);
-    db.run('CREATE INDEX IF NOT EXISTS idx_banned_ips_expires ON banned_ips(expires_at)');
-
-    // 索引优化
-    db.run('CREATE INDEX IF NOT EXISTS idx_activities_date ON activities(date)');
-    db.run('CREATE INDEX IF NOT EXISTS idx_activities_created_at ON activities(created_at)');
-    createIndexSafe('CREATE INDEX IF NOT EXISTS idx_activities_deleted_at ON activities(deleted_at)');
-    db.run('CREATE INDEX IF NOT EXISTS idx_history_date ON history(date)');
-    db.run('CREATE INDEX IF NOT EXISTS idx_history_sort ON history(sort_order)');
-    createIndexSafe('CREATE INDEX IF NOT EXISTS idx_history_deleted_at ON history(deleted_at)');
-    db.run('CREATE INDEX IF NOT EXISTS idx_members_name ON members(name)');
-    createIndexSafe('CREATE INDEX IF NOT EXISTS idx_members_deleted_at ON members(deleted_at)');
-
-    // 初始化站长 (从环境变量读取)
-    const superUser = process.env.SUPER_ADMIN_USERNAME;
-    const superPass = process.env.SUPER_ADMIN_PASSWORD;
-    if (!superUser || !superPass) {
-      console.warn('[Init] 未设置 SUPER_ADMIN_USERNAME / SUPER_ADMIN_PASSWORD，跳过站长初始化');
-    } else {
-      db.get("SELECT * FROM users WHERE username = ?", [superUser], (err, row) => {
-        if (!row) {
-          const hash = bcrypt.hashSync(superPass, 10);
-          db.run("INSERT INTO users (username, password, role) VALUES (?, ?, ?)", [superUser, hash, 'super_admin']);
-          console.log(`[Init] 站长账号初始化: ${superUser}`);
-        } else if (row.role !== 'super_admin') {
-          db.run("UPDATE users SET role = 'super_admin' WHERE username = ?", [superUser]);
-        }
-      });
+  let closed;
+  const closeAll = () => {
+    if (!closed) closed = Promise.all(connections.map(close));
+    return closed;
+  };
+  try {
+    for (const key of ['DATA_DIR', 'PUBLIC_DIR', 'UPLOADS_DIR', 'IMG_ROOT_DIR', 'HISTORY_ROOT_DIR', 'ICON_SVG_DIR']) {
+      await fs.mkdir(resolved[key], { recursive: true });
     }
-  });
-
-  logDb.serialize(() => {
-    logDb.run(`CREATE TABLE IF NOT EXISTS audit_logs (id INTEGER PRIMARY KEY AUTOINCREMENT, username TEXT, action TEXT, details TEXT, created_at DATETIME DEFAULT CURRENT_TIMESTAMP)`);
-    logDb.run('CREATE INDEX IF NOT EXISTS idx_logs_created_at ON audit_logs(created_at)');
-    logDb.run('CREATE INDEX IF NOT EXISTS idx_logs_username ON audit_logs(username)');
-  });
+    const db = await open(resolved.dbPath);
+    const logDb = await open(resolved.logDbPath);
+    for (const connection of [db, logDb]) {
+      for (const pragma of ['journal_mode = WAL', 'synchronous = NORMAL', 'foreign_keys = ON', 'busy_timeout = 5000']) {
+        await run(connection, `PRAGMA ${pragma}`);
+      }
+    }
+    // Compatibility initializer. Versioned migrations replace this in BM-18.
+    for (const sql of schema.main) await run(db, sql);
+    for (const [table, definition] of schema.columns) {
+      try { await run(db, `ALTER TABLE ${table} ADD COLUMN ${definition}`); }
+      catch (error) { if (!/duplicate column name/i.test(error.message)) throw error; }
+    }
+    for (const sql of schema.indexes) await run(db, sql);
+    for (const sql of schema.audit) await run(logDb, sql);
+    if (env.SUPER_ADMIN_USERNAME && env.SUPER_ADMIN_PASSWORD) {
+      const row = await get(db, 'SELECT * FROM users WHERE username = ?', [env.SUPER_ADMIN_USERNAME]);
+      if (!row) {
+        await run(db, 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
+          [env.SUPER_ADMIN_USERNAME, bcrypt.hashSync(env.SUPER_ADMIN_PASSWORD, 10), 'super_admin']);
+      } else if (row.role !== 'super_admin') {
+        await run(db, "UPDATE users SET role = 'super_admin' WHERE username = ?", [env.SUPER_ADMIN_USERNAME]);
+      }
+    }
+    const addLog = (username, action, details) => {
+      logDb.run('INSERT INTO audit_logs (username, action, details) VALUES (?, ?, ?)',
+        [username || 'System', action, details], (error) => {
+          if (error) console.error('[Audit] write failed:', error.code);
+        });
+    };
+    return { ...resolved, db, logDb, addLog, close: closeAll };
+  } catch (error) {
+    await closeAll();
+    throw error;
+  }
 };
-
-module.exports = { db, logDb, addLog, initDb, DATA_DIR, PUBLIC_DIR, UPLOADS_DIR, IMG_ROOT_DIR, HISTORY_ROOT_DIR, ICON_SVG_DIR };
+module.exports = { createDatabase, resolvePaths };

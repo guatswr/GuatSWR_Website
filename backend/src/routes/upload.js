@@ -1,12 +1,13 @@
+module.exports = (context) => {
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { upload } = require('../middlewares/upload');
+const { upload } = context.upload;
 const sharp = require('sharp');
-const { uploadLimiter } = require('../middlewares/limiter');
-const { authenticateToken } = require('../middlewares/auth');
-const { addLog, IMG_ROOT_DIR, ICON_SVG_DIR } = require('../models/db');
-const { moveStagedFile } = require('../utils/storage');
+const { uploadLimiter } = context.limiter;
+const { authenticateToken } = context.auth;
+const { addLog, IMG_ROOT_DIR, ICON_SVG_DIR } = context;
+const { moveStagedFile } = context.storage;
 
 const router = express.Router();
 
@@ -79,4 +80,6 @@ router.post('/', authenticateToken, uploadLimiter, upload.single('file'), async 
   res.json({ url, thumbUrl });
 });
 
-module.exports = router;
+return router;
+
+};

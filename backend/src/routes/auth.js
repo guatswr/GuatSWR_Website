@@ -1,22 +1,24 @@
+module.exports = (context) => {
+  const env = context.env;
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const crypto = require('crypto');
 const path = require('path');
-const { db, addLog, IMG_ROOT_DIR } = require('../models/db');
+const { db, addLog, IMG_ROOT_DIR } = context;
 const { validate } = require('../utils');
-const { authenticateToken, requireSuperAdmin } = require('../middlewares/auth');
-const { loginLimiter } = require('../middlewares/limiter');
+const { authenticateToken, requireSuperAdmin } = context.auth;
+const { loginLimiter } = context.limiter;
 const { loginSchema, registerSchema, profileSchema } = require('../controllers/schemas');
-const { moveStagedFile } = require('../utils/storage');
+const { moveStagedFile } = context.storage;
 
 const router = express.Router();
-const SECRET_KEY = process.env.JWT_SECRET;
+const SECRET_KEY = env.JWT_SECRET;
 if (!SECRET_KEY) {
   throw new Error('JWT_SECRET is required');
 }
 
-const TWOFA_SECRET = process.env.TWOFA_SECRET || SECRET_KEY;
+const TWOFA_SECRET = env.TWOFA_SECRET || SECRET_KEY;
 const TWOFA_KEY = crypto.createHash('sha256').update(String(TWOFA_SECRET)).digest();
 
 const encryptTwofa = (text) => {
@@ -44,7 +46,7 @@ const cleanupLoginAttempts = () => {
   const staleBefore = Date.now() - 24 * 60 * 60 * 1000;
   db.run('DELETE FROM login_attempts WHERE updated_at < ?', [staleBefore], () => {});
 };
-setInterval(cleanupLoginAttempts, 60 * 60 * 1000);
+context.startLoginCleanup = () => context.every(cleanupLoginAttempts, 60 * 60 * 1000);
 
 router.post('/login', loginLimiter, (req, res) => {
   const clientIp = req.ip; 
@@ -192,4 +194,6 @@ router.post('/register', authenticateToken, requireSuperAdmin, (req, res) => {
   });
 });
 
-module.exports = router;
+return router;
+
+};
