@@ -216,10 +216,9 @@ function getActivityPhotosCount(activity: PublicActivity): number {
     <div class="club-container activities-container">
       <EventPageHeader
         title="社团活动记录"
-        seal="旧卷"
+        variant="activities"
         subtitle="一场聚会，一段故事。翻翻我们一起走过的日子。"
         link-to="/events"
-        link-seal="集会"
         link-label="社团活动中心"
       />
 

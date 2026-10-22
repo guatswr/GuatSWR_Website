@@ -3,20 +3,22 @@ import ClubIcon from '~/components/ClubIcon.vue'
 
 defineProps<{
   title: string
-  seal: string
   subtitle: string
   subtitleKey?: string
   linkTo: string
-  linkSeal: string
   linkLabel: string
+  variant?: 'events' | 'activities'
+  seal?: string
+  badgeText?: string
+  linkTag?: string
+  linkSeal?: string
 }>()
 </script>
 
 <template>
-  <header class="events-heading">
+  <header class="events-heading" :class="[`is-${variant || 'events'}`]">
     <div class="events-heading-main">
       <div class="events-heading-title-row">
-        <span class="events-heading-seal" aria-hidden="true">{{ seal }}</span>
         <h1>{{ title }}</h1>
       </div>
       <Transition name="events-fade" mode="out-in">
@@ -24,7 +26,6 @@ defineProps<{
       </Transition>
     </div>
     <NuxtLink :to="linkTo" class="events-archive-link">
-      <span class="events-archive-seal" aria-hidden="true">{{ linkSeal }}</span>
       <span>{{ linkLabel }}</span>
       <ClubIcon name="external" />
     </NuxtLink>
@@ -38,9 +39,7 @@ defineProps<{
   --event-muted: #64748b;
   --event-line: rgb(203 213 225 / 0.85);
   --event-surface: rgb(255 255 255 / 0.9);
-  --event-seal: #a34e47;
-  --event-seal-bg: rgb(163 78 71 / 0.08);
-  --event-seal-border: rgb(163 78 71 / 0.38);
+  --archive-accent: #6366f1;
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
   align-items: flex-end;
@@ -52,6 +51,10 @@ defineProps<{
   line-height: 1.5;
 }
 
+.events-heading.is-activities {
+  --archive-accent: #0284c7;
+}
+
 .events-heading-main {
   min-width: 0;
 }
@@ -61,22 +64,6 @@ defineProps<{
   align-items: center;
   flex-wrap: wrap;
   gap: 0.7rem;
-}
-
-.events-heading-seal {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0.2rem 0.32rem;
-  border: 1px solid var(--event-seal-border);
-  background: var(--event-seal-bg);
-  color: var(--event-seal);
-  font-family: var(--club-serif);
-  font-size: 0.68rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  line-height: 1.05;
-  writing-mode: vertical-rl;
 }
 
 .events-heading h1 {
@@ -100,29 +87,20 @@ defineProps<{
   display: inline-flex;
   align-items: center;
   min-height: 2.5rem;
-  gap: 0.5rem;
-  padding: 0.4rem 0.85rem;
+  gap: 0.55rem;
+  padding: 0.45rem 1rem;
   border: 1px solid var(--event-line);
-  border-top: 2px solid var(--event-seal);
+  border-top: 2px solid var(--archive-accent);
   background: var(--event-surface);
   color: var(--event-body);
   font-size: 0.8125rem;
   font-weight: 600;
+  border-radius: 2px;
   transition:
     border-color 180ms ease,
     background-color 180ms ease,
     color 180ms ease,
     transform 180ms ease;
-}
-
-.events-archive-seal {
-  padding: 0.08rem 0.32rem;
-  border: 1px solid var(--event-seal-border);
-  background: var(--event-seal-bg);
-  color: var(--event-seal);
-  font-family: var(--club-serif);
-  font-size: 0.65rem;
-  font-weight: 700;
 }
 
 .events-archive-link svg {
@@ -132,7 +110,7 @@ defineProps<{
 }
 
 .events-archive-link:hover {
-  border-color: var(--event-seal);
+  border-color: var(--archive-accent);
   color: var(--event-ink);
   transform: translateY(-1px);
 }
@@ -143,29 +121,16 @@ defineProps<{
   --event-muted: #94a3b8;
   --event-line: rgb(51 65 85 / 0.88);
   --event-surface: rgb(20 31 44 / 0.9);
-  --event-seal: #fda4af;
-  --event-seal-bg: rgb(244 63 94 / 0.12);
-  --event-seal-border: rgb(251 113 133 / 0.42);
+  --archive-accent: #818cf8;
+}
+
+.dark .events-heading.is-activities {
+  --archive-accent: #38bdf8;
 }
 
 .events-archive-link:focus-visible {
-  outline: 2px solid var(--event-seal);
+  outline: 2px solid var(--archive-accent);
   outline-offset: 3px;
-}
-
-/* 1. 卷首与标题展开 */
-@keyframes events-seal-press {
-  0% {
-    opacity: 0;
-    transform: scale(1.36) rotate(-5deg);
-  }
-  65% {
-    transform: scale(0.96) rotate(1deg);
-  }
-  100% {
-    opacity: 1;
-    transform: scale(1) rotate(0deg);
-  }
 }
 
 @keyframes events-title-unfurl {
@@ -188,10 +153,6 @@ defineProps<{
     opacity: 1;
     transform: translateX(0);
   }
-}
-
-.events-heading-seal {
-  animation: events-seal-press 540ms cubic-bezier(0.22, 1, 0.36, 1) 60ms backwards;
 }
 
 .events-heading h1 {

@@ -58,11 +58,10 @@ onMounted(() => {
     <div class="club-container events-container">
       <EventPageHeader
         title="活动中心"
-        seal="集会"
+        variant="events"
         :subtitle="activeCategory.subtitle"
         :subtitle-key="activeCategory.path"
         link-to="/activities"
-        link-seal="旧卷"
         link-label="往期活动回顾"
       />
 
