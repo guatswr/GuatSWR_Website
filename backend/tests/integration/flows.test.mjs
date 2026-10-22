@@ -78,9 +78,9 @@ describe('registered legacy defect reproductions', () => {
    await run(f.db,"UPDATE users SET role='admin' WHERE id=1")
    expect((await f.http.get('/api/admin/users').set('Authorization',`Bearer ${token()}`)).status).toBe(403)
  })
- it('EX-05 public event and logs currently expose raw fields',async()=>{
+ it('EX-05 regression projects public fields while preserving ordinary content descriptions',async()=>{
    const f=await fixture()
-   expect((await f.http.get('/api/event')).body.items[0]).toHaveProperty('visitor_ip')
+   expect((await f.http.get('/api/event')).body.items[0]).not.toHaveProperty('visitor_ip')
    expect((await f.http.get('/api/logs')).body.logs[0]).toHaveProperty('details','synthetic details')
  })
  it('EX-07 regression rejects a sibling of public',async()=>{

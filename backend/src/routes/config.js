@@ -6,15 +6,15 @@ const { validate } = require('../utils');
 const { configSchema } = require('../controllers/schemas');
 const { moveStagedFile, getConfigDir, isStagingUrl } = context.storage;
 
+const { PUBLIC_CONFIG_KEYS } = require('../utils/publicLog');
 const router = express.Router();
 
 router.get('/', optionalAuth, (req, res) => {
   db.all("SELECT * FROM site_config", [], (err, rows) => {
     if (err) return res.status(500).json({ error: err.message });
-    const config = {};
-    if (rows) rows.forEach(r => config[r.key] = r.value);
+    const config = Object.fromEntries((rows || []).map(row => [row.key, row.value]));
 
-    if (req.user && (req.user.role === 'super_admin' || req.user.role === 'admin')) {
+    if (req.user?.role === 'super_admin') {
       return res.json(config);
     }
 
@@ -43,6 +43,7 @@ router.post('/', authenticateToken, requireAdmin, (req, res) => {
   const validated = validate(configSchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
   const { key, value } = validated.data;
+  if (key === 'token_version' || key.startsWith('backup_') || (req.user.role !== 'super_admin' && !PUBLIC_CONFIG_KEYS.has(key))) return res.status(403).json({ message: '请使用专用管理接口修改内部配置' });
   (async () => {
     let finalValue = value;
     if (isStagingUrl(value)) {

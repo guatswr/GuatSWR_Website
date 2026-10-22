@@ -40,6 +40,19 @@ const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', require('./config/proxy').createTrustProxy(env.TRUST_PROXY_CIDRS));
 app.disable('x-powered-by');
+app.use((req, res, next) => {
+  res.vary('Authorization');
+  if (req.headers.authorization) res.setHeader('Cache-Control', 'private, no-store');
+  const send = res.json;
+  res.json = (payload) => {
+    if (res.statusCode >= 500 && payload && typeof payload.error === 'string') {
+      const { error, ...safe } = payload;
+      payload = { ...safe, message: typeof safe.message === 'string' ? safe.message : '服务器错误' };
+    }
+    return send.call(res, payload);
+  };
+  next();
+});
 
 app.use(banGuard);
 app.use(globalLimiter);

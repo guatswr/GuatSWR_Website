@@ -6,6 +6,7 @@ const { callBotHook } = require('../utils/botHooks');
 const { moveStagedFile } = context.storage;
 const { createEventContentPersister } = require('../utils/eventContentStorage');
 
+const { publicEvent } = require('../utils/publicEvent');
 const router = express.Router();
 const persistEventContent = createEventContentPersister({ imageRoot: IMG_ROOT_DIR, moveStagedFile });
 
@@ -158,7 +159,7 @@ router.get('/', optionalAuth, (req, res) => {
 
     db.all(sql, [...params, limit, offset], (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
-      const items = rows.map(parseContent);
+      const items = rows.map(parseContent).map(publicEvent);
       res.json({ total, page, limit, items });
     });
   });
@@ -184,7 +185,12 @@ router.get('/:id', optionalAuth, (req, res) => {
       return res.status(403).json({ message: '事件审核中或未公开' });
     }
 
-    res.json(parseContent(row));
+    res.vary('Authorization');
+    if (isAdmin || isOwner) {
+      res.setHeader('Cache-Control', 'private, no-store');
+      return res.json(parseContent(row));
+    }
+    res.json(publicEvent(parseContent(row)));
   });
 });
 
@@ -267,7 +273,8 @@ router.get('/:id/signup', optionalAuth, async (req, res) => {
     const row = userId
       ? await dbGet('SELECT * FROM event_participants WHERE event_id = ? AND user_id = ?', [eventId, userId])
       : await dbGet('SELECT * FROM event_participants WHERE event_id = ? AND visitor_ip = ?', [eventId, visitorIp]);
-    res.json({ data: row || null });
+    if (row) { const { visitor_ip, ...safe } = row; return res.json({ data: safe }); }
+    res.json({ data: null });
   } catch (err) {
     res.status(500).json({ message: '读取失败', error: err.message });
   }

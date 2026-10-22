@@ -12,7 +12,7 @@ const cases = [
  [3,{},['id']], [4,activity,['id','message']], [5,activity,['message']], [6,{},['message']], [7,{},['message']],
  [8,{},null], [9,{},['message','target'],{id:4}], [10,{password:'replacement-password'},['message'],{id:4}], [11,{},['message'],{id:4}], [12,{},['message','version']],
  [13,{},['total','logs']], [14,{},['message']], [15,{},['message','result']], [16,{},['bans']], [17,{ip:'203.0.113.99',reason:'test'},['message','ip']], [18,{},['message','ip']],
- [19,{},['enabled','time','lastRun','lastError']], [20,{enabled:false,time:'03:45'},['message','enabled','time']], [21,{},['full']], [22,{},null], [23,{},['message']], [24,{},['message','error'],{status:500}],
+ [19,{},['enabled','time','lastRun','lastError']], [20,{enabled:false,time:'03:45'},['message','enabled','time']], [21,{},['full']], [22,{},null], [23,{},['message']], [24,{},['message'],{status:500}],
  [25,{},['total','items']], [26,{action:'approve'},['message'],{id:3}], [27,{},['message'],{id:3}],
  [28,{username:'admin',password:'fixture-password'},['token','username','role','avatar','id']], [29,{avatar:'/uploads/avatar.png'},['message']], [30,{},['id','username','role','avatar','twofa_enabled']], [31,{username:'new_user',password:'fixture-password'},['message']],
  [32,{id:1,...activity},['message']], [33,{id:1,...history},['message']], [34,{id:1,...member},['message']],

@@ -17,7 +17,7 @@
 | BM-06 / P0 上传路径安全（本地DONE） | 04 | storage/upload/visitor：正整数选择器、路径分隔符边界和真实路径检查；Multer 安全升级独立子 PR；私有验证区、资源上限、失败清理 | F01～F04；SVG 服务策略和兼容例外；每个上传入口真实 multipart | 保留 URL 和 50MiB 兼容；防同前缀目录、symlink、半成品公开；不批量搬历史文件 |
 | BM-07 / P0 最小认证修复（本地DONE） | 04 | auth middleware/admin/auth：有效 JWT 后查当前用户/角色；版本库错误 fail closed；原子递增全局版本；删除管理员保护；修复二步密码错误计数和解密异常 | EX 登记；A02/A03/A04；删用户旧 token、降权、DB 故障、并发删除负例 | 不换密钥/哈希/声明；错误状态调整单列；用户级撤销 schema 留 BM-31 |
 | BM-08 / P0 游客入口边界 | 05、02 | guest-bff/event/upload_visitor：盘点旧直连客户端，形成 ADR-11；封闭绕过 BFF 的入口；复核 BFF 草稿 ownership 和上传归属 | 同 IP 两游客、异 IP、猜 EID、重放的直连/BFF 双层测试；明确暂未解决的后端证明 | 不能声称 IP 即个人身份；需要旧客户端适配时先产出迁移方案；证明实现归 BM-24 |
-| BM-09 / P0 投影与配置权限 | 07、02 | config/logs/event：公开字段白名单；普通 admin 禁写 token_version/backup_* 等内部键；原始 SQL 错误不出公网 | A05、A08；EX 字段差异、BFF 消费验证；敏感种子不能进入公开缓存 | 不能直接套 BFF DTO 删除所有历史字段；批准例外后更新契约 |
+| BM-09 / P0 投影与配置权限（本地DONE） | 07、02 | config/logs/event：公开字段白名单；普通 admin 禁写 token_version/backup_* 等内部键；原始 SQL 错误不出公网 | A05、A08；EX 字段差异、BFF 消费验证；敏感种子不能进入公开缓存 | 不能直接套 BFF DTO 删除所有历史字段；批准例外后更新契约 |
 | BM-10 / P0 恢复基础 | 02、04 | 两套 db_backup 和 restore：缺 sqlite3/缺库失败；双库完整；预检归档路径/hash/格式；恢复到新目录；停写与数据一致点方案 | B01/B02；隔离恢复报告、旧镜像可读验证、明确绝对输入输出 | 不执行旧 restore 覆盖现有 data；不宣称在线双库+文件天然同一时点 |
 | BM-11 / P1 TS 基础 | 04 | backend tsconfig/build：CJS 混合迁移；先纯函数/env/errors；新 TS strict；显式路径配置 | typecheck/lint/build 脚本；dist 启动；源码与产物都不写 dist/data | 不机械改名，不同时切 ESM；遗留 JS 预算登记 |
 | BM-12 / P1 完整生命周期 | 11、01 | app/server/config/db：显式装配依赖、环境验证、ready 顺序、SIGTERM、连接关闭、timer disposer | L01/L02；缺密钥/DB/目录权限失败，启动重试不重复任务 | 不再依赖 require 顺序；健康接口另登记；迁移尚未完成时兼容初始化器显式调用 |

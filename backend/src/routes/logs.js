@@ -6,6 +6,7 @@ const https = require('https');
 const { URL } = require('url');
 const { db, logDb } = context;
 
+const { projectLog, projectLogStat } = require('../utils/publicLog');
 const router = express.Router();
 
 const UMAMI_BASE_URL = (env.UMAMI_BASE_URL || 'http://localhost:3036').replace(/\/+$/, '');
@@ -130,8 +131,8 @@ const attachUserMeta = (logs, cb) => {
 };
 
 router.get('/', (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
+  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 20));
   const offset = (page - 1) * limit;
   const username = req.query.username || '';
   const action = req.query.action || '';
@@ -152,13 +153,13 @@ router.get('/', (req, res) => {
       [...params, limit, offset],
       (err, rows) => {
       if (err) return res.status(500).json({ error: err.message });
-      attachUserMeta(rows || [], (merged) => res.json({ total, logs: merged }));
+      attachUserMeta(rows || [], (merged) => res.json({ total, logs: merged.map(row => projectLog({ ...row, action: row.action || '', details: row.details || '', user_avatar: row.user_avatar ?? null })) }));
     });
   });
 });
 
 router.get('/stats', (req, res) => {
-  const limit = parseInt(req.query.limit) || 10;
+  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit, 10) || 10));
   const editActions = [
     'CREATE_ACTIVITY', 'UPDATE_ACTIVITY', 'DELETE_ACTIVITY',
     'CREATE_MEMBER', 'UPDATE_MEMBER', 'DELETE_MEMBER',
@@ -176,7 +177,7 @@ router.get('/stats', (req, res) => {
       if (usernames.length === 0) return res.json({ stats: [] });
       const namePlaceholders = usernames.map(() => '?').join(',');
       db.all(`SELECT id, username, avatar FROM users WHERE username IN (${namePlaceholders})`, usernames, (err, users) => {
-        if (err) return res.json({ stats });
+        if (err) return res.json({ stats: stats.map(projectLogStat) });
         const map = new Map((users || []).map(u => [u.username, u]));
         const merged = stats.map(s => ({
           username: s.username,
@@ -184,7 +185,7 @@ router.get('/stats', (req, res) => {
           user_id: map.get(s.username)?.id || null,
           user_avatar: map.get(s.username)?.avatar || null
         }));
-        res.json({ stats: merged });
+        res.json({ stats: merged.map(projectLogStat) });
       });
     }
   );
