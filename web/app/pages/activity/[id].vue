@@ -12,6 +12,7 @@ import type { ActivityContentResponse } from '#shared/content'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import { DEFAULT_DESCRIPTION } from '~/utils/public-seo'
 import { displayImageSource, displayThumbSource } from '~/utils/public-image'
+import { formatArchiveDate } from '~/utils/club-date'
 import { activitySeoNode } from '#shared/seo'
 import { defineArticle, useSchemaOrg } from '#schema-org/app'
 
@@ -97,185 +98,137 @@ useHead({
 </script>
 
 <template>
-  <div class="club-paper min-h-screen relative font-sans overflow-x-hidden">
-    <Transition name="fade-fast">
-      <div
-        v-if="loading"
-        class="fixed inset-0 z-[100] bg-white dark:bg-slate-950 flex flex-col items-center justify-center"
-      >
-        <div class="loader-unit flex flex-col items-center animate-[floating_3s_ease-in-out_infinite]">
-          <div class="taiji-spinner relative w-20 h-20 mb-6">
-            <div class="absolute inset-0 border-4 border-gray-100 dark:border-slate-800 rounded-full"/>
-            <div class="absolute inset-0 border-4 border-red-600 rounded-full border-t-transparent animate-spin"/>
-            <div class="absolute inset-0 flex items-center justify-center text-4xl text-red-600">☯</div>
-          </div>
-          <svg class="w-60 h-10" viewBox="0 0 240 40">
-            <text
-              x="50%"
-              y="50%"
-              text-anchor="middle"
-              dominant-baseline="middle"
-              class="font-serif font-bold text-xl fill-gray-700 dark:fill-gray-200"
-            >
-              少女祈祷中
-              <tspan class="dot-1">·</tspan>
-              <tspan class="dot-2">·</tspan>
-              <tspan class="dot-3">·</tspan>
-            </text>
-          </svg>
-        </div>
-      </div>
-    </Transition>
+  <div class="club-paper min-h-screen">
+    <p
+      v-if="loading"
+      class="py-32 text-center text-sm text-slate-500 dark:text-slate-400"
+      role="status"
+    >
+      正在展开这幅画卷…
+    </p>
 
-    <Transition name="fade-content">
-      <div
-        v-if="!loading && activity"
-        class="relative z-10 w-full md:max-w-5xl mx-auto my-6 md:my-12 overflow-hidden min-h-[calc(100vh-3rem)] md:min-h-0"
-      >
-        <div class="h-[300px] md:h-[550px] w-full relative group overflow-hidden">
-          <ProgressiveImage
-            v-if="coverSource"
-            eager
-            :src="coverSource"
-            :thumb="coverThumb ?? undefined"
-            alt="Cover"
-            wrapper-class="w-full h-full"
-            img-class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
-          />
-          <div class="absolute inset-0 bg-black/40"/>
-
-          <div class="absolute inset-0 flex items-end p-6 md:p-12">
-            <div class="w-full max-w-4xl">
-              <div class="flex flex-col items-start gap-4 animate-[slideUp_0.6s_ease-out]">
-                <div class="flex flex-wrap items-center gap-3 text-white/90 text-sm font-mono tracking-wider drop-shadow-md">
-                  <span class="inline-flex items-center gap-2">
-                    <span class="bg-red-600 w-2 h-4 rounded-sm shadow-sm"/>
-                    <span>{{ activity.date }}</span>
-                  </span>
-                  <span class="inline-flex items-center gap-1 text-xs font-semibold px-3 py-1 rounded-full bg-white/15 text-white border border-white/20 backdrop-blur">
-                    <span class="text-[10px]">🏷️</span>
-                    {{ activity.tag || '未标注' }}
-                  </span>
-                </div>
-                <h1 class="text-3xl md:text-5xl lg:text-6xl font-bold !text-white font-serif tracking-wide leading-tight md:leading-none drop-shadow-lg">
-                  {{ activity.title }}
-                </h1>
-              </div>
-            </div>
-          </div>
-
-          <NuxtLink
-            to="/activities"
-            class="absolute top-4 left-4 md:top-8 md:left-8 bg-black/20 hover:bg-black/40 text-white px-4 py-2 md:px-5 md:py-2.5 rounded-full backdrop-blur-md transition border border-white/20 flex items-center gap-2 group/back shadow-lg z-20"
-            @click="goBack"
-          >
-            <span class="transform group-hover/back:-translate-x-1 transition text-sm md:text-base">← 返回</span>
+    <article v-else-if="activity" class="memory">
+      <div class="club-container">
+        <nav class="memory-nav" aria-label="返回">
+          <NuxtLink to="/activities" class="club-text-link" @click="goBack">
+            <span aria-hidden="true">←</span> 返回活动记录
           </NuxtLink>
-        </div>
+        </nav>
 
-        <div class="p-6 md:p-12 bg-transparent relative">
-          <div class="flex flex-wrap items-center gap-6 mb-8 pb-6 border-b border-gray-200/60 dark:border-slate-700/70">
+        <header class="memory-header">
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-slate-500 dark:text-slate-400">
+            <span class="memory-seal" aria-hidden="true">记</span>
+            <time :datetime="activity.date">{{ formatArchiveDate(activity.date) }}</time>
+            <span v-if="activity.tag" class="memory-tag">{{ activity.tag }}</span>
+          </div>
+          <h1 class="memory-title">
+            {{ activity.title }}
+          </h1>
+          <div class="memory-meta">
             <div class="flex items-center gap-3">
               <ProgressiveImage
                 v-if="activity.created_by_avatar && displayImageSource(activity.created_by_avatar)"
                 :src="displayImageSource(activity.created_by_avatar) ?? ''"
                 :thumb="displayThumbSource(activity.created_by_avatar) ?? undefined"
-                alt="Avatar"
-                wrapper-class="w-10 h-10"
-                img-class="w-10 h-10 rounded-full border border-gray-200 dark:border-slate-700 object-cover shadow-sm"
+                alt="记录者头像"
+                wrapper-class="h-9 w-9"
+                img-class="h-9 w-9 rounded-full border border-slate-200 object-cover dark:border-slate-700"
               />
               <div
                 v-else
-                class="w-10 h-10 rounded-full bg-blue-100 dark:bg-slate-800 text-blue-500 dark:text-blue-200 flex items-center justify-center font-bold shadow-sm text-sm"
+                class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-sm font-bold text-sky-700 dark:border-slate-700 dark:bg-slate-800 dark:text-sky-300"
+                aria-hidden="true"
               >
                 {{ authorInitial }}
               </div>
               <div>
-                <p class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-bold">
-                  发布者
-                </p>
-                <p class="text-sm font-bold text-gray-800 dark:text-gray-100">
-                  {{ activity.created_by || '未知用户' }}
-                </p>
+                <p class="memory-meta-label">记录者</p>
+                <p class="memory-meta-name">{{ activity.created_by || '未知用户' }}</p>
               </div>
             </div>
-
             <div
-              v-if="activity.updated_by"
-              class="flex items-center gap-3 pl-6 border-l border-gray-200/60 dark:border-slate-700/70"
+              v-if="activity.updated_by && activity.updated_by !== activity.created_by"
+              class="flex items-center gap-3 border-l border-slate-200 pl-6 dark:border-slate-700"
             >
-              <ProgressiveImage
-                v-if="activity.updated_by_avatar && displayImageSource(activity.updated_by_avatar)"
-                :src="displayImageSource(activity.updated_by_avatar) ?? ''"
-                :thumb="displayThumbSource(activity.updated_by_avatar) ?? undefined"
-                alt="Avatar"
-                wrapper-class="w-10 h-10"
-                img-class="w-10 h-10 rounded-full border border-gray-200 dark:border-slate-700 object-cover shadow-sm"
-              />
               <div
-                v-else
-                class="w-10 h-10 rounded-full bg-orange-100 dark:bg-slate-800 text-orange-500 dark:text-orange-200 flex items-center justify-center font-bold shadow-sm text-sm"
+                class="flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-slate-50 text-sm font-bold text-slate-500 dark:border-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                aria-hidden="true"
               >
                 {{ activity.updated_by.charAt(0).toUpperCase() }}
               </div>
               <div>
-                <p class="text-[10px] uppercase tracking-wider text-gray-500 dark:text-gray-400 font-bold">
-                  最后编辑
-                </p>
-                <p class="text-sm font-bold text-gray-800 dark:text-gray-100">
-                  {{ activity.updated_by }}
-                </p>
+                <p class="memory-meta-label">最后修订</p>
+                <p class="memory-meta-name">{{ activity.updated_by }}</p>
               </div>
             </div>
           </div>
+        </header>
 
-          <div
-            v-if="activity.description"
-            class="bg-gray-50/80 dark:bg-slate-800/80 border-l-4 border-red-500 p-5 md:p-8 mb-10 text-gray-600 dark:text-gray-200 italic rounded-r-xl shadow-sm leading-relaxed text-sm md:text-base md:leading-6 backdrop-blur-sm"
+        <figure v-if="coverSource" class="memory-figure">
+          <a
+            :href="coverSource"
+            :aria-label="`查看大图：${activity.title}`"
+            @click.prevent="openLightbox(coverSource)"
           >
-            {{ activity.description }}
-          </div>
+            <ProgressiveImage
+              eager
+              :src="coverSource"
+              :thumb="coverThumb ?? undefined"
+              :alt="activity.title"
+              wrapper-class="memory-figure-frame"
+              img-class="h-full w-full object-cover"
+            />
+            <span class="memory-figure-hint" aria-hidden="true">点击展开画卷</span>
+          </a>
+        </figure>
 
-          <div class="markdown-body bg-white dark:bg-slate-900 border border-gray-100/60 dark:border-slate-700 rounded-xl p-5 md:p-8">
-            <SafeMarkdown :nodes="body" />
-          </div>
-
-          <div
-            v-if="gallery.length > 0"
-            class="mt-16 pt-10 border-t border-gray-200/60 dark:border-slate-700/70"
-          >
-            <h3 class="text-xl font-bold mb-6 font-serif text-gray-800 dark:text-gray-100 flex items-center gap-2">
-              <span>📷</span> 活动剪影 (Highlights)
-            </h3>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <a
-                v-for="item in gallery"
-                :key="item.key"
-                :href="item.src"
-                class="overflow-hidden group cursor-zoom-in relative aspect-video bg-gray-100 dark:bg-slate-800 block w-full text-left"
-                :aria-label="`查看大图：${activity.title}`"
-                @click.prevent="openLightbox(item.src)"
-              >
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition z-10 flex items-center justify-center pointer-events-none">
-                  <span class="text-white opacity-0 group-hover:opacity-100 transition text-sm bg-black/50 px-3 py-1.5 rounded-full backdrop-blur-sm border border-white/20">🔍 点击查看大图</span>
-                </div>
-                <ProgressiveImage
-                  :src="item.src"
-                  :thumb="item.thumb ?? undefined"
-                  alt="Gallery image"
-                  wrapper-class="w-full h-full"
-                  img-class="w-full h-full object-cover transform group-hover:scale-105 transition duration-700"
-                />
-              </a>
-            </div>
-          </div>
+        <div v-if="activity.description" class="memory-lede">
+          {{ activity.description }}
         </div>
+
+        <div class="memory-prose">
+          <SafeMarkdown :nodes="body" inherit-typography />
+        </div>
+
+        <section v-if="gallery.length > 0" class="memory-gallery" aria-labelledby="gallery-title">
+          <h2 id="gallery-title" class="memory-gallery-title">
+            <span class="memory-seal" aria-hidden="true">影</span> 活动剪影
+          </h2>
+          <div class="grid grid-cols-1 gap-6 md:grid-cols-2">
+            <a
+              v-for="item in gallery"
+              :key="item.key"
+              :href="item.src"
+              class="memory-gallery-item group"
+              :aria-label="`查看大图：${activity.title}`"
+              @click.prevent="openLightbox(item.src)"
+            >
+              <ProgressiveImage
+                :src="item.src"
+                :thumb="item.thumb ?? undefined"
+                alt="活动剪影"
+                wrapper-class="aspect-video w-full"
+                img-class="h-full w-full object-cover transition-transform duration-700 motion-safe:group-hover:scale-105"
+              />
+              <span class="memory-figure-hint" aria-hidden="true">点击展开画卷</span>
+            </a>
+          </div>
+        </section>
+
+        <footer class="memory-coda">
+          <span class="memory-coda-stamp" aria-hidden="true">录</span>
+          <p class="memory-coda-text">回忆收到这里，故事还在继续。</p>
+          <div class="flex flex-wrap items-center justify-center gap-x-8 gap-y-2">
+            <NuxtLink to="/activities" class="club-text-link">回到活动记录</NuxtLink>
+            <NuxtLink to="/events" class="club-text-link">看看近期活动 <span aria-hidden="true">↗</span></NuxtLink>
+          </div>
+        </footer>
       </div>
-    </Transition>
+    </article>
 
     <p
-      v-if="!loading && !activity"
-      class="relative z-10 mx-auto my-24 max-w-xl px-6 text-center text-sm text-slate-500"
+      v-else
+      class="mx-auto my-24 max-w-xl px-6 text-center text-sm text-slate-500"
       role="status"
     >
       活动不存在或已删除。
@@ -285,121 +238,287 @@ useHead({
     <ImageLightbox
       v-model:open="lightboxOpen"
       :src="currentImage"
-      alt="Full view"
+      alt="活动配图预览"
     />
   </div>
 </template>
 
 <style scoped>
-.markdown-body {
-  border-radius: 0.75rem;
+.memory {
+  padding-block: 2.5rem 5rem;
+}
+.memory-nav {
+  margin-bottom: 1.5rem;
 }
 
-/* The archived `ActivityDetail.vue` scoped overrides compiled to `[data-v-x] p`
-   and friends, i.e. they applied to every matching element of the whole page -
-   the hero heading, the publisher row and the gallery heading included - not
-   just to the Markdown body. They are reproduced here at the same reach. */
-:deep(h1),
-:deep(h2),
-:deep(h3) {
-  margin-top: 1.5em;
-  margin-bottom: 0.8em;
+.memory-header {
+  max-width: 44rem;
+}
+.memory-seal {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid rgb(163 78 71 / 0.4);
+  background-color: rgb(163 78 71 / 0.07);
+  color: #a34e47;
+  font-family: var(--club-serif);
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #1f2937;
+  line-height: 1.5;
+  letter-spacing: 0.1em;
+}
+:global(.dark .memory-seal) {
+  border-color: rgb(240 168 153 / 0.4);
+  background-color: rgb(240 168 153 / 0.1);
+  color: #f0a899;
+}
+.memory-tag {
+  color: #0369a1;
+}
+:global(.dark .memory-tag) {
+  color: #7dd3fc;
+}
+.memory-title {
+  margin-top: 1.25rem;
+  font-family: var(--club-serif);
+  font-size: clamp(1.9rem, 4.5vw, 3.1rem);
+  font-weight: 650;
+  line-height: 1.3;
+  letter-spacing: -0.02em;
+  color: #0f172a;
+  word-break: break-word;
+  text-wrap: balance;
+}
+:global(.dark .memory-title) {
+  color: #f1f5f9;
+}
+.memory-meta {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 1.25rem;
+}
+:global(.dark .memory-meta) {
+  border-top-color: #243447;
+}
+.memory-meta-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #64748b;
+}
+:global(.dark .memory-meta-label) {
+  color: #94a3b8;
+}
+.memory-meta-name {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: #1e293b;
+}
+:global(.dark .memory-meta-name) {
+  color: #f1f5f9;
 }
 
-:deep(html.dark h1),
-:deep(html.dark h2),
-:deep(html.dark h3) {
-  color: #f3f4f6;
+.memory-figure {
+  margin-top: 2.5rem;
+}
+.memory-figure a {
+  position: relative;
+  display: block;
+  cursor: zoom-in;
+}
+.memory-figure-frame {
+  width: 100%;
+  max-height: 34rem;
+  overflow: hidden;
+  border: 1px solid #dce4e8;
+  background-color: #f8fafc;
+}
+:global(.dark .memory-figure-frame) {
+  border-color: #293847;
+  background-color: #0d151f;
+}
+.memory-figure-hint {
+  position: absolute;
+  right: 0.75rem;
+  bottom: 0.75rem;
+  padding: 0.2rem 0.55rem;
+  background-color: rgb(15 23 42 / 0.55);
+  color: #f1f5f9;
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  opacity: 0;
+  transition: opacity 200ms ease;
+}
+.memory-figure a:is(:hover, :focus-visible) .memory-figure-hint,
+.memory-gallery-item:is(:hover, :focus-visible) .memory-figure-hint {
+  opacity: 1;
 }
 
-:deep(p) {
-  margin-bottom: 1.2em;
+.memory-lede {
+  margin-top: 2.25rem;
+  max-width: 44rem;
+  border-left: 2px solid #a34e47;
+  background-color: #fbfbf8;
+  padding: 1.25rem 1.5rem;
+  font-size: 1rem;
+  line-height: 1.9;
+  color: #475569;
+}
+:global(.dark .memory-lede) {
+  background-color: #101a25;
+  color: #cbd5e1;
 }
 
-:deep(ul),
-:deep(ol) {
-  margin-bottom: 1.2em;
+.memory-prose {
+  margin-top: 2.25rem;
+  max-width: 44rem;
+  font-size: 1.05rem;
+  line-height: 1.9;
+  color: #334155;
+}
+:global(.dark .memory-prose) {
+  color: #cbd5e1;
+}
+.memory-prose :deep(h1),
+.memory-prose :deep(h2),
+.memory-prose :deep(h3) {
+  margin-top: 1.6em;
+  margin-bottom: 0.7em;
+  font-family: var(--club-serif);
+  font-weight: 650;
+  line-height: 1.4;
+  color: #0f172a;
+}
+:global(.dark .memory-prose h1),
+:global(.dark .memory-prose h2),
+:global(.dark .memory-prose h3) {
+  color: #f1f5f9;
+}
+.memory-prose :deep(p) {
+  margin-bottom: 1.25em;
+}
+.memory-prose :deep(ul),
+.memory-prose :deep(ol) {
+  margin-bottom: 1.25em;
   padding-left: 1.5em;
 }
-
-:deep(blockquote) {
-  border-left-color: #ef4444;
-  background-color: #f9fafb;
-  padding: 0.5em 1em;
-  color: #6b7280;
+.memory-prose :deep(blockquote) {
+  border-left: 2px solid #a34e47;
+  background-color: rgb(163 78 71 / 0.05);
+  padding: 0.75em 1.25em;
+  color: #475569;
 }
-
-:deep(html.dark blockquote) {
-  background-color: #0f172a;
-  color: #cbd5f5;
+:global(.dark .memory-prose blockquote) {
+  background-color: rgb(240 168 153 / 0.06);
+  color: #cbd5e1;
 }
-
-/* The archived page also carried `[data-v-x] .md-editor-preview { font-family:
-   inherit; font-size: 1.05rem; line-height: 1.8 }` with a `max-width: 768px`
-   step down to `1rem` / `1.6`. That is page-level typography, so it lives here
-   rather than in the shared prose component. */
-.markdown-body :deep(.safe-markdown) {
-  font-size: 1.05rem;
-  line-height: 1.8;
+.memory-prose :deep(img) {
+  border: 1px solid #e2e8f0;
 }
-
+:global(.dark .memory-prose img) {
+  border-color: #293847;
+}
 @media (max-width: 768px) {
-  .markdown-body :deep(.safe-markdown) {
+  .memory-prose {
     font-size: 1rem;
-    line-height: 1.6;
+    line-height: 1.8;
   }
 }
 
-.dot-1 { animation: ping-pong-dot-1 2.4s step-end infinite; }
-.dot-2 { animation: ping-pong-dot-2 2.4s step-end infinite; }
-.dot-3 { animation: ping-pong-dot-3 2.4s step-end infinite; }
+.memory-gallery {
+  margin-top: 3.5rem;
+  border-top: 1px solid #e2e8f0;
+  padding-top: 2.5rem;
+}
+:global(.dark .memory-gallery) {
+  border-top-color: #243447;
+}
+.memory-gallery-title {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  font-family: var(--club-serif);
+  font-size: 1.35rem;
+  font-weight: 600;
+  color: #0f172a;
+}
+:global(.dark .memory-gallery-title) {
+  color: #f1f5f9;
+}
+.memory-gallery .grid {
+  margin-top: 1.75rem;
+}
+.memory-gallery-item {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border: 1px solid #dce4e8;
+  background-color: #f1f5f9;
+  cursor: zoom-in;
+}
+:global(.dark .memory-gallery-item) {
+  border-color: #293847;
+  background-color: #1e293b;
+}
 
-.fade-fast-leave-active { transition: opacity 0.3s ease; }
-.fade-fast-leave-to { opacity: 0; }
-.fade-content-enter-active { transition: opacity 0.4s ease-out; }
-.fade-content-enter-from { opacity: 0; }
+.memory-coda {
+  margin-top: 4rem;
+  border-top: 1px solid #dce4e8;
+  padding-top: 2.5rem;
+  text-align: center;
+}
+:global(.dark .memory-coda) {
+  border-top-color: #293847;
+}
+.memory-coda-stamp {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 2.5rem;
+  width: 2.5rem;
+  border: 1px solid rgb(163 78 71 / 0.5);
+  color: #a34e47;
+  font-family: var(--club-serif);
+  font-size: 1.25rem;
+  font-weight: 700;
+  transform: rotate(-4deg);
+}
+:global(.dark .memory-coda-stamp) {
+  border-color: rgb(240 168 153 / 0.5);
+  color: #f0a899;
+}
+.memory-coda-text {
+  margin-top: 1rem;
+  font-family: var(--club-serif);
+  font-size: 0.9375rem;
+  letter-spacing: 0.04em;
+  color: #64748b;
+}
+:global(.dark .memory-coda-text) {
+  color: #94a3b8;
+}
+.memory-coda .club-text-link {
+  margin-top: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .memory-figure-hint {
+    transition: none;
+  }
+}
 </style>
 
 <style>
-/* Keyframes are global: Tailwind arbitrary `animate-[...]` utilities (and the
-   lightbox component, which lives in another SFC) reference these names. */
-@keyframes ping-pong-dot-1 {
-  0% { visibility: visible; }
-  50% { visibility: hidden; }
-  66.6% { visibility: visible; }
-}
-@keyframes ping-pong-dot-2 {
-  0% { visibility: visible; }
-  33.3% { visibility: hidden; }
-  83.3% { visibility: visible; }
-}
-@keyframes ping-pong-dot-3 {
-  0% { visibility: visible; }
-  16.6% { visibility: hidden; }
-}
-
-@keyframes floating {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-@keyframes zoomIn {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
-}
-@keyframes slideUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
 /* Archived `activity-detail-bg`: the body/layout step aside so the page's own
    paper background controls the overscroll area. */
 body.activity-detail-bg {
   background: transparent !important;
 }
-
 body.activity-detail-bg #__nuxt,
 body.activity-detail-bg #__nuxt > div,
 body.activity-detail-bg main {

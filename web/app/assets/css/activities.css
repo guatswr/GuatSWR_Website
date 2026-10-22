@@ -1,0 +1,597 @@
+/* ==========================================================================
+   桂航绯想天 · 往期活动回顾 (Editorial Activity Chronicle & Memory Archive)
+   统一全站 club-paper 纸本风雅与线框体系，并与“活动中心”转场动画无缝衔接
+   ========================================================================== */
+
+.activities-stage {
+  --act-border: #dce4e8;
+  --act-rule: rgb(220 228 232 / 0.7);
+  --act-surface: #ffffff;
+  --act-subtle-bg: rgb(248 250 252 / 0.85);
+  --act-ink-strong: #0f172a;
+  --act-ink: #1e293b;
+  --act-body: #475569;
+  --act-muted: #64748b;
+  --act-vermilion: #a34e47;
+  --act-vermilion-tint: rgb(163 78 71 / 0.08);
+  --act-sky: #0369a1;
+  --act-sky-tint: rgb(3 105 161 / 0.07);
+  --act-ambient-mark: rgb(163 78 71 / 0.075);
+  --act-ambient-line: rgb(3 105 161 / 0.045);
+
+  position: relative;
+  min-height: calc(100svh - 4rem);
+  overflow-x: clip;
+}
+
+.dark .activities-stage {
+  --act-border: #293847;
+  --act-rule: rgb(41 56 71 / 0.7);
+  --act-surface: #14202b;
+  --act-subtle-bg: rgb(18 28 39 / 0.85);
+  --act-ink-strong: #f1f5f9;
+  --act-ink: #e2e8f0;
+  --act-body: #94a3b8;
+  --act-muted: #64748b;
+  --act-vermilion: #f0a899;
+  --act-vermilion-tint: rgb(240 168 153 / 0.1);
+  --act-sky: #7dd3fc;
+  --act-sky-tint: rgb(125 211 252 / 0.08);
+  --act-ambient-mark: rgb(251 113 133 / 0.08);
+  --act-ambient-line: rgb(56 189 248 / 0.045);
+}
+
+/* --------------------------------------------------------------------------
+   背景几何水印（与活动中心同一转速与星轨位置，转场时产生无缝连续视觉）
+   -------------------------------------------------------------------------- */
+.activities-ambient {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 0;
+  transform: translateZ(0);
+}
+
+.activities-ambient-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(to right, var(--act-ambient-line) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--act-ambient-line) 1px, transparent 1px);
+  background-size: 4.5rem 4.5rem;
+  mask-image: radial-gradient(ellipse 85% 65% at 50% 18%, #000 15%, transparent 80%);
+}
+
+.activities-ambient-watermark {
+  position: absolute;
+  top: 4.5rem;
+  right: max(-5rem, calc(50% - 46rem));
+  width: 24rem;
+  height: 24rem;
+  color: var(--act-ambient-mark);
+}
+
+.activities-container {
+  position: relative;
+  z-index: 1;
+  padding-block: 2rem 5rem;
+}
+
+.activities-content {
+  margin-top: 2rem;
+}
+
+@media (max-width: 700px) {
+  .activities-container {
+    padding-block: 1.5rem 3.5rem;
+  }
+}
+
+/* --------------------------------------------------------------------------
+   操作与筛选工具栏 (Toolbar & Filter Rail)
+   还原旧版结构，保持紧凑自然排版与清晰对齐
+   -------------------------------------------------------------------------- */
+.activities-toolbar {
+  display: flex;
+  flex-direction: column;
+  gap: 0.875rem;
+  margin-bottom: 2.25rem;
+  padding: 1rem 1.25rem;
+  border: 1px solid var(--act-border);
+  background-color: var(--act-surface);
+  transition: border-color 200ms ease;
+}
+
+.activities-search-box {
+  position: relative;
+  flex: 1;
+  max-width: 24rem;
+}
+
+.activities-search-input {
+  width: 100%;
+  height: 2.25rem;
+  padding: 0 2rem 0 2.25rem;
+  border: 1px solid var(--act-border);
+  border-radius: 2px;
+  background-color: var(--act-subtle-bg);
+  color: var(--act-ink);
+  font-size: 0.8125rem;
+  transition: border-color 180ms ease, background-color 180ms ease;
+}
+
+.activities-search-input:focus {
+  outline: none;
+  border-color: var(--act-sky);
+  background-color: var(--act-surface);
+}
+
+.activities-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border: 1px solid var(--act-border);
+  border-radius: 2px;
+  background-color: var(--act-subtle-bg);
+  color: var(--act-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 180ms ease;
+}
+
+.activities-action-btn:hover {
+  border-color: var(--act-sky);
+  color: var(--act-ink-strong);
+  background-color: var(--act-surface);
+}
+
+.activities-view-group {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid var(--act-border);
+  border-radius: 2px;
+  background-color: var(--act-subtle-bg);
+}
+
+.activities-view-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  height: 2.25rem;
+  padding: 0 0.75rem;
+  border: none;
+  background: transparent;
+  color: var(--act-muted);
+  font-size: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: color 150ms ease, background-color 150ms ease;
+}
+
+.activities-view-tab:hover {
+  color: var(--act-ink-strong);
+}
+
+.activities-view-tab.is-active {
+  background-color: var(--act-surface);
+  color: var(--act-sky);
+  font-weight: 600;
+  box-shadow: inset 0 -2px 0 var(--act-sky);
+}
+
+/* 标签筛选轨 */
+.activities-rail-label {
+  font-family: var(--club-serif);
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--act-muted);
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.activities-rail-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  height: 1.875rem;
+  padding: 0 0.625rem;
+  border: 1px solid var(--act-border);
+  border-radius: 2px;
+  background-color: var(--act-subtle-bg);
+  color: var(--act-body);
+  font-size: 0.75rem;
+  cursor: pointer;
+  user-select: none;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  transition: all 150ms ease;
+}
+
+.activities-rail-item:hover {
+  border-color: var(--act-sky);
+  color: var(--act-ink-strong);
+}
+
+.activities-rail-item.is-active {
+  border-color: var(--act-sky);
+  border-top: 2px solid var(--act-sky);
+  background-color: var(--act-surface);
+  color: var(--act-sky);
+  font-weight: 600;
+}
+
+.activities-count-num {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  opacity: 0.75;
+}
+
+/* --------------------------------------------------------------------------
+   头条精选纪事 (Spotlight Featured Dispatch)
+   -------------------------------------------------------------------------- */
+.activities-featured {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  padding-bottom: 2.25rem;
+  margin-bottom: 2.5rem;
+  border-bottom: 1px solid var(--act-border);
+  transition: border-color 200ms ease;
+}
+
+@media (min-width: 768px) {
+  .activities-featured {
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+    align-items: stretch;
+    gap: 2.5rem;
+  }
+}
+
+.activities-featured-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border: 1px solid var(--act-border);
+  border-radius: 2px;
+  background-color: var(--act-subtle-bg);
+}
+
+.activities-featured:is(:hover, :focus-visible) {
+  border-bottom-color: var(--act-sky);
+}
+
+.activities-featured:is(:hover, :focus-visible) .activities-featured-title {
+  color: var(--act-sky);
+}
+
+.activities-featured-title {
+  margin-top: 0.75rem;
+  font-family: var(--club-serif);
+  font-size: clamp(1.4rem, 2.5vw, 2rem);
+  font-weight: 600;
+  line-height: 1.38;
+  letter-spacing: -0.015em;
+  color: var(--act-ink-strong);
+  word-break: break-word;
+  transition: color 200ms ease;
+}
+
+/* --------------------------------------------------------------------------
+   回忆卡片网格 (Dossier Archive Grid)
+   -------------------------------------------------------------------------- */
+.activities-grid {
+  display: grid;
+  gap: 2rem 1.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(18rem, 1fr));
+}
+
+.activities-card {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  border: 1px solid var(--act-border);
+  border-top: 2px solid transparent;
+  border-radius: 2px;
+  background-color: var(--act-surface);
+  transition: border-color 200ms ease, transform 200ms ease;
+}
+
+.activities-card:is(:hover, :focus-visible) {
+  border-top-color: var(--act-sky);
+  border-color: var(--act-sky);
+  transform: translateY(-2px);
+}
+
+.activities-card-media {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  overflow: hidden;
+  border-bottom: 1px solid var(--act-rule);
+  background-color: var(--act-subtle-bg);
+}
+
+.activities-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 1.125rem 1.25rem;
+  justify-content: space-between;
+}
+
+.activities-card-title {
+  margin-top: 0.5rem;
+  font-family: var(--club-serif);
+  font-size: 1.125rem;
+  font-weight: 600;
+  line-height: 1.45;
+  color: var(--act-ink-strong);
+  word-break: break-word;
+  transition: color 200ms ease;
+}
+
+.activities-card:is(:hover, :focus-visible) .activities-card-title {
+  color: var(--act-sky);
+}
+
+.activities-ordinal {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  color: var(--act-vermilion);
+}
+
+.activities-cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--act-sky);
+}
+
+.activities-photo-pill {
+  position: absolute;
+  top: 0.625rem;
+  right: 0.625rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.15rem 0.45rem;
+  border-radius: 2px;
+  background-color: rgb(15 23 42 / 0.75);
+  color: #ffffff;
+  font-size: 0.6875rem;
+  font-family: ui-monospace, monospace;
+  backdrop-filter: blur(4px);
+}
+
+.activities-tag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.1rem 0.4rem;
+  border-radius: 2px;
+  font-size: 0.6875rem;
+  font-weight: 500;
+  border: 1px solid var(--act-border);
+  background-color: var(--act-subtle-bg);
+  color: var(--act-body);
+}
+
+/* --------------------------------------------------------------------------
+   编年时光轴视图 (Chronicle Timeline View)
+   -------------------------------------------------------------------------- */
+.activities-timeline-spine {
+  position: absolute;
+  top: 1rem;
+  bottom: 1.5rem;
+  left: 1.25rem;
+  width: 2px;
+  background-color: var(--act-rule);
+  transform-origin: top center;
+}
+
+.activities-timeline-entry {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  padding-left: 3rem;
+  margin-bottom: 1.75rem;
+}
+
+.activities-timeline-dot {
+  position: absolute;
+  left: 0.875rem;
+  top: 1.25rem;
+  width: 0.8125rem;
+  height: 0.8125rem;
+  border-radius: 9999px;
+  background-color: var(--act-surface);
+  border: 2px solid var(--act-vermilion);
+  transition: transform 200ms ease, background-color 200ms ease;
+}
+
+.activities-timeline-entry:is(:hover, :focus-visible) .activities-timeline-dot {
+  transform: scale(1.3);
+  background-color: var(--act-vermilion);
+}
+
+.activities-timeline-card {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  border: 1px solid var(--act-border);
+  border-left: 2px solid var(--act-sky);
+  border-radius: 2px;
+  background-color: var(--act-surface);
+  padding: 1.125rem 1.25rem;
+  transition: border-color 200ms ease;
+}
+
+@media (min-width: 640px) {
+  .activities-timeline-card {
+    flex-direction: row;
+    gap: 1.5rem;
+    align-items: center;
+  }
+}
+
+.activities-timeline-card:is(:hover, :focus-visible) {
+  border-color: var(--act-sky);
+}
+
+/* ==========================================================================
+   页面载入与转场动画编排 (Orchestrated Page-Enter Choreography)
+   深度复用并衔接活动中心 (.events-stage) 的物理节奏与缓动曲线
+   ========================================================================== */
+
+@keyframes activities-astrolabe-enter {
+  0% {
+    opacity: 0;
+    transform: scale(0.82) rotate(-30deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes activities-astrolabe-spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* 4. 索引看板微浮现 */
+@keyframes activities-badge-slide {
+  0% {
+    opacity: 0;
+    transform: translateY(8px) scale(0.96);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 5. 工具栏升起 */
+@keyframes activities-board-enter {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 6. 标签分类芯片按序升起 */
+@keyframes activities-tab-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* 7. 特刊高光大卡片展开 */
+@keyframes activities-featured-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(22px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 8. 档案卡片列表序贯展开 */
+@keyframes activities-card-rise {
+  0% {
+    opacity: 0;
+    transform: translateY(20px) scale(0.985);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+/* 9. 时间轴纵线拉开 */
+@keyframes activities-spine-draw {
+  0% {
+    transform: scaleY(0);
+  }
+  100% {
+    transform: scaleY(1);
+  }
+}
+
+/* 10. 时间轴节点滑入 */
+@keyframes activities-timeline-node-enter {
+  0% {
+    opacity: 0;
+    transform: translateX(-12px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* 在 .is-entered 激活时按精准时间线（Delay）序列播放 */
+.activities-stage.is-entered .activities-ambient-watermark {
+  animation:
+    activities-astrolabe-enter 1100ms cubic-bezier(0.16, 1, 0.3, 1) backwards,
+    activities-astrolabe-spin 90s linear 1100ms infinite;
+}
+
+.activities-stage.is-entered .activities-toolbar {
+  animation: activities-board-enter 460ms cubic-bezier(0.22, 1, 0.36, 1) 140ms backwards;
+}
+
+.activities-stage.is-entered .activities-rail-item {
+  animation: activities-tab-rise 420ms cubic-bezier(0.22, 1, 0.36, 1) calc(160ms + var(--rail-index, 0) * 30ms) backwards;
+}
+
+.activities-stage.is-entered .activities-featured {
+  animation: activities-featured-rise 540ms cubic-bezier(0.22, 1, 0.36, 1) 180ms backwards;
+}
+
+.activities-stage.is-entered .activities-card {
+  animation: activities-card-rise 480ms cubic-bezier(0.22, 1, 0.36, 1) calc(200ms + var(--card-index, 0) * 45ms) backwards;
+}
+
+.activities-stage.is-entered .activities-timeline-spine {
+  animation: activities-spine-draw 650ms cubic-bezier(0.22, 1, 0.36, 1) 160ms backwards;
+}
+
+.activities-stage.is-entered .activities-timeline-entry {
+  animation: activities-timeline-node-enter 460ms cubic-bezier(0.22, 1, 0.36, 1) calc(180ms + var(--node-index, 0) * 45ms) backwards;
+}
+
+/* 动效友好减少模式 */
+@media (prefers-reduced-motion: reduce) {
+  .activities-stage.is-entered * {
+    animation: none !important;
+    transition: none !important;
+    transform: none !important;
+  }
+}

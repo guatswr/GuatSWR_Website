@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import '~/assets/css/events.css'
-import ClubIcon from '~/components/ClubIcon.vue'
+import EventPageHeader from '~/components/EventPageHeader.vue'
 import { EVENT_NAVIGATION, eventCategoryByPath } from '~/utils/event-center'
 
 const route = useRoute()
@@ -56,25 +56,15 @@ onMounted(() => {
     </div>
 
     <div class="club-container events-container">
-      <header class="events-heading">
-        <div class="events-heading-main">
-          <div class="events-heading-title-row">
-            <span class="events-heading-seal" aria-hidden="true">集会</span>
-            <h1>活动中心</h1>
-          </div>
-          <Transition name="events-fade" mode="out-in">
-            <p :key="activeCategory.path" class="events-heading-subtitle">
-              {{ activeCategory.subtitle }}
-            </p>
-          </Transition>
-        </div>
-
-        <NuxtLink to="/activities" class="events-archive-link">
-          <span class="events-archive-seal" aria-hidden="true">旧卷</span>
-          <span>往期活动回顾</span>
-          <ClubIcon name="external" />
-        </NuxtLink>
-      </header>
+      <EventPageHeader
+        title="活动中心"
+        seal="集会"
+        :subtitle="activeCategory.subtitle"
+        :subtitle-key="activeCategory.path"
+        link-to="/activities"
+        link-seal="旧卷"
+        link-label="往期活动回顾"
+      />
 
       <nav class="events-navigation" aria-label="活动种类">
         <NuxtLink
