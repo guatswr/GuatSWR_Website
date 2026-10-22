@@ -14,7 +14,7 @@ export const run = (db, sql, params = []) => new Promise((resolve, reject) => db
 export const get = (db, sql, params = []) => new Promise((resolve, reject) => db.get(sql, params, (err, row) => err ? reject(err) : resolve(row)))
 export const all = (db, sql, params = []) => new Promise((resolve, reject) => db.all(sql, params, (err, rows) => err ? reject(err) : resolve(rows)))
 export const token = (id = 1, role = 'super_admin', version = 0) => jwt.sign({ id, username: id === 1 ? 'owner' : 'admin', role, token_version: version }, secret, { expiresIn: '24h' })
-export const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jf1sAAAAASUVORK5CYII=', 'base64')
+export const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR4nGP4z8DwHwAFAAH/iZk9HQAAAABJRU5ErkJggg==', 'base64')
 export const fixture = async (overrides = {}) => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'guatswr-contract-'))
   let instance
