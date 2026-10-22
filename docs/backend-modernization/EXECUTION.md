@@ -1,6 +1,6 @@
 # 后端迭代执行表
 
-更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00/01/02 DONE；BM-03实施中，其余 TODO。规划文档的生成不代表任务验收完成。
+更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00/01/02 DONE；BM-03 DONE（M0远程验收）；BM-04准备中，其余 TODO。规划文档的生成不代表任务验收完成。
 
 每行是一个任务包；涉及多个风险维度时按 a/b 子 PR 拆分。前置编号具有传递性。状态只能依次更新为 TODO → DOING → REVIEW → DONE；BLOCKED 必须写明缺少的事实和解除条件。BM-36 是条件发布任务，BM-37～39 是可延期分支。
 
@@ -11,7 +11,7 @@
 | BM-00 / P0 基线冻结（DONE，首批基线） | 无 | 核对 HEAD、锁文件、app 挂载、全部路由、BFF 固定路由；补充每接口正常/异常响应与消费者；登记安全例外 | API 台账、EX 差异登记、环境事实清单；71 操作逐项有归属；A01 | 仅文档；不把源码统计当运行结果 |
 | BM-01 / P0 隔离启动（DONE） | 00a（运行部分 00b 随 02） | db.js/app.js/auth.js/event.js：最小化提取路径与连接工厂；可等待初始化；测试禁用 scheduler/cleanup/Webhook；显式关闭连接和 timer | 临时双库/public/backups fixture，测试 app factory；两实例互不污染、失败退出无监听；L01 | 保留 server.js 生产入口兼容；不能先大规模改业务 |
 | BM-02 / P0 行为测试（DONE） | 01 | backend/tests：Vitest+Supertest；真实 SQLite；迁入现有 node:test 的有价值断言；从路由而非内存模拟验证 | A01～A08、D01、F01、B01、I01 首批基线；缺陷单独复现；建立真实 BFF 接入脚手架 | 不运行原数据；旧缺陷不得变成永久正确断言 |
-| BM-03 / P0 后端 CI | 02 | 新增后端 workflow；backend/shared/部署/脚本变更触发；Linux 原生模块与 Windows 文件路径检查 | npm ci、测试、后续类型/lint/build、容器 smoke；单改 backend 的 PR 确实触发；保留前端门禁 | 未引入的命令不得伪造通过；根 pnpm test 暂不覆盖后端 |
+| BM-03 / P0 后端 CI（DONE） | 02 | 新增后端 workflow；backend/shared/部署/脚本变更触发；Linux 原生模块与 Windows 文件路径检查 | npm ci、测试、后续类型/lint/build、容器 smoke；单改 backend 的 PR 确实触发；保留前端门禁 | 未引入的命令不得伪造通过；根 pnpm test 暂不覆盖后端 |
 | BM-04 / P0 Node 24 | 03 | backend/Dockerfile/package：只升级运行时和可复现安装，npm install 改 npm ci 单独审查；核验 sqlite3/sharp 原生构建 | 精确 Node、镜像 digest、SQLite CLI/嵌入引擎版本、锁审计结果；A/L/N 测试 | 不合并 Express/驱动升级；旧镜像+原挂载可回退 |
 | BM-05 / P0 代理网络 | 04 | app trust proxy、Compose、Nuxt IP 配置：列实际链路；按 CIDR 信任；覆盖 XFF；关闭公网直连或明确 loopback | 代理拓扑、各入口 req.ip 结果；伪造/短链/IPv6、登录/封禁/报名回显测试 N01 | 无生产事实仅能本地验收；不能把所有请求变成 BFF IP |
 | BM-06 / P0 上传路径安全 | 04 | storage/upload/visitor：正整数选择器、路径分隔符边界和真实路径检查；Multer 安全升级独立子 PR；私有验证区、资源上限、失败清理 | F01～F04；SVG 服务策略和兼容例外；每个上传入口真实 multipart | 保留 URL 和 50MiB 兼容；防同前缀目录、symlink、半成品公开；不批量搬历史文件 |
