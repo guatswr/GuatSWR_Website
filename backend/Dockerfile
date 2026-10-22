@@ -7,6 +7,7 @@ RUN apt-get update -o Acquire::Retries=3 \
     && rm -rf /var/lib/apt/lists/*
 RUN npm ci --omit=dev --no-audit --no-fund
 COPY . .
+ENV BIND_HOST=0.0.0.0
 EXPOSE 3000
 RUN mkdir -p /app/data /app/uploads
 CMD ["node", "server.js"]

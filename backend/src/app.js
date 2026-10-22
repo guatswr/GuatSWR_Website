@@ -38,7 +38,7 @@ const CORS_ORIGINS = (env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.
   .filter(Boolean);
 const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
-app.set('trust proxy', true);
+app.set('trust proxy', require('./config/proxy').createTrustProxy(env.TRUST_PROXY_CIDRS));
 app.disable('x-powered-by');
 
 app.use(banGuard);

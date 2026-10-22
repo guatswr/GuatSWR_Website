@@ -28,7 +28,7 @@ export const fixture = async (overrides = {}) => {
     paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },
     backgroundTasks: false, externalServices: false })
   // Explicit direct-loopback test topology. Production proxy policy is tested separately.
-  instance.app.set('trust proxy', false)
+  // Default policy is supplied by the application, never overridden here.
   const db = instance.context.db
   for (const [id, name, role] of [[1, 'owner', 'super_admin'], [2, 'admin', 'admin'], [3, 'second', 'super_admin'], [4, 'target', 'admin']]) {
     await run(db, 'INSERT INTO users(id,username,password,role,avatar) VALUES (?,?,?,?,?)', [id,name,hash,role,'/uploads/avatar.png'])
