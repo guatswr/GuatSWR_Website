@@ -27,6 +27,10 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
       - run: npm --prefix backend ci
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python backend/scripts/backup_bundle_test.py
       - run: npm --prefix backend run test:unit
       - run: npm --prefix backend run test:integration -- --reporter=default --reporter=json --outputFile=test-results/integration.json
       - run: npm --prefix backend run test:contracts -- --reporter=default --reporter=json --outputFile=test-results/contracts.json
@@ -50,6 +54,8 @@ jobs:
       - run: docker build -t guatswr-backend-runtime backend
       - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
+      - run: docker run --rm --network none guatswr-backend-runtime python3 scripts/backup_bundle_test.py
+      - run: docker run --rm --network none --tmpfs /limited:rw,size=1m -e BACKUP_TEST_LIMIT_ROOT=/limited guatswr-backend-runtime node scripts/test-backup-restore.cjs
   real-bff:
     runs-on: ubuntu-latest
     timeout-minutes: 30

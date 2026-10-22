@@ -21,6 +21,8 @@ pnpm-debug.log*
 
 # Build/Cache
 **/coverage/
+**/__pycache__/
+**/*.pyc
 **/.cache/
 /.tools/
 **/.nuxt/

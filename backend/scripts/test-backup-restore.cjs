@@ -1,0 +1,58 @@
+const assert=require('node:assert/strict');
+const fs=require('node:fs/promises');
+const path=require('node:path');
+const os=require('node:os');
+const {execFile}=require('node:child_process');
+const {promisify}=require('node:util');
+const exec=promisify(execFile);
+const {createApplication}=require('../src/app');
+(async()=>{
+ const root=await fs.mkdtemp(path.join(os.tmpdir(),'guatswr-restore-check-'));
+ let source,restored;
+ try{
+  const data=path.join(root,'data'),publicDir=path.join(data,'public'),backups=path.join(root,'backups');
+  source=await createApplication({env:{NODE_ENV:'test',JWT_SECRET:'isolated-restore-key'},paths:{data,public:publicDir,backups},backgroundTasks:false,externalServices:false});
+  await new Promise((resolve,reject)=>source.context.db.run("INSERT INTO history(date,title) VALUES ('2026-01-01','restore fixture')",error=>error?reject(error):resolve()));
+  await fs.writeFile(path.join(publicDir,'fixture.txt'),'public fixture');
+  const scriptDir=process.env.BACKUP_SCRIPT_DIR || __dirname;
+  const bundle=process.env.BACKUP_BUNDLE_SCRIPT || path.join(__dirname,'backup_bundle.py');
+  const env={...process.env,DATA_DIR:data,PUBLIC_DIR:publicDir,BACKUP_ROOT:backups,BACKUP_DATE_TAG:'20261023_000100',BACKUP_WRITE_FENCE:'acknowledged',BACKUP_SOURCE_REVISION:'synthetic-check'};
+  await exec('/bin/bash',[path.join(scriptDir,'backup_all.sh')],{env});
+  const archive=path.join(backups,'full/full_20261023_000100.tar.gz');
+  await assert.rejects(exec('/bin/bash',[path.join(scriptDir,'restore.sh'),archive]),/--target/);
+  const target=path.join(root,'recovered');
+  await exec('python3',[bundle,'restore',archive,'--target',target]);
+  restored=await createApplication({env:{NODE_ENV:'test',JWT_SECRET:'isolated-restore-key'},paths:{data:path.join(target,'data'),public:path.join(target,'data/public'),backups:path.join(target,'backups')},backgroundTasks:false,externalServices:false});
+  const row=await new Promise((resolve,reject)=>restored.context.db.get('SELECT title FROM history',(error,value)=>error?reject(error):resolve(value)));
+  assert.equal(row.title,'restore fixture');
+  assert.equal(await fs.readFile(path.join(target,'data/public/fixture.txt'),'utf8'),'public fixture');
+  const server=await restored.listen(0,'127.0.0.1');
+  const origin=`http://127.0.0.1:${server.address().port}`;
+  const history=await fetch(origin+'/api/history');
+  assert.equal(history.status,200);
+  assert.equal((await history.json())[0].title,'restore fixture');
+  const resource=await fetch(origin+'/uploads/fixture.txt');
+  assert.equal(resource.status,200);
+  assert.equal(await resource.text(),'public fixture');
+  const receipt=JSON.parse(await fs.readFile(path.join(target,'RESTORE_READY.json'),'utf8'));
+  assert.equal(receipt.manifest.consistency,'quiesced-attested');
+  assert.equal(receipt.manifest.source_revision,'synthetic-check');
+  await assert.rejects(exec('python3',[bundle,'restore',archive,'--target',target]),/must not exist/);
+  const badTarget=path.join(root,'bad-target');
+  await assert.rejects(exec('python3',[bundle,'restore',archive,'--target',badTarget,'--sha256','0'.repeat(64)]),/checksum mismatch/);
+  await assert.rejects(fs.access(badTarget));
+  assert.equal(await fs.readFile(path.join(publicDir,'fixture.txt'),'utf8'),'public fixture');
+  if(process.env.BACKUP_TEST_LIMIT_ROOT){
+    await fs.writeFile(path.join(publicDir,'large-fixture.bin'),require('node:crypto').randomBytes(4*1024*1024));
+    await assert.rejects(exec('/bin/bash',[path.join(scriptDir,'backup_all.sh')],{env:{...env,BACKUP_ROOT:process.env.BACKUP_TEST_LIMIT_ROOT,BACKUP_DATE_TAG:'20261023_000200'}}),/No space left/);
+    await assert.rejects(fs.access(path.join(process.env.BACKUP_TEST_LIMIT_ROOT,'full/full_20261023_000200.tar.gz')));
+    assert.equal(await fs.readFile(path.join(publicDir,'fixture.txt'),'utf8'),'public fixture');
+  }
+  console.log(JSON.stringify({ok:true,manifest:true,isolatedRestore:true,applicationHttp:true,resourceBytes:true,checksumRejection:true,overwriteRejection:true,diskFull:!!process.env.BACKUP_TEST_LIMIT_ROOT}));
+ }finally{
+  await restored?.close();await source?.close();
+  assert.equal(path.dirname(path.resolve(root)),path.resolve(os.tmpdir()));
+  assert.ok(path.basename(root).startsWith('guatswr-restore-check-'));
+  await fs.rm(root,{recursive:true,force:true});
+ }
+})().catch(error=>{console.error(error);process.exitCode=1});

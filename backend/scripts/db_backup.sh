@@ -29,6 +29,8 @@ backup_one() {
 }
 backup_one "$DB_PATH" main.db
 backup_one "$LOG_DB_PATH" logs.db
+[[ "$("$SQLITE3_BIN" -readonly "$TMP_DIR/main.db" "SELECT count(*) FROM sqlite_master WHERE type='table' AND name IN ('users','site_config');")" == '2' ]] || fail 'main database identity mismatch'
+[[ "$("$SQLITE3_BIN" -readonly "$TMP_DIR/logs.db" "SELECT count(*) FROM sqlite_master WHERE type='table' AND name='audit_logs';")" == '1' ]] || fail 'audit database identity mismatch'
 tar -czf "$TMP_DIR/archive.tar.gz" -C "$TMP_DIR" main.db logs.db
 DIGEST="$(sha256sum "$TMP_DIR/archive.tar.gz")"
 printf '%s  %s\n' "${DIGEST%% *}" "db_${DATE_TAG}.tar.gz" > "$TMP_DIR/archive.sha256"

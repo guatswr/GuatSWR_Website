@@ -8,7 +8,7 @@ const output = path.resolve(process.argv[2]);
 if (fs.existsSync(output)) throw new Error('Context directory must not already exist');
 fs.mkdirSync(path.join(output, 'backend'), { recursive: true });
 for (const name of ['src','tests','docs','scripts','package.json','package-lock.json','server.js','vitest.config.mjs','vitest.bff.config.mjs']) {
-  fs.cpSync(path.join(backend,name),path.join(output,'backend',name),{recursive:true});
+  fs.cpSync(path.join(backend,name),path.join(output,'backend',name),{recursive:true,filter:source=>path.basename(source)!=='__pycache__'&&!source.endsWith('.pyc')});
 }
 const evidence=path.join(output,'docs/backend-modernization/evidence');
 fs.mkdirSync(evidence,{recursive:true});

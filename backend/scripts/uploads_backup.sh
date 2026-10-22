@@ -1,29 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
-
-ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-PUBLIC_DIR="$ROOT_DIR/data/public"
-BACKUP_DIR="$ROOT_DIR/backups/uploads"
-DATE_TAG="${BACKUP_DATE_TAG:-$(date +%Y%m%d_%H%M%S)}"
-
-mkdir -p "$BACKUP_DIR"
-
-if [[ ! -d "$PUBLIC_DIR" ]]; then
-  echo "Public dir not found: $PUBLIC_DIR" >&2
-  exit 1
-fi
-
-ARCHIVE="$BACKUP_DIR/uploads_${DATE_TAG}.tar.gz"
-
-# 生成文件哈希清单，便于防篡改校验
-HASH_FILE="$BACKUP_DIR/uploads_${DATE_TAG}.sha256"
-
-(cd "$PUBLIC_DIR" && find . -type f -print0 | sort -z | xargs -0 sha256sum) > "$HASH_FILE"
-
-tar -czf "$ARCHIVE" -C "$PUBLIC_DIR" .
-
-# 可选：删除 30 天前的备份
-find "$BACKUP_DIR" -type f -name "*.tar.gz" -mtime +30 -delete
-find "$BACKUP_DIR" -type f -name "*.sha256" -mtime +30 -delete
-
-echo "Uploads backup OK: $ARCHIVE"
+source "$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd -P)/_backup_common.sh"
+require_tool python3
+PUBLIC_DIR="${PUBLIC_DIR:-$DATA_DIR/public}"
+exec python3 "$SCRIPT_DIR/backup_bundle.py" public --root "$PUBLIC_DIR" --out "$BACKUP_ROOT/uploads" --tag "$DATE_TAG"

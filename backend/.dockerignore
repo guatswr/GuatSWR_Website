@@ -8,3 +8,5 @@ uploads
 test-results
 .cache
 coverage
+**/__pycache__
+**/*.pyc

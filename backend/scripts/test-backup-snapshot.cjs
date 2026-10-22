@@ -29,9 +29,11 @@ const {createApplication}=require('../src/app');
   await assert.rejects(exec('/bin/bash',[script],{env:{...env,BACKUP_DATE_TAG:'20261023_000003',LOG_DB_PATH:instance.context.dbPath}}),/databases must be distinct/);
   const corrupt=path.join(root,'corrupt.db');await fs.writeFile(corrupt,'not sqlite');
   await assert.rejects(exec('/bin/bash',[script],{env:{...env,BACKUP_DATE_TAG:'20261023_000004',LOG_DB_PATH:corrupt}}),/not a database/);
+  const wrongAudit=path.join(root,'wrong-audit.db');await fs.copyFile(path.join(extracted,'main.db'),wrongAudit);
+  await assert.rejects(exec('/bin/bash',[script],{env:{...env,BACKUP_DATE_TAG:'20261023_000005',LOG_DB_PATH:wrongAudit}}),/database identity mismatch/);
   const names=await fs.readdir(path.join(backups,'db'));
   assert.deepEqual(names.sort(),['db_20261023_000001.sha256','db_20261023_000001.tar.gz']);
-  console.log('B01 dual-WAL snapshots, missing DB/CLI, collision and cleanup: 8 checks passed');
+  console.log('B01 dual-WAL snapshots, missing DB/CLI, collision and cleanup: 9 checks passed');
  }finally{
   await instance?.close();
   const resolved=path.resolve(root);
