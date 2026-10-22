@@ -1,0 +1,606 @@
+{
+  "commit": "1f057a9a4792ee4f79cedec9d28ebd1c8521f417",
+  "source": "git object bytes; no database opened",
+  "operations": [
+    {
+      "id": "API-01",
+      "operation": "GET /api/activities",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/activities.js:12",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.list"
+    },
+    {
+      "id": "API-02",
+      "operation": "GET /api/activities/:id",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/activities.js:49",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.detail"
+    },
+    {
+      "id": "API-03",
+      "operation": "POST /api/activities/draft",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/activities.js:73",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.draft"
+    },
+    {
+      "id": "API-04",
+      "operation": "POST /api/activities",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/activities.js:86",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.create"
+    },
+    {
+      "id": "API-05",
+      "operation": "PUT /api/activities/:id",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/activities.js:120",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.update"
+    },
+    {
+      "id": "API-06",
+      "operation": "DELETE /api/activities/:id",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/activities.js:141",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.delete"
+    },
+    {
+      "id": "API-07",
+      "operation": "POST /api/activities/:id/restore",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/activities.js:152",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "activity.restore"
+    },
+    {
+      "id": "API-08",
+      "operation": "GET /api/admin/users",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:24",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "user.list"
+    },
+    {
+      "id": "API-09",
+      "operation": "DELETE /api/admin/users/:id",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:34",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "user.delete"
+    },
+    {
+      "id": "API-10",
+      "operation": "PUT /api/admin/users/:id/password",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:49",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "user.resetPassword"
+    },
+    {
+      "id": "API-11",
+      "operation": "PUT /api/admin/users/:id/twofa/reset",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:67",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "user.resetTwofa"
+    },
+    {
+      "id": "API-12",
+      "operation": "POST /api/admin/token-version/refresh",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:85",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "tokenVersion.refresh"
+    },
+    {
+      "id": "API-13",
+      "operation": "GET /api/admin/logs",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/admin.js:104",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "log.list"
+    },
+    {
+      "id": "API-14",
+      "operation": "DELETE /api/admin/logs/:id",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:135",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "log.delete"
+    },
+    {
+      "id": "API-15",
+      "operation": "POST /api/admin/recycle-bin/purge",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:150",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "recycle.purge"
+    },
+    {
+      "id": "API-16",
+      "operation": "GET /api/admin/bans",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:210",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "ban.list"
+    },
+    {
+      "id": "API-17",
+      "operation": "POST /api/admin/bans",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:222",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "ban.create"
+    },
+    {
+      "id": "API-18",
+      "operation": "DELETE /api/admin/bans/:ip",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:237",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-19",
+      "operation": "GET /api/admin/backups/settings",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:253",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "backup.settings"
+    },
+    {
+      "id": "API-20",
+      "operation": "POST /api/admin/backups/settings",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:270",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "backup.configure"
+    },
+    {
+      "id": "API-21",
+      "operation": "GET /api/admin/backups",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:290",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "backup.list"
+    },
+    {
+      "id": "API-22",
+      "operation": "GET /api/admin/backups/download",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:303",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-23",
+      "operation": "DELETE /api/admin/backups",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:315",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "backup.delete"
+    },
+    {
+      "id": "API-24",
+      "operation": "POST /api/admin/backups/run",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:330",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-25",
+      "operation": "GET /api/admin/events/pending",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/admin.js:343",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-26",
+      "operation": "POST /api/admin/events/:id/review",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/admin.js:366",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-27",
+      "operation": "DELETE /api/admin/events/:id",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/admin.js:391",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-28",
+      "operation": "POST /api/auth/login",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/auth.js:49",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "auth.login"
+    },
+    {
+      "id": "API-29",
+      "operation": "PUT /api/auth/profile",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/auth.js:109",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "profile.update"
+    },
+    {
+      "id": "API-30",
+      "operation": "GET /api/auth/me",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/auth.js:176",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "auth.me"
+    },
+    {
+      "id": "API-31",
+      "operation": "POST /api/auth/register",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/auth.js:183",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "user.create"
+    },
+    {
+      "id": "API-32",
+      "operation": "POST /api/bot/notify/activity",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/bot.js:36",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-33",
+      "operation": "POST /api/bot/notify/history",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/bot.js:47",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-34",
+      "operation": "POST /api/bot/notify/member",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/bot.js:59",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-35",
+      "operation": "GET /api/config",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/config.js:10",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "config.read"
+    },
+    {
+      "id": "API-36",
+      "operation": "POST /api/config",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/config.js:41",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "config.write"
+    },
+    {
+      "id": "API-37",
+      "operation": "POST /api/event/draft",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:100",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-38",
+      "operation": "PUT /api/event/:id",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:117",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "event.update"
+    },
+    {
+      "id": "API-39",
+      "operation": "GET /api/event",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:171",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-40",
+      "operation": "GET /api/event/:id",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:208",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "event.detail"
+    },
+    {
+      "id": "API-41",
+      "operation": "POST /api/event/:id/signup",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:232",
+      "openapi": "缺失",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-42",
+      "operation": "GET /api/event/:id/signup",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:301",
+      "openapi": "缺失",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-43",
+      "operation": "DELETE /api/event/:id/signup",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:317",
+      "openapi": "缺失",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-44",
+      "operation": "GET /api/event/:id/participants/public",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/event.js:335",
+      "openapi": "缺失",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-45",
+      "operation": "GET /api/event/admin/list",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:358",
+      "openapi": "缺失",
+      "consumer": "event.list"
+    },
+    {
+      "id": "API-46",
+      "operation": "POST /api/event/admin",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:395",
+      "openapi": "缺失",
+      "consumer": "event.create"
+    },
+    {
+      "id": "API-47",
+      "operation": "POST /api/event/:id/approve",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:424",
+      "openapi": "缺失",
+      "consumer": "event.approve"
+    },
+    {
+      "id": "API-48",
+      "operation": "POST /api/event/:id/reject",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:440",
+      "openapi": "缺失",
+      "consumer": "event.reject"
+    },
+    {
+      "id": "API-49",
+      "operation": "POST /api/event/:id/status",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:455",
+      "openapi": "缺失",
+      "consumer": "event.status"
+    },
+    {
+      "id": "API-50",
+      "operation": "POST /api/event/:id/delete",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:473",
+      "openapi": "缺失",
+      "consumer": "event.delete"
+    },
+    {
+      "id": "API-51",
+      "operation": "POST /api/event/:id/settle",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:488",
+      "openapi": "缺失",
+      "consumer": "event.settle"
+    },
+    {
+      "id": "API-52",
+      "operation": "POST /api/event/:id/set_result",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:513",
+      "openapi": "缺失",
+      "consumer": "event.results"
+    },
+    {
+      "id": "API-53",
+      "operation": "GET /api/event/:id/participants",
+      "authentication": "JWT + admin/super_admin",
+      "source": "backend/src/routes/event.js:538",
+      "openapi": "缺失",
+      "consumer": "event.participants"
+    },
+    {
+      "id": "API-54",
+      "operation": "GET /api/history",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/history.js:11",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "history.list"
+    },
+    {
+      "id": "API-55",
+      "operation": "POST /api/history",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/history.js:19",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "history.create"
+    },
+    {
+      "id": "API-56",
+      "operation": "PUT /api/history/:id",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/history.js:43",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "history.update"
+    },
+    {
+      "id": "API-57",
+      "operation": "DELETE /api/history/:id",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/history.js:67",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "history.delete"
+    },
+    {
+      "id": "API-58",
+      "operation": "POST /api/history/:id/restore",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/history.js:78",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "history.restore"
+    },
+    {
+      "id": "API-59",
+      "operation": "GET /api/logs",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/logs.js:130",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-60",
+      "operation": "GET /api/logs/stats",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/logs.js:158",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-61",
+      "operation": "GET /api/logs/umami",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/logs.js:191",
+      "openapi": "缺失",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-62",
+      "operation": "GET /api/members/stats/schools",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/members.js:58",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-63",
+      "operation": "GET /api/members",
+      "authentication": "可选 JWT（另有业务检查）",
+      "source": "backend/src/routes/members.js:75",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "member.list"
+    },
+    {
+      "id": "API-64",
+      "operation": "POST /api/members",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/members.js:120",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "member.create"
+    },
+    {
+      "id": "API-65",
+      "operation": "PUT /api/members/:id",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/members.js:143",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "member.update"
+    },
+    {
+      "id": "API-66",
+      "operation": "DELETE /api/members/:id",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/members.js:159",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "member.delete"
+    },
+    {
+      "id": "API-67",
+      "operation": "POST /api/members/:id/restore",
+      "authentication": "JWT + super_admin",
+      "source": "backend/src/routes/members.js:170",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "member.restore"
+    },
+    {
+      "id": "API-68",
+      "operation": "POST /api/upload",
+      "authentication": "JWT（无路由级角色中间件）",
+      "source": "backend/src/routes/upload.js:40",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "upload.asset"
+    },
+    {
+      "id": "API-69",
+      "operation": "POST /api/upload/visitor",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/upload_visitor.js:64",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "见下方消费者分组"
+    },
+    {
+      "id": "API-70",
+      "operation": "POST /api/upload/visitor/avatar",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/upload_visitor.js:148",
+      "openapi": "缺失",
+      "consumer": "upload.eventAvatar"
+    },
+    {
+      "id": "API-71",
+      "operation": "GET /api/version",
+      "authentication": "匿名入口",
+      "source": "backend/src/routes/../app.js:85",
+      "openapi": "有（不代表字段准确）",
+      "consumer": "运维/版本检查"
+    }
+  ],
+  "sha256": {
+    "backend/package-lock.json": "3d7f37cdb7da4a5cb83f44b2c31206f2c7763cef110d71c9c55baea8a40f9e57",
+    "backend/src/app.js": "4e5750062ca96d4c9f22a7186ff2f83ee7b4c0ba9a91dccd8363ad4937b848f3",
+    "backend/src/controllers/schemas.js": "6cf4d1cf0f247b6fce310309b86938491d5140ff0af5ce6100408bd5139207f1",
+    "backend/src/middlewares/auth.js": "70d55216dad4687d35b6c8d7e03ea11d21f4b1d35173fafc04ba85fe8d4c29ca",
+    "backend/src/middlewares/ban.js": "301b6cc0cfbfbe6b2b0289737756b0296ee063ad040ac8fede108ba3641aa995",
+    "backend/src/middlewares/limiter.js": "89a86c1f40fec2c1f5d5228fe0776a4149fccdcd98d566d87029c57be5d1d454",
+    "backend/src/middlewares/upload.js": "21c8b271c5e19ae9c8fffabd815731b2d7e014adf5f05e5590c0c8224bcb19cd",
+    "backend/src/models/db.js": "4e4d9fe03c5dd47fe978a7aecc9e65696dcb350dc0ef04d53f33a81a10ea1fa0",
+    "backend/src/routes/activities.js": "51fff94e89e100880ccd6d4d66b85866a7f1277b4c8a98a8c97f0c2ebabb424a",
+    "backend/src/routes/admin.js": "e4d79afad4f5a4ce6b67d5f7bc87c675bc0abd6e9e7924f9ff077e42fa8054d7",
+    "backend/src/routes/auth.js": "fb9cff91e87f7d764c27140215eb2eefb6fb21d356351e52e49a75b113facb7e",
+    "backend/src/routes/bot.js": "4dd2b507783edc11ab4e0f09255230181c303576200ec1737075cf318a73c035",
+    "backend/src/routes/config.js": "7f590a060a5f66bad976c14bd7d83527a7d7d9f67ac461583459120af8e54da1",
+    "backend/src/routes/event.js": "83f74b1605ad11923b0358342e117a02be57813c94e0ae47ab7fef4743a4b6f2",
+    "backend/src/routes/history.js": "96ba850b0ed71c7e5291a2cbab7a29864492314c59c3bb6fb6b164e6435925fd",
+    "backend/src/routes/logs.js": "a2e4954eeb2713375d0f541955a3d04bb1487de5d8bb33c58c973cf7dfd4bd33",
+    "backend/src/routes/members.js": "21449d3a70be55331dcdf78876565a0b2c292e1b1ea3d56b52bd5bf0d599a9a4",
+    "backend/src/routes/upload.js": "e3bafe22e4a1134f86475823edb9d9fb53714304648142124971e7ac09a7c38d",
+    "backend/src/routes/upload_visitor.js": "99f384e1c90d435edf16303315e58165e830668a455a2afc8e323e731b739b7a",
+    "backend/src/utils.js": "8dd35bd5d4396de7dce9a4ba4b4ebb46983891017b47425288a3f8d42510ee28",
+    "backend/src/utils/backup.js": "20adbb4f1760d875d7e32e7fa2d630d3ec7673cf56e0d6b3b667df681c650989",
+    "backend/src/utils/backupScheduler.js": "0d63be9848e6fe8983a6c348ceb69d63843edf8fba146c733d89b55589fd07fa",
+    "backend/src/utils/bot.js": "f22854d8e772f6f858f2c1c0a2959e557396718640cd0c3168a66450d457b5dd",
+    "backend/src/utils/botHooks.js": "d271ec309bf98b199a6c225a6cc6d67b45095b12729eeaa76eb10eff5665a079",
+    "backend/src/utils/eventContentStorage.js": "3819a9ff47714bdf312ee8a80c42973ba41caa7d325dc82be5e33a596c5fd442",
+    "backend/src/utils/eventContentStorage.test.js": "db35bbe8315074ad0c279fb66106917e64bdd0a3cf380ddf233161cb85e84607",
+    "backend/src/utils/storage.js": "6803e388bb875a6f502083dca9f01489527eec235ce0c26992ded1d6f8eb3bbd",
+    "web/server/utils/bff-admin-upstream.ts": "bbfa559c8d0fdb4791d5dd3b0946056ab387cd755124d42552e1139c6f8295f5",
+    "web/server/utils/guest-bff.ts": "734ce1f6c95987d169ad354a981de652684d689b4a41a96034089c11649d3c63",
+    "web/server/utils/public-read.ts": "55f75fd8b18d34dcbcc78e94e7fc9d22e36dfe5e4bac26b5aad1a1a13471828f"
+  }
+}
