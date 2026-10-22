@@ -97,7 +97,7 @@ defineProps({
     </div>
     <a
       href="#interests"
-      class="club-scroll-cue absolute bottom-4 left-1/2 z-10 hidden min-h-11 -translate-x-1/2 items-center gap-3 text-[10px] tracking-[.2em] text-white/80 lg:flex"
+      class="club-scroll-cue absolute bottom-4 left-1/2 z-10 flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap text-[10px] tracking-[.2em] text-white/80"
     >
       <span class="club-scroll-line" aria-hidden="true" />向下，遇见同好
     </a>
@@ -262,6 +262,7 @@ defineProps({
 }
 @media (max-width: 1023px) {
   .club-banner {
+    flex-direction: column;
     min-height: 100vh;
     min-height: 100svh;
     padding-top: max(4rem, calc(env(safe-area-inset-top) + 4rem));
@@ -279,12 +280,20 @@ defineProps({
     display: flex;
     flex-direction: column;
     gap: clamp(1rem, 2.5svh, 1.75rem);
+    margin-block: auto;
     padding-top: clamp(1rem, 3svh, 2rem);
     padding-bottom: max(
       clamp(1.75rem, 4svh, 3rem),
       calc(env(safe-area-inset-bottom) + 2rem)
     );
     text-align: center;
+  }
+  .club-scroll-cue {
+    position: relative;
+    inset: auto;
+    flex-shrink: 0;
+    margin-bottom: max(1rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+    translate: none;
   }
   .club-banner-intro {
     display: flex;
@@ -351,6 +360,15 @@ defineProps({
   .club-banner-actions .club-invitation-label {
     font-size: 0.8125rem;
     letter-spacing: 0.06em;
+  }
+}
+@media (max-width: 1023px) and (max-height: 650px) {
+  .club-banner-content {
+    gap: 0.75rem;
+    padding-block: 0.75rem;
+  }
+  .club-banner-toy {
+    --avatar-size: clamp(6rem, 20svh, 8rem);
   }
 }
 @media (max-width: 359px) {
