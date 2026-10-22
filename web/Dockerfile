@@ -4,6 +4,7 @@ RUN npm install --global pnpm@11.25.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY web/package.json ./web/package.json
+COPY patches ./patches
 RUN --mount=type=cache,id=guatswr-revamp-pnpm,target=/pnpm/store pnpm install --store-dir=/pnpm/store --frozen-lockfile
 COPY packages/shared ./packages/shared
 COPY web ./web
@@ -11,8 +12,8 @@ COPY web ./web
 # They are never imported, executed, or copied into the final runtime image.
 COPY backend/src/app.js ./backend/src/app.js
 COPY backend/src/routes ./backend/src/routes
-RUN pnpm -r typecheck && pnpm -r lint && pnpm -r test && pnpm -r build
-COPY scripts/revamp/check-artifacts.mjs ./scripts/revamp/check-artifacts.mjs
+COPY scripts/revamp ./scripts/revamp
+RUN pnpm check:security && pnpm -r typecheck && pnpm -r lint && pnpm -r test && pnpm -r build
 RUN node scripts/revamp/check-artifacts.mjs
 
 FROM node:24.16.0-alpine AS runtime

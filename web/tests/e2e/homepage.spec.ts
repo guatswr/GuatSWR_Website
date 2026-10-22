@@ -147,7 +147,7 @@ test.describe('homepage', () => {
     expect(heroRequests).toHaveLength(1)
 
     await openNavLink(page, isMobile, '社群链接')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('绯想天 · 外界通讯')
+    await expect(page.getByRole('heading', { level: 1, name: '绯想天 · 外界通讯', exact: true })).toBeVisible()
     await openNavLink(page, isMobile, '首页')
     const hero = page.locator('.club-banner-background img')
     await expect(hero).toHaveAttribute('src', heroPath)

@@ -85,9 +85,9 @@ onMounted(() => {
         alt=""
         class="h-full w-full object-cover"
         decoding="async"
-      />
+      >
     </div>
-    <div class="join-wash absolute inset-0 -z-10" aria-hidden="true"></div>
+    <div class="join-wash absolute inset-0 -z-10" aria-hidden="true"/>
 
     <div class="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-20 lg:py-24">
       <NuxtLink
@@ -110,7 +110,7 @@ onMounted(() => {
             id="join-title"
             class="join-text mt-5 text-4xl font-bold leading-tight tracking-tight sm:text-5xl lg:text-6xl"
           >
-            一起，把热爱<br />变成日常。
+            一起，把热爱<br >变成日常。
           </h1>
           <p
             class="join-text-muted mt-6 max-w-md text-base leading-8 sm:text-lg"
@@ -131,7 +131,7 @@ onMounted(() => {
             <span
               class="h-1.5 w-1.5 rounded-full bg-sky-500"
               aria-hidden="true"
-            ></span>
+            />
             进入幻想乡
           </div>
           <h2 id="join-card-title" class="join-text mt-3 text-2xl font-bold">
@@ -175,7 +175,7 @@ onMounted(() => {
               decoding="async"
               @load="qrLoaded = true"
               @error="qrFailed = true"
-            />
+            >
             <div
               v-else
               class="flex h-full flex-col items-center justify-center gap-3 text-center text-sm leading-6 text-slate-600"
@@ -184,7 +184,7 @@ onMounted(() => {
                 ><span
                   class="join-loading-dot h-3 w-3 rounded-full bg-sky-400"
                   aria-hidden="true"
-                ></span>
+                />
                 <p>正在加载二维码…</p></template
               >
               <template v-else-if="qrFailed"

@@ -1,0 +1,12 @@
+Scope: 2 of 3 workspace projects
+$ eslint src
+$ nuxt prepare && eslint .
+[@nuxtjs/og-image] i The module is disabled, skipping setup.
+• A dev server (PID 35288) is using .nuxt; refreshing templates in place without clearing it.
+* Types generated in .nuxt.
+
+E:\Taropoi\workspace\GuatSWR_Website\web\app\pages\admin\history.vue
+  115:358  warning  'v-html' directive can lead to XSS attack  vue/no-v-html
+
+✖ 1 problem (0 errors, 1 warning)
+

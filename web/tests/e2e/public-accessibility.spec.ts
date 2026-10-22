@@ -39,7 +39,7 @@ for (const theme of ['light', 'dark'] as const) {
     const canHover = await page.evaluate(() => matchMedia('(hover: hover)').matches)
     if (canHover) {
       await rules.hover()
-      await expect(rules).toHaveCSS('color', 'rgb(67, 56, 202)')
+      await expect(rules).toHaveCSS('color', theme === 'dark' ? 'rgb(199, 210, 254)' : 'rgb(67, 56, 202)')
       if (theme === 'light') await auditAccessibility(page, info, 'hovered-log-rules')
       else await collectAccessibility(page, info, 'UNACCEPTED-hovered-dark-log-rules')
     }

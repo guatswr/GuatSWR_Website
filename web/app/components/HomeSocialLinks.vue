@@ -45,7 +45,7 @@ defineProps({
             loading="lazy"
             decoding="async"
             class="h-6 w-6 object-contain"
-          />
+          >
           <span v-else>{{ link.iconText || '↗' }}</span>
         </span>
 

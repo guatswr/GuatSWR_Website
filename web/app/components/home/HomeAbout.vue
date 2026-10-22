@@ -17,10 +17,10 @@ defineProps({ mascot: { type: String, default: '' } })
       <div v-scroll-reveal class="home-about-copy">
         <p class="club-eyebrow">A LITTLE ABOUT US</p>
         <h2 id="about-title" class="club-display home-about-title">
-          因东方相识，<br />让同好成为朋友。
+          因东方相识，<br >让同好成为朋友。
         </h2>
         <p class="home-about-intro">
-          这里是桂航绯想天，<br />一群在校园里分享幻想乡的人。
+          这里是桂航绯想天，<br >一群在校园里分享幻想乡的人。
         </p>
         <div class="home-about-body">
           <p>

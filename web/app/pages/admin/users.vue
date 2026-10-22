@@ -12,10 +12,10 @@ const userQuery = useQuery({ queryKey: ['admin', 'users'], queryFn: ({ signal })
   if (!Array.isArray(value)) throw new Error('账号列表无效')
   return value.map(user => adminUserRowSchema.parse(user))
 }) })
-const banQuery = useQuery({ queryKey: ['admin', 'bans'], queryFn: () => api.command('banList', undefined, value => {
+const banQuery = useQuery({ queryKey: ['admin', 'bans'], queryFn: ({ signal }) => api.command('banList', undefined, value => {
   if (!value || typeof value !== 'object' || !('bans' in value) || !Array.isArray(value.bans)) throw new Error('封禁列表无效')
   return value.bans.map(ban => adminBanRowSchema.parse(ban))
-}) })
+}, signal) })
 const users = computed(() => userQuery.data.value ?? [])
 const bans = computed(() => banQuery.data.value ?? [])
 

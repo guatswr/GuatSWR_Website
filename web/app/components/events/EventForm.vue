@@ -283,7 +283,7 @@ function handleSubmit(): void {
               :aria-invalid="invalidField === 'title' || field.state.meta.errors.length > 0"
               @input="field.handleChange(($event.target as HTMLInputElement).value)"
               @blur="field.handleBlur"
-            />
+            >
             <span
               v-if="field.state.meta.errors.length"
               class="block text-xs text-rose-600 dark:text-rose-300"
@@ -305,7 +305,7 @@ function handleSubmit(): void {
                 value="solo"
                 :checked="field.state.value === 'solo'"
                 @change="field.handleChange('solo')"
-              />
+              >
             </template>
           </form.Field>
           单人赌约
@@ -319,7 +319,7 @@ function handleSubmit(): void {
                 value="duo"
                 :checked="field.state.value === 'duo'"
                 @change="field.handleChange('duo')"
-              />
+              >
             </template>
           </form.Field>
           双人对赌
@@ -337,7 +337,7 @@ function handleSubmit(): void {
                   :src="String(field.state.value)"
                   :alt="item.label + '预览'"
                   class="h-16 w-16 border border-slate-200 object-cover dark:border-slate-700"
-                />
+                >
                 <button
                   type="button"
                   :name="item.key"
@@ -416,7 +416,7 @@ function handleSubmit(): void {
                 :aria-invalid="invalidField === item.key || field.state.meta.errors.length > 0"
                 @input="field.handleChange(($event.target as HTMLInputElement).value)"
                 @blur="field.handleBlur"
-              />
+              >
               <span v-if="item.hint" class="block text-xs text-slate-500 dark:text-slate-400">{{
                 item.hint
               }}</span>
@@ -439,7 +439,7 @@ function handleSubmit(): void {
       accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
       tabindex="-1"
       @change="handleFileChange"
-    />
+    >
 
     <p
       v-if="errorMessage"

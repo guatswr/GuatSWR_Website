@@ -171,9 +171,9 @@ test('top reset and history restoration preserve the actual reading position', a
     await page.evaluate(() => window.scrollTo({ top: 800, behavior: 'instant' }))
   }
   else {
-    await page.locator('a[href^="#history-"]').last().click()
+    await page.locator('.history-bookmark-year').last().click()
     // Save the completed position, not an intermediate smooth-scroll frame.
-    await expect.poll(async () => Math.abs(await page.locator('[data-history-index="1"]').evaluate(node => node.getBoundingClientRect().top) - 96)).toBeLessThanOrEqual(1)
+    await expect.poll(() => page.locator('[data-history-index="1"]').evaluate(node => Math.abs(scrollY - Math.max(0, Math.min(scrollY + node.getBoundingClientRect().top - innerHeight * 0.24, document.documentElement.scrollHeight - innerHeight))))).toBeLessThanOrEqual(1)
   }
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(100)
   const saved = await page.evaluate(() => scrollY)

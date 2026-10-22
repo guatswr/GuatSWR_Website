@@ -1,8 +1,5 @@
-/* Reference tokens alone so admin styles never emit unlayered global utilities
-   that would override @layer utilities rules (such as lg:hidden) in main.css. */
-@reference "tailwindcss/theme.css";
-@reference "./legacy-palette.css";
-@reference "./typography.css";
+/* Tokens are provided by main.css. This stylesheet has no @apply rules and
+   must not import Tailwind again: unlayered utilities would override main.css. */
 
 @layer base {
   /* v1 preflight supplied gray-200 for controls with a plain `border`.

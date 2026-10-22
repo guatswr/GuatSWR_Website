@@ -26,8 +26,7 @@ test('hydrates without browser errors or CSP violations', async ({ page }, info)
   })
   await page.goto('/')
   await expect(page.getByRole('heading', { level: 1 })).toHaveText('桂航绯想天')
-  // The temporary scaffold has no approved visual design. Actual 1:1 visual
-  // regression is enforced against the archived UI in layout.spec.ts.
+  // Capture the actual homepage; its visual design was approved by the user.
   await page.screenshot({ path: info.outputPath('foundation.png'), animations: 'disabled', scale: 'css' })
   expect(errors).toEqual([])
 })
@@ -50,6 +49,7 @@ test('does not index the staging site or expose source maps', async ({ request }
   expect(await robots.text()).toMatch(/Disallow:\s*\//)
   expect((await request.get('/_nuxt/missing.js.map')).status()).toBe(404)
   expect((await request.get('/api/health')).headers()['cache-control']).toContain('no-store')
+  expect((await request.get('/__revamp/layout')).status()).toBe(404)
 })
 
 test('serves precompressed production JavaScript', async ({ request }) => {

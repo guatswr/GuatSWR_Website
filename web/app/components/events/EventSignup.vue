@@ -197,7 +197,7 @@ onBeforeUnmount(() => {
           :aria-invalid="invalidField === 'common_id'"
           class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
-        />
+        >
       </label>
       <label class="space-y-1">
         <span class="text-xs text-slate-500 dark:text-slate-400">机签</span>
@@ -206,7 +206,7 @@ onBeforeUnmount(() => {
           name="machine_sign"
           class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
-        />
+        >
       </label>
       <label class="space-y-1">
         <span class="text-xs text-slate-500 dark:text-slate-400">机师来源</span>
@@ -237,7 +237,7 @@ onBeforeUnmount(() => {
           :aria-invalid="invalidField === 'qq'"
           class="mt-1 w-full rounded-sm border border-slate-300/80 bg-white px-3 py-2.5 text-base text-slate-900 md:text-sm dark:border-white/10 dark:bg-slate-900/40 dark:text-slate-100"
           :disabled="disabled"
-        />
+        >
       </label>
     </form>
 
@@ -288,7 +288,7 @@ onBeforeUnmount(() => {
       v-if="form.avatar"
       class="mt-3 flex flex-col sm:flex-row sm:items-center gap-3 text-xs text-slate-500 dark:text-slate-400"
     >
-      <img :src="form.avatar" alt="头像预览" class="w-10 h-10 rounded-full object-cover" />
+      <img :src="form.avatar" alt="头像预览" class="w-10 h-10 rounded-full object-cover" >
       <span>已上传头像</span>
     </div>
 
@@ -327,6 +327,6 @@ onBeforeUnmount(() => {
       accept="image/jpeg,image/png,image/gif,image/webp,image/svg+xml"
       tabindex="-1"
       @change="handleFileChange"
-    />
+    >
   </div>
 </template>

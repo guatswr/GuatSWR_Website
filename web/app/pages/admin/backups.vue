@@ -10,11 +10,11 @@ definePageMeta({ layout: 'admin', middleware: 'admin', requiresSuperAdmin: true 
 const api = useAdminApi(), session = useBffSession()
 const isSuperAdmin = session.isSuperAdmin
 const settings = reactive({ enabled: false, time: '02:30', lastRun: '', lastError: '' })
-const settingQuery = useQuery({ queryKey: ['admin', 'backup-settings'], queryFn: () => api.command('backupSettings', undefined, value => backupSettingsSchema.parse(value)) })
-const listQuery = useQuery({ queryKey: ['admin', 'backups'], queryFn: () => api.command('backupList', undefined, value => {
+const settingQuery = useQuery({ queryKey: ['admin', 'backup-settings'], queryFn: ({ signal }) => api.command('backupSettings', undefined, value => backupSettingsSchema.parse(value), signal) })
+const listQuery = useQuery({ queryKey: ['admin', 'backups'], queryFn: ({ signal }) => api.command('backupList', undefined, value => {
   if (!value || typeof value !== 'object' || !('full' in value) || !Array.isArray(value.full)) throw new Error('备份列表无效')
   return value.full.map(row => backupRowSchema.parse(row))
-}) })
+}, signal) })
 const backups = computed(() => listQuery.data.value ?? [])
 const busy = ref(false)
 const pageLoading = computed(() => busy.value || settingQuery.isPending.value || listQuery.isPending.value)

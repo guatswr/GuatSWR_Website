@@ -31,6 +31,8 @@ accepted; these logs are the evidence behind them.
 
 | Workstream | Directory | State |
 | --- | --- | --- |
+| Dependency security backports | [`28-dependency-security/`](28-dependency-security/README.md) | Two high findings locally mitigated with locked patches, source hashes and 20 behavioural probes; 35 security / 100 tooling tests, 798 units on Windows and Linux, clean container build/runtime smoke, zero maps; raw audit still reports two version findings, broader #84 remains open |
+| Frontend cleanup / visual acceptance handoff | [`27-frontend-closeout/`](27-frontend-closeout/README.md) | Visuals approved by user; demo/unused dependency removed, query cancellation fixed, 798 units and 118 unique scoped E2E cases accepted after explicit selector correction, 15 JS graphs and zero maps; strict accessibility and release gates remain open |
 | Structure / import boundaries / fixture ownership | [`26-structure-improvements/`](26-structure-improvements/README.md) | 793 units after retained limiter timeout, 65 tooling tests, 127 import scans, 58/58 E2E and 54 zero-difference regions; old backend/frontend/config and active previews preserved; full migration remains open |
 | Public navigation progress feedback | [`25-route-progress/`](25-route-progress/README.md) | 791 units, 16/16 progress + 26/26 mixed regression E2E, 30 zero-difference regions, 15 JS graphs and zero maps; updated local 3101 preview, original 3100 preserved |
 | Public page navigation continuity | [`24-page-transitions/`](24-page-transitions/README.md) | 16/16 normal/reduced-motion navigation checks, 28/28 existing regression, 62 zero-difference regions, 785 units, 15 JS graphs and zero maps; separate local preview on 3101, original 3100 preserved |

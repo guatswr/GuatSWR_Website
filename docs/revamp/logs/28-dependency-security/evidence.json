@@ -1,0 +1,239 @@
+{
+  "generatedAt": "2026-10-22T15:33:29.3298043Z",
+  "branch": "revamp/nuxt-foundation",
+  "baseRevision": "1deb3b9724777fed598e0fde1e068e77361c9a93",
+  "checkout": "uncommitted working tree; includes frontend cleanup checkpoint 27",
+  "runtime": {
+    "node": "24.16.0",
+    "pnpm": "11.25.0"
+  },
+  "scope": {
+    "broaderChecklist84": "open",
+    "deployed": false,
+    "remoteCi": "unrun",
+    "pushed": false,
+    "backendChanged": false,
+    "approvedVisualsChanged": false,
+    "dependencyFindings": "two remediated with verified local backports"
+  },
+  "patchPolicy": [
+    {
+      "package": "node-forge",
+      "version": "1.4.0",
+      "advisory": "GHSA-86w9-cpqp-85rv",
+      "range": "<=1.4.0",
+      "patch": "patches/node-forge@1.4.0.patch",
+      "patchSha256": "bdd899a91341b1ea09eeafb852ed49366b7319675a1d0b5c6d1f3c598b1c368a",
+      "files": {
+        "lib/rsa.js": "96c154db17c611f81eeb48aed2c064c80d87517df2fff24cf574fbd1ac050492"
+      }
+    },
+    {
+      "package": "braces",
+      "version": "3.0.3",
+      "advisory": "GHSA-vfj7-8cjw-p6xm",
+      "range": "<=3.0.3",
+      "patch": "patches/braces@3.0.3.patch",
+      "patchSha256": "8c6c76f1efaccd6301bf89054690d06bd4a0b7ca72d934e853126a591363aa22",
+      "files": {
+        "lib/compile.js": "33bb0e469b79035ee64c927ab2578c75ae0ce2287133da75d78d9fd5e2cb7709",
+        "lib/depth.js": "4a312ddfc751373561a54b588d4a6981da3755b673efedf516a04b232af237f9",
+        "lib/expand.js": "e2ae78745bfc3671d96086533f3c37e081d8e253052420f4f3c2a06319fe4ae1",
+        "lib/parse.js": "6933a0994f0f1fb4327c2d4041f7766f3b5c4e3ee1422647a161e585f92ac90f",
+        "lib/stringify.js": "f504ec32772779fc33d63cab212184d7ee5916db9875823d5f7388bf780f416c"
+      }
+    }
+  ],
+  "dependencyGate": {
+    "generatedAt": "2026-10-22T15:27:22.175Z",
+    "probes": 20.0,
+    "rawFullBefore": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 2,
+      "critical": 0
+    },
+    "rawAuditExitCode": 1,
+    "rawProductionAfter": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 2,
+      "critical": 0
+    },
+    "rawCounts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 2,
+      "critical": 0
+    },
+    "unresolved": [],
+    "ok": true,
+    "mitigated": [
+      {
+        "advisory": "GHSA-86w9-cpqp-85rv",
+        "package": "node-forge",
+        "severity": "high",
+        "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+        "mitigation": "verified local patch; upstream version remains flagged"
+      },
+      {
+        "advisory": "GHSA-vfj7-8cjw-p6xm",
+        "package": "braces",
+        "severity": "high",
+        "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+        "mitigation": "verified local patch; upstream version remains flagged"
+      }
+    ],
+    "verifiedCopies": 2,
+    "versionScannerWarningsRemain": true
+  },
+  "behaviouralReproduction": {
+    "unpatched": {
+      "fail": 12,
+      "pass": 8,
+      "tests": 20
+    },
+    "ephemeralKeysPersisted": false,
+    "patched": {
+      "fail": 0,
+      "pass": 20,
+      "tests": 20
+    }
+  },
+  "tests": {
+    "lint": {
+      "result": "pass",
+      "errors": 0,
+      "existingReviewedWarnings": 1
+    },
+    "security": {
+      "fail": 0,
+      "log": "regression-final.log",
+      "pass": 35,
+      "tests": 35
+    },
+    "securityScriptsLint": "pass with explicit web/eslint.config.mjs",
+    "windowsUnits": {
+      "log": "test.log",
+      "web": 725,
+      "total": 798,
+      "shared": 73
+    },
+    "tooling": {
+      "fail": 0,
+      "log": "tooling-final.log",
+      "pass": 100,
+      "tests": 100
+    },
+    "typecheck": "pass",
+    "linuxUnits": {
+      "log": ".tools/security-audit/docker-build.log",
+      "web": 725,
+      "total": 798,
+      "shared": 73
+    }
+  },
+  "linuxContainer": {
+    "sourceMaps": 0,
+    "build": "pass",
+    "imageId": "sha256:7487378c1755980bb7dcc4306eefd85caba8f5207b7567921fc6df6d2ff715cb",
+    "routeInitialBudget": "not remeasured for this task",
+    "frozenInstall": "pass",
+    "launcher": "native PowerShell docker startup; unchanged container-smoke.mjs --origin; exact owned container stopped",
+    "runtime": {
+      "image": "guatswr-security:local",
+      "generatedAt": "2026-10-22T15:25:59.577Z",
+      "cases": [
+        {
+          "path": "/",
+          "status": 200,
+          "ssrContent": true,
+          "nonceMatches": true
+        },
+        {
+          "path": "/members",
+          "status": 200,
+          "ssrContent": true,
+          "nonceMatches": true
+        },
+        {
+          "path": "/activity/1",
+          "status": 200,
+          "ssrContent": true,
+          "nonceMatches": true
+        },
+        {
+          "path": "/activity/3",
+          "status": 200,
+          "ssrContent": true,
+          "nonceMatches": true
+        },
+        {
+          "path": "/events/stg",
+          "status": 200,
+          "ssrContent": true,
+          "nonceMatches": true
+        }
+      ],
+      "passed": true,
+      "feed": true,
+      "previewSitemapDisabled": true,
+      "publicIndexEntries": 15,
+      "sourceMap404": true,
+      "uploadImageProxy": true
+    },
+    "dependencyGate": "pass",
+    "runtimePackages": {
+      "node-forge": {
+        "manifestDependency": false,
+        "resolved": null
+      },
+      "braces": {
+        "manifestDependency": false,
+        "resolved": null
+      }
+    },
+    "allLazyClientJavaScriptGzipBytes": 2075940,
+    "image": "guatswr-security:local"
+  },
+  "commands": [
+    "pnpm install --frozen-lockfile",
+    "pnpm check:security",
+    "pnpm test:tooling",
+    "pnpm -r run typecheck",
+    "pnpm -r run lint",
+    "pnpm -r run test",
+    "docker build --file web/Dockerfile --tag guatswr-security:local .",
+    "node scripts/revamp/container-smoke.mjs --image guatswr-security:local --origin <owned-container-origin>"
+  ],
+  "failedAttempts": [
+    {
+      "disposition": "corrected before recording genuine unpatched reproduction",
+      "log": ".tools/security-audit/regression-syntax-error.log",
+      "attempt": "probe syntax error"
+    },
+    {
+      "attempt": "gate missing policy; Node source-file creation denied",
+      "disposition": "policy generated to tools and copied with PowerShell; current hashes and probes pass"
+    },
+    {
+      "disposition": "six fixture failures retained; specific tamper assertions and full 100 tests pass with workspace TEMP",
+      "log": ".tools/security-audit/regression-gate.log",
+      "attempt": "focused tests without workspace TEMP"
+    },
+    {
+      "disposition": "explicit web config passes",
+      "log": ".tools/security-audit/lint-security-scripts.log",
+      "attempt": "root ESLint without explicit config"
+    },
+    {
+      "disposition": "supported --origin smoke passes after native PowerShell startup",
+      "log": ".tools/security-audit/container-smoke.log",
+      "attempt": "Node Docker Desktop named-pipe access denied"
+    }
+  ],
+  "localRawLogs": ".tools/security-audit/"
+}

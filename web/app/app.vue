@@ -6,9 +6,6 @@ const pageTransition = usePublicPageTransition()
 <template>
   <NuxtRouteAnnouncer />
   <NuxtLayout>
-    <div v-if="route.meta.layout !== 'admin'" class="club-page-stack">
-      <NuxtPage :transition="pageTransition" />
-    </div>
-    <NuxtPage v-else />
+    <NuxtPage :transition="route.meta.layout === 'admin' ? false : pageTransition" />
   </NuxtLayout>
 </template>

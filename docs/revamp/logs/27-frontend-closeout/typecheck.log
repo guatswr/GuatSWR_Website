@@ -1,0 +1,4 @@
+Scope: 2 of 3 workspace projects
+$ tsc --noEmit
+$ nuxt typecheck
+[@nuxtjs/og-image] i The module is disabled, skipping setup.

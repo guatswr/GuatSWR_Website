@@ -1,0 +1,24 @@
+Scope: 2 of 3 workspace projects
+$ tsc -p tsconfig.build.json && vitest run
+
+ RUN  v5.0.5 E:/Taropoi/workspace/GuatSWR_Website/packages/shared
+
+
+ Test Files  6 passed (6)
+      Tests  73 passed (73)
+   Start at  22:26:37
+   Duration  1.34s (import 62%, transform 27%, tests 8%, worker 2%)
+
+$ vitest run
+
+ RUN  v5.0.5 E:/Taropoi/workspace/GuatSWR_Website/web
+
+
+ Test Files  54 passed (54)
+      Tests  725 passed (725)
+   Start at  22:26:40
+   Duration  9.49s (tests 48%, import 33%, transform 19%, worker 1%)
+
+    Isolate  54 workers spawned · ~771ms startup each (spawn + environment, per file)
+             at least ~2.00s faster with isolate: false — reuses workers across files instead of one per file
+

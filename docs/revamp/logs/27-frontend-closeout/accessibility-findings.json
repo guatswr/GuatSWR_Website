@@ -1,0 +1,1557 @@
+{
+  "generatedAt": "2026-10-22T14:28:29.965Z",
+  "artifact": "initial production build; approved redesign; no colour changes",
+  "complete": false,
+  "states": [
+    {
+      "test": "public automatic accessibility / (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".social-channel-no"
+              ],
+              "html": "<span class=\"social-channel-no\" aria-hidden=\"true\" data-v-aa143f66=\"\">01</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast",
+        "label-content-name-mismatch"
+      ]
+    },
+    {
+      "test": "public automatic accessibility / (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast",
+        "label-content-name-mismatch"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /activities (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/activities",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".is-active.activities-rail-item > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(3)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.58 (foreground color: #428fb9, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-item:nth-child(2) > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(1)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #747f8e, background color: #f9fbfc, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-item:nth-child(3) > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(1)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #747f8e, background color: #f9fbfc, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-item:nth-child(4) > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(1)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #747f8e, background color: #f9fbfc, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".font-mono.text-slate-400.text-xs"
+              ],
+              "html": "<span class=\"text-xs font-mono text-slate-400\">#03</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "a[href$=\"activity/3\"] > .activities-card-body > .dark\\:border-slate-800\\/80.border-slate-100.pt-3 > .text-\\[11px\\].font-mono.text-slate-400"
+              ],
+              "html": "<span class=\"text-[11px] font-mono text-slate-400\">#03</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "a[href$=\"activity/2\"] > .activities-card-body > .dark\\:border-slate-800\\/80.border-slate-100.pt-3 > .text-\\[11px\\].font-mono.text-slate-400"
+              ],
+              "html": "<span class=\"text-[11px] font-mono text-slate-400\">#02</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /activities (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/activities",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".activities-view-tab[role=\"radio\"]:nth-child(2) > .sm\\:inline.hidden"
+              ],
+              "html": "<span class=\"hidden sm:inline\">编年轴线</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.58 (foreground color: #64748b, background color: #121d28, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-label"
+              ],
+              "html": "<span class=\"activities-rail-label\">类别:</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-item:nth-child(2) > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(1)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.35 (foreground color: #748294, background color: #121d28, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-item:nth-child(3) > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(1)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.35 (foreground color: #748294, background color: #121d28, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".activities-rail-item:nth-child(4) > .activities-count-num"
+              ],
+              "html": "<span class=\"activities-count-num\">(1)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.35 (foreground color: #748294, background color: #121d28, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /activity/1 (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/activity/1",
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".memory-figure-link"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/cover.png\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" class=\"memory-figure-link group\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(1)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(2)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo-2.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /activity/1 (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/activity/1",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".memory-badge-chip:nth-child(1) > span"
+              ],
+              "html": "<span data-v-89e0318f=\"\">28 字 · 约 1 分钟</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-badge-chip:nth-child(2) > span:nth-child(2)"
+              ],
+              "html": "<span data-v-89e0318f=\"\">剪影 2 幅</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-group:nth-child(1) > .memory-meta-texts > .memory-meta-label"
+              ],
+              "html": "<span class=\"memory-meta-label\" data-v-89e0318f=\"\">创建文章 · Scribe</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-group:nth-child(1) > .memory-meta-texts > .memory-meta-sub"
+              ],
+              "html": "<span class=\"memory-meta-sub\" data-v-89e0318f=\"\"> 创建于 2026-09-20</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-editor > .memory-meta-texts > .memory-meta-label"
+              ],
+              "html": "<span class=\"memory-meta-label\" data-v-89e0318f=\"\">最近编辑 · Revision</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-editor > .memory-meta-texts > .memory-meta-sub"
+              ],
+              "html": "<span class=\"memory-meta-sub\" data-v-89e0318f=\"\">初稿保持中</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-gallery-counter"
+              ],
+              "html": "<span class=\"memory-gallery-counter\" data-v-89e0318f=\"\">收录留影 2 幅</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 9.4pt (12.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".memory-figure-link"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/cover.png\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" class=\"memory-figure-link group\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(1)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(2)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo-2.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /activity/991 (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/activity/991",
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".memory-figure-link"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/cover.png\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" class=\"memory-figure-link group\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(1)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(2)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo-2.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /activity/991 (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/activity/991",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".memory-badge-chip[data-v-89e0318f=\"\"]:nth-child(1) > span[data-v-89e0318f=\"\"]"
+              ],
+              "html": "<span data-v-89e0318f=\"\">284 字 · 约 1 分钟</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-badge-chip[data-v-89e0318f=\"\"]:nth-child(2) > span[data-v-89e0318f=\"\"]:nth-child(2)"
+              ],
+              "html": "<span data-v-89e0318f=\"\">剪影 2 幅</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-group:nth-child(1) > .memory-meta-texts > .memory-meta-label[data-v-89e0318f=\"\"]"
+              ],
+              "html": "<span class=\"memory-meta-label\" data-v-89e0318f=\"\">创建文章 · Scribe</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-group:nth-child(1) > .memory-meta-texts > .memory-meta-sub[data-v-89e0318f=\"\"]"
+              ],
+              "html": "<span class=\"memory-meta-sub\" data-v-89e0318f=\"\"> 创建于 2026-09-20</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-editor > .memory-meta-texts > .memory-meta-label[data-v-89e0318f=\"\"]"
+              ],
+              "html": "<span class=\"memory-meta-label\" data-v-89e0318f=\"\">最近编辑 · Revision</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-meta-editor > .memory-meta-texts > .memory-meta-sub[data-v-89e0318f=\"\"]"
+              ],
+              "html": "<span class=\"memory-meta-sub\" data-v-89e0318f=\"\">初稿保持中</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".memory-gallery-counter"
+              ],
+              "html": "<span class=\"memory-gallery-counter\" data-v-89e0318f=\"\">收录留影 2 幅</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 9.4pt (12.5px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".memory-figure-link"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/cover.png\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" class=\"memory-figure-link group\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(1)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                ".memory-gallery-item.group[aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\"]:nth-child(2)"
+              ],
+              "html": "<a href=\"/uploads/img/activity/1/photo-2.png\" class=\"memory-gallery-item group\" aria-label=\"查看大图：秋季例会 · 冰之妖精的茶会\" data-v-89e0318f=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /members (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/members",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /members (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/members",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /history (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/history",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-1 > .history-counter-inner > .history-counter-sub > span:nth-child(2)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">九月纪</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.7 (foreground color: #798391, background color: #fbfbf8, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-1 > .history-counter-inner > .history-counter-sub > span:nth-child(4)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">01日</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.7 (foreground color: #798391, background color: #fbfbf8, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-3 > .history-counter-inner > .history-counter-ym"
+              ],
+              "html": "<div class=\"history-counter-ym\" data-v-03e669f4=\"\">2026 · 04</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.34 (foreground color: #d7dbde, background color: #fbfbf8, font size: 21.1pt (28.16px), font weight: bold). Expected contrast ratio of 3:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-3 > .history-counter-inner > .history-counter-sub > span:nth-child(2)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">四月纪</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.44 (foreground color: #d0d3d6, background color: #fbfbf8, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-3 > .history-counter-inner > .history-counter-sub > span:nth-child(4)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">11日</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.44 (foreground color: #d0d3d6, background color: #fbfbf8, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".is-current"
+              ],
+              "html": "<a href=\"#history-0\" class=\"is-current history-bookmark-month\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" data-v-03e669f4=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /history (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/history",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-1 > .history-counter-inner > .history-counter-sub > span:nth-child(2)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">九月纪</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.17 (foreground color: #6f7c8e, background color: #101923, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-1 > .history-counter-inner > .history-counter-sub > span:nth-child(4)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">01日</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.17 (foreground color: #6f7c8e, background color: #101923, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-3 > .history-counter-inner > .history-counter-ym"
+              ],
+              "html": "<div class=\"history-counter-ym\" data-v-03e669f4=\"\">2026 · 04</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.53 (foreground color: #303a47, background color: #101923, font size: 21.1pt (28.16px), font weight: bold). Expected contrast ratio of 3:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-3 > .history-counter-inner > .history-counter-sub > span:nth-child(2)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">四月纪</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.53 (foreground color: #303a47, background color: #101923, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".history-counter.md\\:flex.md\\:order-3 > .history-counter-inner > .history-counter-sub > span:nth-child(4)"
+              ],
+              "html": "<span data-v-03e669f4=\"\">11日</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 1.53 (foreground color: #303a47, background color: #101923, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".is-current"
+              ],
+              "html": "<a href=\"#history-0\" class=\"is-current history-bookmark-month\" title=\"2025-09\" aria-label=\"跳转到 2025-09\" aria-current=\"true\" data-v-03e669f4=\"\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /logs (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/logs",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".logs-metric-item:nth-child(1) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Pageviews</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-metric-item:nth-child(2) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Visitors</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-metric-item:nth-child(3) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Bounces</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-metric-item:nth-child(4) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Avg. Time</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".text-\\[11px\\].mt-0\\.5.text-slate-400"
+              ],
+              "html": "<div class=\"text-[11px] text-slate-400 mt-0.5\" data-v-bdc372ff=\"\">近7天 走势曲线 · 粒度自适应 </div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".text-sky-600 > span:nth-child(2)"
+              ],
+              "html": "<span data-v-bdc372ff=\"\">页面浏览 (PV)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".dark\\:text-emerald-400.text-emerald-600.gap-1\\.5 > span:nth-child(2)"
+              ],
+              "html": "<span data-v-bdc372ff=\"\">独立访客 (UV)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #059669, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(1) > .mb-4.justify-between.flex > .text-slate-400.gap-2.text-xs > .text-\\[11px\\].font-mono"
+              ],
+              "html": "<span class=\"font-mono text-[11px]\" data-v-bdc372ff=\"\">TOP</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(1) > .space-y-2\\.5 > .p-2\\.5.dark\\:border-slate-800\\/80.hover\\:border-slate-300:nth-child(2) > .gap-2\\.5.z-10.min-w-0 > .min-w-0 > .text-slate-400.text-\\[10px\\].truncate"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 font-mono truncate\" data-v-bdc372ff=\"\">/activities</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.43 (foreground color: #94a3b8, background color: #f4fafe, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(2) > .mb-4.justify-between.flex > .text-slate-400.gap-2.text-xs > .text-\\[11px\\].font-mono"
+              ],
+              "html": "<span class=\"font-mono text-[11px]\" data-v-bdc372ff=\"\">DIMENSION</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(2) > .space-y-2\\.5 > .p-2\\.5.dark\\:border-slate-800\\/80.hover\\:border-slate-300:nth-child(1) > .gap-2\\.5.z-10.min-w-0 > .min-w-0 > .text-slate-400.text-\\[10px\\].truncate"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 truncate\" data-v-bdc372ff=\"\">BROWSER</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.45 (foreground color: #94a3b8, background color: #f1fdf7, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(2) > .space-y-2\\.5 > .p-2\\.5.dark\\:border-slate-800\\/80.hover\\:border-slate-300:nth-child(2) > .gap-2\\.5.z-10.min-w-0 > .min-w-0 > .text-slate-400.text-\\[10px\\].truncate"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 truncate\" data-v-bdc372ff=\"\">BROWSER</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.45 (foreground color: #94a3b8, background color: #f1fdf7, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /logs (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/logs",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".is-active"
+              ],
+              "html": "<a aria-current=\"true\" href=\"/logs?range=7d&amp;env=browser&amp;top=5\" class=\"router-link-active router-link-exact-active logs-range-tab is-active\" data-v-bdc372ff=\"\">近7天</a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .flex-1.min-w-0 > .text-gray-400.dark\\:text-slate-500.mt-0\\.5"
+              ],
+              "html": "<div class=\"text-xs text-gray-400 dark:text-slate-500 font-mono truncate mt-0.5\" data-v-bdc372ff=\"\">UID: Unknown</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .flex-1.min-w-0 > .text-gray-400.dark\\:text-slate-500.mt-0\\.5"
+              ],
+              "html": "<div class=\"text-xs text-gray-400 dark:text-slate-500 font-mono truncate mt-0.5\" data-v-bdc372ff=\"\">UID: Unknown</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".club-button-primary"
+              ],
+              "html": "<button type=\"submit\" class=\"club-button-primary px-4 py-1.5 text-sm font-semibold rounded cursor-pointer transition-colors flex-shrink-0\" data-v-bdc372ff=\"\"> 搜索 </button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /social (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/social",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                "h3"
+              ],
+              "html": "<h3 class=\"social-guidelines-heading\" data-v-c613ad4d=\"\"> 同好公约 </h3>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".dark\\:text-slate-500"
+              ],
+              "html": "<p class=\"mt-1 text-xs text-slate-400 dark:text-slate-500\" data-v-c613ad4d=\"\"> 查看群号、加群验证问答与二维码 </p>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fbfbf8, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".social-channel-no"
+              ],
+              "html": "<span class=\"social-channel-no\" aria-hidden=\"true\" data-v-aa143f66=\"\">01</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /social (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/social",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                "h3"
+              ],
+              "html": "<h3 class=\"social-guidelines-heading\" data-v-c613ad4d=\"\"> 同好公约 </h3>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".dark\\:text-slate-500"
+              ],
+              "html": "<p class=\"mt-1 text-xs text-slate-400 dark:text-slate-500\" data-v-c613ad4d=\"\"> 查看群号、加群验证问答与二维码 </p>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.72 (foreground color: #64748b, background color: #101923, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".club-button"
+              ],
+              "html": "<a href=\"/join\" class=\"club-button club-button-primary shrink-0\" data-v-c613ad4d=\"\">",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /join (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/join",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /join (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/join",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                "a[aria-label=\"秋季 STG 大会配图（点击放大）\"] > .event-media-caption[aria-hidden=\"true\"] > .event-media-tag"
+              ],
+              "html": "<span class=\"event-media-tag\">附带影像</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #0284c7, background color: #feffff, font size: 8.6pt (11.52px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-penalty-box > div > dt"
+              ],
+              "html": "<dt>约定</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #64748b, background color: #f3f4f8, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "article[data-kind=\"party\"] > .event-card-body > .event-data-grid > div:nth-child(1) > dt"
+              ],
+              "html": "<dt>地点</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.38 (foreground color: #64748b, background color: #f2f6fa, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                "article[data-kind=\"party\"] > .event-card-body > .event-data-grid > div:nth-child(2) > dt"
+              ],
+              "html": "<dt>类型</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.38 (foreground color: #64748b, background color: #f2f6fa, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-data-grid > div:nth-child(3) > dt"
+              ],
+              "html": "<dt>备注</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.38 (foreground color: #64748b, background color: #f2f6fa, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-card-category[href$=\"bounty\"]"
+              ],
+              "html": "<a href=\"/events/bounty\" class=\"event-card-category\"><span class=\"event-card-category-dot\" aria-hidden=\"true\"></span>悬赏令</a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.35 (foreground color: #b45309, background color: #f7ede6, font size: 8.6pt (11.52px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-person-note"
+              ],
+              "html": "<span class=\"event-person-note\">悬赏发起</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.42 (foreground color: #64748b, background color: #f4f7fa, font size: 8.2pt (10.88px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-bounty-main > dl > div:nth-child(1) > dt"
+              ],
+              "html": "<dt>挑战</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.42 (foreground color: #64748b, background color: #f4f7fa, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-bounty-main > dl > div:nth-child(2) > dt"
+              ],
+              "html": "<dt>要求</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.42 (foreground color: #64748b, background color: #f4f7fa, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".event-bounty-main > dl > div:nth-child(3) > dt"
+              ],
+              "html": "<dt>对象</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.42 (foreground color: #64748b, background color: #f4f7fa, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                "a[aria-label=\"秋季 STG 大会配图（点击放大）\"]"
+              ],
+              "html": "<a href=\"/uploads/img/events/101/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"秋季 STG 大会配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                "a[aria-label=\"冰之妖精 vs 巫女配图（点击放大）\"]"
+              ],
+              "html": "<a href=\"/uploads/img/events/102/proof.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冰之妖精 vs 巫女配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                "a[aria-label=\"冬季饭聚配图（点击放大）\"]"
+              ],
+              "html": "<a href=\"/uploads/img/events/103/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冬季饭聚配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".events-publish"
+              ],
+              "html": "<button type=\"button\" class=\"events-publish\"><span aria-hidden=\"true\">＋</span>发布活动 </button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #f8fafc, background color: #0284c7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".events-signup"
+              ],
+              "html": "<button type=\"button\" class=\"events-signup\">我要参加</button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #f8fafc, background color: #0284c7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                "a[aria-label=\"秋季 STG 大会配图（点击放大）\"]"
+              ],
+              "html": "<a href=\"/uploads/img/events/101/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"秋季 STG 大会配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                "a[aria-label=\"冰之妖精 vs 巫女配图（点击放大）\"]"
+              ],
+              "html": "<a href=\"/uploads/img/events/102/proof.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冰之妖精 vs 巫女配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            },
+            {
+              "target": [
+                "a[aria-label=\"冬季饭聚配图（点击放大）\"]"
+              ],
+              "html": "<a href=\"/uploads/img/events/103/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冬季饭聚配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/bounty (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/bounty",
+      "violations": [],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/bounty (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/bounty",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".events-publish"
+              ],
+              "html": "<button type=\"button\" class=\"events-publish\"><span aria-hidden=\"true\">＋</span>发布活动 </button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #f8fafc, background color: #0284c7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/betting (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/betting",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                "dt"
+              ],
+              "html": "<dt>约定</dt>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.32 (foreground color: #64748b, background color: #f3f4f8, font size: 8.4pt (11.2px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-frame"
+              ],
+              "html": "<a href=\"/uploads/img/events/102/proof.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冰之妖精 vs 巫女配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/betting (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/betting",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".events-publish"
+              ],
+              "html": "<button type=\"button\" class=\"events-publish\"><span aria-hidden=\"true\">＋</span>发布活动 </button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #f8fafc, background color: #0284c7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-frame"
+              ],
+              "html": "<a href=\"/uploads/img/events/102/proof.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冰之妖精 vs 巫女配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/stg (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/stg",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-tag"
+              ],
+              "html": "<span class=\"event-media-tag\">附带影像</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.08 (foreground color: #0284c7, background color: #feffff, font size: 8.6pt (11.52px), font weight: bold). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-frame"
+              ],
+              "html": "<a href=\"/uploads/img/events/101/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"秋季 STG 大会配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/stg (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/stg",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".events-signup"
+              ],
+              "html": "<button type=\"button\" class=\"events-signup\">我要参加</button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.91 (foreground color: #f8fafc, background color: #0284c7, font size: 9.8pt (13px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        },
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-frame"
+              ],
+              "html": "<a href=\"/uploads/img/events/101/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"秋季 STG 大会配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "UNACCEPTED empty-event diagnostic /events/zetime (light)",
+      "project": "desktop",
+      "attachment": "UNACCEPTED-empty-event-message",
+      "route": "/events/zetime",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "UNACCEPTED empty-event diagnostic /events/zetime (dark)",
+      "project": "desktop",
+      "attachment": "UNACCEPTED-empty-event-message",
+      "route": "/events/zetime",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/party (light)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/party",
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-frame"
+              ],
+              "html": "<a href=\"/uploads/img/events/103/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冬季饭聚配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "public automatic accessibility /events/party (dark)",
+      "project": "desktop",
+      "attachment": "axe",
+      "route": "/events/party",
+      "violations": [
+        {
+          "id": "label-content-name-mismatch",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".event-media-frame"
+              ],
+              "html": "<a href=\"/uploads/img/events/103/cover.png\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"event-media-frame\" aria-label=\"冬季饭聚配图（点击放大）\">",
+              "failureSummary": "Fix any of the following:\n  Text inside the element is not included in the accessible name"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "aria-prohibited-attr",
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (light)",
+      "project": "desktop",
+      "attachment": "school-桂航",
+      "route": "/members",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (light)",
+      "project": "desktop",
+      "attachment": "school-桂电",
+      "route": "/members",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (light)",
+      "project": "desktop",
+      "attachment": "expanded-log-rules",
+      "route": "/logs",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".logs-metric-item:nth-child(1) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Pageviews</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-metric-item:nth-child(2) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Visitors</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-metric-item:nth-child(3) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Bounces</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-metric-item:nth-child(4) > .logs-metric-sub"
+              ],
+              "html": "<div class=\"logs-metric-sub\" data-v-bdc372ff=\"\">Avg. Time</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.47 (foreground color: #94a3b8, background color: #fafbfc, font size: 7.8pt (10.4px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".text-\\[11px\\].mt-0\\.5.text-slate-400"
+              ],
+              "html": "<div class=\"text-[11px] text-slate-400 mt-0.5\" data-v-bdc372ff=\"\">近7天 走势曲线 · 粒度自适应 </div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".text-sky-600 > span:nth-child(2)"
+              ],
+              "html": "<span data-v-bdc372ff=\"\">页面浏览 (PV)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #0284c7, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".dark\\:text-emerald-400.text-emerald-600.gap-1\\.5 > span:nth-child(2)"
+              ],
+              "html": "<span data-v-bdc372ff=\"\">独立访客 (UV)</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.76 (foreground color: #059669, background color: #ffffff, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(1) > .mb-4.justify-between.flex > .text-slate-400.gap-2.text-xs > .text-\\[11px\\].font-mono"
+              ],
+              "html": "<span class=\"font-mono text-[11px]\" data-v-bdc372ff=\"\">TOP</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(1) > .space-y-2\\.5 > .p-2\\.5.dark\\:border-slate-800\\/80.hover\\:border-slate-300:nth-child(2) > .gap-2\\.5.z-10.min-w-0 > .min-w-0 > .text-slate-400.text-\\[10px\\].truncate"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 font-mono truncate\" data-v-bdc372ff=\"\">/activities</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.43 (foreground color: #94a3b8, background color: #f4fafe, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(2) > .mb-4.justify-between.flex > .text-slate-400.gap-2.text-xs > .text-\\[11px\\].font-mono"
+              ],
+              "html": "<span class=\"font-mono text-[11px]\" data-v-bdc372ff=\"\">DIMENSION</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 8.3pt (11px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(2) > .space-y-2\\.5 > .p-2\\.5.dark\\:border-slate-800\\/80.hover\\:border-slate-300:nth-child(1) > .gap-2\\.5.z-10.min-w-0 > .min-w-0 > .text-slate-400.text-\\[10px\\].truncate"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 truncate\" data-v-bdc372ff=\"\">BROWSER</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.45 (foreground color: #94a3b8, background color: #f1fdf7, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-subcard:nth-child(2) > .space-y-2\\.5 > .p-2\\.5.dark\\:border-slate-800\\/80.hover\\:border-slate-300:nth-child(2) > .gap-2\\.5.z-10.min-w-0 > .min-w-0 > .text-slate-400.text-\\[10px\\].truncate"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 truncate\" data-v-bdc372ff=\"\">BROWSER</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.45 (foreground color: #94a3b8, background color: #f1fdf7, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".logs-spec-badge"
+              ],
+              "html": "<span class=\"logs-spec-badge font-mono\" aria-hidden=\"true\" data-v-bdc372ff=\"\">SPEC</span>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.56 (foreground color: #0284c7, background color: #e6f1f8, font size: 7.8pt (10.4px), font weight: bold). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 2.56 (foreground color: #94a3b8, background color: #ffffff, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (dark)",
+      "project": "desktop",
+      "attachment": "school-桂航",
+      "route": "/members",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (dark)",
+      "project": "desktop",
+      "attachment": "school-桂电",
+      "route": "/members",
+      "violations": [],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (dark)",
+      "project": "desktop",
+      "attachment": "UNACCEPTED-expanded-dark-log-rules",
+      "route": "/logs",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".is-active"
+              ],
+              "html": "<a aria-current=\"true\" href=\"/logs?range=7d&amp;env=browser&amp;top=5\" class=\"router-link-active router-link-exact-active logs-range-tab is-active\" data-v-bdc372ff=\"\">近7天</a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .flex-1.min-w-0 > .text-gray-400.dark\\:text-slate-500.mt-0\\.5"
+              ],
+              "html": "<div class=\"text-xs text-gray-400 dark:text-slate-500 font-mono truncate mt-0.5\" data-v-bdc372ff=\"\">UID: Unknown</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .flex-1.min-w-0 > .text-gray-400.dark\\:text-slate-500.mt-0\\.5"
+              ],
+              "html": "<div class=\"text-xs text-gray-400 dark:text-slate-500 font-mono truncate mt-0.5\" data-v-bdc372ff=\"\">UID: Unknown</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".club-button-primary"
+              ],
+              "html": "<button type=\"submit\" class=\"club-button-primary px-4 py-1.5 text-sm font-semibold rounded cursor-pointer transition-colors flex-shrink-0\" data-v-bdc372ff=\"\"> 搜索 </button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    },
+    {
+      "test": "approved filters and log control; expanded panel diagnostic (dark)",
+      "project": "desktop",
+      "attachment": "UNACCEPTED-hovered-dark-log-rules",
+      "route": "/logs",
+      "violations": [
+        {
+          "id": "color-contrast",
+          "impact": "serious",
+          "nodes": [
+            {
+              "target": [
+                ".is-active"
+              ],
+              "html": "<a aria-current=\"true\" href=\"/logs?range=7d&amp;env=browser&amp;top=5\" class=\"router-link-active router-link-exact-active logs-range-tab is-active\" data-v-bdc372ff=\"\">近7天</a>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .flex-1.min-w-0 > .text-gray-400.dark\\:text-slate-500.mt-0\\.5"
+              ],
+              "html": "<div class=\"text-xs text-gray-400 dark:text-slate-500 font-mono truncate mt-0.5\" data-v-bdc372ff=\"\">UID: Unknown</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-champion > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .flex-1.min-w-0 > .text-gray-400.dark\\:text-slate-500.mt-0\\.5"
+              ],
+              "html": "<div class=\"text-xs text-gray-400 dark:text-slate-500 font-mono truncate mt-0.5\" data-v-bdc372ff=\"\">UID: Unknown</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 9.0pt (12px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".is-runner-up > .text-right.shrink-0 > .tracking-wider.dark\\:text-slate-500.uppercase"
+              ],
+              "html": "<div class=\"text-[10px] text-slate-400 dark:text-slate-500 font-medium uppercase tracking-wider\" data-v-bdc372ff=\"\">Edits</div>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 3.47 (foreground color: #64748b, background color: #14202b, font size: 7.5pt (10px), font weight: normal). Expected contrast ratio of 4.5:1"
+            },
+            {
+              "target": [
+                ".club-button-primary"
+              ],
+              "html": "<button type=\"submit\" class=\"club-button-primary px-4 py-1.5 text-sm font-semibold rounded cursor-pointer transition-colors flex-shrink-0\" data-v-bdc372ff=\"\"> 搜索 </button>",
+              "failureSummary": "Fix any of the following:\n  Element has insufficient color contrast of 4.09 (foreground color: #ffffff, background color: #0284c7, font size: 10.5pt (14px), font weight: normal). Expected contrast ratio of 4.5:1"
+            }
+          ]
+        }
+      ],
+      "incompleteRules": [
+        "color-contrast"
+      ]
+    }
+  ]
+}

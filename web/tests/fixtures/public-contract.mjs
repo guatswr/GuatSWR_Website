@@ -47,7 +47,8 @@ export const projectFixtureActivityDetail = row => {
 }
 
 export const projectFixtureMember = (row, original = false) => {
-  const { bio: _bio, ...rest } = row
+  const rest = { ...row }
+  delete rest.bio
   const avatar_thumb = thumbnailUrl(row.avatar)
   return { ...rest, tags: parseList(row.tags), avatar_thumb, avatar_original: row.avatar, avatar: original ? row.avatar : avatar_thumb || row.avatar }
 }

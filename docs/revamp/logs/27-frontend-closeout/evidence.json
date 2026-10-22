@@ -1,0 +1,2155 @@
+{
+  "date": "2026-10-22",
+  "generatedAt": "2026-10-22T14:35:00.227Z",
+  "base": "1deb3b9724777fed598e0fde1e068e77361c9a93",
+  "branch": "revamp/nuxt-foundation",
+  "dirtyWorktree": true,
+  "runtime": {
+    "node": "v24.16.0",
+    "pnpm": "11.25.0",
+    "platform": "win32"
+  },
+  "userVisualApproval": {
+    "date": "2026-10-22",
+    "scope": "all migrated pages",
+    "source": "user message",
+    "coloursChangedInCloseout": false
+  },
+  "gates": {
+    "typecheck": "pass",
+    "lint": {
+      "errors": 0,
+      "warnings": 1,
+      "reviewedWarning": "admin history uses DOMPurify before v-html"
+    },
+    "units": {
+      "passed": 798,
+      "shared": 73,
+      "web": 725,
+      "earlierStressTimeoutRetained": true
+    },
+    "tooling": {
+      "passed": 65
+    },
+    "boundaries": {
+      "checkedFiles": 126,
+      "violations": []
+    },
+    "frozenLockfile": "pass; lockfile-only validation",
+    "build": {
+      "shared": "normal workspace build",
+      "nuxt": "isolated production build using the actual project config",
+      "output": ".tools/frontend-closeout/verified/.output"
+    }
+  },
+  "artifact": {
+    "maps": 0,
+    "maxInitialRouteBytes": 153600,
+    "routes": [
+      {
+        "path": "/",
+        "ok": true,
+        "gzipBytes": 137559
+      },
+      {
+        "path": "/activities",
+        "ok": true,
+        "gzipBytes": 129751
+      },
+      {
+        "path": "/activity/1",
+        "ok": true,
+        "gzipBytes": 136247
+      },
+      {
+        "path": "/activity/991",
+        "ok": true,
+        "gzipBytes": 136247
+      },
+      {
+        "path": "/members",
+        "ok": true,
+        "gzipBytes": 128470
+      },
+      {
+        "path": "/history",
+        "ok": true,
+        "gzipBytes": 135003
+      },
+      {
+        "path": "/logs",
+        "ok": true,
+        "gzipBytes": 133397
+      },
+      {
+        "path": "/social",
+        "ok": true,
+        "gzipBytes": 124066
+      },
+      {
+        "path": "/join",
+        "ok": true,
+        "gzipBytes": 124222
+      },
+      {
+        "path": "/events",
+        "ok": true,
+        "gzipBytes": 135086
+      },
+      {
+        "path": "/events/bounty",
+        "ok": true,
+        "gzipBytes": 135088
+      },
+      {
+        "path": "/events/betting",
+        "ok": true,
+        "gzipBytes": 135094
+      },
+      {
+        "path": "/events/stg",
+        "ok": true,
+        "gzipBytes": 135106
+      },
+      {
+        "path": "/events/zetime",
+        "ok": true,
+        "gzipBytes": 135111
+      },
+      {
+        "path": "/events/party",
+        "ok": true,
+        "gzipBytes": 135091
+      }
+    ],
+    "indexSha256": "4f5c47341b5e1e9b6606e6dcc82c0b5231e27814df7b8a5687d985d15709ff0a"
+  },
+  "browser": {
+    "initialBroadRun": {
+      "declared": 346,
+      "completedCases": 180,
+      "completedBatches": 90,
+      "counts": {
+        "passed": 148,
+        "failed": 32,
+        "skipped": 0
+      },
+      "complete": false,
+      "reasonStopped": "Known approved-palette accessibility failures; continue with explicit affected-scope verification on the corrected artifact",
+      "cases": [
+        {
+          "file": "admin-articles.spec.ts",
+          "line": 19,
+          "title": "article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-articles.spec.ts",
+          "line": 122,
+          "title": "article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-articles.spec.ts",
+          "line": 147,
+          "title": "invalid articles never write and an upstream failure leaves content available for explicit manual retry",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 36,
+          "title": "pending review, protected detail, status changes, deletion and restoration invalidate warmed public reads",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 73,
+          "title": "rejecting and editing a private event preserve status, nested people, settlement and unknown metadata",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports 悬赏令 without a guest draft",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports 对赌协议 without a guest draft",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports STG without a guest draft",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports 则则 without a guest draft",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports 线下聚会 without a guest draft",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 154,
+          "title": "participant workflows preserve the frozen public whitelist and save permanent ranking avatars",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 192,
+          "title": "bounty completion and betting settlement preserve original content and become public immediately",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 218,
+          "title": "ordinary admins use event workflows through opaque sessions and anonymous callers cannot read them",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 238,
+          "title": "event avatar BFF enforces session, Origin, CSRF, public status and server-bound event storage",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-interface.spec.ts",
+          "line": 20,
+          "title": "workspace navigation, theme, keyboard focus and member search work without hover",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-interface.spec.ts",
+          "line": 70,
+          "title": "modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-interface.spec.ts",
+          "line": 70,
+          "title": "modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-interface.spec.ts",
+          "line": 99,
+          "title": "ordinary administrators see permitted navigation and cannot enter super-admin pages",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-secondary.spec.ts",
+          "line": 28,
+          "title": "avatar-only saves retain sessions while enabling and disabling 2FA requires fresh login",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-secondary.spec.ts",
+          "line": 65,
+          "title": "global logout requires super admin, permits cancellation and revokes independently created sessions",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-secondary.spec.ts",
+          "line": 88,
+          "title": "recycle purge confirms its exact scope, preserves active records and excludes deleted events",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-secondary.spec.ts",
+          "line": 115,
+          "title": "home link icon upload uses the fixed icon category and persists through public configuration",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-secondary.spec.ts",
+          "line": 133,
+          "title": "large backup hands the actual stream to the browser without a Blob or false completion notice",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 25,
+          "title": "member upload, create, edit, sort, delete and restore cross the real BFF and invalidate public data",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 64,
+          "title": "private writes reject missing CSRF and fresh role denials without browser tokens",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 80,
+          "title": "history edits retain the archived HTML controls and sanitize both previews and public output",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 109,
+          "title": "configuration validates before writing and refreshes a previously cached public read",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 125,
+          "title": "a confirmed credential change revokes the opaque session and accepts only the new password",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 143,
+          "title": "home link editing validates destinations and updates the public projection",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 160,
+          "title": "private log selection and confirmed deletion update the actual admin list",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 171,
+          "title": "account and IPv6 ban workflows stay on protected fixed endpoints",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 205,
+          "title": "backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "admin-workflows.spec.ts",
+          "line": 233,
+          "title": "cancelled backpressured binary downloads release both BFF concurrency slots",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "cache-nonces.spec.ts",
+          "line": 19,
+          "title": "renders a fresh nonce on repeated GET and HEAD responses with private, validator-free caching",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "cache-nonces.spec.ts",
+          "line": 62,
+          "title": "ignores conditional validators instead of returning 304 for nonce-bearing HTML",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "cache-nonces.spec.ts",
+          "line": 75,
+          "title": "keeps public HTML compression while preserving the fresh nonce for each negotiation",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "cache-nonces.spec.ts",
+          "line": 96,
+          "title": "keeps browser JSON APIs no-store and credential-independent while server reads cache",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "cache-nonces.spec.ts",
+          "line": 128,
+          "title": "keeps staged noindex while serving fresh public HTML",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "entry-loading.spec.ts",
+          "line": 6,
+          "title": "/ hydrates after repeated warm-cache document reloads",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "entry-loading.spec.ts",
+          "line": 6,
+          "title": "/members hydrates after repeated warm-cache document reloads",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "entry-loading.spec.ts",
+          "line": 6,
+          "title": "/login hydrates after repeated warm-cache document reloads",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 10,
+          "title": "renders an activity overview without redirecting",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 18,
+          "title": "renders all five categories with Chinese titles and public rows",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 36,
+          "title": "is readable without JavaScript including statuses and signup affordance",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 72,
+          "title": "provides useful links when a category has no events",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 83,
+          "title": "filters mixed event statuses and keeps every category accessible",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 108,
+          "title": "opens the signup modal from mouse and keyboard, traps focus and returns it",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 139,
+          "title": "validates the form and focuses the first invalid field",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 152,
+          "title": "shares one draft between upload and submission and retries with the same id",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 205,
+          "title": "reads, saves and cancels the visitor signup",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 238,
+          "title": "distinguishes permission errors from an expired session",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 270,
+          "title": "shows the participant preview and retries after a failure",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "events.spec.ts",
+          "line": 306,
+          "title": "stops accepting signups after the Beijing deadline",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "foundation.spec.ts",
+          "line": 3,
+          "title": "serves readable SSR HTML with staging and security headers",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "foundation.spec.ts",
+          "line": 21,
+          "title": "hydrates without browser errors or CSP violations",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "foundation.spec.ts",
+          "line": 34,
+          "title": "projects public config without forwarding browser credentials to v1",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "foundation.spec.ts",
+          "line": 47,
+          "title": "does not index the staging site or expose source maps",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "foundation.spec.ts",
+          "line": 55,
+          "title": "serves precompressed production JavaScript",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "foundation.spec.ts",
+          "line": 64,
+          "title": "negotiates HTML compression without mixing cached variants or CSP nonces",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "guest-integration.spec.ts",
+          "line": 11,
+          "title": "real guest BFF reuses a draft across upload, manual retry and a confirmed receipt",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "guest-integration.spec.ts",
+          "line": 81,
+          "title": "real guest BFF uploads an avatar, saves, reads and deletes the visitor signup",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "guest-integration.spec.ts",
+          "line": 109,
+          "title": "real upload ingress accepts a file above the middleware default and rejects above 50 MiB",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 147,
+          "title": "history retains its animations while scrolling without hiding settled cards",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 238,
+          "title": "touch pointer entry does not latch the mouse hover focus",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 258,
+          "title": "year headings and date seals draw once without fading or scaling their text",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 291,
+          "title": "touch mode supports wide screens and settles focus after finger release",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 324,
+          "title": "image loading uses the touch poster without fading or scaling the bitmap",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 360,
+          "title": "the touch chapter dock navigates years and follows reading progress",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 392,
+          "title": "touch dates stay readable while image and body reveal separately once",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "history-animation.spec.ts",
+          "line": 422,
+          "title": "the existing reduced-motion preference still suppresses motion",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 18,
+          "title": "is readable and shows a real hero image with JavaScript disabled",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 70,
+          "title": "keeps the eager hero visible with scripts blocked and stylesheets intact",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 114,
+          "title": "never hides an already painted hero when hydration is delayed",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 133,
+          "title": "fetches the hero image exactly once and keeps its source stable",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 160,
+          "title": "hydrates without errors and never refetches the shared data",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 199,
+          "title": "falls back to the original when the archived thumbnail is missing",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 216,
+          "title": "reports a permanently broken image and stops after bounded retries",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 235,
+          "title": "nine clicks freeze the page and native scrolling thaws it",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 260,
+          "title": "reduced motion keeps the freeze static and dismisses it quickly",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 271,
+          "title": "keeps the archived archive retry state and recovers",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "homepage.spec.ts",
+          "line": 285,
+          "title": "publishes a share image that actually resolves to an image",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "layout.spec.ts",
+          "line": 3,
+          "title": "real-page navigation menus close with Escape and return focus",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 45,
+          "title": "shows the sanitized credential error without navigating",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 52,
+          "title": "asks for the second password, then completes login after confirmation",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 62,
+          "title": "blocks duplicate submits while the first login is in flight",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 79,
+          "title": "redirects a reloaded login page when a valid BFF session already exists",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 86,
+          "title": "keeps the session server-authoritative for expiry and role changes",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 105,
+          "title": "requires CSRF for logout and clears the server record before claiming success",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 130,
+          "title": "keeps the upstream token out of storage, HTML, payload, URLs, headers and console",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 164,
+          "title": "keeps keyboard access, focus and the native confirmation modal",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "login.spec.ts",
+          "line": 177,
+          "title": "focuses the first invalid field when client validation fails",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 82,
+          "title": "public navigation fades out and in without a document reload",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 96,
+          "title": "nested event navigation fades only the board and preserves the category shell",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 108,
+          "title": "home boundary keeps the departing geometry in both directions",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 131,
+          "title": "school query changes preserve the page and scroll without a full-page fade",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 143,
+          "title": "slow destination data keeps the outgoing content visible until ready",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 165,
+          "title": "top reset and history restoration preserve the actual reading position",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 198,
+          "title": "rapid navigation cannot leave a blank or invisible destination",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "page-transitions.spec.ts",
+          "line": 222,
+          "title": "reduced motion removes fades while first-load SSR stays visible",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility / (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility / (dark)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /activities (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /activities (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /activity/1 (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /activity/1 (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /activity/991 (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /activity/991 (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /members (light)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /members (dark)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /history (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /history (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /logs (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /logs (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /social (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /social (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /join (light)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /join (dark)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/bounty (light)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/bounty (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/betting (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/betting (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/stg (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/stg (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "UNACCEPTED empty-event diagnostic /events/zetime (light)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "UNACCEPTED empty-event diagnostic /events/zetime (dark)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/party (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility-audit.spec.ts",
+          "line": 7,
+          "title": "public automatic accessibility /events/party (dark)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility.spec.ts",
+          "line": 4,
+          "title": "visible navigation and interest labels remain available to speech and screen-reader users",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility.spec.ts",
+          "line": 14,
+          "title": "approved filters and log control; expanded panel diagnostic (light)",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-accessibility.spec.ts",
+          "line": 59,
+          "title": "history bookmark links retain keyboard navigation and active states (light)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility.spec.ts",
+          "line": 14,
+          "title": "approved filters and log control; expanded panel diagnostic (dark)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility.spec.ts",
+          "line": 59,
+          "title": "history bookmark links retain keyboard navigation and active states (dark)",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-accessibility.spec.ts",
+          "line": 76,
+          "title": "keyboard Tab reaches code and log scroll regions with a visible focus indicator",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-markdown-advanced.spec.ts",
+          "line": 10,
+          "title": "math and readable diagram source exist without JavaScript",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-markdown-advanced.spec.ts",
+          "line": 30,
+          "title": "diagram engines load only after keyboard activation and clean up on hide, theme change and failure",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 25,
+          "title": "activities render without JavaScript and paginate with ordinary links",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 48,
+          "title": "invalid and out-of-range pages answer with real status codes",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 53,
+          "title": "members school filtering is encoded in the URL and isolated",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 78,
+          "title": "history anchors and the month rail work before JavaScript",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 93,
+          "title": "logs render server-side, redact internal ids and stay offline",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 127,
+          "title": "renders metadata and sanitized body in the SSR response",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 149,
+          "title": "missing and non-public records answer 404",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 154,
+          "title": "an upstream failure answers 502 and leaks nothing",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 165,
+          "title": "gallery lightbox is a native modal dialog with focus return and inert background",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 192,
+          "title": "nested prose typography is applied and no client parser is shipped",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 240,
+          "title": "member school navigation updates the body and the canonical URL",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 270,
+          "title": "members editorial layout links the parliament chart and school filter",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 285,
+          "title": "page and range navigation update the body and the canonical URL",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 304,
+          "title": "SSR query isolation: filters are reflected in markup and canonical",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "public-pages.spec.ts",
+          "line": 325,
+          "title": "reports the real outcome for a denied clipboard and for a working one",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 71,
+          "title": "cached fast navigation shows one bar throughout the visible page transition",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 94,
+          "title": "slow data retains bounded progress and the archived light appearance",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 94,
+          "title": "slow data retains bounded progress and the archived dark appearance",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 130,
+          "title": "late cancelled data cannot hide progress for the newer destination",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 159,
+          "title": "nested categories also show progress and complete without a second bar",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 170,
+          "title": "canonical trailing-slash navigation cannot leave a bar waiting for a nonexistent page transition",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 183,
+          "title": "failed destination data still settles the indicator",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "route-progress.spec.ts",
+          "line": 191,
+          "title": "reduced motion keeps waiting progress static and removes easing",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "seo.spec.ts",
+          "line": 8,
+          "title": "every actual public route has distinct SSR metadata, readable content and a nonce-bearing graph",
+          "project": "desktop",
+          "status": "unexpected"
+        },
+        {
+          "file": "seo.spec.ts",
+          "line": 35,
+          "title": "Article and Event nodes use known timestamps without inventing private fields or deadlines",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "seo.spec.ts",
+          "line": 46,
+          "title": "preview robots and sitemap policy stays closed while the sole source contains only public URLs",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "seo.spec.ts",
+          "line": 63,
+          "title": "serves a discoverable recent RSS feed with stable links and no browser credentials",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "seo.spec.ts",
+          "line": 79,
+          "title": "uses the trusted origin even when request host headers are hostile",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "seo.spec.ts",
+          "line": 92,
+          "title": "keeps canonical, social metadata and titles current after client filtering",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 5,
+          "title": "renders the archived channel index without JavaScript",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 24,
+          "title": "opens curated channels in a new, isolated tab",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 32,
+          "title": "does not refetch the shared configuration when navigating to join",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 48,
+          "title": "renders group details without JavaScript",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 71,
+          "title": "falls back to the archived copy message when the clipboard is denied",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 89,
+          "title": "confirms a successful copy",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "social-join.spec.ts",
+          "line": 99,
+          "title": "shows the archived QR failure state and retries it",
+          "project": "desktop",
+          "status": "expected"
+        },
+        {
+          "file": "admin-articles.spec.ts",
+          "line": 19,
+          "title": "article editor imports safe Markdown and binds all uploads to one unpublished draft before publishing",
+          "project": "mobile",
+          "status": "expected"
+        },
+        {
+          "file": "admin-articles.spec.ts",
+          "line": 122,
+          "title": "article editing protects unsaved changes and updates public reads on edit, deletion and restoration",
+          "project": "mobile",
+          "status": "expected"
+        },
+        {
+          "file": "admin-articles.spec.ts",
+          "line": 147,
+          "title": "invalid articles never write and an upstream failure leaves content available for explicit manual retry",
+          "project": "mobile",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 36,
+          "title": "pending review, protected detail, status changes, deletion and restoration invalidate warmed public reads",
+          "project": "mobile",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 73,
+          "title": "rejecting and editing a private event preserve status, nested people, settlement and unknown metadata",
+          "project": "mobile",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports 悬赏令 without a guest draft",
+          "project": "mobile",
+          "status": "expected"
+        },
+        {
+          "file": "admin-events.spec.ts",
+          "line": 101,
+          "title": "authenticated creation supports 对赌协议 without a guest draft",
+          "project": "mobile",
+          "status": "expected"
+        }
+      ]
+    },
+    "attempts": [
+      {
+        "name": "frontend-closeout-download-verified",
+        "ok": true,
+        "counts": {
+          "passed": 6,
+          "expected": 6,
+          "flaky": 0,
+          "failed": 0,
+          "skipped": 0,
+          "allDeclared": 6
+        },
+        "merge": {
+          "ok": true,
+          "exitCode": 0,
+          "error": null,
+          "blobCount": 6,
+          "missingBlobs": []
+        }
+      },
+      {
+        "name": "frontend-closeout-final-regression",
+        "ok": false,
+        "counts": {
+          "passed": 69,
+          "expected": 69,
+          "flaky": 0,
+          "failed": 1,
+          "skipped": 0,
+          "allDeclared": 70
+        },
+        "merge": {
+          "ok": true,
+          "exitCode": 0,
+          "error": null,
+          "blobCount": 35,
+          "missingBlobs": []
+        }
+      },
+      {
+        "name": "frontend-closeout-layout-verified",
+        "ok": true,
+        "counts": {
+          "passed": 2,
+          "expected": 2,
+          "flaky": 0,
+          "failed": 0,
+          "skipped": 0,
+          "allDeclared": 2
+        },
+        "merge": {
+          "ok": true,
+          "exitCode": 0,
+          "error": null,
+          "blobCount": 1,
+          "missingBlobs": []
+        }
+      },
+      {
+        "name": "frontend-closeout-public-verified",
+        "ok": true,
+        "counts": {
+          "passed": 42,
+          "expected": 42,
+          "flaky": 0,
+          "failed": 0,
+          "skipped": 0,
+          "allDeclared": 42
+        },
+        "merge": {
+          "ok": true,
+          "exitCode": 0,
+          "error": null,
+          "blobCount": 21,
+          "missingBlobs": []
+        }
+      }
+    ],
+    "scopedAcceptedUniqueCases": 118,
+    "supersededFailures": [
+      "mobile::layout.spec.ts::3:1::layout.spec.ts > real-page navigation menus close with Escape and return focus"
+    ],
+    "scopedCases": [
+      {
+        "identity": "desktop::admin-secondary.spec.ts::133:1::admin-secondary.spec.ts > large backup hands the actual stream to the browser without a Blob or false completion notice",
+        "status": "expected",
+        "source": "frontend-closeout-download-verified"
+      },
+      {
+        "identity": "desktop::admin-workflows.spec.ts::171:1::admin-workflows.spec.ts > account and IPv6 ban workflows stay on protected fixed endpoints",
+        "status": "expected",
+        "source": "frontend-closeout-download-verified"
+      },
+      {
+        "identity": "desktop::admin-workflows.spec.ts::205:1::admin-workflows.spec.ts > backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+        "status": "expected",
+        "source": "frontend-closeout-download-verified"
+      },
+      {
+        "identity": "mobile::admin-secondary.spec.ts::133:1::admin-secondary.spec.ts > large backup hands the actual stream to the browser without a Blob or false completion notice",
+        "status": "expected",
+        "source": "frontend-closeout-download-verified"
+      },
+      {
+        "identity": "mobile::admin-workflows.spec.ts::171:1::admin-workflows.spec.ts > account and IPv6 ban workflows stay on protected fixed endpoints",
+        "status": "expected",
+        "source": "frontend-closeout-download-verified"
+      },
+      {
+        "identity": "mobile::admin-workflows.spec.ts::205:1::admin-workflows.spec.ts > backups preserve settings, manual execution, byte-exact download and confirmed deletion",
+        "status": "expected",
+        "source": "frontend-closeout-download-verified"
+      },
+      {
+        "identity": "desktop::admin-interface.spec.ts::20:1::admin-interface.spec.ts > workspace navigation, theme, keyboard focus and member search work without hover",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::admin-interface.spec.ts::70:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::admin-interface.spec.ts::70:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::admin-interface.spec.ts::99:1::admin-interface.spec.ts > ordinary administrators see permitted navigation and cannot enter super-admin pages",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::entry-loading.spec.ts::6:3::entry-loading.spec.ts > / hydrates after repeated warm-cache document reloads",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /login hydrates after repeated warm-cache document reloads",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /members hydrates after repeated warm-cache document reloads",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::114:3::homepage.spec.ts > homepage > never hides an already painted hero when hydration is delayed",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::133:3::homepage.spec.ts > homepage > fetches the hero image exactly once and keeps its source stable",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::160:3::homepage.spec.ts > homepage > hydrates without errors and never refetches the shared data",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::18:3::homepage.spec.ts > homepage > is readable and shows a real hero image with JavaScript disabled",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::199:3::homepage.spec.ts > homepage > falls back to the original when the archived thumbnail is missing",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::216:3::homepage.spec.ts > homepage > reports a permanently broken image and stops after bounded retries",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::235:3::homepage.spec.ts > homepage > nine clicks freeze the page and native scrolling thaws it",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::260:3::homepage.spec.ts > homepage > reduced motion keeps the freeze static and dismisses it quickly",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::271:3::homepage.spec.ts > homepage > keeps the archived archive retry state and recovers",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::285:3::homepage.spec.ts > homepage > publishes a share image that actually resolves to an image",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::homepage.spec.ts::70:3::homepage.spec.ts > homepage > keeps the eager hero visible with scripts blocked and stylesheets intact",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::layout.spec.ts::3:1::layout.spec.ts > real-page navigation menus close with Escape and return focus",
+        "status": "expected",
+        "source": "frontend-closeout-layout-verified"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::108:1::page-transitions.spec.ts > home boundary keeps the departing geometry in both directions",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::131:1::page-transitions.spec.ts > school query changes preserve the page and scroll without a full-page fade",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::143:1::page-transitions.spec.ts > slow destination data keeps the outgoing content visible until ready",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::165:1::page-transitions.spec.ts > top reset and history restoration preserve the actual reading position",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::198:1::page-transitions.spec.ts > rapid navigation cannot leave a blank or invisible destination",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::222:1::page-transitions.spec.ts > reduced motion removes fades while first-load SSR stays visible",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::82:1::page-transitions.spec.ts > public navigation fades out and in without a document reload",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::page-transitions.spec.ts::96:1::page-transitions.spec.ts > nested event navigation fades only the board and preserves the category shell",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::130:1::route-progress.spec.ts > late cancelled data cannot hide progress for the newer destination",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::159:1::route-progress.spec.ts > nested categories also show progress and complete without a second bar",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::170:1::route-progress.spec.ts > canonical trailing-slash navigation cannot leave a bar waiting for a nonexistent page transition",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::183:1::route-progress.spec.ts > failed destination data still settles the indicator",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::191:1::route-progress.spec.ts > reduced motion keeps waiting progress static and removes easing",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::71:1::route-progress.spec.ts > cached fast navigation shows one bar throughout the visible page transition",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::94:3::route-progress.spec.ts > slow data retains bounded progress and the archived dark appearance",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::route-progress.spec.ts::94:3::route-progress.spec.ts > slow data retains bounded progress and the archived light appearance",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::admin-interface.spec.ts::20:1::admin-interface.spec.ts > workspace navigation, theme, keyboard focus and member search work without hover",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::admin-interface.spec.ts::70:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 工作台, 住民管理, 群史管理, 站点设置",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::admin-interface.spec.ts::70:4::admin-interface.spec.ts > modern interface has named controls and contained layout: 首页链接, 操作日志, 账号与权限, 备份管理, 个人设置",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::admin-interface.spec.ts::99:1::admin-interface.spec.ts > ordinary administrators see permitted navigation and cannot enter super-admin pages",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::entry-loading.spec.ts::6:3::entry-loading.spec.ts > / hydrates after repeated warm-cache document reloads",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /login hydrates after repeated warm-cache document reloads",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::entry-loading.spec.ts::6:3::entry-loading.spec.ts > /members hydrates after repeated warm-cache document reloads",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::114:3::homepage.spec.ts > homepage > never hides an already painted hero when hydration is delayed",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::133:3::homepage.spec.ts > homepage > fetches the hero image exactly once and keeps its source stable",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::160:3::homepage.spec.ts > homepage > hydrates without errors and never refetches the shared data",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::18:3::homepage.spec.ts > homepage > is readable and shows a real hero image with JavaScript disabled",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::199:3::homepage.spec.ts > homepage > falls back to the original when the archived thumbnail is missing",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::216:3::homepage.spec.ts > homepage > reports a permanently broken image and stops after bounded retries",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::235:3::homepage.spec.ts > homepage > nine clicks freeze the page and native scrolling thaws it",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::260:3::homepage.spec.ts > homepage > reduced motion keeps the freeze static and dismisses it quickly",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::271:3::homepage.spec.ts > homepage > keeps the archived archive retry state and recovers",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::285:3::homepage.spec.ts > homepage > publishes a share image that actually resolves to an image",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::homepage.spec.ts::70:3::homepage.spec.ts > homepage > keeps the eager hero visible with scripts blocked and stylesheets intact",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::layout.spec.ts::3:1::layout.spec.ts > real-page navigation menus close with Escape and return focus",
+        "status": "expected",
+        "source": "frontend-closeout-layout-verified"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::108:1::page-transitions.spec.ts > home boundary keeps the departing geometry in both directions",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::131:1::page-transitions.spec.ts > school query changes preserve the page and scroll without a full-page fade",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::143:1::page-transitions.spec.ts > slow destination data keeps the outgoing content visible until ready",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::165:1::page-transitions.spec.ts > top reset and history restoration preserve the actual reading position",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::198:1::page-transitions.spec.ts > rapid navigation cannot leave a blank or invisible destination",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::222:1::page-transitions.spec.ts > reduced motion removes fades while first-load SSR stays visible",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::82:1::page-transitions.spec.ts > public navigation fades out and in without a document reload",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::page-transitions.spec.ts::96:1::page-transitions.spec.ts > nested event navigation fades only the board and preserves the category shell",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::130:1::route-progress.spec.ts > late cancelled data cannot hide progress for the newer destination",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::159:1::route-progress.spec.ts > nested categories also show progress and complete without a second bar",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::170:1::route-progress.spec.ts > canonical trailing-slash navigation cannot leave a bar waiting for a nonexistent page transition",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::183:1::route-progress.spec.ts > failed destination data still settles the indicator",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::191:1::route-progress.spec.ts > reduced motion keeps waiting progress static and removes easing",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::71:1::route-progress.spec.ts > cached fast navigation shows one bar throughout the visible page transition",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::94:3::route-progress.spec.ts > slow data retains bounded progress and the archived dark appearance",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "mobile::route-progress.spec.ts::94:3::route-progress.spec.ts > slow data retains bounded progress and the archived light appearance",
+        "status": "expected",
+        "source": "frontend-closeout-final-regression"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::128:3::public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::150:3::public-pages.spec.ts > activity detail > missing and non-public records answer 404",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::155:3::public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::166:3::public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::193:3::public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::237:3::public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::26:3::public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::267:3::public-pages.spec.ts > filter and page reactivity > members editorial layout links the parliament chart and school filter",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::282:3::public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::301:3::public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::322:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::49:3::public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::54:3::public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::79:3::public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::public-pages.spec.ts::94:3::public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::seo.spec.ts::36:1::seo.spec.ts > Article and Event nodes use known timestamps without inventing private fields or deadlines",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::seo.spec.ts::47:1::seo.spec.ts > preview robots and sitemap policy stays closed while the sole source contains only public URLs",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::seo.spec.ts::64:1::seo.spec.ts > serves a discoverable recent RSS feed with stable links and no browser credentials",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::seo.spec.ts::80:1::seo.spec.ts > uses the trusted origin even when request host headers are hostile",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::seo.spec.ts::9:1::seo.spec.ts > every actual public route has distinct SSR metadata, readable content and a nonce-bearing graph",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "desktop::seo.spec.ts::93:1::seo.spec.ts > keeps canonical, social metadata and titles current after client filtering",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::128:3::public-pages.spec.ts > activity detail > renders metadata and sanitized body in the SSR response",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::150:3::public-pages.spec.ts > activity detail > missing and non-public records answer 404",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::155:3::public-pages.spec.ts > activity detail > an upstream failure answers 502 and leaks nothing",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::166:3::public-pages.spec.ts > activity detail > gallery lightbox is a native modal dialog with focus return and inert background",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::193:3::public-pages.spec.ts > markdown rendering contract > nested prose typography is applied and no client parser is shipped",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::237:3::public-pages.spec.ts > filter and page reactivity > member school navigation updates the body and the canonical URL",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::26:3::public-pages.spec.ts > server-rendered public lists > activities render without JavaScript and paginate with ordinary links",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::267:3::public-pages.spec.ts > filter and page reactivity > members editorial layout links the parliament chart and school filter",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::282:3::public-pages.spec.ts > filter and page reactivity > page and range navigation update the body and the canonical URL",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::301:3::public-pages.spec.ts > filter and page reactivity > SSR query isolation: filters are reflected in markup and canonical",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::322:3::public-pages.spec.ts > code block copy > reports the real outcome for a denied clipboard and for a working one",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::49:3::public-pages.spec.ts > server-rendered public lists > invalid and out-of-range pages answer with real status codes",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::54:3::public-pages.spec.ts > server-rendered public lists > members school filtering is encoded in the URL and isolated",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::79:3::public-pages.spec.ts > server-rendered public lists > history anchors and the month rail work before JavaScript",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::public-pages.spec.ts::94:3::public-pages.spec.ts > server-rendered public lists > logs render server-side, redact internal ids and stay offline",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::seo.spec.ts::36:1::seo.spec.ts > Article and Event nodes use known timestamps without inventing private fields or deadlines",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::seo.spec.ts::47:1::seo.spec.ts > preview robots and sitemap policy stays closed while the sole source contains only public URLs",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::seo.spec.ts::64:1::seo.spec.ts > serves a discoverable recent RSS feed with stable links and no browser credentials",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::seo.spec.ts::80:1::seo.spec.ts > uses the trusted origin even when request host headers are hostile",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::seo.spec.ts::9:1::seo.spec.ts > every actual public route has distinct SSR metadata, readable content and a nonce-bearing graph",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      },
+      {
+        "identity": "mobile::seo.spec.ts::93:1::seo.spec.ts > keeps canonical, social metadata and titles current after client filtering",
+        "status": "expected",
+        "source": "frontend-closeout-public-verified"
+      }
+    ],
+    "note": "The 70-case final regression initially passed 69 and failed one renamed-button locator. Both layout cases passed the explicit correction run. No entire-site or first-attempt pass is claimed."
+  },
+  "accessibility": {
+    "complete": false,
+    "capturedStates": 37,
+    "statesWithViolations": 25,
+    "evidence": "accessibility-findings.json"
+  },
+  "dependencyAudit": {
+    "result": "two high-severity dependency-tree findings; release review remains open",
+    "counts": {
+      "info": 0,
+      "low": 0,
+      "moderate": 0,
+      "high": 2,
+      "critical": 0
+    },
+    "findings": [
+      {
+        "module": "node-forge",
+        "severity": "high",
+        "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+        "vulnerable": "<=1.4.0",
+        "patched": null,
+        "advisory": "https://github.com/advisories/GHSA-86w9-cpqp-85rv",
+        "examplePath": "web>@nuxtjs/seo>@nuxtjs/robots>nuxt>@nuxt/nitro-server>nitropack>listhen>node-forge"
+      },
+      {
+        "module": "braces",
+        "severity": "high",
+        "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+        "vulnerable": "<=3.0.3",
+        "patched": null,
+        "advisory": "https://github.com/advisories/GHSA-vfj7-8cjw-p6xm",
+        "examplePath": "web>@nuxtjs/seo>@nuxtjs/robots>nuxt>@nuxt/nitro-server>nitropack>globby>fast-glob>micromatch>braces"
+      }
+    ]
+  },
+  "backendChanges": [],
+  "remaining": [
+    "component/form semantic acceptance",
+    "approved-palette a11y findings and manual review",
+    "matched old/new and Linux Lighthouse/LCP acceptance",
+    "full release resilience/security review",
+    "observability and upstream build warnings",
+    "final Windows/Linux/container CI",
+    "deployment and rollback"
+  ],
+  "sourceHashes": {
+    "pnpm-lock.yaml": "eebbe99d01b6243cce4b3bc731c043fb55cab7323183e1f90cdf4f126f992055",
+    "scripts/revamp/route-fixtures.json": "64c644b29c618a8263f66868f0f50de79987d98a548e18f546fec92c883fb111",
+    "web/app/app.vue": "9b10155c4faaee03983f1190b13f0db6a8ea276cf44f4395c566ce200fd1e6c0",
+    "web/app/assets/css/admin.css": "d3c377bd5cf74b2dcf22918661696e1bcba3a07984ebdcbe90caa4f2d007895a",
+    "web/app/components/HomeSocialLinks.vue": "72262d176902d5ec3b5abac5eb5923eb109b5b71352a5cfa954980e954aaeb97",
+    "web/app/components/events/EventForm.vue": "4ce571b7f766ea5207f436acc31b37a320ca954576b533ed523e54de48da8ae7",
+    "web/app/components/events/EventSignup.vue": "e0c8668daaa741709bd946bcc8a987906789caf24ecda0031985fb5c13e7b1a8",
+    "web/app/components/home/CirnoFreeze.vue": "bc23febbcb649e5971fdfd17f47309c36aee0cc1365c0ce8d74a5a90dd03566e",
+    "web/app/components/home/HomeAbout.vue": "cc027b3a0a652b030e69207f3fc4e79910cf4bc342d84e9b7dddbc61511b59d6",
+    "web/app/components/home/HomeHero.vue": "49ca4516d60c881e0c9cc17ca5c02573b0aadf736b2f60fb6c9ceabe8f7767ed",
+    "web/app/components/ui/Dialog.vue": null,
+    "web/app/composables/useAdminApi.ts": "404a5bfa15ead492b0bb703020b62fa1ee09ce38587473cd2f325f03a91273be",
+    "web/app/layouts/default.vue": "18be4219e55e435c418e73a1548958544b387aebec72b960160de01f1bfcb840",
+    "web/app/pages/__revamp/layout.vue": null,
+    "web/app/pages/admin/backups.vue": "5797dc4afc259e80ca7d94a9bb040fad1ab3869c2ef0149ffa64c111310b2616",
+    "web/app/pages/admin/users.vue": "6f1d0518b09894b4212a3f4867f987cd5e7603f30a4a009883bc185923d5c699",
+    "web/app/pages/join.vue": "7ae29f8c0c6c5b77a09068f7c9d4223cb5e034ec780b026ed945a07079aa1960",
+    "web/app/pages/social.vue": "8b717d9ae829138028498aba1a00fcf42cac2d6d0bc9d303a48934bfcad03d54",
+    "web/app/utils/dialog-reka.ts": null,
+    "web/nuxt.config.ts": "258aa2c2ac61d40bf25b8d46bcd22e49573ef519eb693bf7bca59837aa305853",
+    "web/package.json": "639455a0fd6a443d4421cf954f0a156c5c49ea7ed7a4d779996c9b557ed955a7",
+    "web/tests/e2e/foundation.spec.ts": "38e9d78012d6cf4cf716a44e2941b2c0b33cafc350aa55f4e9bbe89c3e114aee",
+    "web/tests/e2e/homepage.spec.ts": "9a4729808d2d4931ccdc15cce975f2fe7e31572a46dddca761271499b354fabb",
+    "web/tests/e2e/layout.spec.ts": "4b01a58d38bfae59cfaeb57f5c87102836d5e8f9d1fa9f3e6d394f1c95ee393c",
+    "web/tests/e2e/page-transitions.spec.ts": "95931c86c7b338b948076a7eba3cde823a2a1be007e332888daaa94b7ef629ec",
+    "web/tests/e2e/public-accessibility.spec.ts": "6bf9cb632fbf4de248db91b31ec4bf8ca94ea62d5770e55b281e4910aee30988",
+    "web/tests/e2e/public-pages.spec.ts": "d3926107bdece2e6a714d985272234c611848a2c75674f10f2d84b0dab4c1c69",
+    "web/tests/e2e/seo.spec.ts": "8242d7e6f91765c504cf4a48d0d69cb3987cf0dc65ea8724ab1606f6d10a1ccc",
+    "web/tests/fixtures/public-contract.mjs": "6b886acf41211bbd84957625c726b698c9d3801db8f82087c1cd18b644ecf121"
+  }
+}

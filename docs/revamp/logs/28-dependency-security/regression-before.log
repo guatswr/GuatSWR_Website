@@ -1,0 +1,293 @@
+✔ node-forge: accepts canonical SHA-256 with NULL (4.2861ms)
+✔ node-forge: accepts SHA-256 with omitted optional NULL (1.1988ms)
+✔ node-forge: rejects an incorrect digest (0.8734ms)
+✖ node-forge: rejects garbage after nested NULL (CVE-2026-85393) (1.3863ms)
+✖ node-forge: rejects an unexpected second nested element (0.6214ms)
+✖ node-forge: rejects a non-empty NULL payload (0.5887ms)
+✔ braces: retains normal compile (0.7519ms)
+✔ braces: retains ranges and expansion (1.2039ms)
+✔ braces: accepts the supported depth boundary (1.1718ms)
+✔ braces: does not count quoted braces as nesting (0.2355ms)
+✔ braces: does not count escaped braces as nesting (0.1439ms)
+✖ braces: bounds parenthesis nesting (0.522ms)
+✖ braces: cannot disable the bound using options (0.631ms)
+✖ braces: bounds deeply nested input in parse (2.4685ms)
+✖ braces: bounds deeply nested input in compile (16.3381ms)
+✖ braces: bounds deeply nested input in expand (9.758ms)
+✖ braces: bounds deeply nested input in stringify (3.2288ms)
+✖ braces: bounds externally supplied cyclic ASTs in compile (9.8615ms)
+✖ braces: bounds externally supplied cyclic ASTs in expand (4.6274ms)
+✖ braces: bounds externally supplied cyclic ASTs in stringify (5.4631ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 8
+ℹ fail 12
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 306.944
+
+✖ failing tests:
+
+test at scripts\revamp\dependency-security.test.mjs:6:66
+✖ node-forge: rejects garbage after nested NULL (CVE-2026-85393) (1.3863ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:23:73)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /valid RSASSA-PKCS1-v1_5 DigestInfo/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:6:66
+✖ node-forge: rejects an unexpected second nested element (0.6214ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:24:66)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /valid RSASSA-PKCS1-v1_5 DigestInfo/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:6:66
+✖ node-forge: rejects a non-empty NULL payload (0.5887ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception.
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:25:55)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: /valid RSASSA-PKCS1-v1_5 DigestInfo/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds parenthesis nesting (0.522ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception (boundedError).
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:38:49)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: cannot disable the bound using options (0.631ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception (boundedError).
+      at TestContext.probes (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:39:61)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds deeply nested input in parse (2.4685ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception (boundedError).
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:42:74)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds deeply nested input in compile (16.3381ms)
+  AssertionError [ERR_ASSERTION]: The "boundedError" validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  RangeError: Maximum call stack size exceeded
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:42:74)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: RangeError: Maximum call stack size exceeded
+        at Array.values (<anonymous>)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:49:32)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19),
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds deeply nested input in expand (9.758ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception (boundedError).
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:42:74)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds deeply nested input in stringify (3.2288ms)
+  AssertionError [ERR_ASSERTION]: Missing expected exception (boundedError).
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:42:74)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds externally supplied cyclic ASTs in compile (9.8615ms)
+  AssertionError [ERR_ASSERTION]: The "boundedError" validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  RangeError: Maximum call stack size exceeded
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:48:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: RangeError: Maximum call stack size exceeded
+        at Array.values (<anonymous>)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:49:32)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\compile.js:50:19),
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds externally supplied cyclic ASTs in expand (4.6274ms)
+  AssertionError [ERR_ASSERTION]: The "boundedError" validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  RangeError: Maximum call stack size exceeded
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:48:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: RangeError: Maximum call stack size exceeded
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:36:16)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9)
+        at walk (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\expand.js:103:9),
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at scripts\revamp\dependency-security.test.mjs:7:63
+✖ braces: bounds externally supplied cyclic ASTs in stringify (5.4631ms)
+  AssertionError [ERR_ASSERTION]: The "boundedError" validation function is expected to return "true". Received false
+  
+  Caught error:
+  
+  RangeError: Maximum call stack size exceeded
+      at TestContext.<anonymous> (file:///E:/Taropoi/workspace/GuatSWR_Website/scripts/revamp/security-patch-probes.mjs:48:14)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1306:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:897:18)
+      at Test.postRun (node:internal/test_runner/test:1447:19)
+      at Test.run (node:internal/test_runner/test:1372:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:897:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: RangeError: Maximum call stack size exceeded
+        at Array.values (<anonymous>)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:23:32)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19)
+        at stringify (E:\Taropoi\workspace\GuatSWR_Website\node_modules\braces\lib\stringify.js:24:19),
+    operator: 'throws',
+    diff: 'simple'
+  }

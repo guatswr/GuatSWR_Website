@@ -1,0 +1,28 @@
+✔ node-forge: accepts canonical SHA-256 with NULL (5.1784ms)
+✔ node-forge: accepts SHA-256 with omitted optional NULL (0.9753ms)
+✔ node-forge: rejects an incorrect digest (1.0598ms)
+✔ node-forge: rejects garbage after nested NULL (CVE-2026-85393) (1.2137ms)
+✔ node-forge: rejects an unexpected second nested element (0.9395ms)
+✔ node-forge: rejects a non-empty NULL payload (1.0085ms)
+✔ braces: retains normal compile (0.7587ms)
+✔ braces: retains ranges and expansion (1.3502ms)
+✔ braces: accepts the supported depth boundary (1.7561ms)
+✔ braces: does not count quoted braces as nesting (0.2978ms)
+✔ braces: does not count escaped braces as nesting (0.375ms)
+✔ braces: bounds parenthesis nesting (0.4391ms)
+✔ braces: cannot disable the bound using options (0.3151ms)
+✔ braces: bounds deeply nested input in parse (0.2703ms)
+✔ braces: bounds deeply nested input in compile (0.2935ms)
+✔ braces: bounds deeply nested input in expand (0.2938ms)
+✔ braces: bounds deeply nested input in stringify (0.454ms)
+✔ braces: bounds externally supplied cyclic ASTs in compile (0.5224ms)
+✔ braces: bounds externally supplied cyclic ASTs in expand (0.2554ms)
+✔ braces: bounds externally supplied cyclic ASTs in stringify (0.2904ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 251.8565

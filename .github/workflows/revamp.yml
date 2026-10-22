@@ -9,11 +9,13 @@ on:
       - 'web/**'
       - 'packages/**'
       - 'scripts/revamp/**'
+      - 'patches/**'
       - 'pnpm-lock.yaml'
       - 'pnpm-workspace.yaml'
       - 'package.json'
       - '.node-version'
       - '.npmrc'
+      - '.gitattributes'
       - '.github/workflows/revamp.yml'
 
 permissions:
@@ -68,6 +70,15 @@ jobs:
           echo "::add-mask::$secret"
           echo "NUXT_SESSION_PASSWORD=$secret" >> "$GITHUB_ENV"
       - run: pnpm install --frozen-lockfile
+      - run: pnpm check:security
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: revamp-dependency-security-${{ runner.os }}
+          path: .tools/dependency-security.json
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 7
       - run: pnpm test:tooling
       - run: pnpm check:boundaries
       - run: pnpm -r typecheck
@@ -123,5 +134,6 @@ jobs:
             web/test-results/
             web/.e2e-isolated/
             web/.lighthouseci/
+            .tools/dependency-security.json
           include-hidden-files: true
           retention-days: 7

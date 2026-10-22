@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test'
 import type { Locator, Page } from '@playwright/test'
 import { trackExternalRequests } from './support/public-pages'
+import { publicMembersFixture } from '../fixtures/public-data.mjs'
 
 /** Both pages must render from the isolated deterministic upstream. */
 const FIXTURE_MEMBER_SCHOOL = '桂航'
@@ -81,7 +82,7 @@ test.describe('server-rendered public lists', () => {
     const response = await page.goto('/history')
     expect(response?.status()).toBe(200)
     await expect(page.getByRole('heading', { level: 1, name: '绯想天群史' })).toBeVisible()
-    const rail = page.locator('a[href="#history-1"]')
+    const rail = page.locator('.history-bookmark-year[href="#history-1"]')
     await expect(rail).toHaveCount(1)
     await expect(page.locator('#history-1')).toHaveCount(1)
     // Backend HTML is sanitized on the server, not injected raw.
@@ -112,7 +113,7 @@ test.describe('server-rendered public lists', () => {
     const summary = page.locator('section', { hasText: '站点统计' })
     const pageviews = summary.getByText('Pageviews')
     if (await pageviews.isVisible()) {
-      await expect(summary.getByText('页面浏览')).toBeVisible()
+      await expect(summary.getByText('页面浏览', { exact: true })).toBeVisible()
     }
     else {
       await expect(summary.getByText('统计数据暂不可用')).toBeVisible()
@@ -220,14 +221,10 @@ test.describe('markdown rendering contract', () => {
     expect(typography.base).toBe(`${base}px`)
     expect(typography.heading).toBe(px(base * 1.5))
     expect(typography.headingMargin).toBe(px(base * 1.5 * 1.5))
-    // The archived preview resolved the paragraph's box from md-editor-v3's own
-    // `div.default-theme p { line-height: 1.6; margin: .5rem 0 }`: that rule and
-    // the page's `[data-v] p { margin-bottom: 1.2em }` have the same
-    // specificity and the preview stylesheet came later in the cascade, so the
-    // 0.5rem margin and the 1.6 line height are the values the archived page
-    // actually rendered (verified against `frontend/dist` computed styles).
-    expect(typography.paragraphMargin).toBe('8px')
-    expect(typography.paragraphLineHeight).toBe(px(base * 1.6))
+    // The approved article layout opts into inherited paragraph typography:
+    // zero paragraph margins, with the page's responsive prose line height.
+    expect(typography.paragraphMargin).toBe('0px')
+    expect(typography.paragraphLineHeight).toBe(px(base * (base === 16 ? 1.8 : 1.9)))
 
     for (const url of scripts) {
       expect(url).not.toMatch(/mdc|md-editor|shiki|remark|rehype|unified|element-plus/i)
@@ -271,7 +268,7 @@ test.describe('filter and page reactivity', () => {
     await page.goto('/members')
     await expect(memberBody(page).getByRole('heading', { name: '绯想天住民名录', exact: true })).toBeVisible()
     await expect(memberBody(page).getByText('收录细则', { exact: true })).toBeVisible()
-    await expect(memberBody(page).locator('.member-dossier')).toHaveCount(2)
+    await expect(memberBody(page).locator('.member-dossier')).toHaveCount(publicMembersFixture.filter(row => !row.deleted_at).length)
     await expect(memberBody(page).locator('.member-dossier-index').first()).toContainText('C · 01')
 
     const circles = memberBody(page).locator('.parliament-chart-container svg circle')

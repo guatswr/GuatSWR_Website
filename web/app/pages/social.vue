@@ -60,7 +60,7 @@ usePublicSeo({
             <div class="social-index-row">
               <dt>收录渠道</dt>
               <dd class="inline-flex items-center gap-1.5">
-                <span class="social-status-dot" aria-hidden="true"></span>
+                <span class="social-status-dot" aria-hidden="true"/>
                 <span>{{ linkCount }} 处</span>
               </dd>
             </div>

@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test'
 import { PUBLIC_INDEX_PAGES } from '../../shared/seo'
+import { EVENT_CATEGORIES } from './support/events-parity'
 
 const origin = 'https://next.guatswr.top'
 const graphs = (html: string) => [...html.matchAll(/<script\b([^>]*)type="application\/ld\+json"([^>]*)>([\s\S]*?)<\/script>/g)]
@@ -12,7 +13,7 @@ test('every actual public route has distinct SSR metadata, readable content and 
     expect(response.status(), target.path).toBe(200)
     const html = await response.text()
     const title = html.match(/<title[^>]*>([^<]+)<\/title>/)?.[1] ?? ''
-    expect(title).toContain(target.title)
+    expect(title).toContain(EVENT_CATEGORIES.find(category => category.path === target.path)?.title ?? target.title)
     expect(title.match(/桂航绯想天/g)).toHaveLength(1)
     expect(titles.has(title), `${target.path}: duplicate title`).toBe(false)
     titles.add(title)

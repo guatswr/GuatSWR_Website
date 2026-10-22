@@ -22,7 +22,7 @@
 
 这个仓库包含公开网站和管理后台。社群成员可以浏览活动记录、参与报名、查看住民资料与群史；管理员可以发布文章、审核活动、维护站点内容和管理备份。
 
-**当前处于新版迁移验收阶段。** 页面代码已迁入 `web/`，性能、无障碍、安全与部署验收仍有未完成项。新版默认禁止搜索引擎索引，站点地图暂未启用。当前结论与验收证据见 [STATUS.md](docs/revamp/STATUS.md)，详细条目见 [CHECKLIST.md](docs/revamp/CHECKLIST.md)。
+**页面迁移与视觉确认已完成，正在收尾工程验证。** 2026-10-22 用户已确认全部迁移页面的视觉效果；性能、无障碍、安全及部署验收分别记录。新版默认禁止搜索引擎索引，站点地图暂未启用。当前结论与验收证据见 [STATUS.md](docs/revamp/STATUS.md)，详细条目见 [CHECKLIST.md](docs/revamp/CHECKLIST.md)。
 
 ## 目录
 
@@ -176,9 +176,11 @@ pnpm dev
 | `pnpm test` | 共享包与 Nuxt 的单元、集成测试 |
 | `pnpm test:tooling` | 仓库检查工具、E2E 执行器和性能指标工具 |
 | `pnpm check:boundaries` | 共享包、浏览器代码和服务端代码的导入边界 |
+| `pnpm check:security` | 验证依赖补丁与漏洞回归，再执行在线审计；未知告警或补丁失效即失败 |
 | `pnpm build` | 构建共享包和 Nuxt 生产产物 |
 | `pnpm check:artifacts` | 检查构建产物，需要先构建 |
 | `pnpm check:routes` | 检查路由初始 JavaScript 体积，需要构建产物及 Chromium |
+| `pnpm --filter @guatswr/web test:performance` | 在真实首页、文章列表和 STG 页面采集移动端 Lighthouse；CI 在 Linux 执行 |
 
 Playwright E2E 使用隔离测试服务与内存数据。先构建，再安装 Chromium 并运行：
 

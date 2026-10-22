@@ -1,0 +1,129 @@
+diff --git a/lib/compile.js b/lib/compile.js
+index dce69beb90ece5c3b0ca234a949418f9f34eedbc..0b485f970a804141a8ea4213c9e4ecde76aa67c3 100644
+--- a/lib/compile.js
++++ b/lib/compile.js
+@@ -2,9 +2,11 @@
+ 
+ const fill = require('fill-range');
+ const utils = require('./utils');
++const { checkDepth } = require('./depth');
+ 
+ const compile = (ast, options = {}) => {
+-  const walk = (node, parent = {}) => {
++  const walk = (node, parent = {}, depth = 0) => {
++    checkDepth(node.nodes ? depth : depth - 1);
+     const invalidBlock = utils.isInvalidBrace(parent);
+     const invalidNode = node.invalid === true && options.escapeInvalid === true;
+     const invalid = invalidBlock === true || invalidNode === true;
+@@ -47,7 +49,7 @@ const compile = (ast, options = {}) => {
+ 
+     if (node.nodes) {
+       for (const child of node.nodes) {
+-        output += walk(child, node);
++        output += walk(child, node, depth + 1);
+       }
+     }
+ 
+diff --git a/lib/depth.js b/lib/depth.js
+new file mode 100644
+index 0000000000000000000000000000000000000000..931b7856a3e267fd78600b96e5cfd3216c841c83
+--- /dev/null
++++ b/lib/depth.js
+@@ -0,0 +1,12 @@
++'use strict';
++
++// Bound parser nesting and every recursive AST walker, including AST inputs
++// supplied directly to compile/expand/stringify. This is not user-configurable.
++exports.MAX_DEPTH = 128;
++exports.checkDepth = depth => {
++  if (depth > exports.MAX_DEPTH) {
++    const error = new SyntaxError('Brace nesting exceeds maximum depth (128)');
++    error.code = 'ERR_BRACES_MAX_DEPTH';
++    throw error;
++  }
++};
+diff --git a/lib/expand.js b/lib/expand.js
+index 35b2c41d6afdb8f0197959e26079f266e48370d3..7eb126593b6c7e126f53859aff4ea42fb8cbd41e 100644
+--- a/lib/expand.js
++++ b/lib/expand.js
+@@ -3,6 +3,7 @@
+ const fill = require('fill-range');
+ const stringify = require('./stringify');
+ const utils = require('./utils');
++const { checkDepth } = require('./depth');
+ 
+ const append = (queue = '', stash = '', enclose = false) => {
+   const result = [];
+@@ -33,7 +34,8 @@ const append = (queue = '', stash = '', enclose = false) => {
+ const expand = (ast, options = {}) => {
+   const rangeLimit = options.rangeLimit === undefined ? 1000 : options.rangeLimit;
+ 
+-  const walk = (node, parent = {}) => {
++  const walk = (node, parent = {}, depth = 0) => {
++    checkDepth(depth);
+     node.queue = [];
+ 
+     let p = parent;
+@@ -100,7 +102,7 @@ const expand = (ast, options = {}) => {
+       }
+ 
+       if (child.nodes) {
+-        walk(child, node);
++        walk(child, node, depth + 1);
+       }
+     }
+ 
+diff --git a/lib/parse.js b/lib/parse.js
+index 3a6988e629f52aee6609dc5ec290a5e9ff47cecb..f1be1ebbb7fefa3d22e4aaa7f81903096ae2bb5a 100644
+--- a/lib/parse.js
++++ b/lib/parse.js
+@@ -1,6 +1,7 @@
+ 'use strict';
+ 
+ const stringify = require('./stringify');
++const { checkDepth } = require('./depth');
+ 
+ /**
+  * Constants
+@@ -143,6 +144,7 @@ const parse = (input, options = {}) => {
+      */
+ 
+     if (value === CHAR_LEFT_PARENTHESES) {
++      checkDepth(stack.length);
+       block = push({ type: 'paren', nodes: [] });
+       stack.push(block);
+       push({ type: 'text', value });
+@@ -195,6 +197,7 @@ const parse = (input, options = {}) => {
+      */
+ 
+     if (value === CHAR_LEFT_CURLY_BRACE) {
++      checkDepth(stack.length);
+       depth++;
+ 
+       const dollar = prev.value && prev.value.slice(-1) === '$' || block.dollar === true;
+diff --git a/lib/stringify.js b/lib/stringify.js
+index 8bcf872c31894f81a8c64d9202fd607e4fd7ea2b..7a67ab13e5920820fda72d05e5a877bff285a8b8 100644
+--- a/lib/stringify.js
++++ b/lib/stringify.js
+@@ -1,9 +1,11 @@
+ 'use strict';
+ 
+ const utils = require('./utils');
++const { checkDepth } = require('./depth');
+ 
+ module.exports = (ast, options = {}) => {
+-  const stringify = (node, parent = {}) => {
++  const stringify = (node, parent = {}, depth = 0) => {
++    checkDepth(node.nodes ? depth : depth - 1);
+     const invalidBlock = options.escapeInvalid && utils.isInvalidBrace(parent);
+     const invalidNode = node.invalid === true && options.escapeInvalid === true;
+     let output = '';
+@@ -21,7 +23,7 @@ module.exports = (ast, options = {}) => {
+ 
+     if (node.nodes) {
+       for (const child of node.nodes) {
+-        output += stringify(child);
++        output += stringify(child, node, depth + 1);
+       }
+     }
+     return output;

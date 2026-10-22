@@ -1,0 +1,30 @@
+$ node scripts/revamp/check-dependency-security.mjs
+{
+  "ok": true,
+  "verifiedCopies": 2,
+  "regressionProbes": 20,
+  "rawCounts": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 2,
+    "critical": 0
+  },
+  "mitigated": [
+    {
+      "advisory": "GHSA-86w9-cpqp-85rv",
+      "package": "node-forge",
+      "severity": "high",
+      "title": "node-forge RSA PKCS#1 v1.5 signature verification accepts extra nested DigestAlgorithm elements",
+      "mitigation": "verified local patch; upstream version remains flagged"
+    },
+    {
+      "advisory": "GHSA-vfj7-8cjw-p6xm",
+      "package": "braces",
+      "severity": "high",
+      "title": "braces vulnerable to stack-exhaustion denial of service through deeply nested patterns",
+      "mitigation": "verified local patch; upstream version remains flagged"
+    }
+  ],
+  "unresolved": []
+}

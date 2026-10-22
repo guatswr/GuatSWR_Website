@@ -14,7 +14,10 @@ export function useAdminApi() {
     upload: (file: File, activityId?: number) => transport.upload(file, lifetime.signal, activityId),
     uploadEventAvatar: (file: File, eventId: number) => transport.uploadEventAvatar(file, eventId, lifetime.signal),
     uploadIcon: (file: File) => transport.upload(file, lifetime.signal, undefined, true),
-    command: <T>(name: AdminCommand, body: unknown, project: (value: unknown) => T) => transport.command(name, body, project, lifetime.signal),
+    // Query reads consume Vue Query's signal so disposal cancels the cached
+    // query too; otherwise an aborted first mount can leave an error on remount.
+    command: <T>(name: AdminCommand, body: unknown, project: (value: unknown) => T, signal?: AbortSignal) =>
+      transport.command(name, body, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     removeBan: (ip: string) => transport.removeBan(ip, lifetime.signal),
     deleteBackup: (file: string) => transport.deleteBackup(file, lifetime.signal),
   }

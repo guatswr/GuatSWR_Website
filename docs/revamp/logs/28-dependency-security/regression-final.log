@@ -1,0 +1,43 @@
+✔ node-forge: accepts canonical SHA-256 with NULL (4.6063ms)
+✔ node-forge: accepts SHA-256 with omitted optional NULL (0.9111ms)
+✔ node-forge: rejects an incorrect digest (0.7126ms)
+✔ node-forge: rejects garbage after nested NULL (CVE-2026-85393) (1.1902ms)
+✔ node-forge: rejects an unexpected second nested element (0.6835ms)
+✔ node-forge: rejects a non-empty NULL payload (1.8443ms)
+✔ braces: retains normal compile (0.8704ms)
+✔ braces: retains ranges and expansion (1.2918ms)
+✔ braces: accepts the supported depth boundary (1.0228ms)
+✔ braces: does not count quoted braces as nesting (0.2247ms)
+✔ braces: does not count escaped braces as nesting (0.1759ms)
+✔ braces: bounds parenthesis nesting (0.3307ms)
+✔ braces: cannot disable the bound using options (0.2388ms)
+✔ braces: bounds deeply nested input in parse (0.1842ms)
+✔ braces: bounds deeply nested input in compile (0.1695ms)
+✔ braces: bounds deeply nested input in expand (0.2224ms)
+✔ braces: bounds deeply nested input in stringify (0.2148ms)
+✔ braces: bounds externally supplied cyclic ASTs in compile (0.5946ms)
+✔ braces: bounds externally supplied cyclic ASTs in expand (0.2779ms)
+✔ braces: bounds externally supplied cyclic ASTs in stringify (0.2621ms)
+✔ audit accepts only the two exact verified backports while retaining raw counts (0.9626ms)
+✔ a clean upstream audit is also accepted (0.1897ms)
+✔ an unverified patch cannot waive an advisory (0.1826ms)
+✔ new advisories fail even at low severity (0.1799ms)
+✔ a changed affected range requires renewed review (0.1666ms)
+✔ mixed installed versions cannot be waived (0.1065ms)
+✔ an advisory cannot be waived under another package name (0.0811ms)
+✔ network, incomplete and inconsistent audit reports fail closed (0.3277ms)
+✔ discovery finds hoisted and nested copies, including a different version (27.8638ms)
+✔ discovery follows pnpm landing links without treating unused cache copies as installed (19.2365ms)
+✔ every actual installed copy passes patch hashes and exploit probes (1485.0426ms)
+✔ missing/tampered registration rejects mitigation (15.7831ms)
+✔ missing/tampered patch checksum rejects mitigation (16.1313ms)
+✔ missing/tampered installed source rejects mitigation (15.4253ms)
+✔ missing/tampered unreviewed version rejects mitigation (16.9352ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 35
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1795.4759

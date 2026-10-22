@@ -9,11 +9,11 @@
     { "name": "logs", "path": "/logs", "mainContent": "日志档案" },
     { "name": "social", "path": "/social", "mainContent": "绯想天 · 外界通讯" },
     { "name": "join", "path": "/join", "mainContent": "加入桂航绯想天" },
-    { "name": "events entry redirect", "path": "/events", "mainContent": "悬赏令" },
+    { "name": "events overview", "path": "/events", "mainContent": "全部活动" },
     { "name": "bounty", "path": "/events/bounty", "mainContent": "悬赏令" },
     { "name": "betting", "path": "/events/betting", "mainContent": "对赌协议" },
-    { "name": "STG", "path": "/events/stg", "mainContent": "欢迎STGer报名参加" },
-    { "name": "zetime", "path": "/events/zetime", "mainContent": "则批大本营" },
-    { "name": "party", "path": "/events/party", "mainContent": "小聚、大聚、饭聚" }
+    { "name": "STG", "path": "/events/stg", "mainContent": "秋季 STG 大会" },
+    { "name": "zetime", "path": "/events/zetime", "mainContent": "非想天则" },
+    { "name": "party", "path": "/events/party", "mainContent": "冬季饭聚" }
   ]
 }

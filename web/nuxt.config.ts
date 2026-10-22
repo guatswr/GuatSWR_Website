@@ -24,7 +24,7 @@ export default defineNuxtConfig({
     defaults: { nuxtLink: { prefetchOn: { visibility: false, interaction: true } } },
   },
   // Public pages do not need a session; only projected public reads are cached.
-  // Admin middleware will explicitly fetch its BFF session when implemented.
+  // Admin middleware explicitly fetches its BFF session.
   auth: { loadStrategy: 'none' },
   typescript: {
     strict: true,
@@ -147,7 +147,7 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     compressPublicAssets: true,
-    externals: { inline: ['pinia', 'reka-ui'] },
+    externals: { inline: ['pinia'] },
   },
   app: {
     head: {

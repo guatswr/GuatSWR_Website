@@ -21,7 +21,9 @@ onBeforeUnmount(ui.stop)
     <RouteProgressBar />
     <SiteNavbar />
     <main id="main-content" tabindex="-1" class="flex-grow">
-      <slot />
+      <div class="club-page-stack">
+        <slot />
+      </div>
     </main>
     <SiteFooter />
   </div>

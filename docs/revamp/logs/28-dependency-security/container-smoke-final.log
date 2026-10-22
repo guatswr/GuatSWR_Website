@@ -1,0 +1,42 @@
+{
+  "image": "guatswr-security:local",
+  "generatedAt": "2026-10-22T15:25:59.577Z",
+  "cases": [
+    {
+      "path": "/",
+      "status": 200,
+      "ssrContent": true,
+      "nonceMatches": true
+    },
+    {
+      "path": "/members",
+      "status": 200,
+      "ssrContent": true,
+      "nonceMatches": true
+    },
+    {
+      "path": "/activity/1",
+      "status": 200,
+      "ssrContent": true,
+      "nonceMatches": true
+    },
+    {
+      "path": "/activity/3",
+      "status": 200,
+      "ssrContent": true,
+      "nonceMatches": true
+    },
+    {
+      "path": "/events/stg",
+      "status": 200,
+      "ssrContent": true,
+      "nonceMatches": true
+    }
+  ],
+  "passed": true,
+  "feed": true,
+  "previewSitemapDisabled": true,
+  "publicIndexEntries": 15,
+  "sourceMap404": true,
+  "uploadImageProxy": true
+}

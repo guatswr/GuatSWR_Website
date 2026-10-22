@@ -221,7 +221,7 @@ onBeforeUnmount(() => {
       </svg>
       <div class="ice-spell" aria-hidden="true">
         <span class="ice-spell-wings">◇ ◇ ◇ <b>「完美冻结」</b> ◇ ◇ ◇</span>
-        <span class="ice-spell-kicker"> </span>
+        <span class="ice-spell-kicker"/>
         <span id="ice-spell-title" class="ice-spell-name"
           >冻符「Perfect Freeze」</span
         >
