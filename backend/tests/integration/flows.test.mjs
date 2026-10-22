@@ -73,10 +73,10 @@ describe('registered legacy defect reproductions', () => {
    expect((await f.http.put('/api/event/2').send({title:'foreign draft'})).status).toBe(200)
    expect((await get(f.db,'SELECT title FROM events WHERE id=2')).title).toBe('foreign draft')
  })
- it('EX-04 stale elevated claims currently survive role downgrade',async()=>{
+ it('EX-04 regression rejects elevated claims after role downgrade',async()=>{
    const f=await fixture()
    await run(f.db,"UPDATE users SET role='admin' WHERE id=1")
-   expect((await f.http.get('/api/admin/users').set('Authorization',`Bearer ${token()}`)).status).toBe(200)
+   expect((await f.http.get('/api/admin/users').set('Authorization',`Bearer ${token()}`)).status).toBe(403)
  })
  it('EX-05 public event and logs currently expose raw fields',async()=>{
    const f=await fixture()

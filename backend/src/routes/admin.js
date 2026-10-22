@@ -34,14 +34,14 @@ router.get('/users', authenticateToken, requireSuperAdmin, (req, res) => {
  */
 router.delete('/users/:id', authenticateToken, requireSuperAdmin, (req, res) => {
   if (parseInt(req.params.id) === req.user.id) return res.status(400).json({ message: "无法删除自己" });
-  db.get("SELECT username FROM users WHERE id = ?", [req.params.id], (err, row) => {
-    const targetName = row ? row.username : 'Unknown';
-    db.run("DELETE FROM users WHERE id = ?", [req.params.id], function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      addLog(req.user.username, 'DELETE_USER', `删除管理员: ${targetName}`);
-      res.json({ message: "删除成功", target: targetName });
-    });
-  });
+  context.security.deleteAdmin(req.params.id, req.user.id).then(async (deleted) => {
+    if (!deleted) {
+      const target = await new Promise((resolve, reject) => db.get('SELECT role FROM users WHERE id=?', [req.params.id], (error, row) => error ? reject(error) : resolve(row)));
+      return res.status(target ? 409 : 404).json({ message: target ? '不能删除最后一个超级管理员或使用已失效权限' : '用户不存在' });
+    }
+    addLog(req.user.username, 'DELETE_USER', `删除管理员: ${deleted.username}`);
+    res.json({ message: '删除成功', target: deleted.username });
+  }).catch(() => res.status(503).json({ message: '管理员删除暂时不可用' }));
 });
 
 /**
@@ -84,15 +84,10 @@ router.put('/users/:id/twofa/reset', authenticateToken, requireSuperAdmin, (req,
  * 强制刷新 Token 版本
  */
 router.post('/token-version/refresh', authenticateToken, requireSuperAdmin, (req, res) => {
-  db.get("SELECT value FROM site_config WHERE key = 'token_version'", [], (err, row) => {
-    const current = Number(row?.value || 0);
-    const next = Number.isNaN(current) ? 1 : current + 1;
-    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES ('token_version', ?)", [String(next)], (updateErr) => {
-      if (updateErr) return res.status(500).json({ error: updateErr.message });
-      addLog(req.user.username, 'REFRESH_TOKEN_VERSION', `强制刷新登录: version=${next}`);
-      res.json({ message: '已强制刷新登录状态', version: next });
-    });
-  });
+  context.security.incrementVersion().then((version) => {
+    addLog(req.user.username, 'REFRESH_TOKEN_VERSION', `强制刷新登录: version=${version}`);
+    res.json({ message: '已强制刷新登录状态', version });
+  }).catch(() => res.status(503).json({ message: '登录状态刷新暂时不可用' }));
 });
 
 // ==============================================================================

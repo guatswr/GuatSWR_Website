@@ -53,13 +53,11 @@ router.post('/login', loginLimiter, (req, res) => {
   const now = Date.now();
 
   db.get('SELECT count, lock_until FROM login_attempts WHERE ip = ?', [clientIp], (lockErr, lockRow) => {
-    if (!lockErr && lockRow) {
+    if (lockErr) return res.status(503).json({ message: '登录暂时不可用' });
+    if (lockRow) {
       if (lockRow.lock_until > now) {
         const waitSeconds = Math.ceil((lockRow.lock_until - now) / 1000);
         return res.status(429).json({ message: `尝试次数过多，请等待 ${waitSeconds} 秒后再试` });
-      }
-      if (lockRow.lock_until !== 0 && lockRow.lock_until <= now) {
-        db.run('DELETE FROM login_attempts WHERE ip = ?', [clientIp], () => {});
       }
     }
 
@@ -68,35 +66,38 @@ router.post('/login', loginLimiter, (req, res) => {
     const { username, password, twofa } = validated.data;
 
     db.get("SELECT * FROM users WHERE username = ?", [username], (err, user) => {
-      const loginFailed = () => {
-        const nextCount = Math.min((lockRow?.count || 0) + 1, 5);
-        const lockUntil = nextCount >= 5 ? now + 60 * 1000 : 0;
-        db.run(
-          'INSERT INTO login_attempts (ip, count, lock_until, updated_at) VALUES (?, ?, ?, ?) ' +
-          'ON CONFLICT(ip) DO UPDATE SET count = excluded.count, lock_until = excluded.lock_until, updated_at = excluded.updated_at',
-          [clientIp, nextCount, lockUntil, now]
-        );
-        if (nextCount >= 5) {
-          addLog(username || 'Unknown', 'LOGIN_LOCK', `IP ${clientIp} 锁定`);
-          return res.status(429).json({ message: "错误次数过多，锁定 1 分钟" });
-        }
-        return res.status(401).json({ message: `用户名或密码错误 (剩余 ${5 - nextCount} 次)` });
+      const loginFailed = (message) => {
+        context.security.recordFailure(clientIp, now).then((attempt) => {
+          if (attempt.count >= 5) {
+            addLog(username || 'Unknown', 'LOGIN_LOCK', `IP ${clientIp} 锁定`);
+            return res.status(429).json({ message: '错误次数过多，锁定 1 分钟' });
+          }
+          res.status(401).json({ message: message || `用户名或密码错误 (剩余 ${5 - attempt.count} 次)` });
+        }).catch(() => res.status(503).json({ message: '登录暂时不可用' }));
       };
 
-      if (err || !user) return loginFailed();
+      if (err) return res.status(503).json({ message: '登录暂时不可用' });
+      if (!user) return loginFailed();
 
-      if (bcrypt.compareSync(password, user.password)) {
+      let passwordMatches;
+      try { passwordMatches = bcrypt.compareSync(password, user.password); }
+      catch { return res.status(503).json({ message: '登录暂时不可用' }); }
+      if (passwordMatches) {
         if (user.twofa_enabled) {
           if (!twofa) return res.status(401).json({ message: '需要二步密码' });
-          const stored = decryptTwofa(user.twofa_secret);
+          let stored;
+          try { stored = decryptTwofa(user.twofa_secret); }
+          catch { return res.status(503).json({ message: '登录暂时不可用' }); }
           if (!stored || stored !== String(twofa)) {
-            return res.status(401).json({ message: '二步密码错误' });
+            return loginFailed('二步密码错误');
           }
         }
         db.run('DELETE FROM login_attempts WHERE ip = ?', [clientIp], () => {});
         db.get("SELECT value FROM site_config WHERE key = 'token_version'", [], (versionErr, versionRow) => {
-          const version = Number(versionRow?.value || 0);
-          const tokenVersion = Number.isNaN(version) ? 0 : version;
+          if (versionErr) return res.status(503).json({ message: '登录暂时不可用' });
+          let tokenVersion;
+          try { tokenVersion = context.security.readVersion(versionRow?.value); }
+          catch { return res.status(503).json({ message: '登录暂时不可用' }); }
           const token = jwt.sign({ id: user.id, username: user.username, role: user.role, token_version: tokenVersion }, SECRET_KEY, { expiresIn: '24h' });
           addLog(user.username, 'LOGIN', `登录成功 (IP: ${clientIp})`);
           res.json({ token, username: user.username, role: user.role, avatar: user.avatar, id: user.id });
