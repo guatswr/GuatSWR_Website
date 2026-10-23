@@ -1,10 +1,11 @@
 module.exports = (context) => {
 const express = require('express');
+const path = require('node:path');
 const { db, addLog, IMG_ROOT_DIR } = context;
 const { authenticateToken, optionalAuth, requireAdmin } = context.auth;
 const { callBotHook } = require('../utils/botHooks');
 const { moveStagedFile } = context.storage;
-const { createEventContentPersister } = require('../utils/eventContentStorage');
+const { createEventContentPersister, assertVisitorContent } = require(path.join(context.BACKEND_ROOT, 'dist/src/utils/eventContentStorage.js'));
 
 const { publicEvent } = require('../utils/publicEvent');
 const router = express.Router();
@@ -86,6 +87,14 @@ router.put('/:id', optionalAuth, context.guestGateway, context.guestProof.check(
     // 已发布状态下，普通访客不可修改
     if (row.status === 'published' && !req.user) {
       return res.status(403).json({ message: '事件已发布，无法修改' });
+    }
+
+    if (content && !['admin', 'super_admin'].includes(req.user?.role)) {
+      try { assertVisitorContent(content); }
+      catch (error) {
+        if ([400, 413].includes(error.status)) return res.status(error.status).json({ message: error.message });
+        return res.status(500).json({ message: '服务器错误' });
+      }
     }
 
     let storedContent;

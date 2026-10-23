@@ -5,7 +5,7 @@ const os = require('node:os');
 const path = require('node:path');
 const vm = require('node:vm');
 const { createRequire } = require('node:module');
-const { createEventContentPersister } = require('./eventContentStorage');
+const { createEventContentPersister } = require('../../dist/src/utils/eventContentStorage.js');
 
 const loadStorage = (publicDir) => {
   // Load the existing real filesystem helpers without opening the production SQLite DB.
@@ -97,7 +97,7 @@ const loadEventRoute = (moveStagedFile) => {
   };
   const mocks = {
     express: { Router: () => router },
-    '../models/db': { db, addLog() {}, IMG_ROOT_DIR: path.join(os.tmpdir(), 'guatswr-test-images') },
+    '../models/db': { db, addLog() {}, IMG_ROOT_DIR: path.join(os.tmpdir(), 'guatswr-test-images'), BACKEND_ROOT: path.resolve(__dirname, '../..') },
     '../middlewares/auth': {},
     '../utils/botHooks': { callBotHook: async (...args) => { notifications.push(args); } },
     '../utils/storage': { moveStagedFile }

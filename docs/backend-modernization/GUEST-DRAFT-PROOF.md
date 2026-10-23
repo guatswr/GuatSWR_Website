@@ -1,6 +1,6 @@
 # 游客草稿证明协议与切换
 
-BM-24a先交付optional兼容扩展并验证新旧BFF矩阵；BM-24b将GUEST_DRAFT_PROOF_MODE缺省改为required，拒绝缺失证明。optional仅为显式兼容开关，接受原受信bridge请求，但一旦携带证明就必须验证，不能用错误证明降级。最终安全验收必须为required；事件content分层及最终发布验证尚未完成。
+BM-24a先交付optional兼容扩展并验证新旧BFF矩阵；BM-24b将GUEST_DRAFT_PROOF_MODE缺省改为required，拒绝缺失证明；后续完成content类型迁移及保护字段验证。optional仅为显式兼容开关，接受原受信bridge请求，但一旦携带证明就必须验证，不能用错误证明降级。最终安全验收必须为required，正式发布验证仍待BM-35/36。
 
 | 请求 | scope | 绑定 EID |
 | --- | --- | --- |
@@ -16,6 +16,10 @@ BFF仍须先校验CSRF/origin和opaque cookie对应的草稿记录，再为固�
 
 上传证明在Multer之前校验。multipart中的eid在解析后核对，错配只清理private暂存文件，不发布到任何事件目录。证明不是一次性令牌；重复提交收据/并发意图保护继续由BFF已有store负责，不承诺exactly-once。BFF的六小时、单进程、限容量记录语义保留；多实例持久归属不在本扩展中解决。
 
+游客内容在任何搬图/写库前执行与BFF共用的保护字段、48KiB UTF-8、深度4、单字符串5000、数组/对象32项限制；person.id保留合法语义，管理员的results/settlement/未知扩展字段不受游客规则裁剪。该规则由纯shared模块提供，不导入Node/Nuxt。
+
 已验证的部署顺序：先部署能发证明的新BFF，再将后端切到required。旧BFF→optional接收端、新BFF→required接收端、新BFF→BM-23旧接收端均在隔离环境以真实Nuxt生产输出、Express和SQLite联测。这里的旧接收端是3825f1c工程基线，不是线上Node20旧镜像。
 
 生产切换仍由BM-35/36统一执行：确认实际直连消费者、旧BFF实例已更新、代理链/共享密钥/时钟一致，验证required的缺失/跨EID/过期拒绝和正常上传/提交。optional兼容窗口不得留作最终安全验收。原始库、现有服务和正式流量尚未切换。
+
+既有BFF内存草稿记录不能跨进程重启恢复，虽然本次没有改变cookie/store格式或历史EID。生产前必须给出旧实例排空/未提交草稿处置或获准的记录迁移证据；三组新旧兼容联测不能替代跨重启验证。禁止通过IP相等重新认领旧EID，或删除旧草稿来绕过发布门禁。

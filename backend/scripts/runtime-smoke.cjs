@@ -70,8 +70,9 @@ const { start } = require('../server');
     const guestId = (await guest.json()).id;
     const saveHeaders = { ...bridge, 'x-bff-draft-proof': proof('save', guestId) };
     assert.equal((await fetch(`${origin}/api/event/${guestId + 1}`, { method: 'PUT', headers: saveHeaders, body: JSON.stringify({ title: 'cross-draft rejected' }) })).status, 403);
-    assert.equal((await fetch(`${origin}/api/event/${guestId}`, { method: 'PUT', headers: saveHeaders, body: JSON.stringify({ title: 'synthetic-proof-smoke' }) })).status, 200);
-    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true, typedMembers: true, typedActivities: true, requiredDraftProof: true }));
+    assert.equal((await fetch(`${origin}/api/event/${guestId}`, { method: 'PUT', headers: saveHeaders, body: JSON.stringify({ content: { results: [{ rank: 1 }] } }) })).status, 400);
+    assert.equal((await fetch(`${origin}/api/event/${guestId}`, { method: 'PUT', headers: saveHeaders, body: JSON.stringify({ title: 'synthetic-proof-smoke', content: { initiator: { id: 'synthetic-person-id' } } }) })).status, 200);
+    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true, typedMembers: true, typedActivities: true, requiredDraftProof: true, guestContentPolicy: true }));
   } finally {
     await instance.close();
     if (path.dirname(root) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-runtime-')) throw new Error('Unsafe smoke cleanup');

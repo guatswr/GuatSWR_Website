@@ -25,7 +25,6 @@
   "src/utils/backupScheduler.js",
   "src/utils/bot.js",
   "src/utils/botHooks.js",
-  "src/utils/eventContentStorage.js",
   "src/utils/imageUpload.js",
   "src/utils/publicEvent.js",
   "src/utils/publicLog.js",

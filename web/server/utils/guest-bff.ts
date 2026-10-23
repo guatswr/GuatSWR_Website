@@ -5,6 +5,10 @@ import type { H3Event } from 'h3'
 // this module loads under plain Vitest without a `#imports` virtual-module stub.
 import {
   GUEST_DRAFT_PROOF_HEADER,
+  GUEST_MAX_CONTENT_BYTES,
+  GUEST_MAX_STRING_LENGTH,
+  GUEST_MAX_CONTENT_DEPTH,
+  validateGuestContent,
   EVENT_FIELDS,
   EVENT_TYPES,
   eventSignupRecordSchema,
@@ -46,9 +50,7 @@ import { signGuestDraftProof } from './guest-proof'
  */
 
 export const GUEST_MAX_JSON_BYTES = 64 * 1024
-export const GUEST_MAX_CONTENT_BYTES = 48 * 1024
-export const GUEST_MAX_STRING_LENGTH = 5_000
-export const GUEST_MAX_CONTENT_DEPTH = 4
+export { GUEST_MAX_CONTENT_BYTES, GUEST_MAX_STRING_LENGTH, GUEST_MAX_CONTENT_DEPTH }
 export const GUEST_UPSTREAM_TIMEOUT_MS = 8_000
 export const GUEST_UPSTREAM_MAX_RESPONSE_BYTES = 64 * 1024
 
@@ -573,29 +575,6 @@ export function parseGuestSignupBody(body: unknown): EventSignupInput {
 
 const PERSON_PREFIXES = ['initiator', 'a', 'b'] as const
 
-const PROTECTED_CONTENT_KEYS: ReadonlySet<string> = new Set([
-  'id',
-  'status',
-  'results',
-  'result',
-  'results_updated_at',
-  'settlement',
-  'completion',
-  'rewarded',
-  'penalty_result',
-  'created_by',
-  'created_by_name',
-  'created_by_avatar',
-  'updated_by',
-  'updated_by_name',
-  'updated_by_avatar',
-  'created_at',
-  'updated_at',
-  'deleted_at',
-  'visitor_ip',
-  'user_id'
-])
-
 export interface GuestDraftSave {
   type: EventType
   title: string
@@ -644,44 +623,6 @@ const readPath = (content: Record<string, unknown>, path: string): unknown => {
 }
 
 /**
- * Depth/size/string bounds so a guest cannot smuggle a huge or deep content tree.
- *
- * `exemptKeys` applies only at the level immediately below a person key: the
- * archived guest form builds `initiator`/`a`/`b` objects that legitimately carry
- * an `id`, while `id` stays protected everywhere else. The person key set itself
- * is still enforced by the strict member allowlist in `parseGuestDraftSave`.
- */
-const PERSON_MEMBER_KEYS: ReadonlySet<string> = new Set(['id', 'qq', 'avatar', 'goal'])
-
-function assertContentBounds(value: unknown, depth = 0, exemptKeys?: ReadonlySet<string>): void {
-  if (depth > GUEST_MAX_CONTENT_DEPTH) {
-    throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
-  }
-  if (typeof value === 'string') {
-    if (value.length > GUEST_MAX_STRING_LENGTH) {
-      throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
-    }
-    return
-  }
-  if (Array.isArray(value)) {
-    if (value.length > 32) throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
-    for (const entry of value) assertContentBounds(entry, depth + 1)
-    return
-  }
-  if (isPlainObject(value)) {
-    const keys = Object.keys(value)
-    if (keys.length > 32) throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
-    for (const key of keys) {
-      if (PROTECTED_CONTENT_KEYS.has(key) && !(exemptKeys?.has(key) ?? false)) {
-        throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
-      }
-      const childExempt = (PERSON_PREFIXES as readonly string[]).includes(key) ? PERSON_MEMBER_KEYS : undefined
-      assertContentBounds(value[key], depth + 1, childExempt)
-    }
-  }
-}
-
-/**
  * Guest save payload: only the type's own catalogue fields (plus its person
  * objects) may pass, required fields are enforced, protected keys such as
  * settlement/results/created_by/status are rejected at every depth, and the whole
@@ -712,10 +653,11 @@ export function parseGuestDraftSave(body: unknown): GuestDraftSave {
   if (!isPlainObject(content)) {
     throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
   }
-  if (Buffer.byteLength(JSON.stringify(content), 'utf8') > GUEST_MAX_CONTENT_BYTES) {
+  const contentIssue = validateGuestContent(content)
+  if (contentIssue === 'too_large') {
     throw new BffError(413, 'too_large', '提交的内容过大')
   }
-  assertContentBounds(content)
+  if (contentIssue === 'invalid') throw new BffError(400, 'invalid_request', '提交的内容未通过校验')
 
   const shape = typeShape(type as EventType)
   for (const key of Object.keys(content)) {
