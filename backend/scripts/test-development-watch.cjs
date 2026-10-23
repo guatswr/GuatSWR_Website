@@ -13,6 +13,7 @@ const { once } = require('node:events');
   let pending = '';
   let child;
   try {
+    await require('./initialize-databases.cjs').initializeDatabases({}, { data: path.join(root, 'data') });
     const command = require('../package.json').scripts.dev;
     child = spawn('/bin/sh', ['-c', command], { cwd: backend, detached: true,
       env: { ...process.env, PATH: `${path.join(backend, 'node_modules/.bin')}:${path.resolve(backend, '../node_modules/.bin')}:${process.env.PATH}`, NODE_ENV: 'development',

@@ -5,7 +5,9 @@ const os=require('node:os');
 const {execFile}=require('node:child_process');
 const {promisify}=require('node:util');
 const exec=promisify(execFile);
-const {createApplication}=require('../src/app');
+const factory=require('../src/app').createApplication;
+const {initializeDatabases}=require('./initialize-databases.cjs');
+const createApplication=async options=>{await initializeDatabases(options.env,options.paths);return factory(options);};
 (async()=>{
  const root=await fs.mkdtemp(path.join(os.tmpdir(),'guatswr-restore-check-'));
  let source,restored;

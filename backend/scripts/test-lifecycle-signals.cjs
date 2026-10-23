@@ -11,6 +11,7 @@ async function scenario(blocked) {
   let child;
   let watchdog;
   try {
+    await require('./initialize-databases.cjs').initializeDatabases({}, { data: path.join(root, 'data') });
     const script = blocked
       ? "require('./dist/server').start().then(i => { i.context.track(new Promise(() => {})); setInterval(() => {}, 1000); })"
       : "require('./dist/server').start()";

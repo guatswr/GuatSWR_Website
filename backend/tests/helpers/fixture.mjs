@@ -4,7 +4,7 @@ import path from 'node:path'
 import { createRequire } from 'node:module'
 import { onTestFinished } from 'vitest'
 const require = createRequire(import.meta.url)
-const { createApplication } = require('../../src/app')
+const { createApplication } = require('./application.cjs')
 const request = require('supertest')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')

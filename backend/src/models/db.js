@@ -49,10 +49,10 @@ const createDatabase = async ({ env, paths, logger }) => {
   if (resolved.dbPath === resolved.logDbPath) throw new Error('Main and audit databases must be different files');
   const sqlite3 = require('sqlite3').verbose();
   const bcrypt = require('bcryptjs');
-  const schema = require('./legacy-schema.json');
+  const { checkDatabase } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/migrations/engine'));
   const connections = [];
   const open = (filename) => new Promise((resolve, reject) => {
-    const connection = new sqlite3.Database(filename, (error) => {
+    const connection = new sqlite3.Database(filename, sqlite3.OPEN_READWRITE, (error) => {
       if (error) return reject(error);
       connections.push(connection);
       resolve(connection);
@@ -69,19 +69,14 @@ const createDatabase = async ({ env, paths, logger }) => {
     }
     const db = await open(resolved.dbPath);
     const logDb = await open(resolved.logDbPath);
+    const migrations = path.join(resolved.BACKEND_ROOT, 'src/migrations');
+    await checkDatabase(db, migrations, 'main');
+    await checkDatabase(logDb, migrations, 'audit');
     for (const connection of [db, logDb]) {
       for (const pragma of ['journal_mode = WAL', 'synchronous = NORMAL', 'foreign_keys = ON', 'busy_timeout = 5000']) {
         await run(connection, `PRAGMA ${pragma}`);
       }
     }
-    // Compatibility initializer. Versioned migrations replace this in BM-18.
-    for (const sql of schema.main) await run(db, sql);
-    for (const [table, definition] of schema.columns) {
-      try { await run(db, `ALTER TABLE ${table} ADD COLUMN ${definition}`); }
-      catch (error) { if (!/duplicate column name/i.test(error.message)) throw error; }
-    }
-    for (const sql of schema.indexes) await run(db, sql);
-    for (const sql of schema.audit) await run(logDb, sql);
     if (env.SUPER_ADMIN_USERNAME && env.SUPER_ADMIN_PASSWORD) {
       const row = await get(db, 'SELECT * FROM users WHERE username = ?', [env.SUPER_ADMIN_USERNAME]);
       if (!row) {

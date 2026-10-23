@@ -4,7 +4,14 @@ const fs = require('node:fs/promises');
 const os = require('node:os');
 const path = require('node:path');
 
-const { createApplication } = require('../src/app');
+const { createApplication } = require('./helpers/application.cjs');
+const { inspectSchema, migrateDatabase } = require('../dist/src/migrations/engine');
+const migrations = path.resolve(__dirname, '../src/migrations');
+const adoptFixture = async db => {
+  await new Promise((resolve, reject) => db.exec('DROP TABLE _guatswr_migrations', error => error ? reject(error) : resolve()));
+  const current = await inspectSchema(db);
+  await migrateDatabase(db, migrations, 'main', { mode: 'adopt', expectedFingerprint: current.fingerprint });
+};
 const fixture = async (t) => {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'guatswr-backend-'));
   const resources = [];
@@ -38,7 +45,7 @@ test('two applications have independent real databases, resources and HTTP state
   for (const instance of [a, b]) {
     assert.equal((await get(instance.context.db, 'PRAGMA foreign_keys')).foreign_keys, 1);
     assert.equal((await get(instance.context.logDb, 'PRAGMA journal_mode')).journal_mode, 'wal');
-    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%'" )).n, 9);
+    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 9);
     assert.equal((await get(instance.context.logDb, "SELECT count(*) AS n FROM audit_logs")).n, 0);
     assert.equal(instance.context.timers.size, 0);
     const server = await instance.listen(0, '127.0.0.1');
@@ -57,7 +64,7 @@ test('missing secret and database open failure reject before listening', async (
   await assert.rejects(createApplication({ ...options, env: {} }), /JWT_SECRET/);
   await fs.mkdir(options.paths.data, { recursive: true });
   await fs.writeFile(path.join(options.paths.data, 'blocked'), 'file');
-  await assert.rejects(createApplication({ ...options, env: { ...options.env, LOG_DB_PATH: 'blocked/logs.db' } }), /SQLITE_CANTOPEN|ENOTDIR/);
+  await assert.rejects(createApplication({ ...options, env: { ...options.env, LOG_DB_PATH: 'blocked/logs.db' } }), /SQLITE_CANTOPEN|ENOTDIR|EEXIST/);
 });
 
 test('all 71 frozen API operations are still mounted', async (t) => {
@@ -115,6 +122,7 @@ test('reopening a synthetic legacy database preserves records, extra columns and
   const run = (sql) => new Promise((resolve, reject) => first.context.db.run(sql, (e) => e ? reject(e) : resolve()));
   await run('ALTER TABLE members ADD COLUMN bio TEXT');
   await run("INSERT INTO members (name, bio, tags) VALUES ('synthetic-member', 'legacy extra', '[\"old\"]')");
+  await adoptFixture(first.context.db);
   await first.close();
   const second = await createApplication(options);
   options.resources.push(second);
@@ -186,12 +194,16 @@ test('schema initialization errors reject and release the database for repair', 
   await run(first.context.db, 'ALTER TABLE activities RENAME COLUMN date TO legacy_date');
   const dbPath = first.context.dbPath;
   await first.close();
-  await assert.rejects(createApplication(options), /no such column: date/);
+  await assert.rejects(createApplication(options), /MIGRATION_SCHEMA_DRIFT/);
   const sqlite = require('sqlite3');
   const repair = await new Promise((resolve, reject) => {
     const db = new sqlite.Database(dbPath, (e) => e ? reject(e) : resolve(db));
   });
-  try { await run(repair, 'ALTER TABLE activities RENAME COLUMN legacy_date TO date'); }
+  try {
+    await run(repair, 'ALTER TABLE activities RENAME COLUMN legacy_date TO date');
+    await run(repair, 'CREATE INDEX idx_activities_date ON activities(date)');
+    await adoptFixture(repair);
+  }
   finally { await new Promise((resolve, reject) => repair.close((e) => e ? reject(e) : resolve())); }
   const recovered = await createApplication(options);
   options.resources.push(recovered);

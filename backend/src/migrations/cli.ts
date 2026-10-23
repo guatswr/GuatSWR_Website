@@ -1,11 +1,12 @@
 import path from 'node:path'
+import fs from 'node:fs/promises'
 import sqlite from 'sqlite3'
 import { resolvePaths } from '../models/db.js'
 import { checkDatabase, inspectSchema, migrateDatabase, type Connection } from './engine.js'
 
 async function main() {
   const [action, ...args] = process.argv.slice(2)
-  const accepted = new Set(['--data-dir', '--main-fingerprint', '--audit-fingerprint'])
+  const accepted = new Set(['--data-dir', '--main-db', '--audit-db', '--main-fingerprint', '--audit-fingerprint'])
   const options = new Map<string, string>()
   for (let index = 0; index < args.length; index += 2) {
     const key = args[index], value = args[index + 1]
@@ -15,10 +16,17 @@ async function main() {
   const data = options.get('--data-dir')
   if (!data || !path.isAbsolute(data) || !['check', 'inspect', 'initialize', 'adopt'].includes(action || '')) throw new Error('MIGRATION_ARGUMENTS')
   if (action === 'adopt' && (!options.has('--main-fingerprint') || !options.has('--audit-fingerprint'))) throw new Error('MIGRATION_ADOPT_FINGERPRINT_REQUIRED')
+  const files = { main: options.get('--main-db') || path.join(data, 'guatswr_web_main.db'), audit: options.get('--audit-db') || path.join(data, 'guatswr_web_logs.db') }
+  if (!path.isAbsolute(files.main) || !path.isAbsolute(files.audit) || path.resolve(files.main) === path.resolve(files.audit)) throw new Error('MIGRATION_DATABASE_PATHS')
+  const stat = async (filename: string) => {
+    try { return await fs.stat(filename, { bigint: true }) } catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error }
+  }
+  const [mainStat, auditStat] = await Promise.all([stat(files.main), stat(files.audit)])
+  if (mainStat && auditStat && mainStat.dev === auditStat.dev && mainStat.ino === auditStat.ino) throw new Error('MIGRATION_DATABASE_PATHS')
   const directory = path.join(resolvePaths({}).BACKEND_ROOT, 'src/migrations')
   // Each database commits independently. On failure, check both and retry explicitly.
   for (const kind of ['main', 'audit'] as const) {
-    const filename = path.join(data, kind === 'main' ? 'guatswr_web_main.db' : 'guatswr_web_logs.db')
+    const filename = files[kind]
     const mode = action === 'initialize' ? sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE : action === 'adopt' ? sqlite.OPEN_READWRITE : sqlite.OPEN_READONLY
     const db = await new Promise<sqlite.Database>((resolve, reject) => {
       const connection = new sqlite.Database(filename, mode, error => error ? reject(error) : resolve(connection))

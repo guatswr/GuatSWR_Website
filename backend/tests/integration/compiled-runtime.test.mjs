@@ -7,6 +7,7 @@ const require = createRequire(import.meta.url)
 const source = require('../../src/models/db.js')
 const compiled = require('../../dist/src/models/db.js')
 const { createApplication } = require('../../dist/src/app.js')
+const { initializeDatabases } = require('../../scripts/initialize-databases.cjs')
 
 it('source and compiled runtime share package paths and compiled assets start in isolation', async () => {
   const expected = source.resolvePaths({})
@@ -15,6 +16,7 @@ it('source and compiled runtime share package paths and compiled assets start in
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'guatswr-compiled-'))
   let instance
   try {
+    await initializeDatabases({}, { data: path.join(root, 'data') })
     instance = await createApplication({
       env: { NODE_ENV: 'test', JWT_SECRET: 'compiled-isolated-fixture' },
       paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },

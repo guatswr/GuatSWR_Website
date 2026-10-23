@@ -7,7 +7,7 @@ import http from 'node:http'
 import { expect, it } from 'vitest'
 import { fixture } from '../helpers/fixture.mjs'
 const require = createRequire(import.meta.url)
-const { createApplication } = require('../../src/app.js')
+const { createApplication } = require('../helpers/application.cjs')
 const separate = async (env = {}) => {
   const base = await fixture()
   return createApplication({ env: { ...base.context.env, ...env },

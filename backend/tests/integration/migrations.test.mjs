@@ -3,11 +3,14 @@ import os from 'node:os'
 import path from 'node:path'
 import { createHash } from 'node:crypto'
 import { createRequire } from 'node:module'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { expect, it, onTestFinished } from 'vitest'
 const require = createRequire(import.meta.url)
 const sqlite = require('sqlite3')
 const { migrateDatabase, checkDatabase, inspectSchema } = require('../../dist/src/migrations/engine.js')
 const directory = path.resolve('src/migrations')
+const command = promisify(execFile)
 const exec = (db, sql) => new Promise((resolve, reject) => db.exec(sql, error => error ? reject(error) : resolve()))
 const all = (db, sql) => new Promise((resolve, reject) => db.all(sql, (error, rows) => error ? reject(error) : resolve(rows)))
 async function fixture() {
@@ -111,4 +114,14 @@ it('rejects a main database mislabeled as audit even if it retains legacy audit 
   await exec(db, await fs.readFile(path.join(directory, 'audit-001.sql'), 'utf8'))
   const before = await inspectSchema(db)
   await expect(migrateDatabase(db, directory, 'audit', { mode: 'adopt', expectedFingerprint: before.fingerprint })).rejects.toHaveProperty('code', 'MIGRATION_DATABASE_IDENTITY')
+})
+it('CLI initializes and checks explicitly named custom database files', async () => {
+  const f = await fixture()
+  const cli = path.resolve('dist/src/migrations/cli.js')
+  const args = ['--data-dir', f.root, '--main-db', path.join(f.root, 'custom-main.db'), '--audit-db', path.join(f.root, 'custom-audit.db')]
+  const created = await command(process.execPath, [cli, 'initialize', ...args])
+  expect(created.stdout).toContain('"applied":true')
+  expect((await command(process.execPath, [cli, 'check', ...args])).stdout).toContain('"version":1')
+  await expect(command(process.execPath, [cli, 'check', '--data-dir', f.root])).rejects.toHaveProperty('code', 1)
+  await expect(fs.access(path.join(f.root, 'guatswr_web_main.db'))).rejects.toHaveProperty('code', 'ENOENT')
 })
