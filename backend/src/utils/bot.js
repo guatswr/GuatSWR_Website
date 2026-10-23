@@ -45,7 +45,7 @@ const postWebhookTask = async (payload) => {
     clearTimeout(timeout);
   }
 };
-const postWebhook = (payload) => context.track(postWebhookTask(payload));
+const postWebhook = (payload) => context.track(() => postWebhookTask(payload));
 
 const buildBasePayload = (event, data, actor) => ({
   event,

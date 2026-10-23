@@ -403,7 +403,7 @@ router.delete('/events/:id', authenticateToken, requireSuperAdmin, (req, res) =>
       res.json({ message: "删除成功，关联文件已清理" });
     } catch (fileErr) {
       // 文件删除失败不应影响接口返回成功（因为DB已经删了），但要记录错误
-      console.error(`Failed to delete event directory for EID ${eventId}:`, fileErr);
+      context.logger.error('storage.failed', { error: fileErr });
       addLog(req.user.username, 'DELETE_EVENT_FILE_FAIL', `删除事件文件失败 EID: ${eventId}`);
       res.json({ message: "数据库记录已删除，但部分文件可能残留" });
     }

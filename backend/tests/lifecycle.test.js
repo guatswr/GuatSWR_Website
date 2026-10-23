@@ -173,7 +173,7 @@ test('the server executable reports missing config with a nonzero exit', async (
     env: { ...process.env, JWT_SECRET: '' }, encoding: 'utf8', timeout: 5000
   });
   assert.equal(result.status, 1);
-  assert.match(result.stderr, /invalid_configuration/);
+  assert.match(result.stdout + result.stderr, /invalid_configuration/);
   await assert.rejects(fs.access(options.paths.data), /ENOENT/);
 });
 

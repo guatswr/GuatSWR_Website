@@ -28,7 +28,7 @@ export const fixture = async (overrides = {}) => {
   })
   instance = await createApplication({ env: { NODE_ENV: 'test', JWT_SECRET: secret, BFF_BRIDGE_SECRET: bridgeKey, ...overrides.env },
     paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },
-    backgroundTasks: false, externalServices: false })
+    backgroundTasks: false, externalServices: false, logDestination: overrides.logDestination })
   // Explicit direct-loopback test topology. Production proxy policy is tested separately.
   // Default policy is supplied by the application, never overridden here.
   const db = instance.context.db

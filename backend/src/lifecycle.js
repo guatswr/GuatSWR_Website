@@ -15,7 +15,9 @@ const createApplication = async (options = {}) => {
     ...(options.paths?.public ? { PUBLIC_DIR: options.paths.public } : {}),
     ...(options.paths?.backups ? { BACKUP_ROOT: options.paths.backups } : {}),
   }, root);
-  const database = await createDatabase({ env, paths: configuration.paths });
+  const { createDiagnosticLogger } = require(path.join(root, 'dist/src/diagnostics.js'));
+  const logger = createDiagnosticLogger({ destination: options.logDestination, silent: configuration.nodeEnv === 'test' && !options.logDestination });
+  const database = await createDatabase({ env, paths: configuration.paths, logger });
   const timers = new Set();
   const jobs = new Set();
   const children = new Set();
@@ -33,7 +35,7 @@ const createApplication = async (options = {}) => {
   let listening = false;
   let pendingListen;
   const context = {
-    ...database, env, configuration, timers, disposers, shutdownSignal: shutdown.signal,
+    ...database, env, configuration, logger, timers, disposers, shutdownSignal: shutdown.signal,
     isClosing: () => Boolean(closing),
     trackChild(child, options = {}) {
       children.add(child);
@@ -45,17 +47,25 @@ const createApplication = async (options = {}) => {
       return child;
     },
     externalServices: options.externalServices ?? env.NODE_ENV !== 'test',
-    track(promise) {
-      const tracked = Promise.resolve(promise);
-      jobs.add(tracked);
-      tracked.then(() => jobs.delete(tracked), () => jobs.delete(tracked));
-      return tracked;
+    track(work) {
+      return logger.task(() => {
+        const started = performance.now();
+        const tracked = typeof work === 'function' ? Promise.resolve().then(work) : Promise.resolve(work);
+        jobs.add(tracked);
+        logger.info('task.started');
+        tracked.then(() => {
+          jobs.delete(tracked);
+          logger.info('task.completed', { durationMs: performance.now() - started });
+        }, error => {
+          jobs.delete(tracked);
+          logger.error('task.failed', { error, durationMs: performance.now() - started });
+        });
+        return tracked;
+      });
     },
     every(task, delay) {
       if (closing) throw new Error('Application is closing');
-      const timer = setInterval(() => context.track(Promise.resolve().then(task)).catch((error) => {
-        console.error('[Background] task failed:', error.code || error.message);
-      }), delay);
+      const timer = setInterval(() => context.track(task).catch(() => {}), delay);
       timers.add(timer);
       return timer;
     }

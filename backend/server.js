@@ -5,9 +5,9 @@ const start = async () => {
   const instance = await createApplication();
   try {
     const server = await instance.listen();
-    console.log(`***后端服务v4.0已启动 (Port ${server.address().port})***`);
+    instance.context.logger.info('application.ready', { port: server.address().port });
     const shutdown = () => instance.close().catch((error) => {
-      console.error('[Shutdown]', error.code || 'cleanup_failed');
+      instance.context.logger.error('application.failed', { error });
       process.exit(1);
     });
     process.once('SIGTERM', shutdown);
@@ -23,7 +23,10 @@ const start = async () => {
   }
 };
 if (require.main === module) start().catch((error) => {
-  console.error('[Startup]', error.code || error.message);
+  const path = require('node:path');
+  const root = require('./src/models/db').resolvePaths({}).BACKEND_ROOT;
+  const { createDiagnosticLogger } = require(path.join(root, 'dist/src/diagnostics.js'));
+  createDiagnosticLogger().error('application.failed', { error });
   process.exitCode = 1;
 });
 module.exports = { start };

@@ -120,7 +120,7 @@ router.post('/', context.auth.optionalAuth, context.guestGateway, uploadLimiter,
     });
 
   } catch (err) {
-    console.error('Visitor upload error:', err);
+    context.logger.error('upload.failed', { error: err });
     await cleanup(thumbPathTmp);
     return res.status(500).json({ message: '服务器内部错误' });
   }
@@ -181,7 +181,7 @@ router.post('/avatar', context.auth.optionalAuth, context.guestGateway, uploadLi
       url: `${publicUrlBase}/${finalFileName}`
     });
   } catch (err) {
-    console.error('Visitor avatar upload error:', err);
+    context.logger.error('upload.failed', { error: err });
     await cleanup();
     res.status(500).json({ message: '服务器内部错误' });
   }

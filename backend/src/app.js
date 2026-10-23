@@ -40,6 +40,20 @@ const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', require('./config/proxy').createTrustProxy(env.TRUST_PROXY_CIDRS));
 app.disable('x-powered-by');
+app.use((req, res, next) => context.logger.request(requestId => {
+  res.setHeader('X-Request-ID', requestId);
+  const started = performance.now();
+  let recorded = false;
+  const complete = () => {
+    if (recorded) return;
+    recorded = true;
+    const route = typeof req.route?.path === 'string' ? `${req.baseUrl}${req.route.path}` : '/unmatched';
+    context.logger.info('http.completed', { method: req.method, route, status: res.writableFinished ? res.statusCode : 499, durationMs: performance.now() - started });
+  };
+  res.once('finish', context.logger.bind(complete));
+  res.once('close', context.logger.bind(complete));
+  next();
+}));
 app.use((req, res, next) => {
   if (context.isClosing()) return res.status(503).json({ message: '服务正在关闭' });
   next();
@@ -193,7 +207,7 @@ app.use((err, req, res, next) => {
     return res.status(413).json({ message: '文件过大' });
   }
   if (err instanceof require('multer').MulterError) return res.status(400).json({ message: '上传参数无效' });
-  console.error(err);
+  context.logger.error('http.failed', { error: err });
   res.status(500).json({ message: '服务器错误' });
 });
 

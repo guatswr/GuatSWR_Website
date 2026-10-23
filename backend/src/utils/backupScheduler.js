@@ -66,7 +66,7 @@ const checkAndRun = async () => {
     if (lastRun === today) return;
     await runAutoBackup('schedule');
   } catch (err) {
-    console.warn('[Backup] 自动备份失败:', err.message);
+    context.logger.warn('backup.failed', { error: err });
     try {
       await setSetting('backup_last_error', err.message);
       addLog('System', 'AUTO_BACKUP_FAILED', err.message);
@@ -79,7 +79,7 @@ const checkAndRun = async () => {
 const startBackupScheduler = () => {
   if (timer) return;
   timer = context.every(checkAndRun, CHECK_INTERVAL_MS);
-  context.track(checkAndRun());
+  context.track(checkAndRun);
 };
 
 return { startBackupScheduler, runAutoBackup };

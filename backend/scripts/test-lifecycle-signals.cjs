@@ -28,8 +28,12 @@ async function scenario(blocked) {
       child.once('exit', () => reject(new Error(`Child exited before ready: ${errors}`)));
       child.stdout.on('data', chunk => {
         output += chunk;
-        const found = /Port (\d+)/.exec(output);
-        if (found) { clearTimeout(watchdog); resolve(Number(found[1])); }
+        for (const line of output.split('\n')) {
+          try {
+            const record = JSON.parse(line);
+            if (record.event === 'application.ready' && Number.isInteger(record.port)) { clearTimeout(watchdog); resolve(record.port); }
+          } catch { /* A partial JSON line is completed by the next chunk. */ }
+        }
       });
     });
     assert.equal((await fetch(`http://127.0.0.1:${port}/api/version`)).status, 200);
@@ -40,7 +44,7 @@ async function scenario(blocked) {
     clearTimeout(watchdog);
     assert.equal(result[0], blocked ? 1 : 0, errors);
     assert.equal(result[1], null);
-    if (blocked) assert.match(errors, /SHUTDOWN_TIMEOUT/);
+    if (blocked) assert.match(output + errors, /SHUTDOWN_TIMEOUT/);
     const sqlite = require('sqlite3');
     for (const filename of ['guatswr_web_main.db', 'guatswr_web_logs.db']) {
       const db = await new Promise((resolve, reject) => {

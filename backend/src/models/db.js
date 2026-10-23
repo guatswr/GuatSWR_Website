@@ -44,7 +44,7 @@ const get = (db, sql, params = []) => new Promise((resolve, reject) => {
 });
 const close = (db) => new Promise((resolve, reject) => db.close((error) => error ? reject(error) : resolve()));
 
-const createDatabase = async ({ env, paths }) => {
+const createDatabase = async ({ env, paths, logger }) => {
   const resolved = resolvePaths(env, paths);
   if (resolved.dbPath === resolved.logDbPath) throw new Error('Main and audit databases must be different files');
   const sqlite3 = require('sqlite3').verbose();
@@ -92,10 +92,9 @@ const createDatabase = async ({ env, paths }) => {
       }
     }
     const addLog = (username, action, details) => {
+      const report = (error) => { if (error) logger?.error('audit.failed', { error }); };
       logDb.run('INSERT INTO audit_logs (username, action, details) VALUES (?, ?, ?)',
-        [username || 'System', action, details], (error) => {
-          if (error) console.error('[Audit] write failed:', error.code);
-        });
+        [username || 'System', action, details], logger ? logger.bind(report) : report);
     };
     return { ...resolved, db, logDb, addLog, close: closeAll };
   } catch (error) {
