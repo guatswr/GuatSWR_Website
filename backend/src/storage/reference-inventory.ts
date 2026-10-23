@@ -24,20 +24,23 @@ export async function assetReferences(db: SqlExecutor, root: string) {
     UNION ALL SELECT description FROM activities UNION ALL SELECT content FROM events
     UNION ALL SELECT avatar FROM event_participants UNION ALL SELECT value FROM site_config
   `)
+  return referencesFromValues(rows.map(row => row.value), root)
+}
+
+export function referencesFromValues(values: unknown[], root: string) {
   const references = new Set<string>()
   let invalidLocalUrls = 0
-  for (const row of rows) {
-    if (typeof row.value !== 'string') continue
+  for (const textValue of values) {
+    if (typeof textValue !== 'string') continue
     // Extract from JSON, HTML/Markdown and plain URL columns without interpreting
     // unknown historical JSON. False positives retain files, never authorize deletion.
-    const texts = [row.value]
+    const texts = [textValue]
     try {
-      const pending: unknown[] = [JSON.parse(row.value)]
+      const pending: unknown[] = [JSON.parse(textValue)]
       while (pending.length) {
         const value = pending.pop()
         if (typeof value === 'string') texts.push(value)
-        else if (Array.isArray(value)) pending.push(...value)
-        else if (value && typeof value === 'object') pending.push(...Object.values(value))
+        else if (value && typeof value === 'object') for (const item of Object.values(value)) pending.push(item)
       }
     } catch { /* Plain text and malformed historical JSON remain searchable. */ }
     const candidates = new Set<string>()

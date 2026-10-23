@@ -5,11 +5,24 @@ import { createHash } from 'node:crypto'
 import { createRequire } from 'node:module'
 import { execFile } from 'node:child_process'
 import { promisify } from 'node:util'
-import { expect, it, onTestFinished } from 'vitest'
+import { expect, it, onTestFinished, beforeAll, afterAll } from 'vitest'
 const require = createRequire(import.meta.url)
 const sqlite = require('sqlite3')
 const { migrateDatabase, checkDatabase, inspectSchema } = require('../../dist/src/migrations/engine.js')
-const directory = path.resolve('src/migrations')
+const productionDirectory = path.resolve('src/migrations')
+let directory
+beforeAll(async () => {
+  directory = await fs.mkdtemp(path.join(os.tmpdir(), 'guatswr-v1-definitions-'))
+  await fs.cp(productionDirectory, directory, { recursive: true })
+  const manifest = JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8'))
+  delete manifest.main.upgrades
+  delete manifest.main.compatibleUpgrades
+  await fs.writeFile(path.join(directory, 'manifest.json'), JSON.stringify(manifest))
+})
+afterAll(async () => {
+  if (path.dirname(directory) !== path.resolve(os.tmpdir()) || !path.basename(directory).startsWith('guatswr-v1-definitions-')) throw new Error('Unsafe cleanup')
+  await fs.rm(directory, { recursive: true, force: true })
+})
 const command = promisify(execFile)
 const exec = (db, sql) => new Promise((resolve, reject) => db.exec(sql, error => error ? reject(error) : resolve()))
 const all = (db, sql) => new Promise((resolve, reject) => db.all(sql, (error, rows) => error ? reject(error) : resolve(rows)))
@@ -196,7 +209,7 @@ it('CLI upgrade opens existing databases only and succeeds as a no-op at the cur
   await command(process.execPath, [cli, 'initialize', '--data-dir', f.root])
   const response = await command(process.execPath, [cli, 'upgrade', '--data-dir', f.root])
   expect(response.stdout.trim().split('\n').map(line => JSON.parse(line))).toEqual([
-    expect.objectContaining({ database: 'main', version: 1, applied: false }), expect.objectContaining({ database: 'audit', version: 1, applied: false })
+    expect.objectContaining({ database: 'main', version: 2, applied: false }), expect.objectContaining({ database: 'audit', version: 1, applied: false })
   ])
   await expect(command(process.execPath, [cli, 'upgrade', '--data-dir', path.join(f.root, 'missing')])).rejects.toMatchObject({ code: 1 })
   await expect(fs.stat(path.join(f.root, 'missing'))).rejects.toMatchObject({ code: 'ENOENT' })
@@ -214,14 +227,14 @@ it('rejects an upgrade manifest that weakens previously required schema validati
 it('bridge validator accepts only declared compatible v2 without enabling it at initialization', async () => {
   const f = await fixture(), db = await f.open(), custom = path.join(f.root, 'activated')
   await migrateDatabase(db, directory, 'main', { mode: 'initialize' })
-  expect((await checkDatabase(db, directory, 'main', { compatible: true })).version).toBe(1)
-  await fs.cp(directory, custom, { recursive: true })
+  expect((await checkDatabase(db, productionDirectory, 'main', { compatible: true })).version).toBe(1)
+  await fs.cp(productionDirectory, custom, { recursive: true })
   const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
-  manifest.main.upgrades = manifest.main.compatibleUpgrades
+  manifest.main.upgrades = manifest.main.compatibleUpgrades || manifest.main.upgrades
   delete manifest.main.compatibleUpgrades
   await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
   await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })
-  expect((await checkDatabase(db, directory, 'main', { compatible: true })).version).toBe(2)
+  expect((await checkDatabase(db, productionDirectory, 'main', { compatible: true })).version).toBe(2)
   await expect(checkDatabase(db, directory, 'main')).rejects.toHaveProperty('code', 'MIGRATION_VERSION_MISMATCH')
   const { createDatabase } = require('../../src/models/db.js')
   const audit = await f.open('audit.db')
@@ -230,5 +243,5 @@ it('bridge validator accepts only declared compatible v2 without enabling it at 
   expect(instance.mainSchemaVersion).toBe(2)
   await instance.close()
   await exec(db, 'CREATE TABLE unknown_future(value TEXT)')
-  await expect(checkDatabase(db, directory, 'main', { compatible: true })).rejects.toHaveProperty('code', 'MIGRATION_SCHEMA_DRIFT')
+  await expect(checkDatabase(db, productionDirectory, 'main', { compatible: true })).rejects.toHaveProperty('code', 'MIGRATION_SCHEMA_DRIFT')
 })

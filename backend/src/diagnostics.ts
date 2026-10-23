@@ -3,7 +3,7 @@ import { randomUUID } from 'node:crypto'
 import pino, { type DestinationStream } from 'pino'
 
 type Event = 'http.completed' | 'http.failed' | 'task.started' | 'task.completed' | 'task.failed'
-  | 'audit.failed' | 'backup.failed' | 'upload.failed' | 'storage.failed' | 'application.ready' | 'application.failed'
+  | 'audit.failed' | 'backup.failed' | 'upload.failed' | 'storage.failed' | 'storage.cleanup.retry' | 'application.ready' | 'application.failed'
 type Level = 'info' | 'warn' | 'error'
 interface Correlation { requestId?: string; taskId?: string }
 interface Fields { method?: string; route?: string; status?: number; durationMs?: number; error?: unknown; port?: number }

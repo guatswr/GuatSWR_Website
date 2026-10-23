@@ -8,6 +8,10 @@ const { createApplication } = require('./helpers/application.cjs');
 const { inspectSchema, migrateDatabase } = require('../dist/src/migrations/engine');
 const migrations = path.resolve(__dirname, '../src/migrations');
 const adoptFixture = async db => {
+  // Construct a synthetic pre-v2 legacy fixture, never discard real pending intent.
+  const jobs = await new Promise((resolve, reject) => db.get('SELECT count(*) AS n FROM asset_cleanup_jobs', (error, row) => error ? reject(error) : resolve(row)));
+  assert.equal(jobs.n, 0);
+  await new Promise((resolve, reject) => db.exec('DROP TABLE asset_cleanup_jobs', error => error ? reject(error) : resolve()));
   await new Promise((resolve, reject) => db.exec('DROP TABLE _guatswr_migrations', error => error ? reject(error) : resolve()));
   const current = await inspectSchema(db);
   await migrateDatabase(db, migrations, 'main', { mode: 'adopt', expectedFingerprint: current.fingerprint });
@@ -45,7 +49,7 @@ test('two applications have independent real databases, resources and HTTP state
   for (const instance of [a, b]) {
     assert.equal((await get(instance.context.db, 'PRAGMA foreign_keys')).foreign_keys, 1);
     assert.equal((await get(instance.context.logDb, 'PRAGMA journal_mode')).journal_mode, 'wal');
-    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 9);
+    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 10);
     assert.equal((await get(instance.context.logDb, "SELECT count(*) AS n FROM audit_logs")).n, 0);
     assert.equal(instance.context.timers.size, 0);
     const server = await instance.listen(0, '127.0.0.1');
@@ -94,7 +98,7 @@ test('background tasks start after listen and close clears timers and both conne
   options.resources.push(instance);
   assert.equal(instance.context.timers.size, 0);
   await instance.listen(0, '127.0.0.1');
-  assert.equal(instance.context.timers.size, 3);
+  assert.equal(instance.context.timers.size, 4);
   await instance.close();
   assert.equal(instance.context.timers.size, 0);
   await assert.rejects(get(instance.context.db, 'SELECT 1'), /SQLITE_MISUSE/);

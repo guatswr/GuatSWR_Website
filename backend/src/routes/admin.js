@@ -6,8 +6,8 @@ const net = require('net');
 const bcrypt = require('bcryptjs');
 const { db, logDb, addLog, IMG_ROOT_DIR } = context;
 const { authenticateToken, requireSuperAdmin } = context.auth;
-const { validate, normalizeImages } = require('../utils');
-const { deleteByUrl, deletePathSafe } = context.storage;
+const { validate } = require('../utils');
+
 const { listBackups, resolveBackupPath, ensureBackupDirs } = context.backup;
 const { runAutoBackup } = context.scheduler;
 const { resetPasswordSchema } = context.schemas;
@@ -22,6 +22,9 @@ const stateController = createEventStateController(createEventStateService({
   notify: require('../utils/botHooks').callBotHook,
   reportAuditFailure: error => context.logger.error('audit.failed', { error })
 }), error => context.logger.error('http.failed', { error, route: '/api/event/state' }));
+const { createRecycleService, RecycleError } = require(path.join(context.BACKEND_ROOT, 'dist/src/modules/recycle/service'));
+const recycle = createRecycleService(context.sql.main, context.PUBLIC_DIR, path.join(context.DATA_DIR, 'asset-quarantine'));
+const requireCleanupSchema = (req, res, next) => context.mainSchemaVersion >= 2 ? next() : res.status(503).json({ message: '请先升级数据库' });
 const router = express.Router();
 
 // ==============================================================================
@@ -152,59 +155,16 @@ router.delete('/logs/:id', authenticateToken, requireSuperAdmin, (req, res) => {
 /**
  * 清空回收站
  */
-router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, (req, res) => {
-  const result = { activities: 0, members: 0, history: 0 };
-
-  const dbAll = (sql, params = []) => new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => (err ? reject(err) : resolve(rows || [])));
-  });
-  const dbRun = (sql, params = []) => new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) return reject(err);
-      resolve(this);
-    });
-  });
-
-  const collectUploadsFromText = (text) => {
-    if (!text || typeof text !== 'string') return [];
-    return text.match(/\/uploads\/[\w\-./]+/g) || [];
-  };
-
-  (async () => {
-    const deletedActivities = await dbAll("SELECT id, cover_image, images, content FROM activities WHERE deleted_at IS NOT NULL");
-    for (const act of deletedActivities) {
-      await deleteByUrl(act.cover_image);
-      const imgs = normalizeImages(act.images);
-      for (const img of imgs) await deleteByUrl(img);
-      const contentUrls = collectUploadsFromText(act.content);
-      for (const url of contentUrls) await deleteByUrl(url);
-      const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(act.id));
-      await deletePathSafe(activityDir);
-    }
-
-    const deletedMembers = await dbAll("SELECT id, avatar FROM members WHERE deleted_at IS NOT NULL");
-    for (const mem of deletedMembers) {
-      await deleteByUrl(mem.avatar);
-    }
-
-    const deletedHistory = await dbAll("SELECT id, image FROM history WHERE deleted_at IS NOT NULL");
-    for (const hist of deletedHistory) {
-      await deleteByUrl(hist.image);
-    }
-
-    const actRes = await dbRun("DELETE FROM activities WHERE deleted_at IS NOT NULL");
-    const memRes = await dbRun("DELETE FROM members WHERE deleted_at IS NOT NULL");
-    const histRes = await dbRun("DELETE FROM history WHERE deleted_at IS NOT NULL");
-
-    result.activities = actRes.changes || 0;
-    result.members = memRes.changes || 0;
-    result.history = histRes.changes || 0;
-
+router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, requireCleanupSchema, async (req, res) => {
+  try {
+    const result = await recycle.purge();
     addLog(req.user.username, 'PURGE_RECYCLE_BIN', `清空回收站并清理图片: activities=${result.activities}, members=${result.members}, history=${result.history}`);
     res.json({ message: '已清空回收站', result });
-  })().catch((err) => res.status(500).json({ error: err.message }));
+  } catch (error) {
+    context.logger.error('storage.failed', { error });
+    res.status(500).json({ message: '服务器错误' });
+  }
 });
-
 // ==============================================================================
 // 5. 封禁管理模块 (IP Ban Management)
 // ==============================================================================
@@ -374,31 +334,16 @@ router.post('/events/:id/review', authenticateToken, (req, res, next) => stateCo
  * 物理删除事件 (含关联文件)
  * 警告: 此操作不可恢复，会同时删除数据库记录和存储的图片文件夹
  */
-router.delete('/events/:id', authenticateToken, requireSuperAdmin, (req, res) => {
-  const eventId = req.params.id;
-  
-  db.run("DELETE FROM events WHERE id = ?", [eventId], async function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    if (this.changes === 0) return res.status(404).json({ message: "Event not found" });
-
-    // 删除数据库记录成功后，执行文件清理
-    try {
-      // 构造事件图片存储目录路径: backend/data/public/img/events/{eid}
-      const eventDir = path.join(IMG_ROOT_DIR, 'events', String(eventId));
-      
-      // 使用 deletePathSafe 安全递归删除目录
-      await deletePathSafe(eventDir);
-      
-      addLog(req.user.username, 'DELETE_EVENT', `物理删除事件 EID: ${eventId} (含文件)`);
-      res.json({ message: "删除成功，关联文件已清理" });
-    } catch (fileErr) {
-      // 文件删除失败不应影响接口返回成功（因为DB已经删了），但要记录错误
-      context.logger.error('storage.failed', { error: fileErr });
-      addLog(req.user.username, 'DELETE_EVENT_FILE_FAIL', `删除事件文件失败 EID: ${eventId}`);
-      res.json({ message: "数据库记录已删除，但部分文件可能残留" });
-    }
-  });
+router.delete('/events/:id', authenticateToken, requireSuperAdmin, requireCleanupSchema, async (req, res) => {
+  try {
+    const { incomplete } = await recycle.removeEvent(req.params.id);
+    addLog(req.user.username, 'DELETE_EVENT', `物理删除事件 EID: ${req.params.id} (含文件)`);
+    res.json({ message: incomplete ? '数据库记录已删除，但部分文件可能残留' : '删除成功，关联文件已清理' });
+  } catch (error) {
+    if (error instanceof RecycleError) return res.status(error.status).json({ message: error.message });
+    context.logger.error('storage.failed', { error });
+    res.status(500).json({ message: '服务器错误' });
+  }
 });
-
 return router;
 };

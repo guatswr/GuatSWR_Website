@@ -16,6 +16,7 @@
     "build": "npm run check:legacy && tsc -p tsconfig.build.json",
     "typecheck": "npm run check:legacy && tsc -p tsconfig.json --noEmit",
     "lint": "eslint src --max-warnings=0",
+    "storage:cleanup": "node dist/src/storage/cleanup-cli.js",
     "admin:bootstrap": "node dist/src/admin/bootstrap-cli.js",
     "db:check": "node dist/src/migrations/cli.js check",
     "db:inspect": "node dist/src/migrations/cli.js inspect",

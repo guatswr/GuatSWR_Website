@@ -1147,7 +1147,7 @@
         ]
       }
     },
-    "compatibleUpgrades": [
+    "upgrades": [
       {
         "version": 2,
         "file": "main-002-assets.sql",

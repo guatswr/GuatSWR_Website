@@ -131,6 +131,18 @@ const createApplication = async (options = {}) => {
               context.startLoginCleanup();
               context.startStagingCleanup();
               context.scheduler.startBackupScheduler();
+              if (context.mainSchemaVersion >= 2) {
+                const { runCleanupBatch } = require(path.join(root, 'dist/src/storage/cleanup.js'));
+                let runningCleanup = false;
+                context.every(async () => {
+                  if (runningCleanup || context.isClosing()) return;
+                  runningCleanup = true;
+                  try {
+                    const result = await runCleanupBatch(context.sql.main, context.PUBLIC_DIR, path.join(context.DATA_DIR, 'asset-quarantine'), 20, context.shutdownSignal);
+                    if (result.failed) context.logger.error('storage.cleanup.retry', { error: new Error('Pending asset cleanup requires retry') });
+                  } finally { runningCleanup = false; }
+                }, 30000);
+              }
             }
             resolve(server);
           } catch (error) { reject(error); }
