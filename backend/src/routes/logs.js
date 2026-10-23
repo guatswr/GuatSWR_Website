@@ -206,7 +206,7 @@ router.get('/umami', async (req, res) => {
   const limit = Number(req.query.limit) || 10;
   const envTypeRaw = String(req.query.envType || 'browser').toLowerCase();
   const envType = ['browser', 'os', 'device'].includes(envTypeRaw) ? envTypeRaw : 'browser';
-  const cacheKey = `${startAt}:${endAt}:${unit}:${limit}`;
+  const cacheKey = `${startAt}:${endAt}:${unit}:${limit}:${envType}`;
   const cacheItem = umamiCache.get(cacheKey);
   if (cacheItem && Date.now() - cacheItem.ts < UMAMI_CACHE_TTL_MS) {
     return res.json(cacheItem.data);
