@@ -125,3 +125,88 @@ it('CLI initializes and checks explicitly named custom database files', async ()
   await expect(command(process.execPath, [cli, 'check', '--data-dir', f.root])).rejects.toHaveProperty('code', 1)
   await expect(fs.access(path.join(f.root, 'guatswr_web_main.db'))).rejects.toHaveProperty('code', 'ENOENT')
 })
+
+async function upgrades(f, failingThird = false) {
+  const custom = path.join(f.root, 'upgrade-definitions')
+  await fs.cp(directory, custom, { recursive: true })
+  const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
+  const shape = { ...manifest.main.shape, cleanup_fixture: { columns: [[0,'id','INTEGER',0,null,1,0],[1,'value','TEXT',0,null,0,0]], foreignKeys: [], indexes: [] } }
+  const sql = 'CREATE TABLE cleanup_fixture(id INTEGER PRIMARY KEY,value TEXT);'
+  await fs.writeFile(path.join(custom, 'main-002.sql'), sql)
+  manifest.main.upgrades = [{ version: 2, file: 'main-002.sql', sha256: createHash('sha256').update(sql).digest('hex'), shape }]
+  if (failingThird) {
+    const bad = 'CREATE TABLE partial_fixture(value TEXT); SELECT * FROM nonexistent_failure;'
+    await fs.writeFile(path.join(custom, 'main-003.sql'), bad)
+    manifest.main.upgrades.push({ version: 3, file: 'main-003.sql', sha256: createHash('sha256').update(bad).digest('hex'), shape })
+  }
+  await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
+  return custom
+}
+it('explicitly upgrades v1, retains adopted extensions/data and historical ledger rows, and is idempotent', async () => {
+  const f = await fixture(), db = await f.open(), custom = await upgrades(f)
+  await exec(db, await fs.readFile(path.join(directory, 'main-001.sql'), 'utf8'))
+  await exec(db, "ALTER TABLE members ADD COLUMN bio TEXT; INSERT INTO members(name,tags,bio) VALUES('synthetic',NULL,'retained');")
+  await migrateDatabase(db, directory, 'main', { mode: 'adopt', expectedFingerprint: (await inspectSchema(db)).fingerprint })
+  const ledger = await all(db, 'SELECT * FROM _guatswr_migrations')
+  await expect(checkDatabase(db, custom, 'main')).rejects.toHaveProperty('code', 'MIGRATION_VERSION_MISMATCH')
+  await expect(migrateDatabase(db, custom, 'main', { mode: 'initialize' })).rejects.toHaveProperty('code', 'MIGRATION_VERSION_MISMATCH')
+  expect(await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })).toMatchObject({ version: 2, applied: true })
+  expect(await all(db, 'SELECT * FROM _guatswr_migrations WHERE version=1')).toEqual(ledger)
+  expect(await all(db, 'SELECT bio,tags FROM members')).toEqual([{ bio: 'retained', tags: null }])
+  expect(await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })).toMatchObject({ version: 2, applied: false })
+  await checkDatabase(db, custom, 'main')
+  // An older validator must fail closed, not silently accept an unknown version.
+  await expect(checkDatabase(db, directory, 'main')).rejects.toHaveProperty('code', 'MIGRATION_VERSION_MISMATCH')
+})
+it('initializes latest schema atomically and refuses upgrading an unadopted database', async () => {
+  const f = await fixture(), custom = await upgrades(f), db = await f.open()
+  await expect(migrateDatabase(db, custom, 'main', { mode: 'upgrade' })).rejects.toHaveProperty('code', 'MIGRATION_REQUIRED')
+  expect((await migrateDatabase(db, custom, 'main', { mode: 'initialize' })).version).toBe(2)
+  expect((await all(db, 'SELECT version FROM _guatswr_migrations ORDER BY version')).map(r => r.version)).toEqual([1,2])
+  await checkDatabase(db, custom, 'main')
+})
+it('rolls back every pending upgrade and allows retry after a failed later script', async () => {
+  const f = await fixture(), custom = await upgrades(f, true), db = await f.open()
+  await migrateDatabase(db, directory, 'main', { mode: 'initialize' })
+  const before = await all(db, 'SELECT * FROM _guatswr_migrations')
+  await expect(migrateDatabase(db, custom, 'main', { mode: 'upgrade' })).rejects.toThrow()
+  expect(await all(db, 'SELECT * FROM _guatswr_migrations')).toEqual(before)
+  expect(await all(db, "SELECT name FROM sqlite_master WHERE name IN ('cleanup_fixture','partial_fixture')")).toEqual([])
+  const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
+  manifest.main.upgrades.pop()
+  await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
+  expect((await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })).version).toBe(2)
+})
+it('validates historical checksums, contiguous versions and all script checksums before writing', async () => {
+  const f = await fixture(), custom = await upgrades(f), db = await f.open()
+  await migrateDatabase(db, custom, 'main', { mode: 'initialize' })
+  await exec(db, "UPDATE _guatswr_migrations SET checksum='tampered' WHERE version=1")
+  await expect(checkDatabase(db, custom, 'main')).rejects.toHaveProperty('code', 'MIGRATION_LEDGER_CHECKSUM')
+  const blank = await f.open('blank.db')
+  await fs.appendFile(path.join(custom, 'main-002.sql'), '\n-- checksum drift')
+  await expect(migrateDatabase(blank, custom, 'main', { mode: 'initialize' })).rejects.toHaveProperty('code', 'MIGRATION_SOURCE_CHECKSUM')
+  expect(await all(blank, "SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'")).toEqual([])
+  const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
+  manifest.main.upgrades[0].version = 3
+  await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
+  await expect(migrateDatabase(blank, custom, 'main', { mode: 'initialize' })).rejects.toHaveProperty('code', 'MIGRATION_MANIFEST_INVALID')
+})
+it('CLI upgrade opens existing databases only and succeeds as a no-op at the current version', async () => {
+  const f = await fixture(), cli = path.resolve('dist/src/migrations/cli.js')
+  await command(process.execPath, [cli, 'initialize', '--data-dir', f.root])
+  const response = await command(process.execPath, [cli, 'upgrade', '--data-dir', f.root])
+  expect(response.stdout.trim().split('\n').map(line => JSON.parse(line))).toEqual([
+    expect.objectContaining({ database: 'main', version: 1, applied: false }), expect.objectContaining({ database: 'audit', version: 1, applied: false })
+  ])
+  await expect(command(process.execPath, [cli, 'upgrade', '--data-dir', path.join(f.root, 'missing')])).rejects.toMatchObject({ code: 1 })
+  await expect(fs.stat(path.join(f.root, 'missing'))).rejects.toMatchObject({ code: 'ENOENT' })
+})
+
+it('rejects an upgrade manifest that weakens previously required schema validation', async () => {
+  const f = await fixture(), custom = await upgrades(f), db = await f.open()
+  const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
+  delete manifest.main.upgrades[0].shape.users
+  await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
+  await expect(migrateDatabase(db, custom, 'main', { mode: 'initialize' })).rejects.toHaveProperty('code', 'MIGRATION_MANIFEST_INVALID')
+  expect(await all(db, "SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'")).toEqual([])
+})

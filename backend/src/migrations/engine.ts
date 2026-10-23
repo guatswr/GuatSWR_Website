@@ -9,7 +9,7 @@ export interface Connection {
 }
 type Kind = 'main' | 'audit'
 type Shape = { columns: unknown[][]; foreignKeys: unknown[][]; indexes: { name: string; unique: number; origin: string; partial: number; columns: unknown[][] }[] }
-interface Entry { version: number; file: string; sha256: string; shape: Record<string, Shape> }
+interface Entry { version: number; file: string; sha256: string; shape: Record<string, Shape>; upgrades?: Entry[] }
 const ledger = '_guatswr_migrations'
 const all = (db: Connection, sql: string, params: unknown[] = []) => new Promise<Record<string, unknown>[]>((resolve, reject) => db.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows)))
 const exec = (db: Connection, sql: string) => new Promise<void>((resolve, reject) => db.exec(sql, error => error ? reject(error) : resolve()))
@@ -22,13 +22,31 @@ const indexKeys = ['seqno', 'cid', 'name', 'desc', 'coll', 'key']
 
 async function definition(directory: string, kind: Kind) {
   const manifest = JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8')) as Record<Kind, Entry>
-  const entry = manifest[kind]
-  if (!entry || entry.version !== 1 || path.basename(entry.file) !== entry.file) return failure('MIGRATION_MANIFEST_INVALID')
-  const sql = await fs.readFile(path.join(directory, entry.file), 'utf8')
-  if (hash(sql) !== entry.sha256) return failure('MIGRATION_SOURCE_CHECKSUM')
-  return { entry, sql }
+  const base = manifest[kind]
+  if (!base || base.version !== 1 || (base.upgrades !== undefined && !Array.isArray(base.upgrades))) return failure('MIGRATION_MANIFEST_INVALID')
+  const entries = [base, ...(base.upgrades || [])]
+  const definitions: { entry: Entry; sql: string }[] = []
+  const names = new Set<string>()
+  for (const [index, entry] of entries.entries()) {
+    if (!entry || entry.version !== index + 1 || typeof entry.file !== 'string' || !entry.file
+      || path.basename(entry.file) !== entry.file || names.has(entry.file) || !entry.shape || typeof entry.shape !== 'object') return failure('MIGRATION_MANIFEST_INVALID')
+    // This path supports additive Expand migrations. A later definition may not
+    // silently drop an earlier column/index/FK from validation.
+    const previous = entries[index - 1]
+    if (previous) for (const [table, shape] of Object.entries(previous.shape)) {
+      const next = entry.shape[table]
+      if (!next || !Array.isArray(next.columns) || !Array.isArray(next.indexes)
+        || JSON.stringify(shape.foreignKeys) !== JSON.stringify(next.foreignKeys)
+        || shape.columns.some(column => !next.columns.some(item => JSON.stringify(item) === JSON.stringify(column)))
+        || shape.indexes.some(item => !next.indexes.some(candidate => JSON.stringify(candidate) === JSON.stringify(item)))) return failure('MIGRATION_MANIFEST_INVALID')
+    }
+    names.add(entry.file)
+    const sql = await fs.readFile(path.join(directory, entry.file), 'utf8')
+    if (hash(sql) !== entry.sha256) return failure('MIGRATION_SOURCE_CHECKSUM')
+    definitions.push({ entry, sql })
+  }
+  return definitions
 }
-
 export async function inspectSchema(db: Connection) {
   const rows = await all(db, "SELECT type,name,tbl_name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' AND name != ? AND tbl_name != ? ORDER BY type,name", [ledger, ledger])
   return { fingerprint: hash(JSON.stringify(rows)), objectCount: rows.length, tables: rows.filter(row => row.type === 'table').map(row => String(row.name)) }
@@ -65,50 +83,71 @@ async function hasLedger(db: Connection) {
   return (await all(db, "SELECT name FROM sqlite_master WHERE type='table' AND name=?", [ledger])).length > 0
 }
 
-async function checkLoaded(db: Connection, entry: Entry) {
+async function checkLoaded(db: Connection, definitions: { entry: Entry }[], kind: Kind, allowOlder = false) {
   if (!await hasLedger(db)) return failure('MIGRATION_REQUIRED')
   const rows = await all(db, `SELECT version, checksum, schema_hash FROM ${ledger} ORDER BY version`)
-  if (rows.length !== 1 || rows[0]?.version !== entry.version) return failure('MIGRATION_VERSION_MISMATCH')
-  if (rows[0]?.checksum !== entry.sha256) return failure('MIGRATION_LEDGER_CHECKSUM')
+  if (!rows.length || rows.length > definitions.length || (!allowOlder && rows.length !== definitions.length)) return failure('MIGRATION_VERSION_MISMATCH')
+  for (const [index, row] of rows.entries()) {
+    const expected = definitions[index]!.entry
+    if (row.version !== expected.version) return failure('MIGRATION_VERSION_MISMATCH')
+    if (row.checksum !== expected.sha256) return failure('MIGRATION_LEDGER_CHECKSUM')
+    if (typeof row.schema_hash !== 'string' || !/^[a-f0-9]{64}$/.test(row.schema_hash)) return failure('MIGRATION_SCHEMA_DRIFT')
+  }
+  const current = definitions[rows.length - 1]!.entry
   const schema = await inspectSchema(db)
-  if (schema.fingerprint !== rows[0]?.schema_hash) return failure('MIGRATION_SCHEMA_DRIFT')
-  return { version: entry.version, fingerprint: schema.fingerprint }
+  if (schema.fingerprint !== rows[rows.length - 1]?.schema_hash) return failure('MIGRATION_SCHEMA_DRIFT')
+  await validateCore(db, current, kind)
+  return { version: current.version, fingerprint: schema.fingerprint }
 }
 
 export async function checkDatabase(db: Connection, directory: string, kind: Kind) {
-  const { entry } = await definition(directory, kind)
-  // A read transaction prevents mixed observations during concurrent DDL.
+  const definitions = await definition(directory, kind)
   await exec(db, 'BEGIN')
   try {
-    const result = await checkLoaded(db, entry)
+    const result = await checkLoaded(db, definitions, kind)
     await exec(db, 'COMMIT')
     return result
   } catch (error) { await exec(db, 'ROLLBACK'); throw error }
 }
 
 export async function migrateDatabase(db: Connection, directory: string, kind: Kind,
-  options: { mode: 'initialize' | 'adopt'; expectedFingerprint?: string }) {
-  const { entry, sql } = await definition(directory, kind)
-  if (options.mode !== 'initialize' && options.mode !== 'adopt') return failure('MIGRATION_MODE_INVALID')
+  options: { mode: 'initialize' | 'adopt' | 'upgrade'; expectedFingerprint?: string }) {
+  const definitions = await definition(directory, kind)
+  if (!['initialize', 'adopt', 'upgrade'].includes(options.mode)) return failure('MIGRATION_MODE_INVALID')
+  const { entry, sql } = definitions[0]!
   await exec(db, 'BEGIN IMMEDIATE')
   try {
+    let version = 0
     if (await hasLedger(db)) {
-      const current = await checkLoaded(db, entry)
-      await exec(db, 'COMMIT')
-      return { ...current, applied: false }
-    }
-    const before = await inspectSchema(db)
-    if (options.mode === 'initialize') {
-      if (before.objectCount) return failure('MIGRATION_INITIALIZE_REQUIRES_EMPTY')
-      await exec(db, sql)
+      const current = await checkLoaded(db, definitions, kind, options.mode === 'upgrade')
+      if (current.version === definitions.length) {
+        await exec(db, 'COMMIT')
+        return { ...current, applied: false }
+      }
+      version = current.version
     } else {
-      if (!before.tables.length || !options.expectedFingerprint || options.expectedFingerprint !== before.fingerprint) return failure('MIGRATION_ADOPT_FINGERPRINT_REQUIRED')
+      if (options.mode === 'upgrade') return failure('MIGRATION_REQUIRED')
+      const before = await inspectSchema(db)
+      if (options.mode === 'initialize') {
+        if (before.objectCount) return failure('MIGRATION_INITIALIZE_REQUIRES_EMPTY')
+        await exec(db, sql)
+      } else {
+        if (!before.tables.length || !options.expectedFingerprint || options.expectedFingerprint !== before.fingerprint) return failure('MIGRATION_ADOPT_FINGERPRINT_REQUIRED')
+      }
+      await validateCore(db, entry, kind)
+      const after = await inspectSchema(db)
+      await exec(db, `CREATE TABLE ${ledger} (version INTEGER PRIMARY KEY, checksum TEXT NOT NULL, mode TEXT NOT NULL, schema_hash TEXT NOT NULL, applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`)
+      await run(db, `INSERT INTO ${ledger}(version,checksum,mode,schema_hash) VALUES(?,?,?,?)`, [entry.version, entry.sha256, options.mode, after.fingerprint])
+      version = 1
     }
-    await validateCore(db, entry, kind)
-    const after = await inspectSchema(db)
-    await exec(db, `CREATE TABLE ${ledger} (version INTEGER PRIMARY KEY, checksum TEXT NOT NULL, mode TEXT NOT NULL, schema_hash TEXT NOT NULL, applied_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP)`)
-    await run(db, `INSERT INTO ${ledger}(version,checksum,mode,schema_hash) VALUES(?,?,?,?)`, [entry.version, entry.sha256, options.mode, after.fingerprint])
+    for (const next of definitions.slice(version)) {
+      await exec(db, next.sql)
+      await validateCore(db, next.entry, kind)
+      const schema = await inspectSchema(db)
+      await run(db, `INSERT INTO ${ledger}(version,checksum,mode,schema_hash) VALUES(?,?,?,?)`, [next.entry.version, next.entry.sha256, 'upgrade', schema.fingerprint])
+    }
+    const result = await checkLoaded(db, definitions, kind)
     await exec(db, 'COMMIT')
-    return { version: entry.version, fingerprint: after.fingerprint, applied: true }
+    return { ...result, applied: true }
   } catch (error) { await exec(db, 'ROLLBACK'); throw error }
 }

@@ -14,7 +14,7 @@ async function main() {
     options.set(key, value)
   }
   const data = options.get('--data-dir')
-  if (!data || !path.isAbsolute(data) || !['check', 'inspect', 'initialize', 'adopt'].includes(action || '')) throw new Error('MIGRATION_ARGUMENTS')
+  if (!data || !path.isAbsolute(data) || !['check', 'inspect', 'initialize', 'adopt', 'upgrade'].includes(action || '')) throw new Error('MIGRATION_ARGUMENTS')
   if (action === 'adopt' && (!options.has('--main-fingerprint') || !options.has('--audit-fingerprint'))) throw new Error('MIGRATION_ADOPT_FINGERPRINT_REQUIRED')
   const files = { main: options.get('--main-db') || path.join(data, 'guatswr_web_main.db'), audit: options.get('--audit-db') || path.join(data, 'guatswr_web_logs.db') }
   if (!path.isAbsolute(files.main) || !path.isAbsolute(files.audit) || path.resolve(files.main) === path.resolve(files.audit)) throw new Error('MIGRATION_DATABASE_PATHS')
@@ -27,7 +27,7 @@ async function main() {
   // Each database commits independently. On failure, check both and retry explicitly.
   for (const kind of ['main', 'audit'] as const) {
     const filename = files[kind]
-    const mode = action === 'initialize' ? sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE : action === 'adopt' ? sqlite.OPEN_READWRITE : sqlite.OPEN_READONLY
+    const mode = action === 'initialize' ? sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE : ['adopt', 'upgrade'].includes(action || '') ? sqlite.OPEN_READWRITE : sqlite.OPEN_READONLY
     const db = await new Promise<sqlite.Database>((resolve, reject) => {
       const connection = new sqlite.Database(filename, mode, error => error ? reject(error) : resolve(connection))
     })
@@ -37,6 +37,7 @@ async function main() {
       let result
       if (action === 'inspect') result = await inspectSchema(connection)
       else if (action === 'check') result = await checkDatabase(connection, directory, kind)
+      else if (action === 'upgrade') result = await migrateDatabase(connection, directory, kind, { mode: 'upgrade' })
       else if (action === 'adopt') result = await migrateDatabase(connection, directory, kind, { mode: 'adopt', expectedFingerprint: options.get(`--${kind}-fingerprint`)! })
       else result = await migrateDatabase(connection, directory, kind, { mode: 'initialize' })
       console.log(JSON.stringify({ database: kind, action, ...result }))

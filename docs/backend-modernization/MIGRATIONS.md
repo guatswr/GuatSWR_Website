@@ -60,3 +60,15 @@ pnpm --filter guiair-backend admin:bootstrap --main-db E:\explicit\data\guatswr_
 命令仅打开显式绝对路径已有数据库，不创建缺失数据库或自动迁移；结构漂移会拒绝。用户名1～50位ASCII字母/数字/下划线/连字符；密码6～100字符且UTF-8不超过72字节，避免bcrypt静默截断。环境变量仍可保留供该命令使用，但常规server启动不再消费它们初始化账户。
 
 首次创建返回created；同名super_admin重复执行返回unchanged，不重置密码。已有其他super_admin时拒绝新建首位管理员，同名非super_admin也拒绝，不用此命令恢复/提升已有用户权限。错误输出为固定文本，不打印凭据。此行为改变用于关闭重启提权漏洞；回退旧启动代码会重新引入风险，不能在生产仍配置旧凭据时盲目回退。
+
+## 显式增量升级（BM-27b1）
+
+已有账本数据库使用 `pnpm --filter guiair-backend db:migrate upgrade --data-dir <绝对目录>`；自定义--main-db/--audit-db规则不变。upgrade只打开已有文件，不创建缺库；无账本须先走显式adopt。正常启动与check不执行升级，旧版本或未来未知版本均拒绝。
+
+每个数据库manifest保留原version1/file/sha256/shape，可增加upgrades数组，版本必须从2连续递增；每项声明独立SQL文件、SHA256和累积shape。当前只支持保留既有列、索引及外键定义的Expand路径；新项不得删掉旧shape中的要求。所有文件先验hash，再开始写事务。v1 SQL与checksum不能修改来假装升级。
+
+一次数据库upgrade在BEGIN IMMEDIATE内校验当前账本所有版本/checksum、最新实际schema指纹与结构，依次执行待应用脚本/校验新结构/追加账本；任一失败回滚全部本次待升级步骤。历史行不改写，新行记录该版本的schema指纹。历史schema_hash只做格式检查，实际数据库只可与最后一行比对；账本不是防数据库管理员篡改的密码学审计。重复upgrade无待执行项时不重放SQL。
+
+新空库initialize会执行baseline和全部已声明升级并原子提交；未登记旧库adopt先验证原指纹及v1核心结构，再同事务执行已声明增量。已有账本时initialize/adopt不替代upgrade。主/审计两库仍分别提交，部分成功后核查两库并显式重试，不能用旧快照覆盖已成功库。
+
+本节点仓库真实manifest仍只有v1，v2仅存在于合成测试。旧v1应用校验器会拒绝v2账本，不能据“SQL兼容”宣称可直接回滚旧镜像。首次真实v2发布前必须确定兼容部署/回退版本并独立验收；此节点未升级原库。
