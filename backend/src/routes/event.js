@@ -8,7 +8,14 @@ const { moveStagedFile } = context.storage;
 const { createEventContentPersister, assertVisitorContent } = require(path.join(context.BACKEND_ROOT, 'dist/src/utils/eventContentStorage.js'));
 
 const { publicEvent } = require('../utils/publicEvent');
-const { signupDeadlineClosed } = require('@guatswr/shared');
+const signupModule = path.join(context.BACKEND_ROOT, 'dist/src/modules/events/signup');
+const { createSignupRepository } = require(path.join(signupModule, 'repository'));
+const { createSignupService } = require(path.join(signupModule, 'service'));
+const { createSignupController } = require(path.join(signupModule, 'controller'));
+const signupController = createSignupController(
+  createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook }),
+  error => context.logger.error('http.failed', { error, route: '/api/event/:id/signup' })
+);
 const router = express.Router();
 const persistEventContent = createEventContentPersister({ imageRoot: IMG_ROOT_DIR, moveStagedFile });
 
@@ -45,16 +52,6 @@ const normalizeStatusList = (raw) => {
 const isPublicStatus = (status) => PUBLIC_STATUSES.includes(status);
 const isSignupType = (type) => SIGNUP_TYPES.includes(type);
 const getActor = (req) => (req.user ? { id: req.user.id, username: req.user.username, role: req.user.role } : null);
-const toParticipantPublic = (row) => ({
-  id: row.id,
-  common_id: row.common_id,
-  qq: row.qq,
-  avatar: row.avatar,
-  pilot_source: row.pilot_source,
-  machine_sign: row.machine_sign,
-  created_at: row.created_at
-});
-
 // ==========================================
 //  访客/公共接口
 // ==========================================
@@ -204,132 +201,11 @@ router.get('/:id', optionalAuth, (req, res) => {
   });
 });
 
-// 5. 报名 (STG / 则则)
-router.post('/:id/signup', optionalAuth, context.guestGateway, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-
-  try {
-    const event = await dbGet('SELECT id, type, status, content FROM events WHERE id = ?', [eventId]);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持报名' });
-    if (!['published', 'ongoing'].includes(event.status)) {
-      return res.status(403).json({ message: '当前状态不允许报名' });
-    }
-    let signupContent;
-    try { signupContent = JSON.parse(event.content || '{}'); } catch { signupContent = {}; }
-    if (signupDeadlineClosed(signupContent)) return res.status(403).json({ message: '报名已截止' });
-
-    const userId = req.user ? req.user.id : null;
-    const visitorIp = req.ip;
-    const commonId = String(req.body?.common_id || '').trim();
-    const machineSign = String(req.body?.machine_sign || '').trim();
-    const pilotSource = String(req.body?.pilot_source || '').trim();
-    const qq = String(req.body?.qq || '').trim();
-    const avatar = String(req.body?.avatar || '').trim();
-
-    if (!commonId || !qq) {
-      return res.status(400).json({ message: '请填写常用ID与QQ' });
-    }
-
-    if (!avatar) {
-      return res.status(400).json({ message: '请上传头像' });
-    }
-
-    const baseParams = [eventId, userId, visitorIp, commonId, machineSign, pilotSource, qq, avatar];
-    if (userId) {
-      await dbRun(`
-        INSERT INTO event_participants (event_id, user_id, visitor_ip, common_id, machine_sign, pilot_source, qq, avatar)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(event_id, user_id) DO UPDATE SET
-          common_id = excluded.common_id,
-          machine_sign = excluded.machine_sign,
-          pilot_source = excluded.pilot_source,
-          qq = excluded.qq,
-          avatar = excluded.avatar,
-          visitor_ip = excluded.visitor_ip,
-          updated_at = CURRENT_TIMESTAMP
-      `, baseParams);
-    } else {
-      await dbRun(`
-        INSERT INTO event_participants (event_id, user_id, visitor_ip, common_id, machine_sign, pilot_source, qq, avatar)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-        ON CONFLICT(event_id, visitor_ip) DO UPDATE SET
-          common_id = excluded.common_id,
-          machine_sign = excluded.machine_sign,
-          pilot_source = excluded.pilot_source,
-          qq = excluded.qq,
-          avatar = excluded.avatar,
-          updated_at = CURRENT_TIMESTAMP
-      `, baseParams);
-    }
-
-    callBotHook('event.signup', {
-      eventId,
-      type: event.type,
-      participant: { common_id: commonId, qq, avatar, pilot_source: pilotSource }
-    }, getActor(req)).catch(() => {});
-
-    res.json({ message: '报名成功', eventId });
-  } catch (err) {
-    res.status(500).json({ message: '报名失败', error: err.message });
-  }
-});
-
-// 6. 报名信息回显 (STG / 则则)
-router.get('/:id/signup', optionalAuth, context.guestGateway, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  try {
-    const userId = req.user ? req.user.id : null;
-    const visitorIp = req.ip;
-    const row = userId
-      ? await dbGet('SELECT * FROM event_participants WHERE event_id = ? AND user_id = ?', [eventId, userId])
-      : await dbGet('SELECT * FROM event_participants WHERE event_id = ? AND visitor_ip = ?', [eventId, visitorIp]);
-    if (row) { const { visitor_ip, ...safe } = row; return res.json({ data: safe }); }
-    res.json({ data: null });
-  } catch (err) {
-    res.status(500).json({ message: '读取失败', error: err.message });
-  }
-});
-
-// 7. 删除报名信息
-router.delete('/:id/signup', optionalAuth, context.guestGateway, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  try {
-    const userId = req.user ? req.user.id : null;
-    const visitorIp = req.ip;
-    const result = userId
-      ? await dbRun('DELETE FROM event_participants WHERE event_id = ? AND user_id = ?', [eventId, userId])
-      : await dbRun('DELETE FROM event_participants WHERE event_id = ? AND visitor_ip = ?', [eventId, visitorIp]);
-
-    if ((result?.changes || 0) === 0) return res.status(404).json({ message: '报名记录不存在' });
-    res.json({ message: '已删除报名' });
-  } catch (err) {
-    res.status(500).json({ message: '删除失败', error: err.message });
-  }
-});
-
-// 8. 公开报名列表 (STG / 则则)
-router.get('/:id/participants/public', optionalAuth, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  try {
-    const event = await dbGet('SELECT id, type, status FROM events WHERE id = ?', [eventId]);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持报名' });
-    if (!isPublicStatus(event.status)) return res.status(403).json({ message: '当前状态不允许查看名单' });
-    const rows = await dbAll(
-      'SELECT * FROM event_participants WHERE event_id = ? ORDER BY created_at ASC',
-      [eventId]
-    );
-    res.json({ items: rows.map(toParticipantPublic) });
-  } catch (err) {
-    res.status(500).json({ message: '加载失败', error: err.message });
-  }
-});
-
+// 5–8. Typed signup service; eligibility and upsert share one transaction.
+router.post('/:id/signup', optionalAuth, context.guestGateway, (req, res, next) => signupController.signup(req, res).catch(next));
+router.get('/:id/signup', optionalAuth, context.guestGateway, (req, res, next) => signupController.find(req, res).catch(next));
+router.delete('/:id/signup', optionalAuth, context.guestGateway, (req, res, next) => signupController.remove(req, res).catch(next));
+router.get('/:id/participants/public', optionalAuth, (req, res, next) => signupController.list(req, res).catch(next));
 // ==========================================
 //  管理员接口
 // ==========================================

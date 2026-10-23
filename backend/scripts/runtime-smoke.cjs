@@ -58,6 +58,17 @@ const { start } = require('../server');
     const detail = await fetch(`${origin}/api/activities/${activityCreated.id}`);
     assert.equal(detail.status, 200);
     assert.equal((await detail.json()).created_by, 'synthetic-smoke');
+    const signupEvent = await instance.context.sql.main.run("INSERT INTO events(type,title,status,content) VALUES ('STG','synthetic-signup','published','{}')");
+    const signupHeaders = { authorization: `Bearer ${token}`, 'content-type': 'application/json' };
+    const signupUrl = `${origin}/api/event/${signupEvent.lastID}/signup`;
+    const signup = await fetch(signupUrl, { method: 'POST', headers: signupHeaders, body: JSON.stringify({ common_id: 'synthetic-participant', qq: '12345', avatar: '/uploads/avatar.png' }) });
+    assert.equal(signup.status, 200);
+    const signupRead = await fetch(signupUrl, { headers: signupHeaders });
+    const signupRow = (await signupRead.json()).data;
+    assert.equal(signupRow.common_id, 'synthetic-participant');
+    assert.equal(signupRow.visitor_ip, undefined);
+    assert.equal((await fetch(signupUrl, { method: 'DELETE', headers: signupHeaders })).status, 200);
+    assert.equal((await instance.context.sql.main.get('SELECT count(*) AS n FROM event_participants WHERE event_id=?', [signupEvent.lastID])).n, 0);
     const bridge = { 'x-bff-bridge': process.env.BFF_BRIDGE_SECRET, 'x-forwarded-for': '127.0.0.1', 'content-type': 'application/json' };
     const proof = (scope, eid) => {
       const expires = Math.floor(Date.now() / 1000) + 30;

@@ -95,6 +95,16 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
    return {jar,csrf:csrf.data.csrfToken,id:draft.data.id,data:draft.data}
  }
  const a=await visitor(),b=await visitor()
+ const signupHeaders = { origin, 'content-type': 'application/json', 'x-csrf-token': a.csrf }
+ const signup = await call('/api/bff/guest/events/1/signup', { method: 'POST', headers: signupHeaders, body: JSON.stringify({ common_id: 'real BFF signup', qq: '12345', avatar: '/uploads/avatar.png' }) }, a.jar)
+ expect(signup.response.status, JSON.stringify(signup.data)).toBe(200)
+ const signupRead = await call('/api/bff/guest/events/1/signup', {}, a.jar)
+ expect(JSON.stringify(signupRead.data)).toContain('real BFF signup')
+ expect(JSON.stringify(signupRead.data)).not.toContain('visitor_ip')
+ expect((await get(f.db, 'SELECT common_id FROM event_participants WHERE visitor_ip=?', ['127.0.0.1'])).common_id).toBe('real BFF signup')
+ const cancelled = await call('/api/bff/guest/events/1/signup', { method: 'DELETE', headers: signupHeaders }, a.jar)
+ expect(cancelled.response.status, JSON.stringify(cancelled.data)).toBe(200)
+ expect(await get(f.db, 'SELECT id FROM event_participants WHERE visitor_ip=?', ['127.0.0.1'])).toBeUndefined()
  expect(a.id).not.toBe(b.id)
  expect((await get(f.db,'SELECT visitor_ip FROM events WHERE id=?',[a.id])).visitor_ip).toBe('127.0.0.1')
  const uploadBody = new FormData()

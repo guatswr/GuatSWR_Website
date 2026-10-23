@@ -109,6 +109,7 @@ const loadEventRoute = (moveStagedFile) => {
   );
   const { createGuestDraftProofGuard } = nativeRequire('../../dist/src/security/guest-draft-proof.js');
   module.exports({ ...mocks['../models/db'], auth: {}, storage: mocks['../utils/storage'],
+    sql: { main: nativeRequire('../../dist/src/database/sqlite.js').createSqliteStore(path.join(os.tmpdir(), 'unused-signup-store.db')) },
     guestProof: createGuestDraftProofGuard({ secret: 'synthetic-content-proof-key-32-characters', mode: 'required' }) });
   writes.length = 0;
   return {
