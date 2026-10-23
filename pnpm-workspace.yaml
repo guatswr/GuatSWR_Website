@@ -21,9 +21,6 @@ verifyDepsBeforeRun: false
 strictPeerDependencies: true
 engineStrict: true
 minimumReleaseAge: 1440
-# Exact reviewed security update; published less than 24 hours ago.
-minimumReleaseAgeExclude:
-  - multer@2.5.0
 allowBuilds:
   '@scarf/scarf': false
   sqlite3: true
