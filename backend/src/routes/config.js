@@ -1,63 +1,18 @@
 module.exports = (context) => {
-const express = require('express');
-const { db, addLog } = context;
-const { authenticateToken, requireAdmin, optionalAuth } = context.auth;
-const { validate } = require('../utils');
-const { configSchema } = context.schemas;
-const { moveStagedFile, getConfigDir, isStagingUrl } = context.storage;
-
-const { PUBLIC_CONFIG_KEYS } = require('../utils/publicLog');
-const router = express.Router();
-
-router.get('/', optionalAuth, (req, res) => {
-  db.all("SELECT * FROM site_config", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    const config = Object.fromEntries((rows || []).map(row => [row.key, row.value]));
-
-    if (req.user?.role === 'super_admin') {
-      return res.json(config);
-    }
-
-    const publicKeys = [
-      'home_bg',
-      'join_bg',
-      'banner_text',
-      'badge_image',
-      'mascot_image',
-      'qq_qr_image',
-      'qq_group_number',
-      'qq_join_url',
-      'join_question',
-      'home_links'
-    ];
-
-    const publicConfig = {};
-    publicKeys.forEach((key) => {
-      if (key in config) publicConfig[key] = config[key];
-    });
-    res.json(publicConfig);
+  const path = require('node:path');
+  const router = require('express').Router();
+  const compiled = path.join(context.BACKEND_ROOT, 'dist/src/modules/config');
+  const { createConfigRepository } = require(path.join(compiled, 'repository'));
+  const { createConfigService } = require(path.join(compiled, 'service'));
+  const { createConfigController } = require(path.join(compiled, 'controller'));
+  const service = createConfigService({
+    repository: createConfigRepository(context.sql.main), storage: context.storage,
+    audit: (username, key) => context.addLog(username, 'UPDATE_CONFIG', `修改配置: ${key}`),
+    reportAuditFailure: error => context.logger.error('audit.failed', { error })
   });
-});
-
-router.post('/', authenticateToken, requireAdmin, (req, res) => {
-  const validated = validate(configSchema, req.body);
-  if (!validated.ok) return res.status(400).json({ message: validated.error });
-  const { key, value } = validated.data;
-  if (key === 'token_version' || key.startsWith('backup_') || (req.user.role !== 'super_admin' && !PUBLIC_CONFIG_KEYS.has(key))) return res.status(403).json({ message: '请使用专用管理接口修改内部配置' });
-  (async () => {
-    let finalValue = value;
-    if (isStagingUrl(value)) {
-      const targetDir = getConfigDir(key);
-      finalValue = await moveStagedFile(value, targetDir);
-    }
-    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES (?, ?)", [key, finalValue], (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-      addLog(req.user.username, 'UPDATE_CONFIG', `修改配置: ${key}`);
-      res.json({ message: "已保存" });
-    });
-  })().catch((moveErr) => res.status(500).json({ error: moveErr.message }));
-});
-
-return router;
-
+  const controller = createConfigController(service, error => context.logger.error('http.failed', { error, route: '/api/config' }));
+  const { authenticateToken, requireAdmin, optionalAuth } = context.auth;
+  router.get('/', optionalAuth, (req, res, next) => controller.read(req, res).catch(next));
+  router.post('/', authenticateToken, requireAdmin, (req, res, next) => controller.write(req, res).catch(next));
+  return router;
 };

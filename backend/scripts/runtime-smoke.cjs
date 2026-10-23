@@ -19,7 +19,17 @@ const { start } = require('../server');
     const main = await instance.context.sql.main.transaction(tx => tx.get('SELECT count(*) AS count FROM users'));
     const audit = await instance.context.sql.audit.get('SELECT count(*) AS count FROM audit_logs');
     assert.ok(Number.isInteger(main.count) && Number.isInteger(audit.count));
-    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true }));
+    const user = await instance.context.sql.main.run('INSERT INTO users(username,password,role) VALUES (?,?,?)',
+      ['synthetic-smoke', require('bcryptjs').hashSync('synthetic-password', 4), 'admin']);
+    const token = require('jsonwebtoken').sign({ id: user.lastID, token_version: 0 }, process.env.JWT_SECRET);
+    const origin = `http://127.0.0.1:${instance.app.get('port') || process.env.PORT}`;
+    const saved = await fetch(`${origin}/api/config`, { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ key: 'banner_text', value: 'synthetic-config-smoke' }) });
+    assert.equal(saved.status, 200);
+    assert.deepEqual(await saved.json(), { message: '已保存' });
+    const config = await fetch(`${origin}/api/config`);
+    assert.equal(config.status, 200);
+    assert.equal((await config.json()).banner_text, 'synthetic-config-smoke');
+    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true }));
   } finally {
     await instance.close();
     if (path.dirname(root) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-runtime-')) throw new Error('Unsafe smoke cleanup');

@@ -8,6 +8,7 @@ type Level = 'info' | 'warn' | 'error'
 interface Correlation { requestId?: string; taskId?: string }
 interface Fields { method?: string; route?: string; status?: number; durationMs?: number; error?: unknown; port?: number }
 const errors = new Set(['SQLITE_BUSY', 'SQLITE_LOCKED', 'SQLITE_ERROR', 'SQLITE_CANTOPEN', 'SQLITE_CONSTRAINT', 'SQLITE_READONLY', 'SQLITE_FULL',
+  'database_busy', 'database_constraint', 'database_interrupted', 'database_unavailable', 'database_query', 'database_scope',
   'SQLITE_CORRUPT', 'SQLITE_MISUSE', 'ENOENT', 'ENOTDIR', 'EACCES', 'EPERM', 'ENOSPC', 'EADDRINUSE', 'ECONNRESET',
   'SHUTDOWN_TIMEOUT', 'invalid_configuration', 'LIMIT_FILE_SIZE', 'LIMIT_PART_COUNT', 'LIMIT_FILE_COUNT', 'LIMIT_FIELD_COUNT'])
 const classify = (error: unknown): string => {

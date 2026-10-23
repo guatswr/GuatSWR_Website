@@ -59,6 +59,20 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  expect(list.response.status,JSON.stringify(list.data)).toBe(200)
  expect(JSON.stringify(list.data)).toContain('real BFF integration')
 
+ // Warm both real public caches before the BFF write, then prove invalidation.
+ expect((await call('/api/config')).data.banner_text).toBe('fixture')
+ const beforeLogs = await call('/api/logs?action=UPDATE_CONFIG')
+ expect(beforeLogs.response.status).toBe(200)
+ expect(JSON.stringify(beforeLogs.data)).not.toContain('修改配置: banner_text')
+ const configWrite = await call('/api/bff/admin/config', { method: 'PUT', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': login.data.csrfToken }, body: JSON.stringify({ key: 'banner_text', value: 'BFF cache invalidation' }) })
+ expect(configWrite.response.status, JSON.stringify(configWrite.data)).toBe(200)
+ expect(configWrite.data).toEqual({ message: '已保存' })
+ await expect.poll(() => get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='UPDATE_CONFIG'")).toEqual({ n: 1 })
+ expect((await call('/api/config')).data.banner_text).toBe('BFF cache invalidation')
+ const afterLogs = await call('/api/logs?action=UPDATE_CONFIG')
+ expect(afterLogs.response.status).toBe(200)
+ expect(JSON.stringify(afterLogs.data)).toContain('修改配置: banner_text')
+
  // Two anonymous visitors share one loopback/NAT address but have distinct intent cookies.
  const visitor=async()=>{
    const jar=new Map()
