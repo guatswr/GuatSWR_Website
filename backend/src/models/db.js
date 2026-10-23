@@ -39,16 +39,13 @@ const resolvePaths = (env, paths = {}) => {
 const run = (db, sql, params = []) => new Promise((resolve, reject) => {
   db.run(sql, params, function (error) { error ? reject(error) : resolve(this); });
 });
-const get = (db, sql, params = []) => new Promise((resolve, reject) => {
-  db.get(sql, params, (error, row) => error ? reject(error) : resolve(row));
-});
 const close = (db) => new Promise((resolve, reject) => db.close((error) => error ? reject(error) : resolve()));
 
 const createDatabase = async ({ env, paths, logger }) => {
   const resolved = resolvePaths(env, paths);
   if (resolved.dbPath === resolved.logDbPath) throw new Error('Main and audit databases must be different files');
   const sqlite3 = require('sqlite3').verbose();
-  const bcrypt = require('bcryptjs');
+
   const { checkDatabase } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/migrations/engine'));
   const { createSqliteStore } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/database/sqlite'));
   const connections = [];
@@ -81,15 +78,6 @@ const createDatabase = async ({ env, paths, logger }) => {
     for (const connection of [db, logDb]) {
       for (const pragma of ['journal_mode = WAL', 'synchronous = NORMAL', 'foreign_keys = ON', 'busy_timeout = 5000']) {
         await run(connection, `PRAGMA ${pragma}`);
-      }
-    }
-    if (env.SUPER_ADMIN_USERNAME && env.SUPER_ADMIN_PASSWORD) {
-      const row = await get(db, 'SELECT * FROM users WHERE username = ?', [env.SUPER_ADMIN_USERNAME]);
-      if (!row) {
-        await run(db, 'INSERT INTO users (username, password, role) VALUES (?, ?, ?)',
-          [env.SUPER_ADMIN_USERNAME, bcrypt.hashSync(env.SUPER_ADMIN_PASSWORD, 10), 'super_admin']);
-      } else if (row.role !== 'super_admin') {
-        await run(db, "UPDATE users SET role = 'super_admin' WHERE username = ?", [env.SUPER_ADMIN_USERNAME]);
       }
     }
     const addLog = (username, action, details) => {

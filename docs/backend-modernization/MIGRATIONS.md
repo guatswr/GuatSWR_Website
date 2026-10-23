@@ -2,7 +2,7 @@
 
 当前版本：main 001 / audit 001。所有命令在仓库根目录执行，使用 Node 24.16.0、pnpm 11.25.0；先运行 `pnpm --filter @guatswr/shared build` 和 `pnpm --filter guiair-backend build`。生产镜像已经包含编译结果，可在 `/app` 使用 `node dist/src/migrations/cli.js` 替代下面的 pnpm 入口。
 
-正常应用启动要求两个数据库已存在且账本、SQL checksum、完整结构指纹匹配。启动不执行 CREATE / ALTER，也不会补齐缺失索引。未迁移的旧库必须先显式接管；缺库或漂移会终止启动。当前 SUPER_ADMIN 环境变量仍保留旧版初始化/提权行为，拆离归 BM-31；“只校验版本”仅指 schema 管理。
+正常应用启动要求两个数据库已存在且账本、SQL checksum、完整结构指纹匹配。启动不执行 CREATE / ALTER，也不会补齐缺失索引。未迁移的旧库必须先显式接管；缺库或漂移会终止启动。BM-31a已将SUPER_ADMIN初始化移到显式命令；常规启动不创建或重新提升账户。
 
 ## 新的空环境
 
@@ -46,3 +46,17 @@ main 与 audit 各自 BEGIN IMMEDIATE / COMMIT，不存在跨文件原子提交�
 `MIGRATION_REQUIRED` 表示缺少账本；`MIGRATION_SCHEMA_DRIFT` 表示当前结构与已接管指纹不同；版本/checksum 错误必须核对实际部署产物与迁移历史。禁止删除账本、编辑 checksum、盲目重新 adopt 或运行自动补表来消除错误。应保留失败现场，在新目录恢复已验证备份并按发布流程回退。CLI 的受控错误不会输出业务行或 SQL 原始错误。
 
 目前实测仅对本地历史数据的复制件完成 adopt；原始库、现有服务和流量尚未切换。正式切换继续受 BM-35/36 发布门禁约束。
+
+## 首位管理员显式初始化（BM-31a）
+
+完成数据库initialize/adopt并确认check成功后，在后端目录使用当前Node24构建产物执行：
+
+```powershell
+pnpm --filter guiair-backend build
+# SUPER_ADMIN_USERNAME / SUPER_ADMIN_PASSWORD由操作者安全注入当前进程环境，不写入命令参数或Git。
+pnpm --filter guiair-backend admin:bootstrap --main-db E:\explicit\data\guatswr_web_main.db
+```
+
+命令仅打开显式绝对路径已有数据库，不创建缺失数据库或自动迁移；结构漂移会拒绝。用户名1～50位ASCII字母/数字/下划线/连字符；密码6～100字符且UTF-8不超过72字节，避免bcrypt静默截断。环境变量仍可保留供该命令使用，但常规server启动不再消费它们初始化账户。
+
+首次创建返回created；同名super_admin重复执行返回unchanged，不重置密码。已有其他super_admin时拒绝新建首位管理员，同名非super_admin也拒绝，不用此命令恢复/提升已有用户权限。错误输出为固定文本，不打印凭据。此行为改变用于关闭重启提权漏洞；回退旧启动代码会重新引入风险，不能在生产仍配置旧凭据时盲目回退。

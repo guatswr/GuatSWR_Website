@@ -12,6 +12,10 @@ const { start } = require('../server');
   process.env.TRUST_PROXY_CIDRS = '127.0.0.1/32';
   process.env.GUEST_DRAFT_PROOF_MODE = 'required';
   await require('./initialize-databases.cjs').initializeDatabases({}, { data: process.env.DATA_DIR });
+  const bootstrapArgs = [path.resolve('dist/src/admin/bootstrap-cli.js'), '--main-db', path.join(process.env.DATA_DIR, 'guatswr_web_main.db')];
+  const bootstrapEnv = { ...process.env, SUPER_ADMIN_USERNAME: 'synthetic-initial-admin', SUPER_ADMIN_PASSWORD: 'synthetic-bootstrap-password' };
+  assert.deepEqual(JSON.parse(execFileSync(process.execPath, bootstrapArgs, { env: bootstrapEnv, encoding: 'utf8' })), { bootstrap: 'created' });
+  assert.deepEqual(JSON.parse(execFileSync(process.execPath, bootstrapArgs, { env: bootstrapEnv, encoding: 'utf8' })), { bootstrap: 'unchanged' });
   const instance = await start();
   try {
     const version = await new Promise((resolve, reject) => instance.context.db.get('SELECT sqlite_version() AS version', (err, row) => err ? reject(err) : resolve(row.version)));
