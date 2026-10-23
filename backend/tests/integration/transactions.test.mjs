@@ -2,7 +2,8 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { createRequire } from 'node:module'
-import { spawn } from 'node:child_process'
+import { spawn, execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { once } from 'node:events'
 import { expect, it, onTestFinished } from 'vitest'
 import { fixture as application } from '../helpers/fixture.mjs'
@@ -10,6 +11,7 @@ const require = createRequire(import.meta.url)
 const sqlite = require('sqlite3')
 const { createSqliteStore, classifySqliteError } = require('../../dist/src/database/sqlite.js')
 const exec = (db, sql) => new Promise((resolve, reject) => db.exec(sql, error => error ? reject(error) : resolve()))
+const command = promisify(execFile)
 const ready = () => Promise.withResolvers()
 async function fixture() {
   const root = await fs.mkdtemp(path.join(os.tmpdir(), 'guatswr-transaction-'))
@@ -219,4 +221,60 @@ it('classifies native failures without including SQL or private error messages',
   expect(JSON.stringify(error)).not.toContain('private input')
   expect(() => createSqliteStore('relative.db')).toThrow('Database scope')
   expect(() => createSqliteStore(path.resolve('missing.db'), { busyTimeoutMs: 5001 })).toThrow('Database scope')
+})
+
+it('handles a burst of twelve same-process write transactions with four native worker threads', async () => {
+  const f = await fixture()
+  const result = await command(process.execPath, [path.resolve('tests/helpers/write-burst.cjs'), path.resolve('dist/src/database/sqlite.js'), f.filename], { env: { ...process.env, UV_THREADPOOL_SIZE: '4' }, timeout: 10000 })
+  expect(JSON.parse(result.stdout)).toEqual({ callbacks: 12, fulfilled: 12, rejected: [] })
+  expect(result.stderr).not.toContain('MaxListenersExceededWarning')
+  expect(await f.store().get('SELECT count(*) AS count FROM items')).toEqual({ count: 12 })
+})
+
+it('keeps WAL reads concurrent while queued writes stay ordered and cancellation releases a slot', async () => {
+  const db = (await fixture()).store(), started = ready(), release = ready(), controller = new AbortController(), order = []
+  const first = db.transaction(async tx => {
+    await tx.run('INSERT INTO items(label) VALUES (?)', ['first'])
+    order.push('first'); started.resolve(); await release.promise
+  })
+  await started.promise
+  const cancelled = db.transaction(async () => { order.push('must-not-run') }, { signal: controller.signal })
+  const cancelledCheck = expect(cancelled).rejects.toMatchObject({ kind: 'interrupted' })
+  const second = db.get('INSERT INTO items(label) VALUES (?) RETURNING id', ['second']).then(() => order.push('second'))
+  const third = db.transaction(async tx => { await tx.run('INSERT INTO items(label) VALUES (?)', ['third']); order.push('third') })
+  expect(await db.get('SELECT count(*) AS count FROM items')).toEqual({ count: 0 })
+  controller.abort()
+  await cancelledCheck
+  release.resolve()
+  await Promise.all([first, second, third])
+  expect(order).toEqual(['first', 'second', 'third'])
+  expect(await db.get('SELECT count(*) AS count FROM items')).toEqual({ count: 3 })
+})
+
+it('bounds same-store writer queue waiting without replaying callbacks', async () => {
+  const db = (await fixture()).store({ busyTimeoutMs: 50 }), started = ready(), release = ready()
+  const first = db.transaction(async tx => { await tx.run('INSERT INTO items(label) VALUES (?)', ['first']); started.resolve(); await release.promise })
+  await started.promise
+  let calls = 0
+  try {
+    await expect(db.transaction(async () => { calls++ })).rejects.toMatchObject({ kind: 'busy', retryable: true })
+    expect(calls).toBe(0)
+  } finally { release.resolve(); await first }
+  expect(await db.get('SELECT count(*) AS count FROM items')).toEqual({ count: 1 })
+})
+
+it('caps pending writers and drains queued cancellations promptly on close', async () => {
+  const db = (await fixture()).store(), started = ready()
+  const first = db.transaction(async tx => { await tx.run('INSERT INTO items(label) VALUES (?)', ['rolled-back']); started.resolve(); await new Promise(() => {}) })
+  await started.promise
+  let calls = 0
+  const queued = Array.from({ length: 129 }, () => db.transaction(async () => { calls++ }))
+  const settled = Promise.allSettled([first, ...queued])
+  await expect(queued.at(-1)).rejects.toMatchObject({ kind: 'busy' })
+  const before = performance.now()
+  await db.close()
+  expect(performance.now() - before).toBeLessThan(1000)
+  const results = await settled
+  expect(results.every(result => result.status === 'rejected')).toBe(true)
+  expect(calls).toBe(0)
 })

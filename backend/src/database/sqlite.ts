@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { AsyncLocalStorage } from 'node:async_hooks'
+import { setMaxListeners } from 'node:events'
 import sqlite from 'sqlite3'
 
 export type SqlValue = string | number | Buffer | null
@@ -57,8 +58,44 @@ export function createSqliteStore(filename: string, options: { busyTimeoutMs?: n
   const busyTimeoutMs = options.busyTimeoutMs ?? 1000
   if (!path.isAbsolute(filename) || !Number.isInteger(busyTimeoutMs) || busyTimeoutMs < 0 || busyTimeoutMs > 5000) throw scopeError()
   const shutdown = new AbortController()
+  // Every connection/waiter removes its listener; concurrent requests share this owner signal.
+  setMaxListeners(0, shutdown.signal)
   const active = new Set<Promise<unknown>>()
   let closing: Promise<void> | undefined
+  let writerHeld = false
+  const writers: { grant(): void; cancel(error: DatabaseError): void }[] = []
+  const acquireWriter = (signal: AbortSignal) => new Promise<void>((resolve, reject) => {
+    if (signal.aborted) { reject(interrupted()); return }
+    if (!writerHeld) { writerHeld = true; resolve(); return }
+    if (!busyTimeoutMs || writers.length >= 128) { reject(new DatabaseError('busy')); return }
+    const abort = () => waiter.cancel(interrupted())
+    const cleanup = () => { clearTimeout(timer); signal.removeEventListener('abort', abort) }
+    const waiter = {
+      grant: () => { cleanup(); resolve() },
+      cancel: (error: DatabaseError) => {
+        const index = writers.indexOf(waiter)
+        if (index < 0) return
+        writers.splice(index, 1)
+        cleanup()
+        reject(error)
+      }
+    }
+    const timer = setTimeout(() => waiter.cancel(new DatabaseError('busy')), busyTimeoutMs)
+    writers.push(waiter)
+    signal.addEventListener('abort', abort, { once: true })
+  })
+  const withWriter = async <T>(work: () => Promise<T>, supplied?: AbortSignal) => {
+    const signal = supplied ? AbortSignal.any([shutdown.signal, supplied]) : shutdown.signal
+    await acquireWriter(signal)
+    try {
+      if (signal.aborted) throw interrupted()
+      return await work()
+    } finally {
+      const next = writers.shift()
+      if (next) next.grant()
+      else writerHeld = false
+    }
+  }
 
   const connection = async () => {
     const db = await new Promise<sqlite.Database>((resolve, reject) => {
@@ -110,13 +147,17 @@ export function createSqliteStore(filename: string, options: { busyTimeoutMs?: n
     }
   }
   // A successful autocommit callback stays successful even if shutdown begins next.
-  const single = <T>(work: (executor: SqlExecutor) => Promise<T>) => track(() => using(db => work(execute(db))))
+  const single = <T>(sql: string, work: (executor: SqlExecutor) => Promise<T>) => track(async () => {
+    statement(sql)
+    const perform = () => using(db => work(execute(db)))
+    return /^\s*SELECT\b/i.test(sql) ? perform() : withWriter(perform)
+  })
 
   return {
-    get: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => single(executor => executor.get<T>(sql, params)),
-    all: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => single(executor => executor.all<T>(sql, params)),
-    run: (sql: string, params: readonly SqlValue[] = []) => single(executor => executor.run(sql, params)),
-    transaction: <T>(work: (transaction: SqlExecutor) => Promise<T>, operation: OperationOptions = {}) => track(() => using(async (db, signal) => {
+    get: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => single(sql, executor => executor.get<T>(sql, params)),
+    all: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => single(sql, executor => executor.all<T>(sql, params)),
+    run: (sql: string, params: readonly SqlValue[] = []) => single(sql, executor => executor.run(sql, params)),
+    transaction: <T>(work: (transaction: SqlExecutor) => Promise<T>, operation: OperationOptions = {}) => track(() => withWriter(() => using(async (db, signal) => {
       const scope = { active: true }
       let tail = Promise.resolve()
       let accepting = true
@@ -167,7 +208,7 @@ export function createSqliteStore(filename: string, options: { busyTimeoutMs?: n
         accepting = false
         if (abortCallback) signal.removeEventListener('abort', abortCallback)
       }
-    }, operation.signal)),
+    }, operation.signal), operation.signal)),
     close: () => {
       if (transactionScope.getStore()?.active) return Promise.reject(scopeError())
       if (!closing) {
