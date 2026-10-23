@@ -25,6 +25,8 @@ const stateController = createEventStateController(createEventStateService({
 const { createRecycleService, RecycleError } = require(path.join(context.BACKEND_ROOT, 'dist/src/modules/recycle/service'));
 const recycle = createRecycleService(context.sql.main, context.PUBLIC_DIR, path.join(context.DATA_DIR, 'asset-quarantine'));
 const requireCleanupSchema = (req, res, next) => context.mainSchemaVersion >= 2 ? next() : res.status(503).json({ message: '请先升级数据库' });
+const { createBackupSettingsController } = require(path.join(context.BACKEND_ROOT, 'dist/src/backup/controller'));
+const backupSettings = createBackupSettingsController(context.scheduler, addLog, error => context.logger.error('backup.failed', { error }));
 const router = express.Router();
 
 // ==============================================================================
@@ -215,40 +217,8 @@ router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, (req, res) => {
 /**
  * 获取备份设置
  */
-router.get('/backups/settings', authenticateToken, requireSuperAdmin, (req, res) => {
-  db.all("SELECT key, value FROM site_config WHERE key IN ('backup_enabled','backup_time','backup_last_run','backup_last_error')", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    const map = {};
-    (rows || []).forEach((r) => { map[r.key] = r.value; });
-    res.json({
-      enabled: String(map.backup_enabled || '0') === '1',
-      time: map.backup_time || '02:30',
-      lastRun: map.backup_last_run || '',
-      lastError: map.backup_last_error || ''
-    });
-  });
-});
-
-/**
- * 更新备份设置
- */
-router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res) => {
-  const enabled = !!req.body?.enabled;
-  const time = String(req.body?.time || '').trim();
-  if (time && !/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) {
-    return res.status(400).json({ message: '时间格式需为 HH:mm' });
-  }
-  const finalTime = time || '02:30';
-  db.serialize(() => {
-    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES ('backup_enabled', ?)", [enabled ? '1' : '0']);
-    db.run("INSERT OR REPLACE INTO site_config (key, value) VALUES ('backup_time', ?)", [finalTime], (err) => {
-      if (err) return res.status(500).json({ error: err.message });
-      addLog(req.user.username, 'UPDATE_BACKUP_SETTINGS', `自动备份: ${enabled ? '开启' : '关闭'} ${finalTime}`);
-      res.json({ message: '已保存', enabled, time: finalTime });
-    });
-  });
-});
-
+router.get('/backups/settings', authenticateToken, requireSuperAdmin, (req, res, next) => backupSettings.read(req, res).catch(next));
+router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res, next) => backupSettings.update(req, res).catch(next));
 /**
  * 获取备份文件列表
  */

@@ -63,6 +63,7 @@ jobs:
       - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e BFF_BRIDGE_SECRET=synthetic-runtime-bridge-key-at-least-32 -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-lifecycle-signals.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
+      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-concurrency.cjs
       - run: docker run --rm --network none guatswr-backend-runtime python3 scripts/backup_bundle_test.py
       - run: docker run --rm --network none --tmpfs /limited:rw,size=1m -e BACKUP_TEST_LIMIT_ROOT=/limited guatswr-backend-runtime node scripts/test-backup-restore.cjs
   real-bff:

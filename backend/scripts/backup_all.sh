@@ -9,7 +9,7 @@ export PUBLIC_DIR="${PUBLIC_DIR:-$DATA_DIR/public}"
 # lock before taking the DB/public/quarantine snapshots. This does not fence uploads.
 [[ -f "$DB_PATH" && -f "$LOG_DB_PATH" ]] || fail 'both main and audit databases must exist'
 FENCE_DIR="$DATA_DIR/.asset-cleanup-fence"
-mkdir -m 700 -- "$FENCE_DIR" || fail 'backup or cleanup fence already exists; inspect before retrying'
+mkdir -m 700 -- "$FENCE_DIR" || { echo 'Backup error: backup or cleanup fence already exists; inspect before retrying' >&2; exit 75; }
 trap 'rmdir -- "$FENCE_DIR"' EXIT
 "$SQLITE3_BIN" "$DB_PATH" 'PRAGMA busy_timeout=5000; BEGIN IMMEDIATE; COMMIT;' >/dev/null
 /bin/bash "$SCRIPT_DIR/db_backup.sh"
