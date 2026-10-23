@@ -388,5 +388,6 @@ describe('trusted guest gateway transport', () => {
     const headers = new Headers(calls[0]?.init.headers)
     expect(headers.get('x-bff-bridge')).toBe(secret)
     expect(headers.get('x-forwarded-for')).toBe('203.0.113.5')
+    expect(headers.get('x-bff-draft-proof')).toMatch(/^v1\.0\.draft\.\d+\.[A-Za-z0-9_-]{43}$/)
   })
 })

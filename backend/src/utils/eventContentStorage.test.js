@@ -105,7 +105,9 @@ const loadEventRoute = (moveStagedFile) => {
   vm.runInThisContext(`(function(require, module, exports) { ${source}\n})`, { filename })(
     (name) => mocks[name] || nativeRequire(name), module, module.exports
   );
-  module.exports({ ...mocks['../models/db'], auth: {}, storage: mocks['../utils/storage'] });
+  const { createGuestDraftProofGuard } = nativeRequire('../../dist/src/security/guest-draft-proof.js');
+  module.exports({ ...mocks['../models/db'], auth: {}, storage: mocks['../utils/storage'],
+    guestProof: createGuestDraftProofGuard({ secret: 'synthetic-content-proof-key-32-characters', mode: 'required' }) });
   writes.length = 0;
   return {
     writes, notifications,

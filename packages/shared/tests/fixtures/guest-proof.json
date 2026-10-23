@@ -1,0 +1,5 @@
+[
+  { "eid": 0, "scope": "draft", "ip": "203.0.113.5", "secret": "0123456789abcdef0123456789abcdef", "now": 1700000000000, "expires": 1700000030, "message": "[\"guatswr:bff:guest-draft-proof:v1\",0,\"draft\",1700000030,\"203.0.113.5\"]", "token": "v1.0.draft.1700000030.SWwqJNaqoPp7GdclN_hRFMgw0CY8qeQo4EgWJQ2SoXk" },
+  { "eid": 7, "scope": "save", "ip": "203.0.113.5", "secret": "0123456789abcdef0123456789abcdef", "now": 1700000000000, "expires": 1700000030, "message": "[\"guatswr:bff:guest-draft-proof:v1\",7,\"save\",1700000030,\"203.0.113.5\"]", "token": "v1.7.save.1700000030.07dKn1AMBK8cw-0s_iUsNofWCx_pKXQ1MrcyVOsgBvY" },
+  { "eid": 7, "scope": "upload", "ip": "2001:db8::1", "secret": "0123456789abcdef0123456789abcdef", "now": 1700000000000, "expires": 1700000030, "message": "[\"guatswr:bff:guest-draft-proof:v1\",7,\"upload\",1700000030,\"2001:db8::1\"]", "token": "v1.7.upload.1700000030.InsBNBeKf6Dwj5-6wvOXho7_o3kA98WbP4JJ0TWVw2o" }
+]

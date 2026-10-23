@@ -9,6 +9,8 @@ const { start } = require('../server');
   process.env.DATA_DIR = path.join(root, 'data');
   process.env.PUBLIC_DIR = path.join(root, 'public');
   process.env.BACKUP_ROOT = path.join(root, 'backups');
+  process.env.TRUST_PROXY_CIDRS = '127.0.0.1/32';
+  process.env.GUEST_DRAFT_PROOF_MODE = 'required';
   await require('./initialize-databases.cjs').initializeDatabases({}, { data: process.env.DATA_DIR });
   const instance = await start();
   try {
@@ -56,7 +58,20 @@ const { start } = require('../server');
     const detail = await fetch(`${origin}/api/activities/${activityCreated.id}`);
     assert.equal(detail.status, 200);
     assert.equal((await detail.json()).created_by, 'synthetic-smoke');
-    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true, typedMembers: true, typedActivities: true }));
+    const bridge = { 'x-bff-bridge': process.env.BFF_BRIDGE_SECRET, 'x-forwarded-for': '127.0.0.1', 'content-type': 'application/json' };
+    const proof = (scope, eid) => {
+      const expires = Math.floor(Date.now() / 1000) + 30;
+      const message = require('@guatswr/shared').guestDraftProofMessage({ scope, eid, expires, ip: '127.0.0.1' });
+      return `v1.${eid}.${scope}.${expires}.${require('node:crypto').createHmac('sha256', process.env.BFF_BRIDGE_SECRET).update(message).digest('base64url')}`;
+    };
+    assert.equal((await fetch(`${origin}/api/event/draft`, { method: 'POST', headers: bridge, body: '{}' })).status, 403);
+    const guest = await fetch(`${origin}/api/event/draft`, { method: 'POST', headers: { ...bridge, 'x-bff-draft-proof': proof('draft', 0) }, body: '{}' });
+    assert.equal(guest.status, 200);
+    const guestId = (await guest.json()).id;
+    const saveHeaders = { ...bridge, 'x-bff-draft-proof': proof('save', guestId) };
+    assert.equal((await fetch(`${origin}/api/event/${guestId + 1}`, { method: 'PUT', headers: saveHeaders, body: JSON.stringify({ title: 'cross-draft rejected' }) })).status, 403);
+    assert.equal((await fetch(`${origin}/api/event/${guestId}`, { method: 'PUT', headers: saveHeaders, body: JSON.stringify({ title: 'synthetic-proof-smoke' }) })).status, 200);
+    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true, typedMembers: true, typedActivities: true, requiredDraftProof: true }));
   } finally {
     await instance.close();
     if (path.dirname(root) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-runtime-')) throw new Error('Unsafe smoke cleanup');

@@ -13,6 +13,7 @@ export interface RuntimeEnvironment {
   readonly bindHost: string
   readonly jwtSecret: string
   readonly bridgeSecret: string
+  readonly guestDraftProofMode: 'optional' | 'required'
   readonly maxBodyBytes: number
   readonly shutdownTimeoutMs: number
   readonly paths: RuntimePaths
@@ -39,6 +40,8 @@ export function parseEnvironment(input: EnvironmentInput, backendRoot: string): 
   if (!jwtSecret.trim()) return invalid('JWT_SECRET')
   const bridgeSecret = input.BFF_BRIDGE_SECRET || ''
   if ((nodeEnv === 'production' && !bridgeSecret) || (bridgeSecret && !/^[\x21-\x7e]{32,256}$/.test(bridgeSecret))) return invalid('BFF_BRIDGE_SECRET')
+  const guestDraftProofMode = input.GUEST_DRAFT_PROOF_MODE || 'optional'
+  if (guestDraftProofMode !== 'optional' && guestDraftProofMode !== 'required') return invalid('GUEST_DRAFT_PROOF_MODE')
   const rawSize = input.MAX_BODY_SIZE || '50mb'
   const match = /^(\d+)\s*(b|kb|mb)?$/i.exec(rawSize)
   if (!match) return invalid('MAX_BODY_SIZE')
@@ -48,7 +51,7 @@ export function parseEnvironment(input: EnvironmentInput, backendRoot: string): 
   const data = absolute(input, 'DATA_DIR', path.join(backendRoot, 'data'))
   const paths = { data, public: absolute(input, 'PUBLIC_DIR', path.join(data, 'public')), backups: absolute(input, 'BACKUP_ROOT', path.join(backendRoot, 'backups')) }
   return {
-    nodeEnv, jwtSecret, bridgeSecret, paths, maxBodyBytes,
+    nodeEnv, jwtSecret, bridgeSecret, guestDraftProofMode, paths, maxBodyBytes,
     port: integer(input, 'PORT', 3000, 0, 65535),
     bindHost: input.BIND_HOST || '127.0.0.1',
     shutdownTimeoutMs: integer(input, 'SHUTDOWN_TIMEOUT_MS', 15000, 100, 120000),

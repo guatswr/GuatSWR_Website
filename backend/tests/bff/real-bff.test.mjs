@@ -5,10 +5,10 @@ import net from 'node:net'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
-import { fixture, get } from '../helpers/fixture.mjs'
+import { fixture, get, png } from '../helpers/fixture.mjs'
 
 it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity without exposing JWT', async () => {
- const f=await fixture({env:{TRUST_PROXY_CIDRS:"127.0.0.1/32"}})
+ const f=await fixture({env:{TRUST_PROXY_CIDRS:"127.0.0.1/32",GUEST_DRAFT_PROOF_MODE:process.env.BACKEND_BFF_PROOF_MODE === 'optional' ? 'optional' : 'required'}})
  const root=fileURLToPath(new URL('../../../',import.meta.url))
  const output=path.resolve(process.env.BACKEND_BFF_OUTPUT || path.join(root,'web/.output'))
  const entry=path.join(output,'server/index.mjs')
@@ -90,13 +90,20 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  const visitor=async()=>{
    const jar=new Map()
    const csrf=await call('/api/bff/auth/csrf',{},jar)
-   const draft=await call('/api/bff/guest/events/draft',{method:'POST',headers:{origin,'content-type':'application/json','x-csrf-token':csrf.data.csrfToken,'x-bff-bridge':'browser-forged','x-forwarded-for':'203.0.113.222'},body:'{}'},jar)
+   const draft=await call('/api/bff/guest/events/draft',{method:'POST',headers:{origin,'content-type':'application/json','x-csrf-token':csrf.data.csrfToken,'x-bff-bridge':'browser-forged','x-bff-draft-proof':'browser-forged','x-forwarded-for':'203.0.113.222'},body:'{}'},jar)
    expect(draft.response.status,JSON.stringify(draft.data)).toBe(200)
    return {jar,csrf:csrf.data.csrfToken,id:draft.data.id,data:draft.data}
  }
  const a=await visitor(),b=await visitor()
  expect(a.id).not.toBe(b.id)
  expect((await get(f.db,'SELECT visitor_ip FROM events WHERE id=?',[a.id])).visitor_ip).toBe('127.0.0.1')
+ const uploadBody = new FormData()
+ uploadBody.append('eid', String(a.id))
+ uploadBody.append('file', new Blob([png], { type: 'image/png' }), 'guest-proof.png')
+ const uploaded = await call('/api/bff/guest/upload/content', { method: 'POST', headers: { origin, 'x-csrf-token': a.csrf, 'x-bff-draft-proof': 'browser-forged' }, body: uploadBody }, a.jar)
+ expect(uploaded.response.status, JSON.stringify(uploaded.data)).toBe(200)
+ expect(uploaded.data.url).toContain(`/uploads/img/events/${a.id}/`)
+ expect(JSON.stringify(uploaded.data)).not.toMatch(/v1\.\d+\.(draft|save|upload)\./)
  const body=JSON.stringify({type:'STG',title:'guest bridge integration',content:{copy:'fixture',rules:'fixture rules'},submit:true})
  const submit=(visitor,id)=>call(`/api/bff/guest/events/${id}`,{method:'PUT',headers:{origin,'content-type':'application/json','x-csrf-token':visitor.csrf},body},visitor.jar)
  expect((await submit(b,a.id)).response.status).toBe(404)

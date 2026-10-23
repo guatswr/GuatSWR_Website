@@ -4,6 +4,7 @@ import type { H3Event } from 'h3'
 // `useRuntimeConfig` stays a Nitro auto-import (as in `bff-auth-context.ts`) so
 // this module loads under plain Vitest without a `#imports` virtual-module stub.
 import {
+  GUEST_DRAFT_PROOF_HEADER,
   EVENT_FIELDS,
   EVENT_TYPES,
   eventSignupRecordSchema,
@@ -33,6 +34,7 @@ import {
   createGuestDraftStore
 } from './guest-drafts'
 import type { GuestDraftStore, GuestIntent, IssuedDraft } from './guest-drafts'
+import { signGuestDraftProof } from './guest-proof'
 
 /**
  * Guest BFF composition helpers.
@@ -347,6 +349,12 @@ export function createGuestUpstream(options: GuestUpstreamOptions): GuestUpstrea
       if (request.bearerToken) headers.authorization = `Bearer ${request.bearerToken}`
 
       try {
+        if (options.bridgeSecret && ['draft', 'save', 'uploadContent'].includes(request.operation.name)) {
+          const scope = request.operation.name === 'draft' ? 'draft' : request.operation.name === 'save' ? 'save' : 'upload'
+          const rawId = request.operation.name === 'draft' ? 0 : request.operation.name === 'save' ? request.operation.id
+            : request.body instanceof FormData ? request.body.get('eid') : undefined
+          headers[GUEST_DRAFT_PROOF_HEADER] = signGuestDraftProof(options.bridgeSecret, scope, Number(rawId), request.clientIp)
+        }
         const response = await send(url, {
           method,
           headers,

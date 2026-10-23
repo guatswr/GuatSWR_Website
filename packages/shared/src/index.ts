@@ -25,3 +25,4 @@ export * from './events.js'
 // used to be declared in this file as well; they now live only in `auth.js`.
 export * from './auth.js'
 export * from './admin.js'
+export * from './guest-proof.js'

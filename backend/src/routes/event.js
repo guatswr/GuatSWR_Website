@@ -58,7 +58,7 @@ const toParticipantPublic = (row) => ({
 // ==========================================
 
 // 1. 创建草稿 (获取 EID)
-router.post('/draft', optionalAuth, context.guestGateway, (req, res) => {
+router.post('/draft', optionalAuth, context.guestGateway, context.guestProof.check('draft'), (req, res) => {
   const userId = req.user ? req.user.id : null;
   const ip = req.ip;
 
@@ -75,7 +75,7 @@ router.post('/draft', optionalAuth, context.guestGateway, (req, res) => {
 });
 
 // 2. 提交/更新事件
-router.put('/:id', optionalAuth, context.guestGateway, (req, res) => {
+router.put('/:id', optionalAuth, context.guestGateway, context.guestProof.check('save'), (req, res) => {
   const { type, title, content, submit } = req.body;
   const eventId = req.params.id;
 

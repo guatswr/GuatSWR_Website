@@ -25,7 +25,7 @@ describe('compiled strict environment foundation', () => {
   it.each([
     ['NODE_ENV', 'unknown'], ['JWT_SECRET', '  '], ['PORT', '-1'], ['PORT', '65536'],
     ['PORT', '1.5'], ['DATA_DIR', 'relative'], ['PUBLIC_DIR', 'relative'],
-    ['BACKUP_ROOT', 'relative'], ['MAX_BODY_SIZE', '51mb'], ['MAX_BODY_SIZE', '0'],
+    ['BACKUP_ROOT', 'relative'], ['MAX_BODY_SIZE', '51mb'], ['MAX_BODY_SIZE', '0'], ['GUEST_DRAFT_PROOF_MODE', 'unknown'],
     ['MAX_BODY_SIZE', '1e6'], ['SHUTDOWN_TIMEOUT_MS', '99'], ['BFF_BRIDGE_SECRET', 'secret-value'],
   ])('rejects invalid %s without exposing values', (key, value) => {
     try {

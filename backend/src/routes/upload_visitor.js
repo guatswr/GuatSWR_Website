@@ -43,7 +43,7 @@ const checkEidAllowed = (eid) => {
   });
 };
 
-router.post('/', context.auth.optionalAuth, context.guestGateway, uploadLimiter, upload.single('file'), async (req, res) => {
+router.post('/', context.auth.optionalAuth, context.guestGateway, context.guestProof.check('upload'), uploadLimiter, upload.single('file'), async (req, res) => {
   // 清理函数
   const cleanup = async (thumbPath) => {
     if (req.file && fs.existsSync(req.file.path)) await fs.promises.unlink(req.file.path).catch(() => {});
@@ -61,6 +61,10 @@ router.post('/', context.auth.optionalAuth, context.guestGateway, uploadLimiter,
   let thumbPathTmp = null;
 
   try {
+    if (!context.guestProof.matches(req, eid)) {
+      await cleanup();
+      return res.status(403).json({ message: '草稿凭据无效或已过期' });
+    }
     // 1. 状态校验
     const check = await checkEidAllowed(eid);
     if (!check.allowed) {
