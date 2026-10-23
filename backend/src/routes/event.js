@@ -8,6 +8,7 @@ const { moveStagedFile } = context.storage;
 const { createEventContentPersister, assertVisitorContent } = require(path.join(context.BACKEND_ROOT, 'dist/src/utils/eventContentStorage.js'));
 
 const { publicEvent } = require('../utils/publicEvent');
+const { signupDeadlineClosed } = require('@guatswr/shared');
 const router = express.Router();
 const persistEventContent = createEventContentPersister({ imageRoot: IMG_ROOT_DIR, moveStagedFile });
 
@@ -209,12 +210,15 @@ router.post('/:id/signup', optionalAuth, context.guestGateway, async (req, res) 
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
 
   try {
-    const event = await dbGet('SELECT id, type, status FROM events WHERE id = ?', [eventId]);
+    const event = await dbGet('SELECT id, type, status, content FROM events WHERE id = ?', [eventId]);
     if (!event) return res.status(404).json({ message: 'Event not found' });
     if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持报名' });
     if (!['published', 'ongoing'].includes(event.status)) {
       return res.status(403).json({ message: '当前状态不允许报名' });
     }
+    let signupContent;
+    try { signupContent = JSON.parse(event.content || '{}'); } catch { signupContent = {}; }
+    if (signupDeadlineClosed(signupContent)) return res.status(403).json({ message: '报名已截止' });
 
     const userId = req.user ? req.user.id : null;
     const visitorIp = req.ip;

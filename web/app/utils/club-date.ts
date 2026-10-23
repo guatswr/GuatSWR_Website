@@ -6,6 +6,9 @@
  * and free-form legacy text is never parsed with a browser-specific locale.
  */
 
+import { parseClubTime } from '@guatswr/shared'
+export { parseClubTime }
+
 export interface ClubDateFormatOptions {
   year?: boolean
   weekday?: boolean
@@ -13,18 +16,6 @@ export interface ClubDateFormatOptions {
 }
 
 const UNKNOWN_DATE = '时间待确认'
-
-export function parseClubTime(value: unknown): number {
-  if (value instanceof Date) return value.getTime()
-  if (typeof value !== 'string' || !value.trim()) return NaN
-  const text = value.trim()
-  const localIso =
-    /^(\d{4}-\d{2}-\d{2})(?:[T ](\d{2}:\d{2}(?::\d{2}(?:\.\d{1,3})?)?))?$/.exec(
-      text
-    )
-  if (localIso) return Date.parse(`${localIso[1]}T${localIso[2] || '00:00'}+08:00`)
-  return /(?:Z|[+-]\d{2}:?\d{2})$/i.test(text) ? Date.parse(text) : NaN
-}
 
 export function formatClubDate(
   value: unknown,

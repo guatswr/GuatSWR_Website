@@ -9,13 +9,13 @@ import {
   GUEST_MAX_STRING_LENGTH,
   GUEST_MAX_CONTENT_DEPTH,
   validateGuestContent,
+  signupDeadlineClosed,
   EVENT_FIELDS,
   EVENT_TYPES,
   eventSignupRecordSchema,
   eventSignupSchema
 } from '@guatswr/shared'
 import type { EventSignupInput, EventType } from '@guatswr/shared'
-import { parseClubTime } from '~/utils/club-date'
 import { getBffRuntime, getCsrfBinding, readCookieSession, readEventJsonBody, resolveEventClientIp } from './bff-auth-context'
 import type { BffRuntime } from './bff-runtime'
 import { isLoopbackHostname, isLoopbackIp, parseIp } from './bff-identity'
@@ -528,12 +528,6 @@ export interface SignupEventSnapshot {
   content: unknown
 }
 
-const contentText = (content: unknown, key: string): string => {
-  if (typeof content !== 'object' || content === null) return ''
-  const value = (content as Record<string, unknown>)[key]
-  return typeof value === 'string' ? value : ''
-}
-
 /**
  * Signup gate. The frozen STG/则则 `time` is the activity time, not a signup
  * deadline, so only an explicit `content.deadline` can close signups early — and
@@ -547,10 +541,7 @@ export function assertSignupOpen(snapshot: SignupEventSnapshot, now: number = Da
   if (!['published', 'ongoing'].includes(snapshot.status)) {
     throw new BffError(403, 'signup_closed', '当前状态不允许报名')
   }
-  const raw = contentText(snapshot.content, 'deadline')
-  if (!raw) return
-  const deadline = parseClubTime(raw)
-  if (Number.isFinite(deadline) && deadline <= now) {
+  if (signupDeadlineClosed(snapshot.content, now)) {
     throw new BffError(403, 'signup_closed', '报名已截止')
   }
 }
