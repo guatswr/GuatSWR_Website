@@ -1,0 +1,37 @@
+import path from 'node:path'
+import { expect, it } from 'vitest'
+import { fixture, get, run, token, draftProofHeaders, png } from '../helpers/fixture.mjs'
+
+it('review reproduction: an in-flight guest save can undo a committed approval', async () => {
+  const f = await fixture({ env: { TRUST_PROXY_CIDRS: '127.0.0.1/32' } })
+  const observed = Promise.withResolvers(), release = Promise.withResolvers()
+  const original = f.db.get
+  f.db.get = function(sql, params, callback) {
+    if (sql === 'SELECT id, status FROM events WHERE id = ?' && String(params[0]) === '3') {
+      return original.call(this, sql, params, (error, row) => { observed.resolve(row); void release.promise.then(() => callback(error, row)) })
+    }
+    return original.apply(this, arguments)
+  }
+  const saving = f.http.put('/api/event/3').set(draftProofHeaders('save', 3)).send({ title: 'late guest update', content: { copy: 'fixture' }, submit: true }).then(x => x)
+  expect((await observed.promise).status).toBe('pending')
+  const approval = await f.http.post('/api/event/3/approve').set('Authorization', `Bearer ${token(2, 'admin')}`).send({})
+  expect(approval.status).toBe(200)
+  expect((await get(f.db, 'SELECT status FROM events WHERE id=3')).status).toBe('published')
+  release.resolve()
+  expect((await saving).status).toBe(200)
+  expect(await get(f.db, 'SELECT title,status FROM events WHERE id=3')).toEqual({ title: 'late guest update', status: 'pending' })
+})
+
+it('review reproduction: purge deletes an image still referenced by active history', async () => {
+  const f = await fixture()
+  const filename = path.join(f.root, 'public', 'img', 'shared-review.png')
+  await f.fs.mkdir(path.dirname(filename), { recursive: true })
+  await f.fs.writeFile(filename, png)
+  const url = '/uploads/img/shared-review.png'
+  await run(f.db, "UPDATE members SET avatar=?,deleted_at=CURRENT_TIMESTAMP WHERE id=1", [url])
+  await run(f.db, 'UPDATE history SET image=? WHERE id=1', [url])
+  const response = await f.http.post('/api/admin/recycle-bin/purge').set('Authorization', `Bearer ${token()}`).send({})
+  expect(response.status).toBe(200)
+  expect(await get(f.db, 'SELECT image FROM history WHERE id=1')).toEqual({ image: url })
+  await expect(f.fs.stat(filename)).rejects.toMatchObject({ code: 'ENOENT' })
+})

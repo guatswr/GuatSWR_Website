@@ -1,8 +1,8 @@
 # 后端迭代执行表
 
-更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00～15本地工程已验收，BM-04e远程通过，后续按前置推进；生产门禁仍独立开放。规划文档的生成不代表任务验收完成。
+更新：2026-10-24。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00～25已有本地交付证据，BM-26审查后重新开放补验，后续按本次质量复核补充顺序推进；生产门禁仍独立开放。规划文档的生成不代表任务验收完成。
 
-每行是一个任务包；涉及多个风险维度时按 a/b 子 PR 拆分。前置编号具有传递性。状态只能依次更新为 TODO → DOING → REVIEW → DONE；BLOCKED 必须写明缺少的事实和解除条件。BM-36 是条件发布任务，BM-37～39 是可延期分支。
+每行是一个任务包；涉及多个风险维度时按 a/b 子 PR 拆分。前置编号具有传递性。正常状态依次更新为 TODO → DOING → REVIEW → DONE；验收后发现遗漏可退回REVIEW并保留历史证据；BLOCKED 必须写明缺少的事实和解除条件。BM-36 是条件发布任务，BM-37～39 是可延期分支。
 
 ## 执行与验收表
 
@@ -70,3 +70,16 @@
 执行命令必须与当前阶段匹配：接入 Workspace 前使用 `npm --prefix backend ci` 和该目录实际存在的 scripts；接入后使用 `pnpm --filter guiair-backend <script>`（包名若批准改变须同步更新）。BM-03 创建 `test:unit`、`test:integration`、`test:contracts`，BM-11 增加 `typecheck/lint/build`，BM-18 增加 `db:check/db:migrate`，BM-34 增加真实集成命令。上述尚未存在的命令是交付要求，不能直接标记已执行。
 
 跨任务共享文件（锁文件、workspace、shared exports、CI、app 装配、迁移账本）必须串行合并。后续如获准多 agent 协作，可独立处理模块，但不能共享测试库/备份目录或并发修改同一基础文件。Nuxt prepare/typecheck/build 及性能采集按现有规则串行运行。
+
+## 2026-10-24审查补充任务（优先于原行的粗粒度顺序）
+
+| 子节点 | 前置 | 验收与边界 |
+| --- | --- | --- |
+| BM-26c / P1 游客保存与审核并发 | 26a/b | 最终写入重新核验状态；屏障测试证明已发布后旧游客请求不能覆盖/退回pending，删除后不假成功；不在事务内搬图，不擅自收紧其他原有状态 |
+| BM-31a / P1 bootstrap分离（前移） | 12、18 | 显式初始化命令；降权后重启不重提权、空库、幂等、错误输入；其他31子项仍依赖26/30 |
+| BM-27a / P1 引用与只读盘点 | 26c、19 | 跨表共享路径、原图/缩略图、软删恢复引用；孤儿扫描默认dry-run；先固定误删复现 |
+| BM-27b / P1 持久清理 | 27a | 业务删除与任务同事务；Expand迁移/旧应用兼容；重启重试、引用复核、同路径新文件不删；实际清理有恢复点 |
+| BM-27c / P1 搬图补偿 | 27b | config/history/members/activities/event/upload全路径；rename/EXDEV/DB失败和提交前后崩溃；可回收孤儿且无断链引用 |
+| BM-31d / P1 剩余JS业务收口 | 27～31其余 | 每项legacy JS明确归属；event剩余CRUD等业务严格TS，允许薄装配例外；作为BM-32新增前置 |
+
+测试数量分层报告，精确SHA远程完成状态必须单列。重开节点保留历史通过证据并写明新发现；详见[PLAN 2.1](PLAN.md)和[复核证据](evidence/REVIEW-2026-10-24.md)。
