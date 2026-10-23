@@ -131,16 +131,28 @@ router.put('/:id', optionalAuth, context.guestGateway, context.guestProof.check(
 
     const sql = `UPDATE events SET ${updates.join(', ')} WHERE id = ?`;
 
-    db.run(sql, params, function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-
+    try {
+      // File preparation is complete. Recheck eligibility under the writer lock,
+      // so an earlier snapshot cannot undo a committed approval or deletion.
+      const outcome = await context.sql.main.transaction(async (tx) => {
+        const current = await tx.get('SELECT id, status FROM events WHERE id = ?', [eventId]);
+        if (!current) return 404;
+        if (current.status === 'published' && !req.user) return 403;
+        await tx.run(sql, params);
+        return 200;
+      });
+      if (outcome === 404) return res.status(404).json({ message: 'Event not found' });
+      if (outcome === 403) return res.status(403).json({ message: '事件已发布，无法修改' });
       const username = req.user ? req.user.username : 'Visitor';
       if (submit) {
         addLog(username, 'SUBMIT_EVENT', `提交事件审核 EID: ${eventId}`);
       }
 
       res.json({ message: '保存成功', id: eventId });
-    });
+    } catch (error) {
+      context.logger.error('http.failed', { error, route: '/api/event/:id' });
+      res.status(500).json({ message: '服务器错误' });
+    }
   });
 });
 
