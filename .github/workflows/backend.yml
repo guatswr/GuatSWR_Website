@@ -27,6 +27,8 @@ jobs:
           cache: npm
           cache-dependency-path: backend/package-lock.json
       - run: npm --prefix backend ci
+      - run: npm --prefix backend run typecheck
+      - run: npm --prefix backend run lint
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'

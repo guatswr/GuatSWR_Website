@@ -1,13 +1,32 @@
 const path = require('node:path');
 const fs = require('node:fs/promises');
+const syncFs = require('node:fs');
+// Runtime paths are anchored to package metadata in source and dist.
+const findBackendRoot = (start) => {
+  let current = path.resolve(start);
+  for (let depth = 0; depth < 16; depth += 1) {
+    try {
+      const metadata = JSON.parse(syncFs.readFileSync(path.join(current, 'package.json'), 'utf8'));
+      if (metadata.name === 'guiair-backend') return current;
+    } catch (error) {
+      if (!['ENOENT','ENOTDIR'].includes(error.code)) throw error;
+    }
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  throw new Error('Backend package root not found');
+};
+
 
 const resolvePaths = (env, paths = {}) => {
-  const DATA_DIR = path.resolve(paths.data || path.join(__dirname, '..', '..', 'data'));
-  const PUBLIC_DIR = path.resolve(paths.public || path.join(DATA_DIR, 'public'));
+  const BACKEND_ROOT = findBackendRoot(__dirname);
+  const DATA_DIR = path.resolve(paths.data || env.DATA_DIR || path.join(BACKEND_ROOT, 'data'));
+  const PUBLIC_DIR = path.resolve(paths.public || env.PUBLIC_DIR || path.join(DATA_DIR, 'public'));
   const resolveDb = (value, fallback) => path.resolve(DATA_DIR, value || fallback);
   return {
-    DATA_DIR, PUBLIC_DIR,
-    BACKUP_ROOT: path.resolve(paths.backups || path.join(__dirname, '..', '..', 'backups')),
+    BACKEND_ROOT, DATA_DIR, PUBLIC_DIR,
+    BACKUP_ROOT: path.resolve(paths.backups || env.BACKUP_ROOT || path.join(BACKEND_ROOT, 'backups')),
     UPLOADS_DIR: path.join(PUBLIC_DIR, 'upload'),
     PRIVATE_UPLOADS_DIR: path.join(DATA_DIR, 'private-upload'),
     IMG_ROOT_DIR: path.join(PUBLIC_DIR, 'img'),

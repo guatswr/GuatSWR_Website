@@ -74,7 +74,7 @@ app.use('/uploads', helmet({ crossOriginResourcePolicy: { policy: 'cross-origin'
   if (/\.svg$/i.test(filename)) res.setHeader('Content-Security-Policy', "sandbox; default-src 'none'; style-src 'unsafe-inline'");
 } }));
 
-const openapiPath = path.join(__dirname, '..', 'docs', 'openapi.yaml');
+const openapiPath = path.join(context.BACKEND_ROOT, 'docs', 'openapi.yaml');
 if (fs.existsSync(openapiPath)) {
   const openapiDoc = yaml.load(fs.readFileSync(openapiPath, 'utf8'));
   app.get('/api/docs/openapi.yaml', (req, res) => {
