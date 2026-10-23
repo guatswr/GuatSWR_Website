@@ -8,6 +8,8 @@ const { createApplication } = require('../../src/app')
 const request = require('supertest')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
+export const bridgeKey = 'isolated-fixture-gateway-key-at-least-32-characters'
+export const bridgeHeaders = (ip='127.0.0.1') => ({ 'x-bff-bridge': bridgeKey, 'x-forwarded-for': ip })
 export const secret = 'isolated-backend-contract-key'
 const hash = bcrypt.hashSync('fixture-password', 10)
 export const run = (db, sql, params = []) => new Promise((resolve, reject) => db.run(sql, params, function (err) { err ? reject(err) : resolve(this) }))
@@ -24,7 +26,7 @@ export const fixture = async (overrides = {}) => {
     if (path.dirname(absolute) !== path.resolve(os.tmpdir()) || !path.basename(absolute).startsWith('guatswr-contract-')) throw new Error('Unsafe fixture cleanup')
     await fs.rm(absolute, { recursive: true, force: true })
   })
-  instance = await createApplication({ env: { NODE_ENV: 'test', JWT_SECRET: secret, ...overrides.env },
+  instance = await createApplication({ env: { NODE_ENV: 'test', JWT_SECRET: secret, BFF_BRIDGE_SECRET: bridgeKey, ...overrides.env },
     paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },
     backgroundTasks: false, externalServices: false })
   // Explicit direct-loopback test topology. Production proxy policy is tested separately.

@@ -81,7 +81,7 @@ it('F01 a disconnected multipart client does not retain an unverified file',asyn
  const f=await fixture()
  const http=await import('node:http')
  await new Promise(resolve=>{
-   const req=http.request(f.origin+'/api/upload/visitor?eid=2',{method:'POST',headers:{'content-type':'multipart/form-data; boundary=fixture-abort','content-length':100000}})
+   const req=http.request(f.origin+'/api/upload/visitor?eid=2',{method:'POST',headers:{authorization:`Bearer ${token()}`,'content-type':'multipart/form-data; boundary=fixture-abort','content-length':100000}})
    req.on('error',()=>resolve())
    req.write('--fixture-abort\r\nContent-Disposition: form-data; name="file"; filename="aborted.png"\r\nContent-Type: image/png\r\n\r\n')
    req.write(Buffer.concat([png,Buffer.alloc(1000)]),()=>setTimeout(()=>req.destroy(new Error('intentional disconnect')),50))

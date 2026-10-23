@@ -43,7 +43,7 @@ const checkEidAllowed = (eid) => {
   });
 };
 
-router.post('/', uploadLimiter, upload.single('file'), async (req, res) => {
+router.post('/', context.auth.optionalAuth, context.guestGateway, uploadLimiter, upload.single('file'), async (req, res) => {
   // 清理函数
   const cleanup = async (thumbPath) => {
     if (req.file && fs.existsSync(req.file.path)) await fs.promises.unlink(req.file.path).catch(() => {});
@@ -127,7 +127,7 @@ router.post('/', uploadLimiter, upload.single('file'), async (req, res) => {
 });
 
 // 访客头像上传 (报名头像)
-router.post('/avatar', uploadLimiter, upload.single('file'), async (req, res) => {
+router.post('/avatar', context.auth.optionalAuth, context.guestGateway, uploadLimiter, upload.single('file'), async (req, res) => {
   const cleanup = async () => {
     if (req.file && fs.existsSync(req.file.path)) await fs.promises.unlink(req.file.path).catch(() => {});
   };

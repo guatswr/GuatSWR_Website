@@ -1,7 +1,7 @@
 import { it, expect } from 'vitest'
-import { fixture, get } from '../helpers/fixture.mjs'
+import { fixture, get, token } from '../helpers/fixture.mjs'
 const draft = async (f, forwarded) => {
- const req=f.http.post('/api/event/draft').send({})
+ const req=f.http.post('/api/event/draft').set('Authorization',`Bearer ${token()}`).send({})
  if(forwarded)req.set('X-Forwarded-For',forwarded)
  const response=await req
  expect(response.status).toBe(200)

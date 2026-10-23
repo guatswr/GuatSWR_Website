@@ -136,15 +136,18 @@ export interface GuestContext {
   /** Validated address from the trusted socket/proxy chain (never raw XFF). */
   ip: string
   origin: string
+  /** Server-only gateway credential; never taken from browser headers. */
+  bridgeSecret?: string
 }
 
 export function guestContext(event: H3Event): GuestContext {
   const runtime = getBffRuntime(event)
-  const { apiBase } = useRuntimeConfig(event)
+  const { apiBase, bffBridgeSecret } = useRuntimeConfig(event)
   return {
     runtime,
     ip: resolveEventClientIp(event, runtime).ip.address,
-    origin: String(apiBase)
+    origin: String(apiBase),
+    bridgeSecret: String(bffBridgeSecret || '')
   }
 }
 
@@ -288,6 +291,7 @@ export async function issueGuestDraft(
 /* --------------------------------------------------------------- upstream */
 
 export interface GuestUpstreamOptions {
+  bridgeSecret?: string
   origin: string
   fetch?: typeof fetch
   timeoutMs?: number
@@ -339,6 +343,7 @@ export function createGuestUpstream(options: GuestUpstreamOptions): GuestUpstrea
         headers['content-type'] = 'application/json'
         body = JSON.stringify(request.body)
       }
+      if (options.bridgeSecret) headers['x-bff-bridge'] = options.bridgeSecret
       if (request.bearerToken) headers.authorization = `Bearer ${request.bearerToken}`
 
       try {
@@ -415,6 +420,7 @@ export function createGuestUpstream(options: GuestUpstreamOptions): GuestUpstrea
 export function guestUpstream(runtime: BffRuntime, context: GuestContext): GuestUpstream {
   return createGuestUpstream({
     origin: context.origin,
+    bridgeSecret: context.bridgeSecret,
     timeoutMs: runtime.config.upstreamTimeoutMs
   })
 }

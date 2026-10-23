@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { fixture, token, run, get, all } from '../helpers/fixture.mjs'
+import { fixture, token, run, get, all, bridgeHeaders } from '../helpers/fixture.mjs'
 import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const jwt = require('jsonwebtoken')
@@ -45,13 +45,13 @@ describe('authentication and persistence integration', () => {
    expect((await f.http.get('/api/activities/1')).body.created_by).toBe('admin')
  })
  it('E03 upserts the same visitor, returns it, and cancellation removes only that identity', async () => {
-   const f=await fixture()
+   const f=await fixture({env:{TRUST_PROXY_CIDRS:"127.0.0.1/32"}})
    const body={common_id:'visitor',qq:'12345',avatar:'/uploads/avatar.png'}
-   for (let n=0;n<2;n++) expect((await f.http.post('/api/event/1/signup').send({...body,common_id:`visitor-${n}`})).status).toBe(200)
-   expect((await f.http.get('/api/event/1/signup')).body.data.common_id).toBe('visitor-1')
+   for (let n=0;n<2;n++) expect((await f.http.post('/api/event/1/signup').set(bridgeHeaders()).send({...body,common_id:`visitor-${n}`})).status).toBe(200)
+   expect((await f.http.get('/api/event/1/signup').set(bridgeHeaders())).body.data.common_id).toBe('visitor-1')
    expect((await all(f.db,'SELECT * FROM event_participants WHERE event_id=1')).length).toBe(2)
-   expect((await f.http.delete('/api/event/1/signup')).status).toBe(200)
-   expect((await f.http.get('/api/event/1/signup')).body).toEqual({data:null})
+   expect((await f.http.delete('/api/event/1/signup').set(bridgeHeaders())).status).toBe(200)
+   expect((await f.http.get('/api/event/1/signup').set(bridgeHeaders())).body).toEqual({data:null})
    expect((await get(f.db,'SELECT user_id FROM event_participants')).user_id).toBe(2)
  })
  it('A06/F01/B01 characterizes ordering, real multipart/static files and backup bytes', async () => {
@@ -68,10 +68,10 @@ describe('authentication and persistence integration', () => {
 // Temporary reproductions are deliberately named EX. Replace with target assertions
 // in the corresponding security fix, never normalize these into permanent contracts.
 describe('registered legacy defect reproductions', () => {
- it('EX-02 draft write currently lacks ownership',async()=>{
+ it('EX-02 direct draft writes now require a trusted entry',async()=>{
    const f=await fixture()
-   expect((await f.http.put('/api/event/2').send({title:'foreign draft'})).status).toBe(200)
-   expect((await get(f.db,'SELECT title FROM events WHERE id=2')).title).toBe('foreign draft')
+   expect((await f.http.put('/api/event/2').send({title:'foreign draft'})).status).toBe(403)
+   expect((await get(f.db,'SELECT title FROM events WHERE id=2')).title).toBe('draft')
  })
  it('EX-04 regression rejects elevated claims after role downgrade',async()=>{
    const f=await fixture()

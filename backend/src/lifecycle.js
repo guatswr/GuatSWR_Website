@@ -52,7 +52,7 @@ const createApplication = async (options = {}) => {
   try {
     for (const [key, filename] of [
       ['security', './models/security'], ['storage', './utils/storage'], ['images', './utils/imageUpload'], ['backup', './utils/backup'], ['bot', './utils/bot'],
-      ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['limiter', './middlewares/limiter'],
+      ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['guestGateway', './middlewares/guestGateway'], ['limiter', './middlewares/limiter'],
       ['upload', './middlewares/upload'], ['scheduler', './utils/backupScheduler']
     ]) context[key] = require(filename)(context);
     const { app, PORT } = require('./app').buildApp(context);

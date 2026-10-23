@@ -377,3 +377,16 @@ describe('draft store identity', () => {
     expect(store.size()).toBe(0)
   })
 })
+
+describe('trusted guest gateway transport', () => {
+  it('uses only its private gateway option and reconstructs the single client address', async () => {
+    const { impl, calls } = recordingFetch([() => new Response('{"id":7}', { status: 200 })])
+    const secret = 'isolated-gateway-transport-fixture-key-32'
+    const upstream = createGuestUpstream({ origin: 'http://127.0.0.1:8080', fetch: impl, bridgeSecret: secret })
+    await upstream.request({ operation: { name: 'draft' }, clientIp: '203.0.113.5' })
+    expect(calls).toHaveLength(1)
+    const headers = new Headers(calls[0]?.init.headers)
+    expect(headers.get('x-bff-bridge')).toBe(secret)
+    expect(headers.get('x-forwarded-for')).toBe('203.0.113.5')
+  })
+})

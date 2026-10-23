@@ -32,6 +32,8 @@ export default defineNuxtConfig({
   },
   runtimeConfig: {
     apiBase: 'http://127.0.0.1:8088',
+    // Server-only credential for the modernized backend guest gateway.
+    bffBridgeSecret: '',
     session: {
       password: '',
       name: 'guatswr-next',

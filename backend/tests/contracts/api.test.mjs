@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest'
-import { fixture, token, run, get, png } from '../helpers/fixture.mjs'
+import { fixture, token, run, get, png, bridgeHeaders } from '../helpers/fixture.mjs'
 import { createRequire } from 'node:module'
 const require = createRequire(import.meta.url)
 const frozen = require('../../../docs/backend-modernization/evidence/baseline.json')
@@ -27,6 +27,7 @@ const send = (f, operation, body, auth, options = {}) => {
  const [method] = operation.split(' ')
  let req = f.http[method.toLowerCase()](resolvePath(operation, options.id))
  if (auth) req = req.set('Authorization', `Bearer ${auth}`)
+ if (options.number === 43 && !auth) req = req.set(bridgeHeaders())
  if ([22,23].includes(options.number)) req = req.query({ type:'full',file:'fixture.tar.gz' })
  if (options.multipart) {
    if (options.number !== 68) req = req.field('eid', options.number === 69 ? '2' : '1')
@@ -42,7 +43,7 @@ describe('A01 frozen API operations', () => {
  for (const [number, body, keys, options = {}] of cases) {
    const entry = frozen.operations[number-1]
    it(`${entry.id} ${entry.operation}: normal input and authentication boundary`, async () => {
-     const f = await fixture()
+     const f = await fixture(number === 43 ? {env:{TRUST_PROXY_CIDRS:"127.0.0.1/32"}} : {})
      if (number === 43) await run(f.db,"INSERT INTO event_participants(event_id,visitor_ip,common_id) VALUES (1,'127.0.0.1','visitor')")
      const auth = number === 43 ? null : token()
      const response = await send(f,entry.operation,body,auth,{...options,number,multipart:[68,69,70].includes(number)})

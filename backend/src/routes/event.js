@@ -58,7 +58,7 @@ const toParticipantPublic = (row) => ({
 // ==========================================
 
 // 1. 创建草稿 (获取 EID)
-router.post('/draft', optionalAuth, (req, res) => {
+router.post('/draft', optionalAuth, context.guestGateway, (req, res) => {
   const userId = req.user ? req.user.id : null;
   const ip = req.ip;
 
@@ -75,7 +75,7 @@ router.post('/draft', optionalAuth, (req, res) => {
 });
 
 // 2. 提交/更新事件
-router.put('/:id', optionalAuth, (req, res) => {
+router.put('/:id', optionalAuth, context.guestGateway, (req, res) => {
   const { type, title, content, submit } = req.body;
   const eventId = req.params.id;
 
@@ -195,7 +195,7 @@ router.get('/:id', optionalAuth, (req, res) => {
 });
 
 // 5. 报名 (STG / 则则)
-router.post('/:id/signup', optionalAuth, async (req, res) => {
+router.post('/:id/signup', optionalAuth, context.guestGateway, async (req, res) => {
   const eventId = Number(req.params.id || 0);
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
 
@@ -264,7 +264,7 @@ router.post('/:id/signup', optionalAuth, async (req, res) => {
 });
 
 // 6. 报名信息回显 (STG / 则则)
-router.get('/:id/signup', optionalAuth, async (req, res) => {
+router.get('/:id/signup', optionalAuth, context.guestGateway, async (req, res) => {
   const eventId = Number(req.params.id || 0);
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
   try {
@@ -281,7 +281,7 @@ router.get('/:id/signup', optionalAuth, async (req, res) => {
 });
 
 // 7. 删除报名信息
-router.delete('/:id/signup', optionalAuth, async (req, res) => {
+router.delete('/:id/signup', optionalAuth, context.guestGateway, async (req, res) => {
   const eventId = Number(req.params.id || 0);
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
   try {
