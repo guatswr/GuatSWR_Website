@@ -1,7 +1,8 @@
 import { historySchema, backendV1Error } from '@guatswr/shared/backend-v1'
-import type { HistoryActor, HistoryService } from './service.js'
+import type { HistoryService } from './service.js'
+import type { Actor } from '../actor.js'
 
-interface Request { body?: unknown; user?: HistoryActor; params: { id: string }; query: { includeDeleted?: unknown } }
+interface Request { body?: unknown; user?: Actor; params: { id: string }; query: { includeDeleted?: unknown } }
 interface Response { status(code: number): Response; json(body: unknown): unknown }
 export function createHistoryController(service: HistoryService, reportFailure: (error: unknown) => void) {
   const fail = (response: Response, error: unknown) => {

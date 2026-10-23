@@ -36,7 +36,16 @@ const { start } = require('../server');
     const listed = await fetch(`${origin}/api/history`);
     assert.equal(listed.status, 200);
     assert.ok((await listed.json()).some(entry => entry.id === created.id && entry.title === 'synthetic-history-smoke'));
-    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true }));
+    const member = await fetch(`${origin}/api/members`, { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ name: 'synthetic-member-smoke', role: 'member', tags: ['tag', 'tag'] }) });
+    assert.equal(member.status, 200);
+    const memberCreated = await member.json();
+    assert.ok(Number.isSafeInteger(memberCreated.id) && memberCreated.id > 0);
+    const members = await fetch(`${origin}/api/members`);
+    assert.equal(members.status, 200);
+    const projected = (await members.json()).find(entry => entry.id === memberCreated.id);
+    assert.deepEqual(projected.tags, ['tag']);
+    assert.equal(projected.avatar_original, null);
+    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true, typedMembers: true }));
   } finally {
     await instance.close();
     if (path.dirname(root) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-runtime-')) throw new Error('Unsafe smoke cleanup');
