@@ -83,3 +83,5 @@
 | BM-31d / P1 剩余JS业务收口 | 27～31其余 | 每项legacy JS明确归属；event剩余CRUD等业务严格TS，允许薄装配例外；作为BM-32新增前置 |
 
 测试数量分层报告，精确SHA远程完成状态必须单列。重开节点保留历史通过证据并写明新发现；详见[PLAN 2.1](PLAN.md)和[复核证据](evidence/REVIEW-2026-10-24.md)。
+
+BM-27b实施补充：现迁移引擎仅v1 initialize/adopt；添加清理意图表前先交付显式增量upgrade及历史账本链校验，验证v1→v2/最新空库/重复与断点/旧应用兼容，不直接改v1 checksum或对原库执行DDL。
