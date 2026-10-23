@@ -28,19 +28,17 @@ const setSetting = async (key, value) => {
 };
 
 const runScript = (scriptPath) => new Promise((resolve, reject) => {
-  context.trackChild(execFile('/bin/bash', [scriptPath], { env: env, detached: process.platform !== 'win32' }, (err, stdout, stderr) => {
+  context.trackChild(execFile('/bin/bash', [scriptPath], { env: { ...env, DATA_DIR: context.DATA_DIR, PUBLIC_DIR: context.PUBLIC_DIR, BACKUP_ROOT: context.BACKUP_ROOT, DB_PATH: context.dbPath, LOG_DB_PATH: context.logDbPath }, detached: process.platform !== 'win32' }, (err, stdout, stderr) => {
     if (err) return reject(new Error(stderr || err.message));
     resolve(stdout);
   }), { processGroup: true });
 });
 
 const getLocalDate = (date = new Date()) => {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, '0');
-  const d = String(date.getDate()).padStart(2, '0');
-  return `${y}-${m}-${d}`;
+  const parts = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit' }).formatToParts(date);
+  const value = (type) => parts.find(part => part.type === type).value;
+  return `${value('year')}-${value('month')}-${value('day')}`;
 };
-
 const runAutoBackup = async (trigger = 'schedule') => {
   if (!context.externalServices) throw new Error('External services disabled');
   await runScript(FULL_BACKUP_SCRIPT);
@@ -58,7 +56,8 @@ const checkAndRun = async () => {
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(time)) return;
     const now = new Date();
     const [hh, mm] = time.split(':').map((v) => Number(v));
-    const nowMinutes = now.getHours() * 60 + now.getMinutes();
+    const local = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Shanghai', hour: '2-digit', minute: '2-digit', hourCycle: 'h23' }).formatToParts(now);
+    const nowMinutes = Number(local.find(part => part.type === 'hour').value) * 60 + Number(local.find(part => part.type === 'minute').value);
     const scheduleMinutes = hh * 60 + mm;
     if (nowMinutes < scheduleMinutes) return;
     const today = getLocalDate(now);
