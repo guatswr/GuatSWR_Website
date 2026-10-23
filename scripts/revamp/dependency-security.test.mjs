@@ -54,12 +54,13 @@ async function put(root, path, content) {
   await mkdir(dirname(target), { recursive: true })
   await writeFile(target, typeof content === 'string' ? content : JSON.stringify(content))
 }
-test('discovery finds hoisted and nested copies, including a different version', () => fixture(async root => {
+test('discovery finds hoisted, nested and backend-local copies, including different versions', () => fixture(async root => {
   await put(root, 'node_modules/node-forge/package.json', { name: 'node-forge', version: '1.4.0' })
   await put(root, 'node_modules/vendor/package.json', { name: 'vendor', version: '1.0.0' })
   await put(root, 'node_modules/vendor/node_modules/node-forge/package.json', { name: 'node-forge', version: '1.3.0' })
+  await put(root, 'backend/node_modules/node-forge/package.json', { name: 'node-forge', version: '1.2.0' })
   const copies = await discoverInstalledPackages(root, new Set(['node-forge']))
-  assert.deepEqual(copies.map(item => item.version).sort(), ['1.3.0', '1.4.0'])
+  assert.deepEqual(copies.map(item => item.version).sort(), ['1.2.0', '1.3.0', '1.4.0'])
 }))
 test('discovery follows pnpm landing links without treating unused cache copies as installed', () => fixture(async root => {
   const store = 'node_modules/.pnpm/vendor@1/node_modules'

@@ -1,7 +1,8 @@
 services:
   guiair-backend:
     build:
-      context: .
+      context: ..
+      dockerfile: backend/Dockerfile
       args:
         IMAGE_REGISTRY: ""
     container_name: guatswr_backend

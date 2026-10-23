@@ -1,11 +1,13 @@
 FROM node:24.16.0-alpine AS build
 WORKDIR /workspace
+RUN apk add --no-cache python3 make g++
 RUN npm install --global pnpm@11.25.0
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY web/package.json ./web/package.json
+COPY backend/package.json ./backend/package.json
 COPY patches ./patches
-RUN --mount=type=cache,id=guatswr-revamp-pnpm,target=/pnpm/store pnpm install --store-dir=/pnpm/store --frozen-lockfile
+RUN --mount=type=cache,id=guatswr-revamp-pnpm,target=/pnpm/store pnpm install --store-dir=/pnpm/store --frozen-lockfile --filter @guatswr/web...
 COPY packages/shared ./packages/shared
 COPY web ./web
 # Literal Express route declarations are read-only contract-test inputs.
@@ -13,7 +15,11 @@ COPY web ./web
 COPY backend/src/app.js ./backend/src/app.js
 COPY backend/src/routes ./backend/src/routes
 COPY scripts/revamp ./scripts/revamp
-RUN pnpm check:security && pnpm -r typecheck && pnpm -r lint && pnpm -r test && pnpm -r build
+RUN pnpm check:security && pnpm --filter @guatswr/shared build \
+    && pnpm --filter @guatswr/shared --filter @guatswr/web -r typecheck \
+    && pnpm --filter @guatswr/shared --filter @guatswr/web -r lint \
+    && pnpm --filter @guatswr/shared --filter @guatswr/web -r test \
+    && pnpm --filter @guatswr/shared --filter @guatswr/web -r build
 RUN node scripts/revamp/check-artifacts.mjs
 
 FROM node:24.16.0-alpine AS runtime

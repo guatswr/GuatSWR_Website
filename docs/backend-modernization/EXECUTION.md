@@ -1,6 +1,6 @@
 # 后端迭代执行表
 
-更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00～12本地工程已验收，BM-11远程通过，后续按前置推进；生产门禁仍独立开放。规划文档的生成不代表任务验收完成。
+更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00～15本地工程已验收，BM-04e远程通过，后续按前置推进；生产门禁仍独立开放。规划文档的生成不代表任务验收完成。
 
 每行是一个任务包；涉及多个风险维度时按 a/b 子 PR 拆分。前置编号具有传递性。状态只能依次更新为 TODO → DOING → REVIEW → DONE；BLOCKED 必须写明缺少的事实和解除条件。BM-36 是条件发布任务，BM-37～39 是可延期分支。
 
@@ -19,11 +19,11 @@
 | BM-08 / P0 游客入口边界（本地DONE） | 05、02 | guest-bff/event/upload_visitor：盘点旧直连客户端，形成 ADR-11；封闭绕过 BFF 的入口；复核 BFF 草稿 ownership 和上传归属 | 同 IP 两游客、异 IP、猜 EID、重放的直连/BFF 双层测试；明确暂未解决的后端证明 | 不能声称 IP 即个人身份；需要旧客户端适配时先产出迁移方案；证明实现归 BM-24 |
 | BM-09 / P0 投影与配置权限（本地DONE） | 07、02 | config/logs/event：公开字段白名单；普通 admin 禁写 token_version/backup_* 等内部键；原始 SQL 错误不出公网 | A05、A08；EX 字段差异、BFF 消费验证；敏感种子不能进入公开缓存 | 不能直接套 BFF DTO 删除所有历史字段；批准例外后更新契约 |
 | BM-10 / P0 恢复基础（本地DONE） | 02、04 | 两套 db_backup 和 restore：缺 sqlite3/缺库失败；双库完整；预检归档路径/hash/格式；恢复到新目录；停写与数据一致点方案 | B01/B02；隔离恢复报告、旧镜像可读验证、明确绝对输入输出 | 不执行旧 restore 覆盖现有 data；不宣称在线双库+文件天然同一时点 |
-| BM-11 / P1 TS 基础 | 04 | backend tsconfig/build：CJS 混合迁移；先纯函数/env/errors；新 TS strict；显式路径配置 | typecheck/lint/build 脚本；dist 启动；源码与产物都不写 dist/data | 不机械改名，不同时切 ESM；遗留 JS 预算登记 |
-| BM-12 / P1 完整生命周期 | 11、01 | app/server/config/db：显式装配依赖、环境验证、ready 顺序、SIGTERM、连接关闭、timer disposer | L01/L02；缺密钥/DB/目录权限失败，启动重试不重复任务 | 不再依赖 require 顺序；健康接口另登记；迁移尚未完成时兼容初始化器显式调用 |
-| BM-13 / P1 诊断日志 | 12 | shared logger/request middleware：Pino、request ID、路由耗时、脱敏、任务关联 | O01；密码/token/二步密文不出现；诊断日志和审计分开 | 不把整个请求体/headers 写入；异常消息脱敏 |
-| BM-14 / P1 shared 消费 | 11 | packages/shared exports/build：增加独立 CJS 产物与声明；保留 ESM；独立消费样例 | 打包后 clean install；require/import 都工作；前端边界和产物检查 | 不用 require TS、不偷偷把 backend 改 ESM |
-| BM-15 / P1 Workspace | 14、03 | 根 workspace/锁/Docker/CI：纳入 backend；保留包名或显式登记改名；原生依赖构建 allowlist | frozen install、干净容器、全工作区检查；移除后端重复锁仅在切换完成时 | 整包恢复旧 npm 锁和构建配置；不能两套安装器同时管理 backend |
+| BM-11 / P1 TS 基础（本地DONE） | 04 | backend tsconfig/build：CJS 混合迁移；先纯函数/env/errors；新 TS strict；显式路径配置 | typecheck/lint/build 脚本；dist 启动；源码与产物都不写 dist/data | 不机械改名，不同时切 ESM；遗留 JS 预算登记 |
+| BM-12 / P1 完整生命周期（本地DONE） | 11、01 | app/server/config/db：显式装配依赖、环境验证、ready 顺序、SIGTERM、连接关闭、timer disposer | L01/L02；缺密钥/DB/目录权限失败，启动重试不重复任务 | 不再依赖 require 顺序；健康接口另登记；迁移尚未完成时兼容初始化器显式调用 |
+| BM-13 / P1 诊断日志（本地DONE） | 12 | shared logger/request middleware：Pino、request ID、路由耗时、脱敏、任务关联 | O01；密码/token/二步密文不出现；诊断日志和审计分开 | 不把整个请求体/headers 写入；异常消息脱敏 |
+| BM-14 / P1 shared 消费（本地DONE） | 11 | packages/shared exports/build：增加独立 CJS 产物与声明；保留 ESM；独立消费样例 | 打包后 clean install；require/import 都工作；前端边界和产物检查 | 不用 require TS、不偷偷把 backend 改 ESM |
+| BM-15 / P1 Workspace（本地DONE） | 14、03 | 根 workspace/锁/Docker/CI：纳入 backend；保留包名或显式登记改名；原生依赖构建 allowlist | frozen install、干净容器、全工作区检查；移除后端重复锁仅在切换完成时 | 整包恢复旧 npm 锁和构建配置；不能两套安装器同时管理 backend |
 | BM-16 / P1 Zod 4 | 15、02 | controllers/schemas 与 shared：逐 schema 比较默认/空值/coerce/错误消息；分 wire input/output 与 UI form | Z01；原有效输入和异常行为差分；独立路由 adapters | 不直接替换为更窄 BFF schema；general/未知历史 content 需兼容 |
 | BM-17 / P0 数据实测 | 10、12 | 在获准来源的一致隔离副本上导出 sqlite_master/PRAGMA/index/FK；检查 JSON、NULL、时间、重复 | D01；双库 schema 指纹、计数、异常报告、脱敏 fixture；原数据不进 Git | 不直接运行 app 初始化原库；未知列/表保留并登记 |
 | BM-18 / P1 版本迁移 | 17、11 | db/migrations main/audit 分开；SQL+checksum 账本；空库初始化与旧库 adopt 分开；Drizzle schema 内省仅副本 | D02/D03；空库/旧库/部分迁移/漂移/二次执行；移除 import DDL；启动只校验版本 | 禁止 push；禁止盲目 adopt；旧应用须可读新增结构；双库部分完成须可恢复 |

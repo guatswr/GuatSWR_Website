@@ -15,6 +15,7 @@ on:
       - 'package.json'
       - '.node-version'
       - '.npmrc'
+      - '.dockerignore'
       - '.gitattributes'
       - '.github/workflows/revamp.yml'
 

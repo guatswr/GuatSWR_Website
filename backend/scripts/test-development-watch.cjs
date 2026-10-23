@@ -15,7 +15,7 @@ const { once } = require('node:events');
   try {
     const command = require('../package.json').scripts.dev;
     child = spawn('/bin/sh', ['-c', command], { cwd: backend, detached: true,
-      env: { ...process.env, PATH: `${path.join(backend, 'node_modules/.bin')}:${process.env.PATH}`, NODE_ENV: 'development',
+      env: { ...process.env, PATH: `${path.join(backend, 'node_modules/.bin')}:${path.resolve(backend, '../node_modules/.bin')}:${process.env.PATH}`, NODE_ENV: 'development',
         JWT_SECRET: 'synthetic-development-key', BFF_BRIDGE_SECRET: 'synthetic-development-bridge-key-32-characters', PORT: '0', BIND_HOST: '127.0.0.1',
         DATA_DIR: path.join(root, 'data'), PUBLIC_DIR: path.join(root, 'public'), BACKUP_ROOT: path.join(root, 'backups') }, stdio: ['ignore', 'pipe', 'pipe'] });
     child.stdout.on('data', chunk => {

@@ -11,7 +11,7 @@ M0远程验收已通过；M1安全/恢复的本地工程节点已齐，当前推
 | BM-01 隔离启动 | DONE | Windows/Linux Node 24.16.0 各 17/17 通过；见 [证据](evidence/BM-01.md) |
 | BM-02 行为测试 | DONE | Windows/Linux 各173项；真实BFF脚手架1项通过；见 [证据](evidence/BM-02.md) |
 | BM-03 后端 CI | DONE | 精确提交 f89777d 的 Windows/Linux/容器/真实BFF 全通过；见 [证据](evidence/BM-03.md) |
-| BM-04 Node24 | DONE | 运行时及兼容补丁通过；最新生产审计0，全量开发braces关联3项待BM-15补丁；见 [补丁证据](evidence/BM-04e.md) |
+| BM-04 Node24 | DONE | 运行时/兼容补丁通过；生产审计0，BM-15统一补丁门禁0未解决；见 [补丁证据](evidence/BM-04e.md) |
 | BM-05 代理网络 | DONE（本地） | 默认不信任、显式CIDR、loopback发布；生产拓扑仍待实测；见 [证据](evidence/BM-05.md) |
 | BM-06 上传安全 | DONE（本地） | 路径/私有暂存/资源限制/Multer/sharp已落地；Windows/Linux190项+BFF通过，新增并发测试通过；见 [证据](evidence/BM-06.md) |
 | BM-07 最小认证 | DONE（本地） | 现查身份、原子版本/管理员保护、二步失败锁；201全套+BFF、认证11项通过；见 [证据](evidence/BM-07.md) |
@@ -22,7 +22,8 @@ M0远程验收已通过；M1安全/恢复的本地工程节点已齐，当前推
 | BM-12 生命周期 | DONE（本地） | 双平台各239项+BFF、生产镜像/真实SIGTERM/退出期限和双库完整性通过；见 [证据](evidence/BM-12.md) |
 | BM-13 诊断日志 | DONE（本地） | Pino白名单、请求/任务ID、异步审计关联；双平台245项+BFF、prune后信号/双库通过；见 [证据](evidence/BM-13.md) |
 | BM-14 shared双产物 | DONE（本地） | 4导出路径、双平台tarball独立消费/声明、shared73/前端726/BFF通过；见 [证据](evidence/BM-14.md) |
-| BM-15～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
+| BM-15 Workspace | DONE（本地） | 单pnpm锁；Windows1044+工具100/Linux后端245、双镜像/BFF/备份恢复通过；旧npm锁已移除；见 [证据](evidence/BM-15.md) |
+| BM-16～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
 M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当前推进 BM-11～19及剩余依赖安全；BM-06d远程run39831366762、BM-07远程run39832294837全部通过。生产代理链/旧直连消费者仍需发布前核验，依赖审计剩余项另分批修复。
 
@@ -32,4 +33,4 @@ M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当�
 
 每个完成节点均提交并推送；精确提交以 Git 历史为准，证据报告记录输入 SHA、命令、失败和未运行项。后续从本文件及对应 evidence 接续。
 
-最新验证：6a8dbcd远程run39894871767全通过（含BM-14/Compose修正）。BM-04e双平台各245项/BFF/开发重启/退出通过，生产审计0，全量开发关联3项待BM-15统一补丁；本提交远程待核验。
+最新验证：BM-04e 6a3bd86远程run39895637903全通过。BM-15冻结安装、补丁门禁0未解决、全工作区检查/双镜像/真实BFF与恢复通过；本提交远程待核验。主工作区既有node_modules未原地重装以保留3100，安装验证位于隔离副本/容器。

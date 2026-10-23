@@ -47,6 +47,7 @@ export async function discoverInstalledPackages(root, names) {
   }
   await visitModules(join(root, 'node_modules'))
   await visitModules(join(root, 'web/node_modules'))
+  await visitModules(join(root, 'backend/node_modules'))
   let workspaces = []
   try { workspaces = await readdir(join(root, 'packages')) } catch (error) { if (error.code !== 'ENOENT') throw error }
   for (const name of workspaces) await visitModules(join(root, 'packages', name, 'node_modules'))

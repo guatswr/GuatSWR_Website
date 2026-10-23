@@ -1,7 +1,9 @@
 FROM node:24.16.0-bookworm-slim@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d16354b0c574f736c476489d09f560a203
-WORKDIR /work/backend
-COPY backend/package*.json ./
-RUN npm ci --no-audit --no-fund
-COPY backend ./
-COPY docs /work/docs
-CMD ["npm", "test"]
+WORKDIR /workspace
+RUN apt-get update -o Acquire::Retries=3 \
+    && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
+    && rm -rf /var/lib/apt/lists/*
+RUN npm install --global pnpm@11.25.0 --no-audit --no-fund
+COPY . .
+RUN pnpm install --frozen-lockfile && pnpm --filter @guatswr/shared build
+CMD ["pnpm", "--filter", "guiair-backend", "test"]

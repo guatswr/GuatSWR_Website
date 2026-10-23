@@ -2,9 +2,9 @@ name: Backend migration gates
 on:
   push:
     branches: ['codex/backend-modernization', 'revamp/**', main]
-    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.gitattributes', '.github/workflows/backend.yml', 'docs/backend-modernization/**']
+    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', '.gitattributes', '.github/workflows/backend.yml', 'docs/backend-modernization/**']
   pull_request:
-    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.gitattributes', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', '.gitattributes', '.github/workflows/backend.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,21 +21,24 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
-          cache: npm
-          cache-dependency-path: backend/package-lock.json
-      - run: npm --prefix backend ci
-      - run: npm --prefix backend run typecheck
-      - run: npm --prefix backend run lint
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm check:security
+      - run: pnpm typecheck
+      - run: pnpm -r lint
+      - run: pnpm --filter @guatswr/shared test
+      - run: pnpm --filter @guatswr/web test
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
       - run: python backend/scripts/backup_bundle_test.py
-      - run: npm --prefix backend run test:unit
-      - run: npm --prefix backend run test:integration -- --reporter=default --reporter=json --outputFile=test-results/integration.json
-      - run: npm --prefix backend run test:contracts -- --reporter=default --reporter=json --outputFile=test-results/contracts.json
+      - run: pnpm --filter guiair-backend test:unit
+      - run: pnpm --filter guiair-backend run test:integration --reporter=default --reporter=json --outputFile=test-results/integration.json
+      - run: pnpm --filter guiair-backend run test:contracts --reporter=default --reporter=json --outputFile=test-results/contracts.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -53,9 +56,9 @@ jobs:
       - run: node backend/scripts/prepare-test-context.cjs "$RUNNER_TEMP/backend-context"
       - run: docker build -t guatswr-backend-test "$RUNNER_TEMP/backend-context"
       - run: docker run --rm --network none guatswr-backend-test
-      - run: docker run --rm --network none guatswr-backend-test node scripts/test-development-watch.cjs
-      - run: docker build -t guatswr-backend-runtime backend
-      - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
+      - run: docker run --rm --network none guatswr-backend-test node backend/scripts/test-development-watch.cjs
+      - run: docker build -f backend/Dockerfile -t guatswr-backend-runtime .
+      - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e BFF_BRIDGE_SECRET=synthetic-runtime-bridge-key-at-least-32 -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-lifecycle-signals.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
       - run: docker run --rm --network none guatswr-backend-runtime python3 scripts/backup_bundle_test.py
@@ -82,8 +85,7 @@ jobs:
           docker build -t guatswr-shared-consumer "$RUNNER_TEMP/shared-consumer"
           docker run --rm --network none guatswr-shared-consumer
       - run: pnpm --filter @guatswr/web build
-      - run: npm --prefix backend ci
-      - run: npm --prefix backend run test:bff -- --reporter=default --reporter=json --outputFile=test-results/bff.json
+      - run: pnpm --filter guiair-backend run test:bff --reporter=default --reporter=json --outputFile=test-results/bff.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
