@@ -83,4 +83,5 @@ codex.md
 
 
 backend/dist/
+packages/shared/.build-cjs-*/
 **/*.tsbuildinfo

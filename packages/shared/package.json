@@ -3,17 +3,19 @@
   "version": "0.0.0",
   "private": true,
   "type": "module",
+  "files": ["dist"],
   "exports": {
-    ".": { "types": "./src/index.ts", "import": "./dist/index.js" },
-    "./config": { "types": "./src/config.ts", "import": "./dist/config.js" },
-    "./event-labels": { "types": "./src/event-labels.ts", "import": "./dist/event-labels.js" },
-    "./admin-workflows": { "types": "./src/admin-workflows.ts", "import": "./dist/admin-workflows.js" }
+    ".": { "import": { "types": "./dist/index.d.ts", "default": "./dist/index.js" }, "require": { "types": "./dist/cjs/index.d.ts", "default": "./dist/cjs/index.js" } },
+    "./config": { "import": { "types": "./dist/config.d.ts", "default": "./dist/config.js" }, "require": { "types": "./dist/cjs/config.d.ts", "default": "./dist/cjs/config.js" } },
+    "./event-labels": { "import": { "types": "./dist/event-labels.d.ts", "default": "./dist/event-labels.js" }, "require": { "types": "./dist/cjs/event-labels.d.ts", "default": "./dist/cjs/event-labels.js" } },
+    "./admin-workflows": { "import": { "types": "./dist/admin-workflows.d.ts", "default": "./dist/admin-workflows.js" }, "require": { "types": "./dist/cjs/admin-workflows.d.ts", "default": "./dist/cjs/admin-workflows.js" } }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
     "lint": "eslint src",
-    "test": "tsc -p tsconfig.build.json && vitest run",
-    "build": "tsc -p tsconfig.build.json"
+    "test": "npm run build && vitest run",
+    "build": "tsc -p tsconfig.build.json && node scripts/build-cjs.mjs",
+    "prepack": "npm run build"
   },
   "dependencies": { "zod": "4.6.7" },
   "devDependencies": {

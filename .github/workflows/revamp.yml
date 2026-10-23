@@ -81,6 +81,7 @@ jobs:
           retention-days: 7
       - run: pnpm test:tooling
       - run: pnpm check:boundaries
+      - run: pnpm --filter @guatswr/shared build
       - run: pnpm -r typecheck
       - run: pnpm -r lint
       - run: pnpm -r test

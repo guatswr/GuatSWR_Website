@@ -72,6 +72,14 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:security
       - run: pnpm --filter @guatswr/shared build
+      - name: Verify packed shared ESM and CommonJS consumers
+        run: |
+          mkdir -p "$RUNNER_TEMP/shared-consumer"
+          npm pack ./packages/shared --ignore-scripts --pack-destination "$RUNNER_TEMP/shared-consumer"
+          cp "$RUNNER_TEMP/shared-consumer/"*.tgz "$RUNNER_TEMP/shared-consumer/shared.tgz"
+          cp packages/shared/tests/consumer/* "$RUNNER_TEMP/shared-consumer/"
+          docker build -t guatswr-shared-consumer "$RUNNER_TEMP/shared-consumer"
+          docker run --rm --network none guatswr-shared-consumer
       - run: pnpm --filter @guatswr/web build
       - run: npm --prefix backend ci
       - run: npm --prefix backend run test:bff -- --reporter=default --reporter=json --outputFile=test-results/bff.json

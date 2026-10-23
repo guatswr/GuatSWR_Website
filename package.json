@@ -10,7 +10,7 @@
   },
   "scripts": {
     "dev": "pnpm --filter @guatswr/shared build && pnpm --filter @guatswr/web dev",
-    "typecheck": "pnpm -r typecheck",
+    "typecheck": "pnpm --filter @guatswr/shared build && pnpm -r typecheck",
     "lint": "pnpm -r lint",
     "test": "pnpm -r test",
     "build": "pnpm -r build",
