@@ -2,7 +2,7 @@ const assert = require('node:assert/strict');
 const fs = require('node:fs/promises');
 const path = require('node:path');
 const os = require('node:os');
-const { spawn } = require('node:child_process');
+const { spawn, execFileSync } = require('node:child_process');
 const { once } = require('node:events');
 (async () => {
   if (process.platform === 'win32') throw new Error('Run this process-group gate in the isolated Linux test image');
@@ -13,6 +13,8 @@ const { once } = require('node:events');
   let pending = '';
   let child;
   try {
+    // Each CI docker run starts from the image, without the prior test container's dist.
+    execFileSync('npm', ['run', 'build'], { cwd: backend, stdio: 'pipe', timeout: 60000 });
     await require('./initialize-databases.cjs').initializeDatabases({}, { data: path.join(root, 'data') });
     const command = require('../package.json').scripts.dev;
     child = spawn('/bin/sh', ['-c', command], { cwd: backend, detached: true,
