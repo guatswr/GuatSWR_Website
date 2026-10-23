@@ -39,6 +39,7 @@ test('admin content images and thumbnails persist outside staging and survive it
   const persist = createEventContentPersister({ imageRoot: path.join(publicDir, 'img'), moveStagedFile: storage.moveStagedFile });
   const input = {
     cover: '/uploads/upload/cover.png',
+    thumbnail: '/uploads/upload/cover-thumb.webp',
     initiator: { avatar: '/uploads/upload/cover.png', id: '⑨', future: true },
     results: [{ rank: 1, avatar: '/uploads/img/events/12/avatars/player.png' }],
     external: 'https://example.com/uploads/upload/remote.png',
@@ -50,6 +51,7 @@ test('admin content images and thumbnails persist outside staging and survive it
   const output = await persist(input, 12);
   const finalUrl = '/uploads/img/events/12/cover.png';
   assert.equal(output.cover, finalUrl);
+  assert.equal(output.thumbnail, '/uploads/img/events/12/cover-thumb.webp');
   assert.equal(output.initiator.avatar, finalUrl, 'duplicate image references must share the moved URL');
   assert.equal(output.nested[3].image, finalUrl);
   assert.equal(output.external, input.external);

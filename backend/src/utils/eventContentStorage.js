@@ -5,6 +5,7 @@ const createEventContentPersister = ({ imageRoot, moveStagedFile }) => async (co
   if (!Number.isSafeInteger(id) || id <= 0) throw new Error('Invalid event id');
   const targetDir = path.join(imageRoot, 'events', String(id));
   const movedUrls = new Map();
+  const movedFiles = new Map();
 
   const visit = async (value) => {
     if (typeof value === 'string') {
@@ -12,7 +13,7 @@ const createEventContentPersister = ({ imageRoot, moveStagedFile }) => async (co
       if (!value.startsWith('/uploads/upload/')) return value;
       const filename = value.slice('/uploads/upload/'.length);
       if (!filename || filename === '.' || filename === '..' || /[\\/?#]/.test(filename)) return value;
-      if (!movedUrls.has(value)) movedUrls.set(value, await moveStagedFile(value, targetDir));
+      if (!movedUrls.has(value)) movedUrls.set(value, await moveStagedFile(value, targetDir, movedFiles));
       return movedUrls.get(value);
     }
     if (Array.isArray(value)) {
