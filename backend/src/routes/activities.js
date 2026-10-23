@@ -7,6 +7,7 @@ const { validate, normalizeImages } = require('../utils');
 const { activitySchema } = context.schemas;
 const { moveStagedFile, moveStagedFiles, moveStagedUrlsInText } = context.storage;
 const { notifyActivityPublished } = context.bot;
+const { positiveId } = require('../utils/storageBoundary');
 
 const router = express.Router();
 
@@ -121,6 +122,7 @@ router.post('/', authenticateToken, (req, res) => {
 router.put('/:id', authenticateToken, (req, res) => {
   const validated = validate(activitySchema, req.body);
   if (!validated.ok) return res.status(400).json({ message: validated.error });
+  if (!positiveId(req.params.id)) return res.status(400).json({ message: 'Invalid activity id' });
   const { title, tag, date, description, content, cover_image, images } = validated.data;
   const normalizedImages = normalizeImages(images);
 
