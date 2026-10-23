@@ -73,6 +73,11 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  expect(afterLogs.response.status).toBe(200)
  expect(JSON.stringify(afterLogs.data)).toContain('修改配置: banner_text')
 
+ const historyCreated = await call('/api/bff/admin/history', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': login.data.csrfToken }, body: JSON.stringify({ date: '2026-10-23', title: 'BFF history ID regression' }) })
+ expect(historyCreated.response.status, JSON.stringify(historyCreated.data)).toBe(200)
+ expect(historyCreated.data.id).toEqual(expect.any(Number))
+ expect(await get(f.db, 'SELECT id FROM history WHERE title=?', ['BFF history ID regression'])).toEqual({ id: historyCreated.data.id })
+
  // Two anonymous visitors share one loopback/NAT address but have distinct intent cookies.
  const visitor=async()=>{
    const jar=new Map()

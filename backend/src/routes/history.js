@@ -25,7 +25,7 @@ router.post('/', authenticateToken, (req, res) => {
   (async () => {
     const movedImage = await moveStagedFile(image, historyDir);
     db.run("INSERT INTO history (date, title, description, image, sort_order) VALUES (?, ?, ?, ?, ?)", 
-      [date, title, description, movedImage, sort_order || 0], (err) => {
+      [date, title, description, movedImage, sort_order || 0], function (err) {
         if (err) return res.status(500).json({ error: err.message });
         addLog(req.user.username, 'CREATE_HISTORY', `添加群史: ${title}`);
         notifyHistoryUpdated({

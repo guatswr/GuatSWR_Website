@@ -19,7 +19,7 @@ const cases = [
  [35,{},['banner_text']], [36,{key:'banner_text',value:'new text'},['message']], [37,{},['id','message']], [38,{title:'updated'},['message','id'],{id:2}], [39,{},['total','page','limit','items']], [40,{},['id','content','status']],
  [41,{common_id:'new-pilot',qq:'12345',avatar:'/uploads/avatar.png'},['message','eventId']], [42,{},['data']], [43,{},['message']], [44,{},['items']], [45,{},['total','page','limit','items']],
  [46,{type:'STG',title:'created',content:{future:true}},['id','message']], [47,{},['message'],{id:3}], [48,{},['message'],{id:3}], [49,{status:'ongoing'},['message']], [50,{},['message']], [51,{payload:{result:'done'}},['message','id']], [52,{results:[]},['message','id']], [53,{},['items']],
- [54,{},null], [55,history,[]], [56,history,['message']], [57,{},['message']], [58,{},['message']], [59,{},['total','logs']], [60,{},['stats']], [61,{},['message'],{status:503}], [62,{},null], [63,{},null],
+ [54,{},null], [55,history,['id']], [56,history,['message']], [57,{},['message']], [58,{},['message']], [59,{},['total','logs']], [60,{},['stats']], [61,{},['message'],{status:503}], [62,{},null], [63,{},null],
  [64,member,['id']], [65,member,['message']], [66,{},['message']], [67,{},['message']], [68,{},['url','thumbUrl']], [69,{},['message','eid','url','thumbUrl']], [70,{},['url']], [71,{},['version','status']]
 ]
 const resolvePath = (operation, id = 1) => operation.split(' ')[1].replace(':id', String(id)).replace(':ip','203.0.113.99')
@@ -54,9 +54,9 @@ describe('A01 frozen API operations', () => {
        expect(response.headers['content-type']).toContain('application/json')
        if (keys === null) expect(Array.isArray(response.body)).toBe(true)
        else for (const key of keys) expect(response.body).toHaveProperty(key)
-       if (number === 55) { // EX-06: legacy arrow callback loses lastID; row really exists.
-         expect(response.body).toEqual({})
-         expect(await get(f.db,"SELECT title FROM history WHERE title='new history'")).toEqual({title:'new history'})
+       if (number === 55) { // EX-06 fixed in BM-21a: response ID identifies the committed row.
+         expect(response.body.id).toEqual(expect.any(Number))
+         expect(await get(f.db,"SELECT id,title FROM history WHERE title='new history'")).toEqual({id:response.body.id,title:'new history'})
        }
        if ([68,69,70].includes(number)) expect((await f.http.get(response.body.url)).status).toBe(200)
        if (number === 36) expect(await get(f.db,"SELECT value FROM site_config WHERE key='banner_text'")).toEqual({value:'new text'})
