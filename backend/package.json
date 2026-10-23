@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "start": "node dist/server.js",
-    "dev": "nodemon --watch src --watch server.js --ext js,ts,json --exec \"npm run build && node dist/server.js\"",
+    "dev": "nodemon --signal SIGTERM --watch src --watch server.js --ext js,ts,json --exec \"npm run build && node dist/server.js\"",
     "test:bootstrap": "node --test --test-timeout=15000 tests/lifecycle.test.js src/utils/eventContentStorage.test.js",
     "test": "npm run build && npm run test:bootstrap && vitest run --configLoader native",
     "test:unit": "npm run build && npm run test:bootstrap && vitest run --configLoader native tests/unit",
@@ -42,7 +42,7 @@
     "@eslint/js": "10.0.1",
     "@types/node": "24.10.0",
     "eslint": "10.13.0",
-    "nodemon": "^2.0.22",
+    "nodemon": "3.1.14",
     "supertest": "7.3.1",
     "typescript": "6.0.2",
     "typescript-eslint": "8.71.2",

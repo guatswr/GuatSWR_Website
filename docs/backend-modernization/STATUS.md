@@ -11,7 +11,7 @@ M0远程验收已通过；M1安全/恢复的本地工程节点已齐，当前推
 | BM-01 隔离启动 | DONE | Windows/Linux Node 24.16.0 各 17/17 通过；见 [证据](evidence/BM-01.md) |
 | BM-02 行为测试 | DONE | Windows/Linux 各173项；真实BFF脚手架1项通过；见 [证据](evidence/BM-02.md) |
 | BM-03 后端 CI | DONE | 精确提交 f89777d 的 Windows/Linux/容器/真实BFF 全通过；见 [证据](evidence/BM-03.md) |
-| BM-04 Node24 | DONE | 生产镜像确定安装/真实启动通过；审计13项待分批修复；见 [证据](evidence/BM-04.md) |
+| BM-04 Node24 | DONE | 运行时及兼容补丁通过；最新生产审计0，全量开发braces关联3项待BM-15补丁；见 [补丁证据](evidence/BM-04e.md) |
 | BM-05 代理网络 | DONE（本地） | 默认不信任、显式CIDR、loopback发布；生产拓扑仍待实测；见 [证据](evidence/BM-05.md) |
 | BM-06 上传安全 | DONE（本地） | 路径/私有暂存/资源限制/Multer/sharp已落地；Windows/Linux190项+BFF通过，新增并发测试通过；见 [证据](evidence/BM-06.md) |
 | BM-07 最小认证 | DONE（本地） | 现查身份、原子版本/管理员保护、二步失败锁；201全套+BFF、认证11项通过；见 [证据](evidence/BM-07.md) |
@@ -32,4 +32,4 @@ M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当�
 
 每个完成节点均提交并推送；精确提交以 Git 历史为准，证据报告记录输入 SHA、命令、失败和未运行项。后续从本文件及对应 evidence 接续。
 
-最新验证：BM-13 c09e158远程run39893875667全通过。BM-14双平台包消费、shared73/前端726/新Nuxt构建与typecheck/BFF通过；本提交远程待核验。
+最新验证：6a8dbcd远程run39894871767全通过（含BM-14/Compose修正）。BM-04e双平台各245项/BFF/开发重启/退出通过，生产审计0，全量开发关联3项待BM-15统一补丁；本提交远程待核验。
