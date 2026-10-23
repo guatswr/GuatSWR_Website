@@ -29,7 +29,14 @@ const { start } = require('../server');
     const config = await fetch(`${origin}/api/config`);
     assert.equal(config.status, 200);
     assert.equal((await config.json()).banner_text, 'synthetic-config-smoke');
-    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true }));
+    const history = await fetch(`${origin}/api/history`, { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify({ date: '2026-10-23', title: 'synthetic-history-smoke' }) });
+    assert.equal(history.status, 200);
+    const created = await history.json();
+    assert.ok(Number.isSafeInteger(created.id) && created.id > 0);
+    const listed = await fetch(`${origin}/api/history`);
+    assert.equal(listed.status, 200);
+    assert.ok((await listed.json()).some(entry => entry.id === created.id && entry.title === 'synthetic-history-smoke'));
+    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true, typedConfig: true, typedHistory: true }));
   } finally {
     await instance.close();
     if (path.dirname(root) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-runtime-')) throw new Error('Unsafe smoke cleanup');
