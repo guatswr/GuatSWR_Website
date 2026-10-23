@@ -4,14 +4,18 @@ const { createApplication } = require('./src/app');
 const start = async () => {
   const instance = await createApplication();
   try {
-    const server = await instance.listen(undefined, process.env.BIND_HOST || '127.0.0.1');
+    const server = await instance.listen();
     console.log(`***后端服务v4.0已启动 (Port ${server.address().port})***`);
     const shutdown = () => instance.close().catch((error) => {
-      console.error('[Shutdown]', error.code || error.message);
-      process.exitCode = 1;
+      console.error('[Shutdown]', error.code || 'cleanup_failed');
+      process.exit(1);
     });
     process.once('SIGTERM', shutdown);
     process.once('SIGINT', shutdown);
+    instance.context.disposers.push(() => {
+      process.removeListener('SIGTERM', shutdown);
+      process.removeListener('SIGINT', shutdown);
+    });
     return instance;
   } catch (error) {
     await instance.close();

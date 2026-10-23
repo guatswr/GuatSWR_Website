@@ -28,10 +28,10 @@ const setSetting = async (key, value) => {
 };
 
 const runScript = (scriptPath) => new Promise((resolve, reject) => {
-  execFile('/bin/bash', [scriptPath], { env: env }, (err, stdout, stderr) => {
+  context.trackChild(execFile('/bin/bash', [scriptPath], { env: env, detached: process.platform !== 'win32' }, (err, stdout, stderr) => {
     if (err) return reject(new Error(stderr || err.message));
     resolve(stdout);
-  });
+  }), { processGroup: true });
 });
 
 const getLocalDate = (date = new Date()) => {

@@ -1,6 +1,6 @@
 # 后端迭代执行表
 
-更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00/01/02 DONE；BM-03 DONE（M0远程验收）；BM-04准备中，其余 TODO。规划文档的生成不代表任务验收完成。
+更新：2026-10-23。源码基线、事实与 ADR 见 [PLAN](PLAN.md)，测试组见 [ACCEPTANCE](ACCEPTANCE.md)。当前进度以 [STATUS.md](STATUS.md) 为入口：BM-00～12本地工程已验收，BM-11远程通过，后续按前置推进；生产门禁仍独立开放。规划文档的生成不代表任务验收完成。
 
 每行是一个任务包；涉及多个风险维度时按 a/b 子 PR 拆分。前置编号具有传递性。状态只能依次更新为 TODO → DOING → REVIEW → DONE；BLOCKED 必须写明缺少的事实和解除条件。BM-36 是条件发布任务，BM-37～39 是可延期分支。
 

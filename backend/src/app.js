@@ -31,7 +31,7 @@ const app = express();
 const PORT = env.PORT || 3000;
 const NODE_ENV = env.NODE_ENV || 'development';
 const isProd = NODE_ENV === 'production';
-const MAX_BODY_SIZE = env.MAX_BODY_SIZE || '50mb';
+const MAX_BODY_SIZE = context.configuration.maxBodyBytes;
 const CORS_ORIGINS = (env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
   .split(',')
   .map((o) => o.trim())
@@ -40,6 +40,10 @@ const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', require('./config/proxy').createTrustProxy(env.TRUST_PROXY_CIDRS));
 app.disable('x-powered-by');
+app.use((req, res, next) => {
+  if (context.isClosing()) return res.status(503).json({ message: '服务正在关闭' });
+  next();
+});
 app.use((req, res, next) => {
   res.vary('Authorization');
   if (req.headers.authorization) res.setHeader('Cache-Control', 'private, no-store');

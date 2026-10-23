@@ -1,22 +1,49 @@
-const { createDatabase } = require('./models/db');
+const { createDatabase, resolvePaths } = require('./models/db');
+const path = require('node:path');
 
 const createApplication = async (options = {}) => {
   // No dotenv here: only the executable entry point reads a production env file.
   const env = { ...(options.env || process.env) };
-  if (!env.JWT_SECRET) throw new Error('JWT_SECRET is required');
   if (env.NODE_ENV === 'test' && (!options.paths?.data || !options.paths?.public || !options.paths?.backups)) {
     throw new Error('Tests require explicit data, public and backup paths');
   }
-  const database = await createDatabase({ env, paths: options.paths });
+  // Native CJS consumption of compiled strict TS; never require TypeScript source.
+  const root = resolvePaths(env).BACKEND_ROOT;
+  const { parseEnvironment } = require(path.join(root, 'dist/src/config/environment.js'));
+  const configuration = parseEnvironment({ ...env,
+    ...(options.paths?.data ? { DATA_DIR: options.paths.data } : {}),
+    ...(options.paths?.public ? { PUBLIC_DIR: options.paths.public } : {}),
+    ...(options.paths?.backups ? { BACKUP_ROOT: options.paths.backups } : {}),
+  }, root);
+  const database = await createDatabase({ env, paths: configuration.paths });
   const timers = new Set();
   const jobs = new Set();
+  const children = new Set();
+  const shutdown = new AbortController();
+  const childGroups = new WeakSet();
+  const stopChild = (child, signal) => {
+    try {
+      if (childGroups.has(child) && child.pid) process.kill(-child.pid, signal);
+      else child.kill(signal);
+    } catch (error) { if (error.code !== 'ESRCH') throw error; }
+  };
   const disposers = [];
   let closing;
   let server;
   let listening = false;
   let pendingListen;
   const context = {
-    ...database, env, timers, disposers,
+    ...database, env, configuration, timers, disposers, shutdownSignal: shutdown.signal,
+    isClosing: () => Boolean(closing),
+    trackChild(child, options = {}) {
+      children.add(child);
+      if (options.processGroup && process.platform !== 'win32') childGroups.add(child);
+      const remove = () => children.delete(child);
+      child.once('exit', remove);
+      child.once('error', remove);
+      if (closing) stopChild(child, 'SIGTERM');
+      return child;
+    },
     externalServices: options.externalServices ?? env.NODE_ENV !== 'test',
     track(promise) {
       const tracked = Promise.resolve(promise);
@@ -25,6 +52,7 @@ const createApplication = async (options = {}) => {
       return tracked;
     },
     every(task, delay) {
+      if (closing) throw new Error('Application is closing');
       const timer = setInterval(() => context.track(Promise.resolve().then(task)).catch((error) => {
         console.error('[Background] task failed:', error.code || error.message);
       }), delay);
@@ -33,9 +61,13 @@ const createApplication = async (options = {}) => {
     }
   };
   const close = () => {
-    if (!closing) closing = (async () => {
+    if (!closing) {
+      let deadline;
+      const cleanup = (async () => {
+      shutdown.abort();
       for (const timer of timers) clearInterval(timer);
       timers.clear();
+      for (const child of children) stopChild(child, 'SIGTERM');
       if (pendingListen) await pendingListen.catch(() => {});
       if (server?.listening) {
         await new Promise((resolve, reject) => {
@@ -44,9 +76,26 @@ const createApplication = async (options = {}) => {
         });
       }
       await Promise.allSettled([...jobs]);
-      for (const dispose of disposers.reverse()) await dispose();
-      await database.close();
-    })();
+      await Promise.allSettled([...children].map(child => new Promise(resolve => {
+        child.once('exit', resolve);
+        child.once('error', resolve);
+      })));
+      const results = await Promise.allSettled(disposers.reverse().map(dispose => Promise.resolve().then(dispose)));
+      const databaseResult = await Promise.allSettled([database.close()]);
+      const errors = [...results, ...databaseResult].filter(result => result.status === 'rejected').map(result => result.reason);
+      if (errors.length) throw new AggregateError(errors, 'Application cleanup failed');
+      })();
+      const timeout = new Promise((resolve, reject) => {
+        deadline = setTimeout(() => {
+          server?.closeAllConnections();
+          for (const child of children) stopChild(child, 'SIGKILL');
+          const error = new Error('Application shutdown deadline exceeded');
+          error.code = 'SHUTDOWN_TIMEOUT';
+          reject(error);
+        }, configuration.shutdownTimeoutMs);
+      });
+      closing = Promise.race([cleanup, timeout]).finally(() => clearTimeout(deadline));
+    }
     return closing;
   };
   try {
@@ -55,20 +104,22 @@ const createApplication = async (options = {}) => {
       ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['guestGateway', './middlewares/guestGateway'], ['limiter', './middlewares/limiter'],
       ['upload', './middlewares/upload'], ['scheduler', './utils/backupScheduler']
     ]) context[key] = require(filename)(context);
-    const { app, PORT } = require('./app').buildApp(context);
-    const listen = (port = PORT, host) => {
+    const { app } = require('./app').buildApp(context);
+    const listen = (port = configuration.port, host = configuration.bindHost) => {
       if (closing || listening) return Promise.reject(new Error('Application already listening or closed'));
       listening = true;
       pendingListen = new Promise((resolve, reject) => {
         server = app.listen(port, host);
         server.once('error', (error) => { listening = false; reject(error); });
         server.once('listening', () => {
-          if (!closing && (options.backgroundTasks ?? env.NODE_ENV !== 'test')) {
-            context.startLoginCleanup();
-            context.startStagingCleanup();
-            context.scheduler.startBackupScheduler();
-          }
-          resolve(server);
+          try {
+            if (!closing && (options.backgroundTasks ?? env.NODE_ENV !== 'test')) {
+              context.startLoginCleanup();
+              context.startStagingCleanup();
+              context.scheduler.startBackupScheduler();
+            }
+            resolve(server);
+          } catch (error) { reject(error); }
         });
         server.on('clientError', (error, socket) => socket.destroy());
       });

@@ -21,7 +21,7 @@ const buildHeaders = (token) => {
   return headers;
 };
 
-const postWebhook = async (payload) => {
+const postWebhookTask = async (payload) => {
   if (!context.externalServices) return { skipped: true, reason: 'External services disabled' };
   const { url, token } = getWebhookConfig();
   if (!url) return { skipped: true, reason: 'ASTRBOT_WEBHOOK_URL 未配置' };
@@ -34,7 +34,7 @@ const postWebhook = async (payload) => {
       method: 'POST',
       headers: buildHeaders(token),
       body: JSON.stringify(payload),
-      signal: controller.signal
+      signal: AbortSignal.any([controller.signal, context.shutdownSignal])
     });
     if (!res.ok) {
       const text = await res.text().catch(() => '');
@@ -45,6 +45,7 @@ const postWebhook = async (payload) => {
     clearTimeout(timeout);
   }
 };
+const postWebhook = (payload) => context.track(postWebhookTask(payload));
 
 const buildBasePayload = (event, data, actor) => ({
   event,
