@@ -1,5 +1,5 @@
 import { it, expect } from 'vitest'
-import { fixture, token, get, png } from '../helpers/fixture.mjs'
+import { fixture, token, get, png, draftProofHeaders } from '../helpers/fixture.mjs'
 const key='isolated-guest-gateway-test-secret-at-least-32'
 const headers=(ip='203.0.113.99')=>({'x-bff-bridge':key,'x-forwarded-for':ip})
 it('E01 direct anonymous writes and private signup reads cannot bypass BFF',async()=>{
@@ -27,7 +27,7 @@ it('E01 forged keys and malformed forwarded identities are rejected',async()=>{
 })
 it('E01 authenticated BFF keeps the reconstructed visitor IP and signup identity',async()=>{
  const f=await fixture({env:{BFF_BRIDGE_SECRET:key,TRUST_PROXY_CIDRS:'127.0.0.1/32'}})
- const draft=await f.http.post('/api/event/draft').set(headers()).send({})
+ const draft=await f.http.post('/api/event/draft').set(draftProofHeaders('draft', 0, '203.0.113.99', key)).send({})
  expect(draft.status).toBe(200)
  expect((await get(f.db,'SELECT visitor_ip FROM events WHERE id=?',[draft.body.id])).visitor_ip).toBe('203.0.113.99')
  expect((await f.http.post('/api/event/1/signup').set(headers()).send({common_id:'gateway visitor',qq:'12345',avatar:'/uploads/avatar.png'})).status).toBe(200)

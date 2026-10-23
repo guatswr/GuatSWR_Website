@@ -2,6 +2,7 @@ import fs from 'node:fs/promises'
 import os from 'node:os'
 import path from 'node:path'
 import { createRequire } from 'node:module'
+import { createHmac } from 'node:crypto'
 import { onTestFinished } from 'vitest'
 const require = createRequire(import.meta.url)
 const { createApplication } = require('./application.cjs')
@@ -10,6 +11,12 @@ const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
 export const bridgeKey = 'isolated-fixture-gateway-key-at-least-32-characters'
 export const bridgeHeaders = (ip='127.0.0.1') => ({ 'x-bff-bridge': bridgeKey, 'x-forwarded-for': ip })
+export const draftProofHeaders = (scope, eid, ip = '127.0.0.1', key = bridgeKey) => {
+  const expires = Math.floor(Date.now() / 1000) + 30
+  const message = require('@guatswr/shared').guestDraftProofMessage({ scope, eid, expires, ip })
+  const signature = createHmac('sha256', key).update(message).digest('base64url')
+  return { 'x-bff-bridge': key, 'x-forwarded-for': ip, 'x-bff-draft-proof': `v1.${eid}.${scope}.${expires}.${signature}` }
+}
 export const secret = 'isolated-backend-contract-key'
 const hash = bcrypt.hashSync('fixture-password', 10)
 export const run = (db, sql, params = []) => new Promise((resolve, reject) => db.run(sql, params, function (err) { err ? reject(err) : resolve(this) }))

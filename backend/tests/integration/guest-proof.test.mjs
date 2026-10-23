@@ -11,9 +11,16 @@ const headers = (scope, eid, { ip = '127.0.0.1', expires = Math.floor(Date.now()
 const strict = () => fixture({ env: { TRUST_PROXY_CIDRS: '127.0.0.1/32', GUEST_DRAFT_PROOF_MODE: 'required' } })
 
 it('supports the explicit expand window but rejects an invalid presented proof', async () => {
-  const f = await fixture({ env: { TRUST_PROXY_CIDRS: '127.0.0.1/32' } })
+  const f = await fixture({ env: { TRUST_PROXY_CIDRS: '127.0.0.1/32', GUEST_DRAFT_PROOF_MODE: 'optional' } })
   expect((await f.http.post('/api/event/draft').set(bridgeHeaders()).send({})).status).toBe(200)
   expect((await f.http.post('/api/event/draft').set({ ...bridgeHeaders(), 'x-bff-draft-proof': 'forged' }).send({})).status).toBe(403)
+})
+it('requires proofs by default even when the bridge credential and proxy peer are valid', async () => {
+  const f = await fixture({ env: { TRUST_PROXY_CIDRS: '127.0.0.1/32' } })
+  expect(f.context.configuration.guestDraftProofMode).toBe('required')
+  const response = await f.http.post('/api/event/draft').set(bridgeHeaders()).send({})
+  expect(response.status).toBe(403)
+  expect((await f.http.post('/api/event/draft').set(headers('draft', 0)).send({})).status).toBe(200)
 })
 it('required mode binds writes to EID, operation, lifetime and the trusted forwarded address', async () => {
   const f = await strict()

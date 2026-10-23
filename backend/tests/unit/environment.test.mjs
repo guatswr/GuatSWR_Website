@@ -13,6 +13,7 @@ describe('compiled strict environment foundation', () => {
     expect(result.jwtSecret).toBe(input.JWT_SECRET)
     expect(result.port).toBe(3000)
     expect(result.maxBodyBytes).toBe(50 * 1024 ** 2)
+    expect(result.guestDraftProofMode).toBe('required')
     expect(result.paths.data).toBe(path.join(root, 'data'))
     expect(result.paths.public).toBe(path.join(root, 'data/public'))
   })

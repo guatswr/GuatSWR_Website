@@ -40,7 +40,7 @@ export function parseEnvironment(input: EnvironmentInput, backendRoot: string): 
   if (!jwtSecret.trim()) return invalid('JWT_SECRET')
   const bridgeSecret = input.BFF_BRIDGE_SECRET || ''
   if ((nodeEnv === 'production' && !bridgeSecret) || (bridgeSecret && !/^[\x21-\x7e]{32,256}$/.test(bridgeSecret))) return invalid('BFF_BRIDGE_SECRET')
-  const guestDraftProofMode = input.GUEST_DRAFT_PROOF_MODE || 'optional'
+  const guestDraftProofMode = input.GUEST_DRAFT_PROOF_MODE || 'required'
   if (guestDraftProofMode !== 'optional' && guestDraftProofMode !== 'required') return invalid('GUEST_DRAFT_PROOF_MODE')
   const rawSize = input.MAX_BODY_SIZE || '50mb'
   const match = /^(\d+)\s*(b|kb|mb)?$/i.exec(rawSize)

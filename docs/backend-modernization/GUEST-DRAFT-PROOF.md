@@ -1,6 +1,6 @@
 # 游客草稿证明协议与切换
 
-BM-24a 为兼容扩展：当前 GUEST_DRAFT_PROOF_MODE 缺省为 optional。此模式接受原受信 bridge 请求，但一旦携带证明就必须验证，不能用错误证明降级。required 模式会拒绝缺失证明。最终启用与事件 content 提取尚未完成，不能把本扩展当作 EX-02 已关闭。
+BM-24a先交付optional兼容扩展并验证新旧BFF矩阵；BM-24b将GUEST_DRAFT_PROOF_MODE缺省改为required，拒绝缺失证明。optional仅为显式兼容开关，接受原受信bridge请求，但一旦携带证明就必须验证，不能用错误证明降级。最终安全验收必须为required；事件content分层及最终发布验证尚未完成。
 
 | 请求 | scope | 绑定 EID |
 | --- | --- | --- |
