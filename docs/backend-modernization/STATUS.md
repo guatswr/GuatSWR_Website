@@ -25,7 +25,8 @@ M0远程验收已通过；M1安全/恢复的本地工程节点已齐，当前推
 | BM-15 Workspace | DONE（本地） | 单pnpm锁；Windows1044+工具100/Linux后端245、双镜像/BFF/备份恢复通过；旧npm锁已移除；见 [证据](evidence/BM-15.md) |
 | BM-16 Zod4 | DONE（本地） | 11组wire迁入shared；1521差分+11 HTTP、Linux1777/Windows回归、shared77/前端726/BFF及产物通过；见 [证据](evidence/BM-16.md) |
 | BM-17 数据实测 | DONE（本地） | 只读双库快照/结构与质量盘点、合成历史样本、双平台9项测试通过；保留旧审计表/bio/NULL；见 [证据](evidence/BM-17.md) |
-| BM-18～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
+| BM-18 版本迁移 | IN PROGRESS | 已冻结双库001 SQL/checksum/结构清单，双平台验证通过；迁移账本/adopt/启动校验待实现；见 [证据](evidence/BM-18.md) |
+| BM-19～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
 M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当前推进 BM-11～19及剩余依赖安全；BM-06d远程run39831366762、BM-07远程run39832294837全部通过。生产代理链/旧直连消费者仍需发布前核验，依赖审计剩余项另分批修复。
 

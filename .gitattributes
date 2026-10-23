@@ -1,3 +1,4 @@
 * text=auto
 *.sh text eol=lf
 patches/*.patch text eol=lf
+backend/src/migrations/*.sql text eol=lf

@@ -37,6 +37,7 @@ jobs:
           python-version: '3.13'
       - run: python backend/scripts/backup_bundle_test.py
       - run: python backend/scripts/inspect_data_test.py
+      - run: python backend/scripts/migration_baseline_test.py
       - run: pnpm --filter guiair-backend test:unit
       - run: pnpm --filter guiair-backend run test:integration --reporter=default --reporter=json --outputFile=test-results/integration.json
       - run: pnpm --filter guiair-backend run test:contracts --reporter=default --reporter=json --outputFile=test-results/contracts.json
