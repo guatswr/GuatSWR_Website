@@ -4,7 +4,7 @@ const path = require('path');
 const { db, addLog, IMG_ROOT_DIR } = context;
 const { authenticateToken, optionalAuth, requireSuperAdmin } = context.auth;
 const { validate, normalizeImages } = require('../utils');
-const { activitySchema } = require('../controllers/schemas');
+const { activitySchema } = context.schemas;
 const { moveStagedFile, moveStagedFiles, moveStagedUrlsInText } = context.storage;
 const { notifyActivityPublished } = context.bot;
 

@@ -11,7 +11,8 @@ const normalizeImages = (images) => {
 };
 
 const validate = (schema, data) => {
-  const parsed = schema.safeParse(data);
+  const { backendV1Error } = require('@guatswr/shared/backend-v1');
+  const parsed = schema.safeParse(data, { error: backendV1Error });
   if (!parsed.success) {
     const msg = parsed.error.issues?.[0]?.message || '参数错误';
     return { ok: false, error: msg };

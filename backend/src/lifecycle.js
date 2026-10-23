@@ -17,6 +17,7 @@ const createApplication = async (options = {}) => {
   }, root);
   const { createDiagnosticLogger } = require(path.join(root, 'dist/src/diagnostics.js'));
   const logger = createDiagnosticLogger({ destination: options.logDestination, silent: configuration.nodeEnv === 'test' && !options.logDestination });
+  const schemas = require('@guatswr/shared/backend-v1');
   const database = await createDatabase({ env, paths: configuration.paths, logger });
   const timers = new Set();
   const jobs = new Set();
@@ -36,6 +37,7 @@ const createApplication = async (options = {}) => {
   let pendingListen;
   const context = {
     ...database, env, configuration, logger, timers, disposers, shutdownSignal: shutdown.signal,
+    schemas,
     isClosing: () => Boolean(closing),
     trackChild(child, options = {}) {
       children.add(child);

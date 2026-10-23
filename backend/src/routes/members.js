@@ -5,7 +5,7 @@ const fs = require('fs');
 const { db, addLog, IMG_ROOT_DIR } = context;
 const { authenticateToken, optionalAuth, requireSuperAdmin } = context.auth;
 const { validate } = require('../utils');
-const { memberSchema } = require('../controllers/schemas');
+const { memberSchema } = context.schemas;
 const { moveStagedFile, resolveUploadsPath, toUploadsUrl } = context.storage;
 const { notifyMemberAdded } = context.bot;
 

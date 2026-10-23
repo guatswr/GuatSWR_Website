@@ -2,11 +2,11 @@ import { z } from 'zod'
 
 /**
  * Admin/protected API contracts mirrored from the frozen backend
- * (`backend/src/controllers/schemas.js`, `routes/admin.js`, `routes/activities.js`,
+ * (the archived controllers, `routes/admin.js`, `routes/activities.js`,
  * `routes/members.js`, `routes/history.js`, `routes/config.js`, `routes/logs.js`,
- * `routes/auth.js`). Request schemas preserve the backend's limits; response
- * projections are explicit allowlists so raw DB rows and private fields never
- * leave the BFF.
+ * `routes/auth.js`). Legacy wire contracts now live in backend-v1.ts;
+ * BFF-specific bounds stay here. Response projections are explicit allowlists
+ * so raw DB rows and private fields never leave the BFF.
  */
 
 /* ------------------------------------------------------------- request rows */
@@ -67,7 +67,7 @@ export type AdminConfigKey = z.infer<typeof adminConfigKeySchema>
 
 const TRIMMED_CONFIG_KEYS: readonly string[] = ['qq_group_number', 'qq_join_url', 'join_question']
 
-// Mirrors backend/src/controllers/schemas.js `configSchema`, restricted to the
+// Mirrors backend-v1.ts configuration semantics, restricted to the
 // admin-editable key allowlist.
 export const adminConfigWriteSchema = z.object({
   key: adminConfigKeySchema,
@@ -100,7 +100,7 @@ export const resetPasswordSchema = z.object({
   password: z.string().min(6, '密码至少 6 位').max(100),
 })
 
-// Mirrors backend/src/controllers/schemas.js `profileSchema`.
+// Also consumed as the backend-v1.ts profile wire schema.
 export const profileInputSchema = z.object({
   password: z.preprocess(
     value => (value === '' ? undefined : value),

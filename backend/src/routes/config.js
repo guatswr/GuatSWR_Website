@@ -3,7 +3,7 @@ const express = require('express');
 const { db, addLog } = context;
 const { authenticateToken, requireAdmin, optionalAuth } = context.auth;
 const { validate } = require('../utils');
-const { configSchema } = require('../controllers/schemas');
+const { configSchema } = context.schemas;
 const { moveStagedFile, getConfigDir, isStagingUrl } = context.storage;
 
 const { PUBLIC_CONFIG_KEYS } = require('../utils/publicLog');

@@ -8,7 +8,7 @@ export const authRoleSchema = z.enum(AUTH_ROLES)
 
 export type AuthRole = z.infer<typeof authRoleSchema>
 
-// Mirrors backend/src/controllers/schemas.js `loginSchema`. `twofa` is the
+// Also consumed by backend-v1.ts. `twofa` is the
 // optional *second password*, never a TOTP code.
 export const loginSchema = z.object({
   username: z.string().trim().min(1, '用户名不能为空').max(50)

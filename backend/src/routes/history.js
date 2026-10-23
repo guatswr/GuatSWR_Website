@@ -3,7 +3,7 @@ const express = require('express');
 const { db, addLog } = context;
 const { authenticateToken, optionalAuth, requireSuperAdmin } = context.auth;
 const { validate } = require('../utils');
-const { historySchema } = require('../controllers/schemas');
+const { historySchema } = context.schemas;
 const { moveStagedFile, getHistoryDir } = context.storage;
 const { notifyHistoryUpdated } = context.bot;
 

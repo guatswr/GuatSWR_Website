@@ -9,7 +9,7 @@ const { db, addLog, IMG_ROOT_DIR } = context;
 const { validate } = require('../utils');
 const { authenticateToken, requireSuperAdmin } = context.auth;
 const { loginLimiter } = context.limiter;
-const { loginSchema, registerSchema, profileSchema } = require('../controllers/schemas');
+const { loginSchema, registerSchema, profileSchema } = context.schemas;
 const { moveStagedFile } = context.storage;
 
 const router = express.Router();

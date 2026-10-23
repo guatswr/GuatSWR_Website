@@ -10,7 +10,7 @@ const { validate, normalizeImages } = require('../utils');
 const { deleteByUrl, deletePathSafe } = context.storage;
 const { listBackups, resolveBackupPath, ensureBackupDirs } = context.backup;
 const { runAutoBackup } = context.scheduler;
-const { resetPasswordSchema } = require('../controllers/schemas');
+const { resetPasswordSchema } = context.schemas;
 const { banIp, unbanIp, cleanupExpired } = context.ban;
 
 const router = express.Router();

@@ -1,7 +1,6 @@
 [
   "src/app.js",
   "src/config/proxy.js",
-  "src/controllers/schemas.js",
   "src/lifecycle.js",
   "src/middlewares/auth.js",
   "src/middlewares/ban.js",

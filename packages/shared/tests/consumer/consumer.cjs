@@ -1,7 +1,7 @@
 const assert = require('node:assert/strict');
 const fs = require('node:fs');
 const path = require('node:path');
-const names = ['@guatswr/shared', '@guatswr/shared/config', '@guatswr/shared/event-labels', '@guatswr/shared/admin-workflows'];
+const names = ['@guatswr/shared', '@guatswr/shared/config', '@guatswr/shared/event-labels', '@guatswr/shared/admin-workflows', '@guatswr/shared/backend-v1'];
 (async () => {
   for (const name of names) {
     const common = require(name);
