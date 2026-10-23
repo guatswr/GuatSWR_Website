@@ -14,7 +14,13 @@ router.get('/', optionalAuth, (req, res) => {
   const sql = includeDeleted && req.user?.role === 'super_admin'
     ? "SELECT * FROM history ORDER BY date ASC, sort_order ASC"
     : "SELECT * FROM history WHERE deleted_at IS NULL ORDER BY date ASC, sort_order ASC";
-  db.all(sql, [], (err, rows) => res.json(rows || []));
+  db.all(sql, [], (err, rows) => {
+    if (err) {
+      context.logger.error('http.failed', { error: err, route: '/api/history', method: 'GET' });
+      return res.status(500).json({ message: '服务器错误' });
+    }
+    res.json(rows || []);
+  });
 });
 
 router.post('/', authenticateToken, (req, res) => {

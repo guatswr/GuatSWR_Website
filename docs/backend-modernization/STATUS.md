@@ -28,7 +28,7 @@ M0远程验收已通过；M1安全/恢复的本地工程节点已齐，当前推
 | BM-18 版本迁移 | DONE（本地） | 双账本/checksum/显式adopt、自定义路径、启动拒绝缺库/漂移；Windows1790/Linux全套+增量、生产镜像/BFF/恢复通过；见 [证据](evidence/BM-18.md) 与 [手册](MIGRATIONS.md) |
 | BM-19 事务接口 | DONE（本地） | 独立连接/参数绑定/有界busy/中断与真实进程崩溃回滚；双平台各1805项、生产闭包/信号通过；ADR-14审计策略已明确；见 [证据](evidence/BM-19.md) |
 | BM-20 config模块 | DONE（本地） | controller/service/repository严格TS；双平台各1814项、真实BFF缓存失效、生产镜像鉴权写/公开读通过；文件补偿仍归BM-27；见 [证据](evidence/BM-20.md) |
-| BM-21 history模块 | IN PROGRESS | EX-06创建ID独立修复，双平台各144项/BFF/本地Bot接收器通过；SQL错误伪成功和类型拆分待推进；见 [证据](evidence/BM-21.md) |
+| BM-21 history模块 | IN PROGRESS | EX-06创建ID已独立提交；列表SQL错误伪成功另行修复，红→绿双平台通过；类型拆分待推进；见 [证据](evidence/BM-21.md) |
 | BM-22～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
 M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。当前推进 BM-11～19及剩余依赖安全；BM-06d远程run39831366762、BM-07远程run39832294837全部通过。生产代理链/旧直连消费者仍需发布前核验，依赖审计剩余项另分批修复。

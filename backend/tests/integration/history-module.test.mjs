@@ -1,7 +1,7 @@
 import http from 'node:http'
 import { once } from 'node:events'
 import { expect, it, onTestFinished } from 'vitest'
-import { fixture, token, get } from '../helpers/fixture.mjs'
+import { fixture, token, get, run } from '../helpers/fixture.mjs'
 
 it('EX-06 create returns each committed ID and sends that ID to the real local Bot receiver', async () => {
   const notifications = []
@@ -31,4 +31,12 @@ it('EX-06 create returns each committed ID and sends that ID to the real local B
     expect(notification).toMatchObject({ event: 'history.updated', source: 'guatswr_web', actor: { id: 2, username: 'admin', role: 'admin' }, data: { id: responses[index].body.id, date: '2026-10-23', title: titles[index], description: '', image: '', sort_order: 0, action: 'create' } })
     expect(Number.isFinite(Date.parse(notification.timestamp))).toBe(true)
   }
+})
+
+it('EX-06 history SQL read failure returns a safe failure instead of a successful empty list', async () => {
+  const f = await fixture()
+  await run(f.db, 'DROP TABLE history')
+  const response = await f.http.get('/api/history')
+  expect(response.status).toBe(500)
+  expect(response.body).toEqual({ message: '服务器错误' })
 })
