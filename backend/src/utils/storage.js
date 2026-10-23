@@ -42,21 +42,26 @@ const moveFileSafe = async (src, dest) => {
   }
 };
 
-const uniqueDestPath = (targetDir, filename) => {
+const uniqueDestPath = (targetDir, filename, reserveThumb = false) => {
   const ext = path.extname(filename);
   const base = path.basename(filename, ext);
   let candidate = path.join(targetDir, filename);
-  if (!fs.existsSync(candidate)) return candidate;
+  const thumb = path.join(targetDir, `${base}-thumb.webp`);
+  if (!fs.existsSync(candidate) && !(reserveThumb && fs.existsSync(thumb))) return candidate;
   const suffix = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
   candidate = path.join(targetDir, `${base}-${suffix}${ext}`);
   return candidate;
 };
 
-const moveStagedFile = async (url, targetDir) => {
+const moveCacheKey = filename => process.platform === 'win32' ? path.resolve(filename).toLowerCase() : path.resolve(filename);
+const moveStagedFile = async (url, targetDir, movedUrls) => {
   if (!isStagingUrl(url)) return url;
   const srcPath = resolveUploadsPath(url);
   if (!srcPath) return url;
+  const cached = movedUrls?.get(moveCacheKey(srcPath));
+  if (cached) return cached;
   if (!fs.existsSync(srcPath)) return url;
+  const remember = (source, destination) => movedUrls?.set(moveCacheKey(source), toUploadsUrl(destination));
 
   if (!isSafePath(PUBLIC_DIR_RESOLVED, targetDir)) throw new Error('Unsafe storage path');
   await ensureDir(targetDir);
@@ -78,33 +83,37 @@ const moveStagedFile = async (url, targetDir) => {
   if (isThumb) {
     const origSrc = findOriginalInStaging();
     if (origSrc) {
-      const origDest = uniqueDestPath(targetDir, path.basename(origSrc));
+      const origDest = uniqueDestPath(targetDir, path.basename(origSrc), true);
       await moveFileSafe(origSrc, origDest);
+      remember(origSrc, origDest);
       destPath = origDest;
       const thumbDest = path.join(targetDir, `${path.parse(origDest).name}-thumb.webp`);
       await moveFileSafe(srcPath, thumbDest);
+      remember(srcPath, thumbDest);
       return toUploadsUrl(thumbDest);
     }
   }
 
-  destPath = uniqueDestPath(targetDir, filename);
+  destPath = uniqueDestPath(targetDir, filename, !isThumb);
   await moveFileSafe(srcPath, destPath);
+  remember(srcPath, destPath);
 
   const thumbSrc = path.join(path.dirname(srcPath), `${base}-thumb.webp`);
   if (fs.existsSync(thumbSrc)) {
     const destBase = path.parse(destPath).name;
     const thumbDest = path.join(targetDir, `${destBase}-thumb.webp`);
     await moveFileSafe(thumbSrc, thumbDest);
+    remember(thumbSrc, thumbDest);
   }
 
   return toUploadsUrl(destPath);
 };
 
-const moveStagedFiles = async (urls, targetDir) => {
+const moveStagedFiles = async (urls, targetDir, movedUrls) => {
   if (!Array.isArray(urls)) return urls;
   const results = [];
   for (const url of urls) {
-    results.push(await moveStagedFile(url, targetDir));
+    results.push(await moveStagedFile(url, targetDir, movedUrls));
   }
   return results;
 };
@@ -178,13 +187,13 @@ const cleanupStaging = async (ttlMs) => {
   }
 };
 
-const moveStagedUrlsInText = async (text, targetDir) => {
+const moveStagedUrlsInText = async (text, targetDir, movedUrls) => {
   if (!text || typeof text !== 'string') return text;
   const urls = text.match(/\/uploads\/upload\/[^\s)"']+/g) || [];
   if (urls.length === 0) return text;
   let updated = text;
   for (const url of urls) {
-    const newUrl = await moveStagedFile(url, targetDir);
+    const newUrl = await moveStagedFile(url, targetDir, movedUrls);
     if (newUrl && newUrl !== url) {
       updated = updated.split(url).join(newUrl);
     }

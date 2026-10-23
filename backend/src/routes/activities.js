@@ -98,9 +98,10 @@ router.post('/', authenticateToken, (req, res) => {
       const activityId = this.lastID;
       const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(activityId));
       (async () => {
-        const movedCover = await moveStagedFile(cover_image, activityDir);
-        const movedImages = await moveStagedFiles(normalizedImages, activityDir);
-        const movedContent = await moveStagedUrlsInText(content, activityDir);
+        const movedUrls = new Map();
+        const movedCover = await moveStagedFile(cover_image, activityDir, movedUrls);
+        const movedImages = await moveStagedFiles(normalizedImages, activityDir, movedUrls);
+        const movedContent = await moveStagedUrlsInText(content, activityDir, movedUrls);
         db.run("UPDATE activities SET cover_image=?, images=?, content=? WHERE id=?",
           [movedCover, JSON.stringify(movedImages), movedContent, activityId], (updateErr) => {
             if (updateErr) return res.status(500).json({ error: updateErr.message });
@@ -128,9 +129,10 @@ router.put('/:id', authenticateToken, (req, res) => {
 
   const activityDir = path.join(IMG_ROOT_DIR, 'activity', String(req.params.id));
   (async () => {
-    const movedCover = await moveStagedFile(cover_image, activityDir);
-    const movedImages = await moveStagedFiles(normalizedImages, activityDir);
-    const movedContent = await moveStagedUrlsInText(content, activityDir);
+    const movedUrls = new Map();
+    const movedCover = await moveStagedFile(cover_image, activityDir, movedUrls);
+    const movedImages = await moveStagedFiles(normalizedImages, activityDir, movedUrls);
+    const movedContent = await moveStagedUrlsInText(content, activityDir, movedUrls);
     db.run("UPDATE activities SET title=?, tag=?, date=?, description=?, content=?, cover_image=?, images=?, updated_by=?, status=? WHERE id=?", 
       [title, tag, date, description, movedContent, movedCover, JSON.stringify(movedImages), req.user.id, 'published', req.params.id], 
       (err) => {
