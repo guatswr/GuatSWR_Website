@@ -1,0 +1,58 @@
+{
+  "main": {
+    "activities": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "banned_ips": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "event_participants": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "events": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "history": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "login_attempts": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "members": {
+      "missingColumns": [],
+      "extraColumnHashes": [
+        "0532018263446433469480bac5ab768a7e036aee50f3ea63cd5f77b48ac19a87"
+      ],
+      "changedKnownColumns": []
+    },
+    "site_config": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    },
+    "users": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    }
+  },
+  "audit": {
+    "audit_logs": {
+      "missingColumns": [],
+      "extraColumnHashes": [],
+      "changedKnownColumns": []
+    }
+  }
+}

@@ -1,0 +1,330 @@
+{
+  "formatVersion": 1,
+  "consistency": "online-per-resource",
+  "applicationInitialized": false,
+  "complete": true,
+  "startedAtUtc": "2026-10-23T06:33:22.829820+00:00",
+  "databases": {
+    "main": {
+      "sqliteVersion": "3.50.4",
+      "schemaHash": "49eaac1a8a8e7b3fee3239cf17c9eef8a434d23aff6e1ba4e1e28ccd002e21a7",
+      "tables": {
+        "activities": {
+          "schemaHash": "39d2f2a233b61cc15b5e34dbe732b2313d6dbf099f295ea7696eb8fbbc72e883",
+          "columnCount": 14,
+          "indexCount": 3,
+          "foreignKeyCount": 0,
+          "rows": 3,
+          "nulls": {
+            "id": 0,
+            "title": 0,
+            "date": 0,
+            "description": 0,
+            "content": 0,
+            "cover_image": 0,
+            "created_at": 0,
+            "images": 0,
+            "created_by": 0,
+            "updated_by": 0,
+            "status": 0,
+            "tag": 0,
+            "deleted_by": 3,
+            "deleted_at": 3
+          },
+          "emptyRequired": {
+            "title": 0,
+            "date": 0
+          },
+          "invalidJson": {
+            "images": 0
+          },
+          "jsonKinds": {
+            "images": {
+              "array": 3
+            }
+          },
+          "unparseableDates": {
+            "date": 0,
+            "created_at": 0,
+            "deleted_at": 0
+          },
+          "statusDistinct": 1
+        },
+        "extension_438324d41b9c2d77": {
+          "schemaHash": "33c0cc8773a23bc4a6d781a846add62b3a81674cae7d5155d94525370f3a653f",
+          "columnCount": 5,
+          "indexCount": 0,
+          "foreignKeyCount": 0,
+          "rows": 14
+        },
+        "banned_ips": {
+          "schemaHash": "5b1a950c4f5b1d65d26c80f38d9b43dce41aac4ecdf21138daeba4a85fecebb0",
+          "columnCount": 5,
+          "indexCount": 2,
+          "foreignKeyCount": 0,
+          "rows": 0,
+          "nulls": {
+            "ip": 0,
+            "reason": 0,
+            "created_at": 0,
+            "expires_at": 0,
+            "created_by": 0
+          },
+          "emptyRequired": {},
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {}
+        },
+        "event_participants": {
+          "schemaHash": "72f3b5dba5ceab28f97d9024ce89151b7bc86ad670b47ea715df3c6cb19974a4",
+          "columnCount": 11,
+          "indexCount": 5,
+          "foreignKeyCount": 1,
+          "rows": 2,
+          "nulls": {
+            "id": 0,
+            "event_id": 0,
+            "user_id": 0,
+            "visitor_ip": 0,
+            "common_id": 0,
+            "machine_sign": 0,
+            "pilot_source": 0,
+            "qq": 0,
+            "avatar": 0,
+            "created_at": 0,
+            "updated_at": 0
+          },
+          "emptyRequired": {
+            "event_id": 0
+          },
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {
+            "created_at": 0,
+            "updated_at": 0
+          },
+          "orphanEvents": 0,
+          "duplicate_user_id_groups": 0,
+          "duplicate_visitor_ip_groups": 0
+        },
+        "events": {
+          "schemaHash": "e0cb73fc282fa8ec83a8f2f8d107915623736e09f9078b6feaa4b919d644b2d4",
+          "columnCount": 9,
+          "indexCount": 0,
+          "foreignKeyCount": 0,
+          "rows": 9,
+          "nulls": {
+            "id": 0,
+            "type": 0,
+            "title": 1,
+            "content": 0,
+            "status": 0,
+            "created_by": 1,
+            "visitor_ip": 0,
+            "created_at": 0,
+            "updated_at": 0
+          },
+          "emptyRequired": {
+            "type": 0,
+            "status": 0,
+            "content": 0
+          },
+          "invalidJson": {
+            "content": 0
+          },
+          "jsonKinds": {
+            "content": {
+              "object": 9
+            }
+          },
+          "unparseableDates": {
+            "created_at": 0,
+            "updated_at": 0
+          },
+          "statusDistinct": 4,
+          "typeDistinct": 8
+        },
+        "history": {
+          "schemaHash": "cbbc2c790be862357dc1f6fe00a35cf56c97288a8e688c88cfb50da187f3f6f8",
+          "columnCount": 8,
+          "indexCount": 3,
+          "foreignKeyCount": 0,
+          "rows": 45,
+          "nulls": {
+            "id": 0,
+            "date": 0,
+            "title": 0,
+            "description": 0,
+            "extension_affa657b3c3e9337": 0,
+            "sort_order": 0,
+            "deleted_at": 45,
+            "deleted_by": 45
+          },
+          "emptyRequired": {
+            "date": 0,
+            "title": 0
+          },
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {
+            "date": 0,
+            "deleted_at": 0
+          }
+        },
+        "login_attempts": {
+          "schemaHash": "5a4c0d2a81cce10a71d0e84206bb2aabbfce631256bffb5c5b7da59bf42641be",
+          "columnCount": 4,
+          "indexCount": 1,
+          "foreignKeyCount": 0,
+          "rows": 0,
+          "nulls": {
+            "ip": 0,
+            "count": 0,
+            "lock_until": 0,
+            "updated_at": 0
+          },
+          "emptyRequired": {},
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {}
+        },
+        "members": {
+          "schemaHash": "7a7642c9581d522d8e5b3011c99f9e2e6f95ebc802c3d751444e7889823ff0ab",
+          "columnCount": 10,
+          "indexCount": 2,
+          "foreignKeyCount": 0,
+          "rows": 139,
+          "nulls": {
+            "id": 0,
+            "name": 0,
+            "role": 0,
+            "extension_202f4cd7e23e665a": 0,
+            "avatar": 0,
+            "school": 0,
+            "sort_order": 0,
+            "deleted_at": 139,
+            "deleted_by": 139,
+            "tags": 98
+          },
+          "emptyRequired": {
+            "name": 0,
+            "role": 0
+          },
+          "invalidJson": {
+            "tags": 0
+          },
+          "jsonKinds": {
+            "tags": {
+              "array": 41,
+              "sql_null": 98
+            }
+          },
+          "unparseableDates": {
+            "deleted_at": 0
+          },
+          "roleDistinct": 139
+        },
+        "site_config": {
+          "schemaHash": "370aa0e73c3ce53936afa3f7b003330668b059124af596c733515dba63c6d5f8",
+          "columnCount": 2,
+          "indexCount": 1,
+          "foreignKeyCount": 0,
+          "rows": 12,
+          "nulls": {
+            "key": 0,
+            "value": 0
+          },
+          "emptyRequired": {},
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {}
+        },
+        "users": {
+          "schemaHash": "0e574fde8efc545b09183feee8674463ba34692145fdd8b6c37a788d337e0077",
+          "columnCount": 7,
+          "indexCount": 1,
+          "foreignKeyCount": 0,
+          "rows": 9,
+          "nulls": {
+            "id": 0,
+            "username": 0,
+            "password": 0,
+            "role": 0,
+            "avatar": 4,
+            "twofa_secret": 4,
+            "twofa_enabled": 0
+          },
+          "emptyRequired": {
+            "username": 0,
+            "password": 0,
+            "role": 0
+          },
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {},
+          "roleDistinct": 2,
+          "duplicateUsernames": 0
+        }
+      },
+      "missingTables": [],
+      "extensionTables": 1,
+      "integrityOk": true,
+      "foreignKeyViolations": 0,
+      "pragmas": {
+        "application_id": 0,
+        "user_version": 0,
+        "schema_version": 1,
+        "page_size": 4096,
+        "journal_mode": "wal",
+        "auto_vacuum": 0,
+        "foreign_keys": 1,
+        "query_only": 1,
+        "trusted_schema": 0
+      }
+    },
+    "audit": {
+      "sqliteVersion": "3.50.4",
+      "schemaHash": "54a9155e40d949fc2b5f81c695eb40ad6a21617b30d22d44b106d8dda1bd6384",
+      "tables": {
+        "audit_logs": {
+          "schemaHash": "7e58fe175e6126bceac87075e80f23af8a4587523912da751a7f2e9859cdfafc",
+          "columnCount": 5,
+          "indexCount": 2,
+          "foreignKeyCount": 0,
+          "rows": 1143,
+          "nulls": {
+            "id": 0,
+            "username": 0,
+            "action": 0,
+            "details": 0,
+            "created_at": 0
+          },
+          "emptyRequired": {
+            "action": 0
+          },
+          "invalidJson": {},
+          "jsonKinds": {},
+          "unparseableDates": {
+            "created_at": 0
+          }
+        }
+      },
+      "missingTables": [],
+      "extensionTables": 0,
+      "integrityOk": true,
+      "foreignKeyViolations": 0,
+      "pragmas": {
+        "application_id": 0,
+        "user_version": 0,
+        "schema_version": 1,
+        "page_size": 4096,
+        "journal_mode": "wal",
+        "auto_vacuum": 0,
+        "foreign_keys": 1,
+        "query_only": 1,
+        "trusted_schema": 0
+      }
+    }
+  },
+  "finishedAtUtc": "2026-10-23T06:33:22.866377+00:00"
+}
