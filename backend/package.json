@@ -15,7 +15,10 @@
     "check:legacy": "node scripts/check-legacy-budget.cjs",
     "build": "npm run check:legacy && tsc -p tsconfig.build.json",
     "typecheck": "npm run check:legacy && tsc -p tsconfig.json --noEmit",
-    "lint": "eslint src --max-warnings=0"
+    "lint": "eslint src --max-warnings=0",
+    "db:check": "node dist/src/migrations/cli.js check",
+    "db:inspect": "node dist/src/migrations/cli.js inspect",
+    "db:migrate": "node dist/src/migrations/cli.js"
   },
   "dependencies": {
     "bcryptjs": "2.4.3",
