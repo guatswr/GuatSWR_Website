@@ -9,7 +9,7 @@ export interface Connection {
 }
 type Kind = 'main' | 'audit'
 type Shape = { columns: unknown[][]; foreignKeys: unknown[][]; indexes: { name: string; unique: number; origin: string; partial: number; columns: unknown[][] }[] }
-interface Entry { version: number; file: string; sha256: string; shape: Record<string, Shape>; upgrades?: Entry[] }
+interface Entry { version: number; file: string; sha256: string; shape: Record<string, Shape>; upgrades?: Entry[]; compatibleUpgrades?: Entry[] }
 const ledger = '_guatswr_migrations'
 const all = (db: Connection, sql: string, params: unknown[] = []) => new Promise<Record<string, unknown>[]>((resolve, reject) => db.all(sql, params, (error, rows) => error ? reject(error) : resolve(rows)))
 const exec = (db: Connection, sql: string) => new Promise<void>((resolve, reject) => db.exec(sql, error => error ? reject(error) : resolve()))
@@ -20,11 +20,12 @@ const matrix = (rows: Record<string, unknown>[], keys: string[]) => rows.map(row
 const columnKeys = ['cid', 'name', 'type', 'notnull', 'dflt_value', 'pk', 'hidden']
 const indexKeys = ['seqno', 'cid', 'name', 'desc', 'coll', 'key']
 
-async function definition(directory: string, kind: Kind) {
+async function definition(directory: string, kind: Kind, compatible = false) {
   const manifest = JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8')) as Record<Kind, Entry>
   const base = manifest[kind]
-  if (!base || base.version !== 1 || (base.upgrades !== undefined && !Array.isArray(base.upgrades))) return failure('MIGRATION_MANIFEST_INVALID')
-  const entries = [base, ...(base.upgrades || [])]
+  if (!base || base.version !== 1 || (base.upgrades !== undefined && !Array.isArray(base.upgrades))
+    || (base.compatibleUpgrades !== undefined && !Array.isArray(base.compatibleUpgrades))) return failure('MIGRATION_MANIFEST_INVALID')
+  const entries = [base, ...(base.upgrades || []), ...(compatible ? base.compatibleUpgrades || [] : [])]
   const definitions: { entry: Entry; sql: string }[] = []
   const names = new Set<string>()
   for (const [index, entry] of entries.entries()) {
@@ -100,11 +101,11 @@ async function checkLoaded(db: Connection, definitions: { entry: Entry }[], kind
   return { version: current.version, fingerprint: schema.fingerprint }
 }
 
-export async function checkDatabase(db: Connection, directory: string, kind: Kind) {
-  const definitions = await definition(directory, kind)
+export async function checkDatabase(db: Connection, directory: string, kind: Kind, options: { compatible?: boolean } = {}) {
+  const definitions = await definition(directory, kind, options.compatible)
   await exec(db, 'BEGIN')
   try {
-    const result = await checkLoaded(db, definitions, kind)
+    const result = await checkLoaded(db, definitions, kind, options.compatible)
     await exec(db, 'COMMIT')
     return result
   } catch (error) { await exec(db, 'ROLLBACK'); throw error }

@@ -73,7 +73,7 @@ const createDatabase = async ({ env, paths, logger }) => {
     const db = await open(resolved.dbPath);
     const logDb = await open(resolved.logDbPath);
     const migrations = path.join(resolved.BACKEND_ROOT, 'src/migrations');
-    await checkDatabase(db, migrations, 'main');
+    const mainSchema = await checkDatabase(db, migrations, 'main', { compatible: true });
     await checkDatabase(logDb, migrations, 'audit');
     for (const connection of [db, logDb]) {
       for (const pragma of ['journal_mode = WAL', 'synchronous = NORMAL', 'foreign_keys = ON', 'busy_timeout = 5000']) {
@@ -87,7 +87,7 @@ const createDatabase = async ({ env, paths, logger }) => {
     };
     const sql = { main: createSqliteStore(resolved.dbPath), audit: createSqliteStore(resolved.logDbPath) };
     stores.push(sql.main, sql.audit);
-    return { ...resolved, db, logDb, sql, addLog, close: closeAll };
+    return { ...resolved, db, logDb, sql, addLog, mainSchemaVersion: mainSchema.version, close: closeAll };
   } catch (error) {
     await closeAll();
     throw error;

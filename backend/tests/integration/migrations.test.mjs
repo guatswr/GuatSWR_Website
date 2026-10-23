@@ -210,3 +210,25 @@ it('rejects an upgrade manifest that weakens previously required schema validati
   await expect(migrateDatabase(db, custom, 'main', { mode: 'initialize' })).rejects.toHaveProperty('code', 'MIGRATION_MANIFEST_INVALID')
   expect(await all(db, "SELECT name FROM sqlite_master WHERE name NOT LIKE 'sqlite_%'")).toEqual([])
 })
+
+it('bridge validator accepts only declared compatible v2 without enabling it at initialization', async () => {
+  const f = await fixture(), db = await f.open(), custom = path.join(f.root, 'activated')
+  await migrateDatabase(db, directory, 'main', { mode: 'initialize' })
+  expect((await checkDatabase(db, directory, 'main', { compatible: true })).version).toBe(1)
+  await fs.cp(directory, custom, { recursive: true })
+  const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
+  manifest.main.upgrades = manifest.main.compatibleUpgrades
+  delete manifest.main.compatibleUpgrades
+  await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
+  await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })
+  expect((await checkDatabase(db, directory, 'main', { compatible: true })).version).toBe(2)
+  await expect(checkDatabase(db, directory, 'main')).rejects.toHaveProperty('code', 'MIGRATION_VERSION_MISMATCH')
+  const { createDatabase } = require('../../src/models/db.js')
+  const audit = await f.open('audit.db')
+  await migrateDatabase(audit, directory, 'audit', { mode: 'initialize' })
+  const instance = await createDatabase({ env: { DB_PATH: path.join(f.root, 'main.db'), LOG_DB_PATH: path.join(f.root, 'audit.db') }, paths: { data: f.root, public: path.join(f.root, 'public') } })
+  expect(instance.mainSchemaVersion).toBe(2)
+  await instance.close()
+  await exec(db, 'CREATE TABLE unknown_future(value TEXT)')
+  await expect(checkDatabase(db, directory, 'main', { compatible: true })).rejects.toHaveProperty('code', 'MIGRATION_SCHEMA_DRIFT')
+})
