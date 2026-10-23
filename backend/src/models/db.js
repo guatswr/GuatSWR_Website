@@ -50,7 +50,9 @@ const createDatabase = async ({ env, paths, logger }) => {
   const sqlite3 = require('sqlite3').verbose();
   const bcrypt = require('bcryptjs');
   const { checkDatabase } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/migrations/engine'));
+  const { createSqliteStore } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/database/sqlite'));
   const connections = [];
+  const stores = [];
   const open = (filename) => new Promise((resolve, reject) => {
     const connection = new sqlite3.Database(filename, sqlite3.OPEN_READWRITE, (error) => {
       if (error) return reject(error);
@@ -60,7 +62,11 @@ const createDatabase = async ({ env, paths, logger }) => {
   });
   let closed;
   const closeAll = () => {
-    if (!closed) closed = Promise.all(connections.map(close));
+    if (!closed) closed = (async () => {
+      const results = await Promise.allSettled([...stores.map(store => store.close()), ...connections.map(close)]);
+      const errors = results.filter(result => result.status === 'rejected').map(result => result.reason);
+      if (errors.length) throw new AggregateError(errors, 'Database cleanup failed');
+    })();
     return closed;
   };
   try {
@@ -91,7 +97,9 @@ const createDatabase = async ({ env, paths, logger }) => {
       logDb.run('INSERT INTO audit_logs (username, action, details) VALUES (?, ?, ?)',
         [username || 'System', action, details], logger ? logger.bind(report) : report);
     };
-    return { ...resolved, db, logDb, addLog, close: closeAll };
+    const sql = { main: createSqliteStore(resolved.dbPath), audit: createSqliteStore(resolved.logDbPath) };
+    stores.push(sql.main, sql.audit);
+    return { ...resolved, db, logDb, sql, addLog, close: closeAll };
   } catch (error) {
     await closeAll();
     throw error;

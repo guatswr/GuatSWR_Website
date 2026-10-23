@@ -16,7 +16,10 @@ const { start } = require('../server');
     const response = await fetch(`http://127.0.0.1:${instance.app.get('port') || process.env.PORT}/api/version`);
     assert.equal(response.status, 200);
     assert.equal((await response.json()).status, 'online');
-    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp }));
+    const main = await instance.context.sql.main.transaction(tx => tx.get('SELECT count(*) AS count FROM users'));
+    const audit = await instance.context.sql.audit.get('SELECT count(*) AS count FROM audit_logs');
+    assert.ok(Number.isInteger(main.count) && Number.isInteger(audit.count));
+    console.log(JSON.stringify({ node: process.version, platform: process.platform, sqlite: version, sqliteCli: execFileSync('sqlite3',['--version'],{encoding:'utf8'}).trim(), sharp: require('sharp').versions.sharp, scopedSql: true }));
   } finally {
     await instance.close();
     if (path.dirname(root) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-runtime-')) throw new Error('Unsafe smoke cleanup');
