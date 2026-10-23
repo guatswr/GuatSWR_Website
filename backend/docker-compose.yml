@@ -9,10 +9,9 @@ services:
     ports:
       - "127.0.0.1:8088:3000"
     volumes:
-      - ./:/app
-      - /app/node_modules
       - ./data:/app/data
       - ./uploads:/app/uploads
+      - ./backups:/app/backups
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
