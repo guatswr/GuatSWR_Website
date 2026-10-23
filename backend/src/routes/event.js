@@ -346,17 +346,17 @@ router.post('/:id/settle', authenticateToken, requireAdmin, async (req, res) => 
   if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
 
   try {
-    const event = await dbGet('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    const content = parseContent(event).content;
     const payload = req.body?.payload && typeof req.body.payload === 'object' ? req.body.payload : {};
-    const nextContent = { ...content, ...payload };
     const nextStatus = String(req.body?.status || 'settled');
-
-    await dbRun(
-      'UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [JSON.stringify(nextContent), nextStatus, eventId]
-    );
+    const event = await context.sql.main.transaction(async (tx) => {
+      const current = await tx.get('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
+      if (!current) return null;
+      const nextContent = { ...parseContent(current).content, ...payload };
+      await tx.run('UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [JSON.stringify(nextContent), nextStatus, eventId]);
+      return current;
+    });
+    if (!event) return res.status(404).json({ message: 'Event not found' });
     addLog(req.user.username, 'SETTLE_EVENT', `结算事件 EID: ${eventId}`);
     callBotHook('event.settled', { eventId, type: event.type, payload }, getActor(req)).catch(() => {});
     res.json({ message: '已结算', id: eventId });
@@ -373,15 +373,16 @@ router.post('/:id/set_result', authenticateToken, requireAdmin, async (req, res)
   if (!Array.isArray(results)) return res.status(400).json({ message: 'results must be an array' });
 
   try {
-    const event = await dbGet('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
+    const event = await context.sql.main.transaction(async (tx) => {
+      const current = await tx.get('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
+      if (!current || !isSignupType(current.type)) return current;
+      const nextContent = { ...parseContent(current).content, results, results_updated_at: new Date().toISOString() };
+      await tx.run('UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
+        [JSON.stringify(nextContent), 'ended', eventId]);
+      return current;
+    });
     if (!event) return res.status(404).json({ message: 'Event not found' });
     if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持录入结果' });
-    const content = parseContent(event).content;
-    const nextContent = { ...content, results, results_updated_at: new Date().toISOString() };
-    await dbRun(
-      'UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-      [JSON.stringify(nextContent), 'ended', eventId]
-    );
     addLog(req.user.username, 'SET_EVENT_RESULT', `录入比赛结果 EID: ${eventId}`);
     callBotHook('event.result_set', { eventId, type: event.type, results }, getActor(req)).catch(() => {});
     res.json({ message: '结果已保存', id: eventId });
