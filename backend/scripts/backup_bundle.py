@@ -239,7 +239,39 @@ def database_names(files):
     return audit
 
 
-def pack_full(db, public, public_manifest, output, tag, consistency, revision):
+def file_identity(filename):
+    value = filename.stat()
+    return ':'.join(str(item) for item in (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns))
+
+
+def pack_quarantine(root, work, tag, db, db_files):
+    if root.is_symlink():
+        raise ValueError('quarantine symlink is forbidden')
+    if not root.exists():
+        root = work / 'empty-quarantine'
+        root.mkdir(mode=0o700)
+    root = root.resolve(strict=True)
+    packed = pack_public(root, work / 'quarantine-pack', tag)
+    archive = work / ('quarantine_' + tag + '.tar.gz')
+    packed.rename(archive)
+    files = scan(archive)
+    bindings = {}
+    extracted = work / 'binding-databases'
+    extract_checked(db, extracted, db_files)
+    from urllib.parse import quote
+    uri = 'file:' + quote((extracted / 'main.db').as_posix(), safe='/') + '?mode=ro&immutable=1'
+    with contextlib.closing(sqlite3.connect(uri, uri=True)) as connection:
+        if connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='asset_cleanup_jobs'").fetchone():
+            for job_id, original in connection.execute('SELECT id,identity FROM asset_cleanup_jobs'):
+                if not re.fullmatch('[a-f0-9-]{36}', job_id) or job_id not in files:
+                    continue
+                current = file_identity(root / job_id)
+                if current.split(':')[:4] == original.split(':')[:4]:
+                    bindings[job_id] = {'identity': original, 'sha256': files[job_id]['sha256']}
+    return archive, {'archive': archive.name, **info(archive), 'files': files, 'bindings': bindings}
+
+
+def pack_full(db, public, public_manifest, output, tag, consistency, revision, quarantine=None):
     validate_tag(tag)
     verify_outer(db)
     verify_outer(public)
@@ -258,11 +290,17 @@ def pack_full(db, public, public_manifest, output, tag, consistency, revision):
     output.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix='.full_', dir=output) as work:
         work = Path(work)
+        private_archive = None
+        if quarantine is not None:
+            private_archive, manifest['quarantine'] = pack_quarantine(quarantine, work, tag, db, db_files)
+            manifest['version'] = 3
         (work / MANIFEST).write_bytes(json_bytes(manifest))
         staged = work / 'full.tar.gz'
         with tarfile.open(staged, 'w:gz') as archive:
             archive.add(db, arcname=db.name)
             archive.add(public, arcname=public.name)
+            if private_archive is not None:
+                archive.add(private_archive, arcname=private_archive.name)
             archive.add(work / MANIFEST, arcname=MANIFEST)
         return finish_archive(staged, output, 'full_' + tag)
 
@@ -300,10 +338,13 @@ def restore(archive_file, target, checksum, allow_legacy):
             if manifest_file.stat().st_size > MAX_METADATA:
                 raise ValueError('manifest too large')
             manifest = json.loads(manifest_file.read_bytes())
-            if manifest.get('format') != 'guatswr-full' or manifest.get('version') != 2:
+            if manifest.get('format') != 'guatswr-full' or manifest.get('version') not in (2, 3):
                 raise ValueError('unsupported manifest')
             db_spec, public_spec = manifest['databases'], manifest['public']
-            if set(outer) != {MANIFEST, db_spec['archive'], public_spec['archive']}:
+            expected_parts = {MANIFEST, db_spec['archive'], public_spec['archive']}
+            if manifest['version'] == 3:
+                expected_parts.add(manifest['quarantine']['archive'])
+            if len(expected_parts) != (4 if manifest['version'] == 3 else 3) or set(outer) != expected_parts:
                 raise ValueError('unexpected full bundle entries')
         else:
             if not allow_legacy:
@@ -315,7 +356,8 @@ def restore(archive_file, target, checksum, allow_legacy):
             db_spec = {'archive': db_names[0], **info(parts / db_names[0]), 'files': scan(parts / db_names[0])}
             public_spec = {'archive': public_names[0], **info(parts / public_names[0]), 'files': scan(parts / public_names[0])}
             manifest = {'format': 'guatswr-full', 'version': 1, 'consistency': 'legacy-unknown', 'databases': db_spec, 'public': public_spec}
-        for spec in [db_spec, public_spec]:
+        private_spec = manifest.get('quarantine') if manifest['version'] == 3 else None
+        for spec in [db_spec, public_spec] + ([private_spec] if private_spec is not None else []):
             name = clean_name(spec['archive'])
             if '/' in name or not name or name not in outer:
                 raise ValueError('invalid nested archive name')
@@ -331,7 +373,29 @@ def restore(archive_file, target, checksum, allow_legacy):
         extract_checked(parts / public_spec['archive'], public, public_spec['files'])
         shutil.move(databases / 'main.db', candidate / 'data/guatswr_web_main.db')
         shutil.move(databases / audit_name, candidate / 'data/guatswr_web_logs.db')
+        rebound = 0
+        if private_spec is not None:
+            private = candidate / 'data/asset-quarantine'
+            private.mkdir(mode=0o700)
+            extract_checked(parts / private_spec['archive'], private, private_spec['files'])
+            # Rebind only jobs proven to own the archived private bytes. Never bind
+            # an old deletion intent to a replacement at the same public URL.
+            with contextlib.closing(sqlite3.connect(candidate / 'data/guatswr_web_main.db')) as connection:
+                for job_id, binding in private_spec.get('bindings', {}).items():
+                    if not re.fullmatch('[a-f0-9-]{36}', job_id) or job_id not in private_spec['files']:
+                        raise ValueError('invalid quarantine binding')
+                    if binding['sha256'] != private_spec['files'][job_id]['sha256']:
+                        raise ValueError('quarantine binding checksum mismatch')
+                    row = connection.execute('SELECT identity FROM asset_cleanup_jobs WHERE id=?', (job_id,)).fetchone()
+                    if row != (binding['identity'],):
+                        raise ValueError('quarantine binding identity mismatch')
+                    connection.execute('UPDATE asset_cleanup_jobs SET identity=? WHERE id=?', (file_identity(private / job_id), job_id))
+                    rebound += 1
+                connection.commit()
+            validate_sqlite(candidate / 'data/guatswr_web_main.db', 'main')
         receipt = {'restored_at': utcnow(), 'source_sha256': digest(archive_file), 'manifest': manifest}
+        if private_spec is not None:
+            receipt['rebound_cleanup_jobs'] = rebound
         (candidate / 'RESTORE_READY.json').write_bytes(json_bytes(receipt))
         # The parent is operator-controlled; cooperating restorers never overwrite.
         lock = target.parent / ('.' + target.name + '.restore-lock')
@@ -359,6 +423,7 @@ def main():
     full.add_argument('--tag', required=True)
     full.add_argument('--consistency', choices=['online-per-resource', 'quiesced-attested'], default='online-per-resource')
     full.add_argument('--revision', default='unknown')
+    full.add_argument('--quarantine', type=Path)
     recover = commands.add_parser('restore')
     recover.add_argument('archive', type=Path)
     recover.add_argument('--target', type=Path, required=True)
@@ -368,7 +433,7 @@ def main():
     if args.command == 'public':
         result = pack_public(args.root, args.out, args.tag)
     elif args.command == 'full':
-        result = pack_full(args.db, args.public, args.public_manifest, args.out, args.tag, args.consistency, args.revision)
+        result = pack_full(args.db, args.public, args.public_manifest, args.out, args.tag, args.consistency, args.revision, args.quarantine)
     else:
         result = restore(args.archive, args.target, args.sha256, args.allow_legacy)
     print(json.dumps({'ok': True, 'output': str(result)}, ensure_ascii=False))

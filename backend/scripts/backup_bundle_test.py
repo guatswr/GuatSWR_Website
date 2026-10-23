@@ -47,9 +47,14 @@ class RestoreChecks(unittest.TestCase):
         self.assertFalse(self.target.exists())
         self.assertFalse(any(self.root.glob('.guatswr-restore-*')))
 
-    def make_full(self, legacy=False, corrupt=False, orphan=False):
+    def make_full(self, legacy=False, corrupt=False, orphan=False, quarantine=False):
         source = self.root / 'source'
         source.mkdir()
+        private = self.root / 'private-source'
+        job_id = '01234567-1234-1234-1234-0123456789ab'
+        if quarantine:
+            private.mkdir(mode=0o700)
+            (private / job_id).write_bytes(b'synthetic quarantine bytes')
         for name in ['main.db', 'logs.db']:
             with contextlib.closing(sqlite3.connect(source / name)) as connection:
                 connection.execute('CREATE TABLE fixture (value TEXT)')
@@ -57,6 +62,9 @@ class RestoreChecks(unittest.TestCase):
                 if name == 'main.db':
                     connection.execute('CREATE TABLE users (id INTEGER PRIMARY KEY)')
                     connection.execute('CREATE TABLE site_config (key TEXT PRIMARY KEY, value TEXT)')
+                    if quarantine:
+                        connection.execute('CREATE TABLE asset_cleanup_jobs (id TEXT PRIMARY KEY, identity TEXT, state TEXT)')
+                        connection.execute('INSERT INTO asset_cleanup_jobs VALUES (?,?,?)', (job_id, bundle.file_identity(private / job_id), 'pending'))
                     if orphan:
                         connection.execute('CREATE TABLE parents (id INTEGER PRIMARY KEY)')
                         connection.execute('CREATE TABLE children (parent INTEGER REFERENCES parents(id))')
@@ -82,7 +90,39 @@ class RestoreChecks(unittest.TestCase):
                 archive.add(uploads, arcname=uploads.name)
             self.sign(full)
             return full
-        return bundle.pack_full(db, uploads, uploads.with_name('uploads_20261023_000001.manifest.json'), self.root / 'full', '20261023_000001', 'online-per-resource', 'synthetic')
+        return bundle.pack_full(db, uploads, uploads.with_name('uploads_20261023_000001.manifest.json'), self.root / 'full', '20261023_000001', 'online-per-resource', 'synthetic', private if quarantine else None)
+
+    def test_v3_restores_private_bytes_and_rebinds_only_verified_quarantine_identity(self):
+        archive = self.make_full(quarantine=True)
+        bundle.restore(archive, self.target, None, False)
+        receipt = json.loads((self.target / 'RESTORE_READY.json').read_bytes())
+        self.assertEqual(receipt['manifest']['version'], 3)
+        self.assertEqual(receipt['rebound_cleanup_jobs'], 1)
+        job_id = '01234567-1234-1234-1234-0123456789ab'
+        private = self.target / 'data/asset-quarantine' / job_id
+        self.assertEqual(private.read_bytes(), b'synthetic quarantine bytes')
+        self.assertFalse((self.target / 'data/public' / job_id).exists())
+        with contextlib.closing(sqlite3.connect(self.target / 'data/guatswr_web_main.db')) as connection:
+            self.assertEqual(connection.execute('SELECT identity,state FROM asset_cleanup_jobs').fetchone(), (bundle.file_identity(private), 'pending'))
+
+    def test_v3_rejects_tampered_quarantine_binding_before_publication(self):
+        archive = self.make_full(quarantine=True)
+        with tarfile.open(archive, 'r:gz') as source:
+            contents = {item.name: source.extractfile(item).read() for item in source if item.isfile()}
+        manifest = json.loads(contents[bundle.MANIFEST])
+        next(iter(manifest['quarantine']['bindings'].values()))['sha256'] = '0' * 64
+        contents[bundle.MANIFEST] = json.dumps(manifest).encode()
+        self.refused(self.archive('tampered-binding.tar.gz', [self.file(name, data) for name, data in contents.items()]))
+
+    def test_rejects_reused_nested_archive_names(self):
+        archive = self.make_full()
+        with tarfile.open(archive, 'r:gz') as source:
+            contents = {item.name: source.extractfile(item).read() for item in source if item.isfile()}
+        manifest = json.loads(contents[bundle.MANIFEST])
+        contents.pop(manifest['public']['archive'])
+        manifest['public'] = manifest['databases']
+        contents[bundle.MANIFEST] = json.dumps(manifest).encode()
+        self.refused(self.archive('alias-parts.tar.gz', [self.file(name, data) for name, data in contents.items()]))
 
     def test_valid_manifest_and_resources(self):
         archive = self.make_full()

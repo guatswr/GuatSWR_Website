@@ -13,6 +13,7 @@ const metadata = async (filename: string) => {
   try { return await fs.lstat(filename, { bigint: true }) }
   catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error }
 }
+const paused = async (quarantine: string) => Boolean(await metadata(path.join(path.dirname(quarantine), '.asset-cleanup-fence')))
 async function safeParents(root: string, filename: string) {
   const relative = path.relative(root, filename)
   if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('CLEANUP_PATH')
@@ -61,12 +62,14 @@ export async function processCleanupJob(store: SqliteStore, root: string, quaran
   if (!path.isAbsolute(root) || !path.isAbsolute(quarantine) || !/^[a-f0-9-]{36}$/.test(id)) throw new Error('CLEANUP_ARGUMENTS')
   const relative = path.relative(root, quarantine)
   if (!relative.startsWith('..') && !path.isAbsolute(relative)) throw new Error('CLEANUP_QUARANTINE_PUBLIC')
+  if (await paused(quarantine)) return 'pending'
   await fs.mkdir(quarantine, { recursive: true, mode: 0o700 })
   if ((await fs.lstat(quarantine)).isSymbolicLink()) throw new Error('CLEANUP_PATH')
   const actualRelative = path.relative(await fs.realpath(root), await fs.realpath(quarantine))
   if (!actualRelative.startsWith('..') && !path.isAbsolute(actualRelative)) throw new Error('CLEANUP_QUARANTINE_PUBLIC')
   try {
     return await store.transaction(async tx => {
+      if (await paused(quarantine)) return 'pending'
       const job = await tx.get<Job>('SELECT * FROM asset_cleanup_jobs WHERE id=?', [id])
       if (!job || !['pending', 'quarantined'].includes(job.state)) return job?.state || 'missing'
       const filename = localAssetPath(root, job.url)
@@ -114,6 +117,7 @@ export async function processCleanupJob(store: SqliteStore, root: string, quaran
 
 export async function runCleanupBatch(store: SqliteStore, root: string, quarantine: string, limit = 20, signal?: AbortSignal) {
   if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error('CLEANUP_LIMIT')
+  if (await paused(quarantine)) return { processed: 0, failed: 0 }
   const jobs = await store.all<Job>("SELECT * FROM asset_cleanup_jobs WHERE state='pending' AND attempts<10 ORDER BY updated_at,id LIMIT ?", [limit])
   const result = { processed: 0, failed: 0 }
   for (const job of jobs) {

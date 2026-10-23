@@ -130,3 +130,14 @@ it('background cleanup starts after listen and drains persisted work with manage
   } finally { await other.close();vi.useRealTimers() }
   expect(other.context.timers.size).toBe(0)
 })
+
+it('backup fence defers new moves without consuming retries and resumes after the fence is removed', async () => {
+  const c=await setup(),id=await queue(c),fence=path.join(c.f.root,'data','.asset-cleanup-fence')
+  await fs.mkdir(fence)
+  expect(await runCleanupBatch(c.store,c.root,c.quarantine)).toEqual({processed:0,failed:0})
+  expect(await processCleanupJob(c.store,c.root,c.quarantine,id)).toBe('pending')
+  expect((await c.store.get('SELECT attempts FROM asset_cleanup_jobs WHERE id=?',[id])).attempts).toBe(0)
+  expect(await fs.readFile(c.filename)).toEqual(png)
+  await fs.rmdir(fence)
+  expect(await processCleanupJob(c.store,c.root,c.quarantine,id)).toBe('quarantined')
+})
