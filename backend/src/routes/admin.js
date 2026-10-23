@@ -13,6 +13,15 @@ const { runAutoBackup } = context.scheduler;
 const { resetPasswordSchema } = context.schemas;
 const { banIp, unbanIp, cleanupExpired } = context.ban;
 
+const stateModule = path.join(context.BACKEND_ROOT, 'dist/src/modules/events/state');
+const { createEventStateRepository } = require(path.join(stateModule, 'repository'));
+const { createEventStateService } = require(path.join(stateModule, 'service'));
+const { createEventStateController } = require(path.join(stateModule, 'controller'));
+const stateController = createEventStateController(createEventStateService({
+  repository: createEventStateRepository(context.sql.main), audit: addLog,
+  notify: require('../utils/botHooks').callBotHook,
+  reportAuditFailure: error => context.logger.error('audit.failed', { error })
+}), error => context.logger.error('http.failed', { error, route: '/api/event/state' }));
 const router = express.Router();
 
 // ==============================================================================
@@ -359,26 +368,7 @@ router.get('/events/pending', authenticateToken, (req, res) => {
 /**
  * 审核事件 (通过/驳回)
  */
-router.post('/events/:id/review', authenticateToken, (req, res) => {
-  const { action } = req.body; 
-  const eventId = req.params.id;
-
-  if (!['approve', 'reject'].includes(action)) {
-    return res.status(400).json({ message: "Invalid action. Use 'approve' or 'reject'." });
-  }
-
-  const newStatus = action === 'approve' ? 'published' : 'rejected';
-
-  const sql = `UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?`;
-  db.run(sql, [newStatus, eventId], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    if (this.changes === 0) return res.status(404).json({ message: "Event not found" });
-
-    addLog(req.user.username, 'REVIEW_EVENT', `审核事件 EID: ${eventId} -> ${newStatus}`);
-    
-    res.json({ message: `操作成功，事件已${newStatus === 'published' ? '发布' : '驳回'}` });
-  });
-});
+router.post('/events/:id/review', authenticateToken, (req, res, next) => stateController.review(req, res).catch(next));
 
 /**
  * 物理删除事件 (含关联文件)

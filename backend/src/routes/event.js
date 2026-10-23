@@ -16,12 +16,21 @@ const signupController = createSignupController(
   createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook }),
   error => context.logger.error('http.failed', { error, route: '/api/event/:id/signup' })
 );
+const stateModule = path.join(context.BACKEND_ROOT, 'dist/src/modules/events/state');
+const { createEventStateRepository } = require(path.join(stateModule, 'repository'));
+const { createEventStateService, eventStatuses } = require(path.join(stateModule, 'service'));
+const { createEventStateController } = require(path.join(stateModule, 'controller'));
+const stateController = createEventStateController(createEventStateService({
+  repository: createEventStateRepository(context.sql.main), audit: addLog,
+  notify: require('../utils/botHooks').callBotHook,
+  reportAuditFailure: error => context.logger.error('audit.failed', { error })
+}), error => context.logger.error('http.failed', { error, route: '/api/event/state' }));
 const router = express.Router();
 const persistEventContent = createEventContentPersister({ imageRoot: IMG_ROOT_DIR, moveStagedFile });
 
 const PUBLIC_STATUSES = ['published', 'ongoing', 'ended', 'settled'];
-const SIGNUP_TYPES = ['STG', '则则'];
-const ADMIN_STATUSES = ['draft', 'pending', 'published', 'ongoing', 'ended', 'settled', 'rejected', 'deleted'];
+
+const ADMIN_STATUSES = eventStatuses;
 
 const dbGet = (sql, params = []) => new Promise((resolve, reject) => {
   db.get(sql, params, (err, row) => (err ? reject(err) : resolve(row)));
@@ -50,7 +59,7 @@ const normalizeStatusList = (raw) => {
 };
 
 const isPublicStatus = (status) => PUBLIC_STATUSES.includes(status);
-const isSignupType = (type) => SIGNUP_TYPES.includes(type);
+
 const getActor = (req) => (req.user ? { id: req.user.id, username: req.user.username, role: req.user.role } : null);
 // ==========================================
 //  访客/公共接口
@@ -276,121 +285,13 @@ router.post('/admin', authenticateToken, requireAdmin, async (req, res) => {
   }
 });
 
-// 11. 审核通过
-router.post('/:id/approve', authenticateToken, requireAdmin, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-
-  try {
-    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['published', eventId]);
-    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
-    addLog(req.user.username, 'APPROVE_EVENT', `审核通过 EID: ${eventId}`);
-    callBotHook('event.approved', { eventId }, getActor(req)).catch(() => {});
-    res.json({ message: '已发布' });
-  } catch (err) {
-    res.status(500).json({ message: '操作失败', error: err.message });
-  }
-});
-
-// 12. 驳回
-router.post('/:id/reject', authenticateToken, requireAdmin, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  try {
-    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['rejected', eventId]);
-    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
-    addLog(req.user.username, 'REJECT_EVENT', `驳回事件 EID: ${eventId}`);
-    callBotHook('event.rejected', { eventId }, getActor(req)).catch(() => {});
-    res.json({ message: '已驳回' });
-  } catch (err) {
-    res.status(500).json({ message: '操作失败', error: err.message });
-  }
-});
-
-// 13. 更新状态 (进行中 / 已结束)
-router.post('/:id/status', authenticateToken, requireAdmin, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  const nextStatus = String(req.body?.status || '').trim();
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  if (!ADMIN_STATUSES.includes(nextStatus)) return res.status(400).json({ message: 'Invalid status' });
-
-  try {
-    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [nextStatus, eventId]);
-    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
-    addLog(req.user.username, 'UPDATE_EVENT_STATUS', `更新事件状态 EID: ${eventId} -> ${nextStatus}`);
-    callBotHook('event.status', { eventId, status: nextStatus }, getActor(req)).catch(() => {});
-    res.json({ message: '状态已更新' });
-  } catch (err) {
-    res.status(500).json({ message: '操作失败', error: err.message });
-  }
-});
-
-// 14. 软删除
-router.post('/:id/delete', authenticateToken, requireAdmin, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  try {
-    const result = await dbRun('UPDATE events SET status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', ['deleted', eventId]);
-    if ((result?.changes || 0) === 0) return res.status(404).json({ message: 'Event not found' });
-    addLog(req.user.username, 'DELETE_EVENT', `软删除事件 EID: ${eventId}`);
-    callBotHook('event.deleted', { eventId }, getActor(req)).catch(() => {});
-    res.json({ message: '已删除' });
-  } catch (err) {
-    res.status(500).json({ message: '删除失败', error: err.message });
-  }
-});
-
-// 15. 结算/验收
-router.post('/:id/settle', authenticateToken, requireAdmin, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-
-  try {
-    const payload = req.body?.payload && typeof req.body.payload === 'object' ? req.body.payload : {};
-    const nextStatus = String(req.body?.status || 'settled');
-    const event = await context.sql.main.transaction(async (tx) => {
-      const current = await tx.get('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
-      if (!current) return null;
-      const nextContent = { ...parseContent(current).content, ...payload };
-      await tx.run('UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [JSON.stringify(nextContent), nextStatus, eventId]);
-      return current;
-    });
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    addLog(req.user.username, 'SETTLE_EVENT', `结算事件 EID: ${eventId}`);
-    callBotHook('event.settled', { eventId, type: event.type, payload }, getActor(req)).catch(() => {});
-    res.json({ message: '已结算', id: eventId });
-  } catch (err) {
-    res.status(500).json({ message: '结算失败', error: err.message });
-  }
-});
-
-// 16. 录入比赛结果
-router.post('/:id/set_result', authenticateToken, requireAdmin, async (req, res) => {
-  const eventId = Number(req.params.id || 0);
-  const results = req.body?.results;
-  if (!Number.isInteger(eventId) || eventId <= 0) return res.status(400).json({ message: 'Invalid event id' });
-  if (!Array.isArray(results)) return res.status(400).json({ message: 'results must be an array' });
-
-  try {
-    const event = await context.sql.main.transaction(async (tx) => {
-      const current = await tx.get('SELECT id, type, content FROM events WHERE id = ?', [eventId]);
-      if (!current || !isSignupType(current.type)) return current;
-      const nextContent = { ...parseContent(current).content, results, results_updated_at: new Date().toISOString() };
-      await tx.run('UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-        [JSON.stringify(nextContent), 'ended', eventId]);
-      return current;
-    });
-    if (!event) return res.status(404).json({ message: 'Event not found' });
-    if (!isSignupType(event.type)) return res.status(400).json({ message: '此活动不支持录入结果' });
-    addLog(req.user.username, 'SET_EVENT_RESULT', `录入比赛结果 EID: ${eventId}`);
-    callBotHook('event.result_set', { eventId, type: event.type, results }, getActor(req)).catch(() => {});
-    res.json({ message: '结果已保存', id: eventId });
-  } catch (err) {
-    res.status(500).json({ message: '录入失败', error: err.message });
-  }
-});
-
+// 11–16. Shared typed state rules; legacy broad transitions are preserved.
+router.post('/:id/approve', authenticateToken, requireAdmin, (req, res, next) => stateController.approve(req, res).catch(next));
+router.post('/:id/reject', authenticateToken, requireAdmin, (req, res, next) => stateController.reject(req, res).catch(next));
+router.post('/:id/status', authenticateToken, requireAdmin, (req, res, next) => stateController.status(req, res).catch(next));
+router.post('/:id/delete', authenticateToken, requireAdmin, (req, res, next) => stateController.remove(req, res).catch(next));
+router.post('/:id/settle', authenticateToken, requireAdmin, (req, res, next) => stateController.settle(req, res).catch(next));
+router.post('/:id/set_result', authenticateToken, requireAdmin, (req, res, next) => stateController.result(req, res).catch(next));
 // 17. 查看报名列表
 router.get('/:id/participants', authenticateToken, requireAdmin, async (req, res) => {
   const eventId = Number(req.params.id || 0);

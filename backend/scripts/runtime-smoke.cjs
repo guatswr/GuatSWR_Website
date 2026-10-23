@@ -69,6 +69,14 @@ const { start } = require('../server');
     assert.equal(signupRow.visitor_ip, undefined);
     assert.equal((await fetch(signupUrl, { method: 'DELETE', headers: signupHeaders })).status, 200);
     assert.equal((await instance.context.sql.main.get('SELECT count(*) AS n FROM event_participants WHERE event_id=?', [signupEvent.lastID])).n, 0);
+    const eventUrl = `${origin}/api/event/${signupEvent.lastID}`;
+    assert.equal((await fetch(`${eventUrl}/set_result`, { method: 'POST', headers: signupHeaders, body: JSON.stringify({ results: [{ rank: 1 }] }) })).status, 200);
+    assert.equal((await fetch(`${eventUrl}/settle`, { method: 'POST', headers: signupHeaders, body: JSON.stringify({ payload: { completion: true } }) })).status, 200);
+    const settledEvent = await instance.context.sql.main.get('SELECT status,content FROM events WHERE id=?', [signupEvent.lastID]);
+    assert.equal(settledEvent.status, 'settled');
+    assert.deepEqual(JSON.parse(settledEvent.content).results, [{ rank: 1 }]);
+    assert.equal(JSON.parse(settledEvent.content).completion, true);
+    assert.equal((await fetch(`${origin}/api/admin/events/${signupEvent.lastID}/review`, { method: 'POST', headers: signupHeaders, body: JSON.stringify({ action: 'approve' }) })).status, 200);
     const bridge = { 'x-bff-bridge': process.env.BFF_BRIDGE_SECRET, 'x-forwarded-for': '127.0.0.1', 'content-type': 'application/json' };
     const proof = (scope, eid) => {
       const expires = Math.floor(Date.now() / 1000) + 30;
