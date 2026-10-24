@@ -3,14 +3,11 @@ const express = require('express');
 const path = require('path');
 
 const net = require('net');
-const bcrypt = require('bcryptjs');
-const { db, logDb, addLog, IMG_ROOT_DIR } = context;
+const { db, addLog } = context;
 const { authenticateToken, requireSuperAdmin } = context.auth;
-const { validate } = require('../utils');
 
 
 const { runAutoBackup } = context.scheduler;
-const { resetPasswordSchema } = context.schemas;
 const { banIp, unbanIp, cleanupExpired } = context.ban;
 
 const stateModule = path.join(context.BACKEND_ROOT, 'dist/src/modules/events/state');
@@ -31,126 +28,18 @@ const { createBackupFilesController } = require(path.join(context.BACKEND_ROOT, 
 const backupFiles = createBackupFilesController(context.backup, addLog, error => context.logger.warn('backup.failed', { error }));
 const router = express.Router();
 
-// ==============================================================================
-// 1. 用户管理模块 (User Management)
-// ==============================================================================
-
-/**
- * 获取所有管理员列表
- */
-router.get('/users', authenticateToken, requireSuperAdmin, (req, res) => {
-  db.all("SELECT id, username, role, avatar, twofa_enabled FROM users ORDER BY id ASC", [], (err, rows) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json(rows);
-  });
-});
-
-/**
- * 删除管理员
- */
-router.delete('/users/:id', authenticateToken, requireSuperAdmin, (req, res) => {
-  if (parseInt(req.params.id) === req.user.id) return res.status(400).json({ message: "无法删除自己" });
-  context.security.deleteAdmin(req.params.id, req.user.id).then(async (deleted) => {
-    if (!deleted) {
-      const target = await new Promise((resolve, reject) => db.get('SELECT role FROM users WHERE id=?', [req.params.id], (error, row) => error ? reject(error) : resolve(row)));
-      return res.status(target ? 409 : 404).json({ message: target ? '不能删除最后一个超级管理员或使用已失效权限' : '用户不存在' });
-    }
-    addLog(req.user.username, 'DELETE_USER', `删除管理员: ${deleted.username}`);
-    res.json({ message: '删除成功', target: deleted.username });
-  }).catch(() => res.status(503).json({ message: '管理员删除暂时不可用' }));
-});
-
-/**
- * 强制重置管理员密码
- */
-router.put('/users/:id/password', authenticateToken, requireSuperAdmin, (req, res) => {
-  const validated = validate(resetPasswordSchema, req.body);
-  if (!validated.ok) return res.status(400).json({ message: validated.error });
-  const { password } = validated.data;
-  const hash = bcrypt.hashSync(password, 10);
-  db.get("SELECT username FROM users WHERE id = ?", [req.params.id], (err, row) => {
-    const targetName = row ? row.username : 'Unknown';
-    db.run("UPDATE users SET password = ? WHERE id = ?", [hash, req.params.id], function(err) {
-      if (err) return res.status(500).json({ error: err.message });
-      addLog(req.user.username, 'RESET_PWD', `重置密码: ${targetName}`);
-      res.json({ message: "重置成功" });
-    });
-  });
-});
-
-/**
- * 重置用户的二步验证 (2FA)
- */
-router.put('/users/:id/twofa/reset', authenticateToken, requireSuperAdmin, (req, res) => {
-  db.get("SELECT username FROM users WHERE id = ?", [req.params.id], (err, row) => {
-    const targetName = row ? row.username : 'Unknown';
-    db.run("UPDATE users SET twofa_enabled = 0, twofa_secret = NULL WHERE id = ?", [req.params.id], function(updateErr) {
-      if (updateErr) return res.status(500).json({ error: updateErr.message });
-      addLog(req.user.username, 'RESET_2FA', `重置二步密码: ${targetName}`);
-      res.json({ message: "二步密码已重置" });
-    });
-  });
-});
-
-// ==============================================================================
-// 2. 系统安全模块 (System Security)
-// ==============================================================================
-
-/**
- * 强制刷新 Token 版本
- */
-router.post('/token-version/refresh', authenticateToken, requireSuperAdmin, (req, res) => {
-  context.security.incrementVersion().then((version) => {
-    addLog(req.user.username, 'REFRESH_TOKEN_VERSION', `强制刷新登录: version=${version}`);
-    res.json({ message: '已强制刷新登录状态', version });
-  }).catch(() => res.status(503).json({ message: '登录状态刷新暂时不可用' }));
-});
-
-// ==============================================================================
-// 3. 审计日志模块 (Audit Logs)
-// ==============================================================================
-
-/**
- * 获取审计日志
- */
-router.get('/logs', authenticateToken, (req, res) => {
-  const page = parseInt(req.query.page) || 1;
-  const limit = parseInt(req.query.limit) || 20;
-  const offset = (page - 1) * limit;
-  const username = req.query.username || '';
-  const action = req.query.action || '';
-
-  let sqlBase = "FROM audit_logs WHERE 1=1";
-  const params = [];
-  if (username) { sqlBase += " AND username LIKE ?"; params.push(`%${username}%`); }
-  if (action) { sqlBase += " AND action LIKE ?"; params.push(`%${action}%`); }
-
-  logDb.get(`SELECT COUNT(*) as count ${sqlBase}`, params, (err, row) => {
-    if (err) return res.status(500).json({ error: err.message });
-    const total = row.count;
-    logDb.all(
-      `SELECT id, username, action, details,
-        strftime('%Y-%m-%dT%H:%M:%S+08:00', created_at, '+8 hours') as created_at
-       ${sqlBase}
-       ORDER BY created_at DESC LIMIT ? OFFSET ?`,
-      [...params, limit, offset],
-      (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ total, logs: rows });
-    });
-  });
-});
-
-/**
- * 删除单条日志记录
- */
-router.delete('/logs/:id', authenticateToken, requireSuperAdmin, (req, res) => {
-  logDb.run("DELETE FROM audit_logs WHERE id = ?", [req.params.id], function(err) {
-    if (err) return res.status(500).json({ error: err.message });
-    addLog(req.user.username, 'DELETE_LOG', `删除日志: ${req.params.id}`);
-    res.json({ message: "删除成功" });
-  });
-});
+const { createAdminService } = require(path.join(context.BACKEND_ROOT, 'dist/src/admin/service'));
+const { createAdminController } = require(path.join(context.BACKEND_ROOT, 'dist/src/admin/controller'));
+const report = error => context.logger.error('http.failed', { error, route: '/api/admin' });
+const admin = createAdminController(createAdminService({ main: context.sql.main, audit: context.sql.audit, security: context.security, log: addLog, report }), report);
+const handle = fn => (req, res, next) => fn(req, res).catch(next);
+router.get('/users', authenticateToken, requireSuperAdmin, handle(admin.users));
+router.delete('/users/:id', authenticateToken, requireSuperAdmin, handle(admin.deleteUser));
+router.put('/users/:id/password', authenticateToken, requireSuperAdmin, handle(admin.resetPassword));
+router.put('/users/:id/twofa/reset', authenticateToken, requireSuperAdmin, handle(admin.resetSecondPassword));
+router.post('/token-version/refresh', authenticateToken, requireSuperAdmin, handle(admin.refreshVersion));
+router.get('/logs', authenticateToken, handle(admin.logs));
+router.delete('/logs/:id', authenticateToken, requireSuperAdmin, handle(admin.deleteLog));
 
 // ==============================================================================
 // 4. 数据清理模块 (Data Maintenance)
@@ -243,25 +132,7 @@ router.post('/backups/run', authenticateToken, requireSuperAdmin, (req, res) => 
 /**
  * 获取待审核的事件列表
  */
-router.get('/events/pending', authenticateToken, (req, res) => {
-  const page = Math.max(1, parseInt(req.query.page, 10) || 1);
-  const limit = 20;
-  const offset = (page - 1) * limit;
-
-  db.get(`SELECT COUNT(*) as count FROM events WHERE status = 'pending'`, [], (err, countRow) => {
-    if (err) return res.status(500).json({ error: err.message });
-    
-    const sql = `SELECT * FROM events WHERE status = 'pending' ORDER BY created_at ASC LIMIT ? OFFSET ?`;
-    db.all(sql, [limit, offset], (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      const items = rows.map(row => {
-        try { row.content = JSON.parse(row.content); } catch (e) { row.content = {}; }
-        return row;
-      });
-      res.json({ total: countRow.count, items });
-    });
-  });
-});
+router.get('/events/pending', authenticateToken, handle(admin.pending));
 
 /**
  * 审核事件 (通过/驳回)
