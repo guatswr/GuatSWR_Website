@@ -28,6 +28,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:security
+      - run: node --test scripts/revamp/upstream-security.test.mjs
       - run: pnpm typecheck
       - run: pnpm -r lint
       - run: pnpm --filter @guatswr/shared test
@@ -78,6 +79,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - run: pnpm check:security
+      - run: node --test scripts/revamp/upstream-security.test.mjs
       - run: pnpm --filter @guatswr/shared build
       - name: Verify packed shared ESM and CommonJS consumers
         run: |

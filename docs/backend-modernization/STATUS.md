@@ -23,6 +23,7 @@ M0～M2工程节点及远程门禁已通过，当前推进M3逐模块迁移（co
 | BM-13 诊断日志 | DONE（本地） | Pino白名单、请求/任务ID、异步审计关联；双平台245项+BFF、prune后信号/双库通过；见 [证据](evidence/BM-13.md) |
 | BM-14 shared双产物 | DONE（本地） | 4导出路径、双平台tarball独立消费/声明、shared73/前端726/BFF通过；见 [证据](evidence/BM-14.md) |
 | BM-15 Workspace | DONE（本地） | 单pnpm锁；Windows1044+工具100/Linux后端245、双镜像/BFF/备份恢复通过；旧npm锁已移除；见 [证据](evidence/BM-15.md) |
+| BM-15f 后续依赖安全 | DONE（本地） | 3个上游补丁关闭6条新公告，审计0未解决；等待期1440保留；双平台后端/新Nuxt+BFF/生产恢复通过；见 [证据](evidence/BM-15f.md) |
 | BM-16 Zod4 | DONE（本地） | 11组wire迁入shared；1521差分+11 HTTP、Linux1777/Windows回归、shared77/前端726/BFF及产物通过；见 [证据](evidence/BM-16.md) |
 | BM-17 数据实测 | DONE（本地） | 只读双库快照/结构与质量盘点、合成历史样本、双平台9项测试通过；保留旧审计表/bio/NULL；见 [证据](evidence/BM-17.md) |
 | BM-18 版本迁移 | DONE（本地） | 双账本/checksum/显式adopt、自定义路径、启动拒绝缺库/漂移；Windows1790/Linux全套+增量、生产镜像/BFF/恢复通过；见 [证据](evidence/BM-18.md) 与 [手册](MIGRATIONS.md) |
@@ -62,4 +63,4 @@ BM-29本地完成，接续BM-30备份调度；BM-27剩余搬图补偿和最终�
 
 BM-30c完成本地门禁：真实Python/Node验证标记与v3隔离身份双平台互操作通过，生产镜像b92a59a79118恢复/并发/私有根检查通过。后续继续BM-31认证管理与剩余JS业务，以及BM-27搬图补偿；整体尚未工程完成，未进行生产发布。
 
-最新远程：67ed1e7 run40045189143容器成功，但Windows/Linux/real-bff的共用check:security因6条新依赖公告失败，本地已复现。BM-31b1认证纯迁移本地通过并留证；随后先独立更新3个上游修复包及锁文件，恢复0未解决审计门禁再推进其余节点。
+最新远程：67ed1e7 run40045189143容器成功，但Windows/Linux/real-bff的共用check:security因6条新依赖公告失败，本地已复现。BM-15f已独立更新3个上游补丁及锁文件，审计恢复0未解决，双平台后端、新Nuxt+BFF及生产恢复通过；远程精确SHA仍待核验。BM-31b1认证纯迁移已留证，后续接续用户版本与可靠审计的兼容Expand。

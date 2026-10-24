@@ -19,6 +19,6 @@
     "check:routes": "node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json",
     "check:boundaries": "node scripts/revamp/check-boundaries.mjs",
     "check:security": "node scripts/revamp/check-dependency-security.mjs",
-    "test:tooling": "node --test scripts/revamp/boundaries.test.mjs scripts/revamp/route-budget.test.mjs scripts/revamp/dependency-security.test.mjs web/scripts/e2e-isolated.test.mjs web/scripts/performance-metrics.test.mjs"
+    "test:tooling": "node --test scripts/revamp/boundaries.test.mjs scripts/revamp/route-budget.test.mjs scripts/revamp/dependency-security.test.mjs scripts/revamp/upstream-security.test.mjs web/scripts/e2e-isolated.test.mjs web/scripts/performance-metrics.test.mjs"
   }
 }
