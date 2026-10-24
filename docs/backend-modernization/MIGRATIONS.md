@@ -95,3 +95,5 @@ pnpm --filter guiair-backend storage:cleanup --main-db E:\data\guatswr_web_main.
 后续BM-27c/30仍需补齐搬图补偿、隔离区容量/保留期与备份manifest覆盖，再进行完整恢复演练。当前备份仅覆盖原有DB/public边界，不能声称已包含asset-quarantine；正式部署前必须关闭此差距，并保留删除前恢复点。
 
 BM-27c1跟进：完整备份现输出包含私有隔离区的v3包，恢复仍接受v1/v2。新恢复工具对归属已验证的隔离文件重新绑定任务文件身份，并在RESTORE_READY.json记录数量；不对公开路径同名新文件自动重绑。backup_all围栏暂停清理并排空在途元数据事务，不能替代业务停写。崩溃遗留.asset-cleanup-fence须先核查任务/备份进程后处理，不自动抢占。旧工具不理解v3包，回退须随附本版本恢复工具。详见BM-27证据。
+
+BM-30备份保留：默认keep-all，不自动按天删除。完整包验证命令为`python3 backend/scripts/backup_bundle.py verify /absolute/full_TAG.tar.gz --work-dir /absolute/private-work-dir`，工作目录必须预先存在；验包并恢复至临时新目录成功才写入绑定归档身份的`.verified.json`。管理员删除接口至少保留一个有效标记的完整包；过期/损坏标记409，验证标记及其checksum不能单独删除。它证明包曾完整恢复验证，应用HTTP启动仍须另行演练。verify与删除共用归档目录`.backup-retention.lock`，崩溃锁须核查后手工处理。Windows验证及v3私有文件身份重绑需要Node24，可设`BACKUP_NODE_BIN`绝对路径，Linux无需此额外提供器。BACKUP_ROOT不能位于PUBLIC_DIR内，含symlink解析结果；新旧脚本均需Python3。

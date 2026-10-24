@@ -13,9 +13,9 @@ const { createBackupRunner } = require('../dist/src/backup/runner.js');
     const data = path.join(root, 'data'), backups = path.join(root, 'backups'), publicDir = path.join(data, 'public');
     await initializeDatabases({}, { data });
     app = await factory({ env: { NODE_ENV: 'test', JWT_SECRET: 'synthetic-backup-key' }, paths: { data, public: publicDir, backups }, backgroundTasks: false, externalServices: false });
-    const runner = tag => createBackupRunner({
+    const runner = (tag, backupRoot = backups) => createBackupRunner({
       script: app.context.backup.FULL_BACKUP_SCRIPT,
-      env: { ...process.env, DATA_DIR: data, PUBLIC_DIR: publicDir, BACKUP_ROOT: backups, DB_PATH: app.context.dbPath, LOG_DB_PATH: app.context.logDbPath, BACKUP_DATE_TAG: tag },
+      env: { ...process.env, DATA_DIR: data, PUBLIC_DIR: publicDir, BACKUP_ROOT: backupRoot, DB_PATH: app.context.dbPath, LOG_DB_PATH: app.context.logDbPath, BACKUP_DATE_TAG: tag },
       timeoutMs: '10000', shutdown: app.context.shutdownSignal,
       trackChild: child => app.context.trackChild(child, { processGroup: true })
     });
@@ -34,7 +34,10 @@ const { createBackupRunner } = require('../dist/src/backup/runner.js');
     await fs.stat(path.join(backups, 'full', 'full_20300101_000000_first.tar.gz'));
     await assert.rejects(fs.stat(path.join(backups, 'full', 'full_20300101_000000_second.tar.gz')), error => error.code === 'ENOENT');
     await assert.rejects(fs.stat(path.join(data, '.asset-cleanup-fence')), error => error.code === 'ENOENT');
-    console.log(JSON.stringify({ ok: true, concurrentWinner: 1, explicitPaths: true, fenceReleased: true }));
+    const forbidden = path.join(publicDir, 'exposed-backups');
+    await assert.rejects(runner('20300101_000000_private', forbidden)(), error => error.code === 'BACKUP_EXECUTION_FAILED');
+    await assert.rejects(fs.stat(forbidden), error => error.code === 'ENOENT');
+    console.log(JSON.stringify({ ok: true, concurrentWinner: 1, explicitPaths: true, fenceReleased: true, publicBackupRefused: true }));
   } finally {
     release.resolve(); await holding?.catch(() => {}); await first?.catch(() => {}); await app?.close();
     assert.equal(path.dirname(root), path.resolve(os.tmpdir()));

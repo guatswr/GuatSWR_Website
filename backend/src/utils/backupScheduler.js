@@ -5,11 +5,11 @@ module.exports = (context) => {
   const { createBackupScheduler } = require(path.join(compiled, 'scheduler'));
   const run = createBackupRunner({
     script: context.backup.FULL_BACKUP_SCRIPT,
-    env: { ...context.env, DATA_DIR: context.DATA_DIR, PUBLIC_DIR: context.PUBLIC_DIR, BACKUP_ROOT: context.BACKUP_ROOT, DB_PATH: context.dbPath, LOG_DB_PATH: context.logDbPath },
+    env: { ...context.env, BACKUP_NODE_BIN: process.execPath, DATA_DIR: context.DATA_DIR, PUBLIC_DIR: context.PUBLIC_DIR, BACKUP_ROOT: context.BACKUP_ROOT, DB_PATH: context.dbPath, LOG_DB_PATH: context.logDbPath },
     shutdown: context.shutdownSignal, timeoutMs: context.env.BACKUP_TIMEOUT_MS,
     trackChild: child => context.trackChild(child, { processGroup: true })
   });
-  const service = createBackupScheduler({ store: context.sql.main, run, enabled: () => context.externalServices,
+  const service = createBackupScheduler({ store: context.sql.main, run: async () => { await context.backup.ensureBackupDirs(); await run(); }, enabled: () => context.externalServices,
     audit: context.addLog, report: error => context.logger.warn('backup.failed', { error }) });
   const owner = context.env.BACKUP_SCHEDULER_OWNER || 'app';
   if (!['app', 'external'].includes(owner)) throw new BackupError('BACKUP_CONFIGURATION');

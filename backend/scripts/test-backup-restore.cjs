@@ -31,6 +31,10 @@ const createApplication=async options=>{await initializeDatabases(options.env,op
   await assert.rejects(exec('/bin/bash',[path.join(scriptDir,'backup_all.sh')],{env:{...env,BACKUP_DATE_TAG:'20261023_000101'}}),/fence already exists/);
   await fs.rmdir(path.join(data,'.asset-cleanup-fence'));
   const archive=path.join(backups,'full/full_20261023_000100.tar.gz');
+  await exec('python3',[bundle,'verify',archive,'--work-dir',root]);
+  const verified=JSON.parse(await fs.readFile(archive+'.verified.json','utf8'));
+  assert.equal(verified.format,'guatswr-verified-backup');
+  await assert.rejects(source.context.backup.remove('full',path.basename(archive)),error=>error.code==='BACKUP_LAST_VERIFIED');
   await assert.rejects(exec('/bin/bash',[path.join(scriptDir,'restore.sh'),archive]),/--target/);
   const target=path.join(root,'recovered');
   await exec('python3',[bundle,'restore',archive,'--target',target]);

@@ -38,7 +38,7 @@
 | BM-27 / P1 文件一致性 | 23、26、19 | upload/storage/recycle/admin purge：先 DB 提交、后可重试清理任务；引用检查；补偿移动失败与进程崩溃 | F03/F04；共享资源、孤儿扫描 dry-run、重试不删新文件、EXDEV | 不在事务中等网络/大文件；失败保留待清理记录；清理不可逆须备份 |
 | BM-28 / P1 Bot 集成 | 13、19、23 | 提取 AstrBot transport；3 个真实事件格式兼容；响应体/超时上限；失败可观测；持久任务如启用独立 PR | X01；本地接收器验证 payload/header；timeout/非2xx/未配置/重发 | Event hook 默认不激活；没有接收端幂等不能承诺 exactly-once |
 | BM-29 / P1 logs/Umami | 09、13、19 | 审计查询与公开投影分开；Umami envType 纳入缓存键；缓存容量/响应体/并发/超时限额 | A08/X02；时区、筛选、统计、token refresh 一次、坏 JSON、同范围不同 envType | 不改公众统计字段；外部凭据只用测试值 |
-| BM-30 / P1 备份调度 | 10、12、19 | backup/Scheduler/admin：显式路径、Asia/Shanghai、互斥、子进程期限、manifest、保留策略；cron 与应用排他 | B03；手动+定时并发、重启、磁盘满、失败状态；100MiB 下载取消与 HEAD | 同步接口保持，不擅改 202；五分钟 BFF deadline 联测；保留已知恢复点 |
+| BM-30 / P1 备份调度（本地DONE） | 10、12、19 | backup/Scheduler/admin：显式路径、Asia/Shanghai、互斥、子进程期限、manifest、保留策略；cron 与应用排他 | B03；Win1941/Linux1942、Python各19、BFF/生产原生恢复通过，见BM-30证据 | 同步接口保持，不擅改 202；五分钟 BFF deadline 联测；保留已知恢复点 |
 | BM-31 / P1 auth/admin 类型化 | 07、16、19、26、30 | 纯重构先行；用户级撤销另做 Expand 迁移/兼容声明；最后管理员事务；保留 CBC/bcrypt；bootstrap 从常规启动分离 | A02～04/I02；旧 JWT、版本缺省、密码变化、BFF revoke、bootstrap 不重提权 | 不自动全员退出；若增加用户版本，明确旧 token 兼容窗口与安全修复回退限制 |
 | BM-32 / P1 Express 5 | 20～31 | 单独升级 express/types；检查 query/body/params/static/async/listen；旧 callback 内异常仍须显式处理 | 全 A/E/F/L；全部 71 操作；OpenAPI 与 BFF；未处理 rejection 为零 | 仅回退框架 PR；不同时变模块系统/驱动 |
 | BM-33 / P1 生产镜像 | 32、15 | 多阶段 root context；修正 .dockerignore backend 排除；非 root；仅挂 data/public/backups；运行产物带 docs/scripts | N02/L02；干净安装、无源码 bind mount、权限/重建/停机；镜像 digest | 数据卷不随镜像删除；健康探针不触发迁移/备份 |

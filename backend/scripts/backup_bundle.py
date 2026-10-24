@@ -11,6 +11,7 @@ import re
 import shutil
 import sqlite3
 import stat
+import subprocess
 import tarfile
 import tempfile
 
@@ -244,6 +245,38 @@ def file_identity(filename):
     return ':'.join(str(item) for item in (value.st_dev, value.st_ino, value.st_size, value.st_mtime_ns, value.st_ctime_ns))
 
 
+def consumer_identities(filenames):
+    filenames = list(filenames)
+    if not filenames:
+        return []
+    if len(filenames) > MAX_FILES:
+        raise ValueError('too many metadata paths')
+    if os.name != 'nt':
+        return [file_identity(filename) for filename in filenames]
+    # Python's Windows st_dev/ctime conventions differ from libuv. Generate the
+    # marker and quarantine bindings in the Node consumer's metadata domain.
+    # One bounded batch avoids spawning a process for every quarantined file.
+    code = "const fs=require('node:fs');if(process.versions.node.split('.')[0]!=='24')process.exit(1);const paths=JSON.parse(fs.readFileSync(0,'utf8'));process.stdout.write(JSON.stringify(paths.map(p=>{const s=fs.lstatSync(p,{bigint:true});if(!s.isFile()||s.isSymbolicLink())throw Error('metadata');return [s.dev,s.ino,s.size,s.mtimeNs,s.ctimeNs].map(String).join(':')})));"
+    try:
+        result = subprocess.run([os.environ.get('BACKUP_NODE_BIN', 'node'), '-e', code],
+                                input=json_bytes([str(filename) for filename in filenames]).decode(),
+                                check=True, stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                                text=True, timeout=30, env={**os.environ, 'NODE_OPTIONS': ''})
+        if len(result.stdout) > MAX_METADATA:
+            raise ValueError('metadata')
+        identities = json.loads(result.stdout)
+        if not isinstance(identities, list) or len(identities) != len(filenames) or any(
+                not isinstance(value, str) or not re.fullmatch(r'\d+:\d+:\d+:\d+:\d+', value) for value in identities):
+            raise ValueError('metadata')
+        return identities
+    except Exception as error:
+        raise ValueError('Windows verification/private-file restore requires the Node 24 metadata provider') from error
+
+
+def verification_identity(filename):
+    return consumer_identities([filename])[0]
+
+
 def pack_quarantine(root, work, tag, db, db_files):
     if root.is_symlink():
         raise ValueError('quarantine symlink is forbidden')
@@ -262,10 +295,9 @@ def pack_quarantine(root, work, tag, db, db_files):
     uri = 'file:' + quote((extracted / 'main.db').as_posix(), safe='/') + '?mode=ro&immutable=1'
     with contextlib.closing(sqlite3.connect(uri, uri=True)) as connection:
         if connection.execute("SELECT 1 FROM sqlite_master WHERE type='table' AND name='asset_cleanup_jobs'").fetchone():
-            for job_id, original in connection.execute('SELECT id,identity FROM asset_cleanup_jobs'):
-                if not re.fullmatch('[a-f0-9-]{36}', job_id) or job_id not in files:
-                    continue
-                current = file_identity(root / job_id)
+            jobs = [(job_id, original) for job_id, original in connection.execute('SELECT id,identity FROM asset_cleanup_jobs')
+                    if re.fullmatch('[a-f0-9-]{36}', job_id) and job_id in files]
+            for (job_id, original), current in zip(jobs, consumer_identities(root / job_id for job_id, _ in jobs)):
                 if current.split(':')[:4] == original.split(':')[:4]:
                     bindings[job_id] = {'identity': original, 'sha256': files[job_id]['sha256']}
     return archive, {'archive': archive.name, **info(archive), 'files': files, 'bindings': bindings}
@@ -381,7 +413,8 @@ def restore(archive_file, target, checksum, allow_legacy):
             # Rebind only jobs proven to own the archived private bytes. Never bind
             # an old deletion intent to a replacement at the same public URL.
             with contextlib.closing(sqlite3.connect(candidate / 'data/guatswr_web_main.db')) as connection:
-                for job_id, binding in private_spec.get('bindings', {}).items():
+                bindings = private_spec.get('bindings', {})
+                for job_id, binding in bindings.items():
                     if not re.fullmatch('[a-f0-9-]{36}', job_id) or job_id not in private_spec['files']:
                         raise ValueError('invalid quarantine binding')
                     if binding['sha256'] != private_spec['files'][job_id]['sha256']:
@@ -389,7 +422,9 @@ def restore(archive_file, target, checksum, allow_legacy):
                     row = connection.execute('SELECT identity FROM asset_cleanup_jobs WHERE id=?', (job_id,)).fetchone()
                     if row != (binding['identity'],):
                         raise ValueError('quarantine binding identity mismatch')
-                    connection.execute('UPDATE asset_cleanup_jobs SET identity=? WHERE id=?', (file_identity(private / job_id), job_id))
+                identities = consumer_identities(private / job_id for job_id in bindings)
+                for job_id, identity in zip(bindings, identities):
+                    connection.execute('UPDATE asset_cleanup_jobs SET identity=? WHERE id=?', (identity, job_id))
                     rebound += 1
                 connection.commit()
             validate_sqlite(candidate / 'data/guatswr_web_main.db', 'main')
@@ -407,6 +442,34 @@ def restore(archive_file, target, checksum, allow_legacy):
         finally:
             lock.rmdir()
     return target
+
+
+def verify_backup(archive_file, work_root, checksum=None, allow_legacy=False):
+    if archive_file.is_symlink() or not archive_file.is_file() or not work_root.is_absolute() or not work_root.is_dir():
+        raise ValueError('existing archive and explicit verification work directory required')
+    lock = archive_file.parent / '.backup-retention.lock'
+    lock.mkdir(mode=0o700)
+    try:
+        original = file_identity(archive_file)
+        with tempfile.TemporaryDirectory(prefix='.guatswr-verify-', dir=work_root) as work:
+            restored = restore(archive_file, Path(work) / 'candidate', checksum, allow_legacy)
+            receipt = json.loads((restored / 'RESTORE_READY.json').read_bytes())
+        if file_identity(archive_file) != original or digest(archive_file) != receipt['source_sha256']:
+            raise ValueError('archive changed during verification')
+        marker = {'format': 'guatswr-verified-backup', 'version': 1, 'verified_at': utcnow(),
+                  'source_sha256': receipt['source_sha256'], 'source_identity': verification_identity(archive_file),
+                  'source_size': archive_file.stat().st_size, 'artifact': archive_file.name}
+        output = archive_file.with_name(archive_file.name + '.verified.json')
+        with tempfile.NamedTemporaryFile(prefix='.verified-', dir=archive_file.parent, delete=False) as staged:
+            filename = Path(staged.name)
+            try:
+                staged.write(json_bytes(marker)); staged.flush(); os.fsync(staged.fileno()); staged.close()
+                os.replace(filename, output)
+            finally:
+                filename.unlink(missing_ok=True)
+        return output
+    finally:
+        lock.rmdir()
 
 
 def main():
@@ -429,11 +492,18 @@ def main():
     recover.add_argument('--target', type=Path, required=True)
     recover.add_argument('--sha256')
     recover.add_argument('--allow-legacy', action='store_true')
+    verify = commands.add_parser('verify')
+    verify.add_argument('archive', type=Path)
+    verify.add_argument('--work-dir', type=Path, required=True)
+    verify.add_argument('--sha256')
+    verify.add_argument('--allow-legacy', action='store_true')
     args = parser.parse_args()
     if args.command == 'public':
         result = pack_public(args.root, args.out, args.tag)
     elif args.command == 'full':
         result = pack_full(args.db, args.public, args.public_manifest, args.out, args.tag, args.consistency, args.revision, args.quarantine)
+    elif args.command == 'verify':
+        result = verify_backup(args.archive, args.work_dir, args.sha256, args.allow_legacy)
     else:
         result = restore(args.archive, args.target, args.sha256, args.allow_legacy)
     print(json.dumps({'ok': True, 'output': str(result)}, ensure_ascii=False))

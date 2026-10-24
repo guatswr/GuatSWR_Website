@@ -64,7 +64,7 @@ class RestoreChecks(unittest.TestCase):
                     connection.execute('CREATE TABLE site_config (key TEXT PRIMARY KEY, value TEXT)')
                     if quarantine:
                         connection.execute('CREATE TABLE asset_cleanup_jobs (id TEXT PRIMARY KEY, identity TEXT, state TEXT)')
-                        connection.execute('INSERT INTO asset_cleanup_jobs VALUES (?,?,?)', (job_id, bundle.file_identity(private / job_id), 'pending'))
+                        connection.execute('INSERT INTO asset_cleanup_jobs VALUES (?,?,?)', (job_id, bundle.verification_identity(private / job_id), 'pending'))
                     if orphan:
                         connection.execute('CREATE TABLE parents (id INTEGER PRIMARY KEY)')
                         connection.execute('CREATE TABLE children (parent INTEGER REFERENCES parents(id))')
@@ -103,7 +103,7 @@ class RestoreChecks(unittest.TestCase):
         self.assertEqual(private.read_bytes(), b'synthetic quarantine bytes')
         self.assertFalse((self.target / 'data/public' / job_id).exists())
         with contextlib.closing(sqlite3.connect(self.target / 'data/guatswr_web_main.db')) as connection:
-            self.assertEqual(connection.execute('SELECT identity,state FROM asset_cleanup_jobs').fetchone(), (bundle.file_identity(private), 'pending'))
+            self.assertEqual(connection.execute('SELECT identity,state FROM asset_cleanup_jobs').fetchone(), (bundle.verification_identity(private), 'pending'))
 
     def test_v3_rejects_tampered_quarantine_binding_before_publication(self):
         archive = self.make_full(quarantine=True)
@@ -123,6 +123,29 @@ class RestoreChecks(unittest.TestCase):
         manifest['public'] = manifest['databases']
         contents[bundle.MANIFEST] = json.dumps(manifest).encode()
         self.refused(self.archive('alias-parts.tar.gz', [self.file(name, data) for name, data in contents.items()]))
+
+    def test_verify_publishes_a_bound_marker_only_after_complete_restore(self):
+        archive = self.make_full(quarantine=True)
+        output = bundle.verify_backup(archive, self.root)
+        marker = json.loads(output.read_bytes())
+        self.assertEqual(marker['source_sha256'], bundle.digest(archive))
+        self.assertEqual(marker['source_identity'], bundle.verification_identity(archive))
+        self.assertEqual(marker['artifact'], archive.name)
+        self.assertEqual(marker['format'], 'guatswr-verified-backup')
+        self.assertFalse((archive.parent / '.backup-retention.lock').exists())
+        self.assertFalse(any(self.root.glob('.guatswr-verify-*')))
+        lock = archive.parent / '.backup-retention.lock'
+        lock.mkdir()
+        with self.assertRaises(FileExistsError):
+            bundle.verify_backup(archive, self.root)
+        self.assertTrue(lock.exists())
+
+    def test_corrupt_database_never_receives_a_verified_marker(self):
+        archive = self.make_full(corrupt=True)
+        with self.assertRaises(Exception):
+            bundle.verify_backup(archive, self.root)
+        self.assertFalse(archive.with_name(archive.name + '.verified.json').exists())
+        self.assertFalse((archive.parent / '.backup-retention.lock').exists())
 
     def test_valid_manifest_and_resources(self):
         archive = self.make_full()

@@ -1,14 +1,14 @@
 module.exports = (context) => {
 const express = require('express');
 const path = require('path');
-const fs = require('fs');
+
 const net = require('net');
 const bcrypt = require('bcryptjs');
 const { db, logDb, addLog, IMG_ROOT_DIR } = context;
 const { authenticateToken, requireSuperAdmin } = context.auth;
 const { validate } = require('../utils');
 
-const { listBackups, resolveBackupPath, ensureBackupDirs } = context.backup;
+
 const { runAutoBackup } = context.scheduler;
 const { resetPasswordSchema } = context.schemas;
 const { banIp, unbanIp, cleanupExpired } = context.ban;
@@ -27,6 +27,8 @@ const recycle = createRecycleService(context.sql.main, context.PUBLIC_DIR, path.
 const requireCleanupSchema = (req, res, next) => context.mainSchemaVersion >= 2 ? next() : res.status(503).json({ message: '请先升级数据库' });
 const { createBackupSettingsController } = require(path.join(context.BACKEND_ROOT, 'dist/src/backup/controller'));
 const backupSettings = createBackupSettingsController(context.scheduler, addLog, error => context.logger.error('backup.failed', { error }));
+const { createBackupFilesController } = require(path.join(context.BACKEND_ROOT, 'dist/src/backup/files-controller'));
+const backupFiles = createBackupFilesController(context.backup, addLog, error => context.logger.warn('backup.failed', { error }));
 const router = express.Router();
 
 // ==============================================================================
@@ -222,43 +224,9 @@ router.post('/backups/settings', authenticateToken, requireSuperAdmin, (req, res
 /**
  * 获取备份文件列表
  */
-router.get('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
-  try {
-    ensureBackupDirs();
-    const fullList = listBackups('full');
-    res.json({ full: fullList });
-  } catch (err) {
-    res.status(500).json({ message: '加载备份列表失败', error: err.message });
-  }
-});
-
-/**
- * 下载备份文件
- */
-router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res) => {
-  const { type, file } = req.query || {};
-  if (type && type !== 'full') return res.status(400).json({ message: '仅支持完整备份下载' });
-  const resolved = resolveBackupPath(type, file);
-  if (!resolved) return res.status(404).json({ message: '备份文件不存在' });
-  addLog(req.user.username, 'DOWNLOAD_BACKUP', `下载备份: ${resolved.type}/${resolved.fileName}`);
-  res.download(resolved.filePath, resolved.fileName);
-});
-
-/**
- * 删除备份文件
- */
-router.delete('/backups', authenticateToken, requireSuperAdmin, (req, res) => {
-  const { type, file } = req.query || {};
-  if (type && type !== 'full') return res.status(400).json({ message: '仅支持完整备份删除' });
-  const resolved = resolveBackupPath(type, file);
-  if (!resolved) return res.status(404).json({ message: '备份文件不存在' });
-  fs.unlink(resolved.filePath, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    addLog(req.user.username, 'DELETE_BACKUP', `删除备份: ${resolved.type}/${resolved.fileName}`);
-    res.json({ message: '已删除' });
-  });
-});
-
+router.get('/backups', authenticateToken, requireSuperAdmin, (req, res, next) => backupFiles.list(req, res).catch(next));
+router.get('/backups/download', authenticateToken, requireSuperAdmin, (req, res, next) => backupFiles.download(req, res).catch(next));
+router.delete('/backups', authenticateToken, requireSuperAdmin, (req, res, next) => backupFiles.remove(req, res).catch(next));
 /**
  * 手动触发备份
  */
