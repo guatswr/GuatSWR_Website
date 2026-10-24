@@ -6,7 +6,10 @@ module.exports = context => {
     iconRoot: context.ICON_SVG_DIR, publicRoot: context.PUBLIC_DIR, moveStagedFile: context.storage.moveStagedFile,
     matches: (req, eid) => context.guestProof.matches(req, eid), audit: context.addLog,
     report: error => context.logger.error('upload.failed', { error }) });
-  const handle = fn => (req, res, next) => context.track(() => fn(req, res)).catch(next);
+  const handle = fn => (req, res, next) => context.track(async () => {
+    try { return await fn(req, res); }
+    finally { context.upload.upload.complete(req); }
+  }).catch(next);
   router.post('/', context.auth.optionalAuth, context.guestGateway, context.guestProof.check('upload'), context.limiter.uploadLimiter, context.upload.upload.single('file'), handle(controller.content));
   router.post('/avatar', context.auth.optionalAuth, context.guestGateway, context.limiter.uploadLimiter, context.upload.upload.single('file'), handle(controller.avatar));
   return router;

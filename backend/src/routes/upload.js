@@ -7,6 +7,9 @@ module.exports = context => {
     matches: (req, eid) => context.guestProof.matches(req, eid), audit: context.addLog,
     report: error => context.logger.error('upload.failed', { error }) });
   router.post('/', context.auth.authenticateToken, context.limiter.uploadLimiter, controller.adminParameters, context.upload.upload.single('file'),
-    (req, res, next) => context.track(() => controller.admin(req, res)).catch(next));
+    (req, res, next) => context.track(async () => {
+      try { return await controller.admin(req, res); }
+      finally { context.upload.upload.complete(req); }
+    }).catch(next));
   return router;
 };

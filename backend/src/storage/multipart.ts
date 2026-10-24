@@ -1,8 +1,10 @@
 import { createRequire } from 'node:module'
 import { randomUUID } from 'node:crypto'
 import path from 'node:path'
+import fs from 'node:fs/promises'
 import type { IncomingMessage, ServerResponse } from 'node:http'
 import type { UploadedImage } from './images.js'
+import { isSafePath } from '../utils/storage-boundary.js'
 
 export interface UploadRequest extends IncomingMessage {
   file?: UploadedImage; body?: unknown; query: Record<string, unknown>; user?: { id: number; username: string; role: string }
@@ -32,19 +34,33 @@ export function createMultipartParser(privateDir: string) {
     }
   })
   let active = 0
-  return { upload: { single(field: string): Handler {
+  const leases = new WeakMap<UploadRequest, () => void>()
+  return { upload: { complete(request: UploadRequest) { leases.get(request)?.() }, single(field: string): Handler {
     const parse = parser.single(field)
     return (req, res, next) => {
+      if (req.aborted || res.destroyed) return
       if (active >= 8) return res.status(429).json({ message: '上传并发过多，请稍后再试' })
       active++
-      let released = false
+      let released = false, parsing = true
       const release = () => {
         if (released) return
         released = true; active--
-        res.removeListener('finish', release); res.removeListener('close', release); req.removeListener('aborted', release)
+        leases.delete(req)
+        res.removeListener('finish', closed); res.removeListener('close', closed); req.removeListener('aborted', closed)
       }
-      res.once('finish', release); res.once('close', release); req.once('aborted', release)
-      return parse(req, res, error => { if (error) release(); next(error) })
+      const closed = () => { if (parsing) release() }
+      leases.set(req, release)
+      res.once('finish', closed); res.once('close', closed); req.once('aborted', closed)
+      return parse(req, res, error => {
+        if (error) { release(); next(error); return }
+        if (released || req.aborted || res.destroyed) {
+          release()
+          if (req.file && isSafePath(privateDir, req.file.path)) void fs.unlink(req.file.path).catch(() => {})
+          return
+        }
+        parsing = false
+        next()
+      })
     }
   } } }
 }

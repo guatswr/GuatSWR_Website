@@ -63,3 +63,11 @@ Windows夹具使用已知绝对fixture根内的链接路径，PowerShell核验Li
 Windows17+1953=1970通过、1项POSIX不适用；Linux17+1954=1971通过（bm31d-uploads-windows/linux.log），strict build/lint与真实BFF完整链路通过。新生产镜像guatswr-backend-bm31d-uploads-runtime，manifest-list sha256:4ff6e102f774086f1af0ed6d836af57db3beda384b4455e9c6e67556230209ab，无业务源码覆盖runtime-smoke通过（bm31d-uploads-production-build/runtime.log）。本节点未重跑完整恢复。
 
 新增资源生命周期实测（非本纯类型变更）：8个multipart已解析、后台工作被屏障暂停的真实TCP客户端断开后，原计数释放，允许第9个工作进入（bm31d-aborted-upload-red.log，activeWork=9、heldLimit=false）。源码原HTTP计数不能代表实际图片工作上限，须31d9独立修复与回归，不将这一已知缺口写为完成。
+
+## BM-31d9 上传工作槽位生命周期修复（输入379e244）
+
+解析成功后槽位由controller finally显式释放，客户端close/aborted仅在解析期释放，不再让仍运行的上传处理提前腾出容量。已经aborted/destroyed的请求不启动parser；解析结束发现已断开则删除该请求的私有文件并停止后续处理。容量仍8、既有429消息不变，非异常客户端的URL/字段/大小/格式规则不变；EX-22登记此资源限制修复。
+
+使用真实Multer磁盘解析和TCP断开、受控处理工作屏障复现与验证；不把合成parser字节称为通过Sharp的真实图片。3项专项验证已关闭入口不解析、8个处理中的断开客户端仍占槽、第9个429、完成释放后再次200及私有文件清空。此前红灯activeWork=9，现原生生产检查activeWork=8、heldLimit=true；新增8秒上限的test-upload-work-ownership.cjs接入容器CI。
+
+完整Windows17+1956=1973通过，1项POSIX不适用；Linux17+1957=1974通过（bm31d-upload-lease-windows-final/linux-final.log）。strict build/lint、BFF完整链路通过。新生产镜像guatswr-backend-bm31d-upload-lease-runtime，manifest-list sha256:daf71a819ee15c539068619a28d356acb1d55624ac54753f70e1275a2202ce5c；无源码覆盖真实TCP断开资源检查与runtime-smoke通过（bm31d-upload-lease-production-build/native/runtime.log）。完整恢复本节点未重跑。剩余storage和BM-27补偿/引用保留继续，31d尚未完成。
