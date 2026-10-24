@@ -41,3 +41,9 @@ Windows17+1944=1961通过、1项POSIX专用不适用；Linux17+1945=1962全通�
 新增3项真实DB回归：布尔/数值/对象/数组与native CAST参数对照、历史额外列与NULL内容/结构化type过滤/状态回退、真实目录故障后无已发布记录或成功审计。6项保存/审核/删除竞争屏障改为拦截SqliteStore初次SELECT，最终写锁复核不受拦截；17项bootstrap保持，旧纯单测更新DB端口与lastID，未用mock替代真实HTTP并发。9项新增/并发专项、原16项内容/状态/投影专项通过。完整Windows17+1948=1965、Linux17+1949=1966通过（bm31d-events-binding-windows/linux.log），Windows1项POSIX不适用；strict build/lint与BFF完整双会话链路通过。
 
 新生产镜像guatswr-backend-bm31d-events-runtime，manifest-list sha256:e16ed019bdc87032a49b99528aa00e12ea9f4745fc3628e8145712c2b1dc2631，无源码覆盖原生runtime-smoke通过（bm31d-events-production-build/runtime.log），含直连游客拒绝/可信证明及管理内容保存链路。成员绑定独立生产镜像证据见前段。没有重跑全量恢复；剩余storage/upload及app中sitemap等业务继续，31d未完成。
+
+## BM-31d6 sitemap查询与输出类型迁移（输入5d5da9f）
+
+将app.js中的SQL、日期规则和XML拼接迁入strict TS sitemap控制器，应用保留HTTP装配。先在旧实现运行3项真实HTTP/SQLite用例，再用同一组验证新实现（bm31d-sitemap-legacy/targeted.log）：已发布/NULL状态可见、软删排除、date文本前缀与无效日期、原排序/XML转义、固定no-cache头、SITE_URL及原协议/Host回退、DB故障plain Server Error 500。未收紧日期或更改URL来源协议。
+
+完整Windows17+1951=1968通过，1项POSIX不适用；Linux17+1952=1969通过（bm31d-sitemap-windows/linux.log），strict build/lint通过。新生产镜像guatswr-backend-bm31d-sitemap-runtime无源码覆盖runtime-smoke通过，已加入实际XML Content-Type及新活动URL验证（bm31d-sitemap-production-build/runtime.log）。本节点未重跑BFF/恢复，沿用31d5/31c对应证据。后续上传路径补验发现目录创建前缺边界检查，将独立修复，不把该未完成项藏入本纯类型节点。
