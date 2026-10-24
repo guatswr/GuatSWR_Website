@@ -26,7 +26,7 @@
     "bcryptjs": "2.4.3",
     "cors": "2.8.6",
     "dotenv": "16.6.1",
-    "express": "4.22.3",
+    "express": "5.3.0",
     "express-rate-limit": "7.5.1",
     "helmet": "7.2.0",
     "js-yaml": "4.3.2",
@@ -47,7 +47,8 @@
     "supertest": "7.3.1",
     "typescript": "6.0.2",
     "typescript-eslint": "8.71.2",
-    "vitest": "5.0.5"
+    "vitest": "5.0.5",
+    "@types/express": "5.0.6"
   },
   "engines": {
     "node": ">=24.16.0 <25"

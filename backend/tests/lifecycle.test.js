@@ -81,11 +81,11 @@ test('all 71 frozen API operations are still mounted', async (t) => {
   const instance = await createApplication(options);
   options.resources.push(instance);
   const prefixes = ['/api/auth', '/api/admin', '/api/activities', '/api/members', '/api/history', '/api/config', '/api/upload/visitor', '/api/upload', '/api/logs', '/api/bot', '/api/event'];
-  const routers = instance.app._router.stack.filter((layer) => layer.name === 'router');
+  const routers = (instance.app._router || instance.app.router).stack.filter((layer) => layer.name === 'router');
   assert.equal(routers.length, prefixes.length);
   const operations = ['GET /api/version'];
   routers.forEach((layer, index) => {
-    assert.ok(layer.regexp.test(prefixes[index]));
+    assert.ok(layer.regexp ? layer.regexp.test(prefixes[index]) : layer.matchers.some(match => match(prefixes[index])));
     for (const item of layer.handle.stack) {
       if (!item.route) continue;
       for (const method of Object.keys(item.route.methods)) {

@@ -3,7 +3,7 @@ import { BackupError } from './runner.js'
 interface Request { query: Record<string, unknown>; user: { username: string } }
 interface Response {
   status(code: number): Response; json(body: unknown): unknown
-  download(filename: string, name: string): void
+  download(filename: string, name: string, options: { dotfiles: 'allow' }): void
 }
 export function createBackupFilesController(files: BackupFiles, audit: (username: string, action: string, details: string) => void, report: (error: unknown) => void) {
   const log = (req: Request, action: string, details: string) => { try { audit(req.user.username, action, details) } catch (error) { report(error) } }
@@ -16,7 +16,9 @@ export function createBackupFilesController(files: BackupFiles, audit: (username
       const target = await files.resolveBackupPath(req.query.type, req.query.file)
       if (!target) return res.status(404).json({ message: '备份文件不存在' })
       log(req, 'DOWNLOAD_BACKUP', `下载备份: ${target.type}/${target.fileName}`)
-      res.download(target.filePath, target.fileName)
+      // The private, validated absolute backup root may have a hidden parent
+      // (including the isolated test workspace). Public static files stay denied.
+      res.download(target.filePath, target.fileName, { dotfiles: 'allow' })
     },
     remove: async (req: Request, res: Response) => {
       if (req.query.type && req.query.type !== 'full') return res.status(400).json({ message: '仅支持完整备份删除' })

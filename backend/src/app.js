@@ -40,6 +40,8 @@ const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', require('./config/proxy').createTrustProxy(env.TRUST_PROXY_CIDRS));
 app.disable('x-powered-by');
+// Express 4's extended query semantics are part of the frozen API contract.
+app.set('query parser', 'extended');
 app.use((req, res, next) => context.logger.request(requestId => {
   res.setHeader('X-Request-ID', requestId);
   const started = performance.now();
@@ -85,6 +87,10 @@ app.use(cors({
 }));
 app.use(express.json({ limit: MAX_BODY_SIZE }));
 app.use(express.urlencoded({ extended: true, limit: MAX_BODY_SIZE }));
+app.use((req, res, next) => {
+  if (req.body === undefined) req.body = {};
+  next();
+});
 app.use('/uploads', helmet({ crossOriginResourcePolicy: { policy: 'cross-origin' }, contentSecurityPolicy: false }), (req, res, next) => {
   if (!context.storage.resolveUploadsPath(`/uploads${req.path}`)) return res.status(404).json({ message: 'Not Found' });
   next();
