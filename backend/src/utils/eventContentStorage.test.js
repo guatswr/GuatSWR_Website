@@ -108,12 +108,13 @@ const loadEventRoute = (moveStagedFile) => {
     (name) => mocks[name] || nativeRequire(name), module, module.exports
   );
   const { createGuestDraftProofGuard } = nativeRequire('../../dist/src/security/guest-draft-proof.js');
+  const sql = {
+    get: (sql, params) => new Promise((resolve, reject) => db.get(sql, params, (error, row) => error ? reject(error) : resolve(row))),
+    run: (sql, params) => new Promise((resolve, reject) => db.run(sql, params, function(error) { error ? reject(error) : resolve({ changes: this.changes, lastID: this.lastID }); }))
+  };
   module.exports({ ...mocks['../models/db'], auth: {}, storage: mocks['../utils/storage'],
     // This fixture tests content URL persistence; HTTP integration tests use real transactions.
-    sql: { main: { transaction: work => work({
-      get: (sql, params) => new Promise((resolve, reject) => db.get(sql, params, (error, row) => error ? reject(error) : resolve(row))),
-      run: (sql, params) => new Promise((resolve, reject) => db.run(sql, params, function(error) { error ? reject(error) : resolve({ changes: this.changes }); }))
-    }) } }, logger: { error() {} },
+    sql: { main: { ...sql, transaction: work => work(sql) } }, logger: { error() {} },
     guestProof: createGuestDraftProofGuard({ secret: 'synthetic-content-proof-key-32-characters', mode: 'required' }) });
   writes.length = 0;
   return {

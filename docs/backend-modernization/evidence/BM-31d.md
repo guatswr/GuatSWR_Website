@@ -33,3 +33,11 @@ Windows17+1944=1961通过、1项POSIX专用不适用；Linux17+1945=1962全通�
 新增strict legacyJsonBinding，限定既有JSON/query输入边界，参数仍绑定而不拼SQL；members Repository的过滤值类型改为SqlValue。此修复与事件结构重构分开提交，后续Event复用同一已验证边界。成员专项及联合完整回归/独立镜像证据接续补入。
 
 成员10项专项通过（bm31d-member-binding-targeted.log）。联合工作树（含后续事件类型迁移）完整Windows17+1948=1965、Linux17+1949=1966通过，Windows1项POSIX不适用（bm31d-events-binding-windows/linux.log），BFF完整链路通过。另单独构建仅绑定修复的生产上下文：恢复HEAD事件路由和单测夹具、移除尚未提交的3个事件TS源，镜像guatswr-backend-bm31d-member-runtime，manifest-list sha256:b77fb8b0d029dc0b428e8b36e507e436ae7db4c2ef5a40347318747b2ea1ebca；runtime-smoke与真实HTTP structuredSchool回归通过（bm31d-member-production-build/runtime/native-binding.log）。新增test-member-binding.cjs接入容器CI。此修复不宣称事件结构迁移已经提交或31d完成。
+
+## BM-31d5 事件剩余CRUD类型迁移（绑定修复基线bbdcf7a）
+
+事件draft/save/public-list/detail/admin-list/create/participants迁入strict repository/service/controller，原Signup/State服务保留，JS事件路由325行缩为纯接线。保留宽松输入、native JSON参数绑定、任意合法历史content值、status过滤回退/分页、作者及管理员私有详情、匿名公开投影、原通知触发点/默认no-op。未新增Event wire schema、唯一约束或状态收紧；save最终写锁中重查published/存在性仍有效。create仍先保留draft，文件成功后发布、准备失败丢弃保留行；文件跨资源补偿仍归BM-27，不在本节点冒充已完成。
+
+新增3项真实DB回归：布尔/数值/对象/数组与native CAST参数对照、历史额外列与NULL内容/结构化type过滤/状态回退、真实目录故障后无已发布记录或成功审计。6项保存/审核/删除竞争屏障改为拦截SqliteStore初次SELECT，最终写锁复核不受拦截；17项bootstrap保持，旧纯单测更新DB端口与lastID，未用mock替代真实HTTP并发。9项新增/并发专项、原16项内容/状态/投影专项通过。完整Windows17+1948=1965、Linux17+1949=1966通过（bm31d-events-binding-windows/linux.log），Windows1项POSIX不适用；strict build/lint与BFF完整双会话链路通过。
+
+新生产镜像guatswr-backend-bm31d-events-runtime，manifest-list sha256:e16ed019bdc87032a49b99528aa00e12ea9f4745fc3628e8145712c2b1dc2631，无源码覆盖原生runtime-smoke通过（bm31d-events-production-build/runtime.log），含直连游客拒绝/可信证明及管理内容保存链路。成员绑定独立生产镜像证据见前段。没有重跑全量恢复；剩余storage/upload及app中sitemap等业务继续，31d未完成。

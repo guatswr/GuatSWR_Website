@@ -11,12 +11,13 @@ it.each([
 ])('rechecks the final write after concurrent %s, preserving legacy allowed states', async (action, body, state, expected) => {
   const f = await fixture({ env: { TRUST_PROXY_CIDRS: '127.0.0.1/32' } })
   const observed = Promise.withResolvers(), release = Promise.withResolvers()
-  const original = f.db.get
-  f.db.get = function(sql, params, callback) {
-    if (sql === 'SELECT id, status FROM events WHERE id = ?' && String(params[0]) === '3') {
-      return original.call(this, sql, params, (error, row) => { observed.resolve(); void release.promise.then(() => callback(error, row)) })
+  const original = f.context.sql.main.get
+  f.context.sql.main.get = async function(sql, params) {
+    const row = await original(sql, params)
+    if (/^SELECT id,\s*status FROM events WHERE id\s*=\s*\?$/.test(sql) && String(params[0]) === '3') {
+      observed.resolve(); await release.promise
     }
-    return original.apply(this, arguments)
+    return row
   }
   const saving = f.http.put('/api/event/3').set(draftProofHeaders('save', 3)).send({ title: 'late guest update', content: { copy: 'fixture' }, submit: true }).then(x => x)
   await observed.promise
