@@ -22,3 +22,5 @@ Compose仍只发布127.0.0.1:8088，实际反向代理/BFF CIDR和旧直连消�
 HEALTHCHECK只GET本容器loopback /api/version，1.5秒请求期限/3秒执行期限，不建库、不迁移、不备份。它是HTTP存活检查；迁移完整性在启动校验，探针200不能替代业务故障指标。停止使用Docker stop/SIGTERM，等待请求/任务/子进程释放，超时退出非0；不得自动删除卷来重建服务。
 
 本地安全演练命令：`pwsh -File backend/scripts/test-runtime-volumes.ps1 -Image EXACT_TEST_IMAGE`。脚本只创建带随机guatswr-bm33前缀的合成Docker资源；测试两次真实进程重建、上传/备份和已建有效双库后的权限不足，退出仅清理本次资源。不能将其卷名替换成正式卷。恢复流程继续见BACKUP-RUNBOOK/MIGRATIONS；已写入后的只读回退须禁写、禁旧后台清理，不能直接覆盖快照。
+
+2026-10-25候选已冻结，详见RELEASE-CHECKLIST。构建可用SOURCE_REVISION参数写入OCI revision label；Compose通过BACKEND_SOURCE_REVISION传入，正式交付不得接受unknown。镜像已docker save并有独立SHA256，归档仅含代码/依赖/空状态目录，不包含正式.env或数据库。

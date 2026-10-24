@@ -103,3 +103,5 @@ BM-31b2兼容桥阶段仅声明main003/users.auth_version与security_audit_outbo
 BM-31c现已激活上述Expand，`db:migrate upgrade`逐库独立提交至main3/audit2；未全部完成时安全写/登录返回503，公开及已知旧版本读取仍可用于核查。先在副本预演并备份，禁止常规启动代做迁移。旧会话不因扩展自动失效，密码/二步变更仅撤销该用户；显式全局刷新仍使所有旧全局版本令牌失效。主库保存安全审计意图，日志库以source_id去重投递，故障恢复后重试；不要手工清空未投递意图。HTTP成功表示业务与意图已提交，不表示日志库立即可见。停写回退最低版本b343784/镜像60ca04f8de43，仅作读取核查；其旧写逻辑不具备版本递增及可靠审计，须保持写入隔离。正式发布仍归BM-36授权。
 
 BM-27c2不增加schema（main3/audit2）。离线接续：`storage:cleanup --main-db ABS --public-dir ABS --quarantine-dir ABS [--journal-dir ABS] --apply`；无--apply仍只读汇总，不恢复日志/不移动文件。日志默认在quarantine同级asset-publications。最低只读回退b343784还须由工厂以backgroundTasks:false、externalServices:false启动并在所有路由前拦截非GET/HEAD；仅HTTP停写不足以停旧TTL清理。禁止直接运行旧server默认后台计时器。
+
+2026-10-25候选8dd7138：主/审计3/2与SQL校验已冻结在evidence/BM-35-migration-checksums.json。原版本1/2脚本未重写。已在历史副本显式adopt升级及旧桥新写入后只读读取验证。只读回退除HTTP禁写/禁timer外，须用scripts/read-only-server.cjs在导入app前为每个SQLite连接启用query_only；单文件可挂载至b343784镜像/app/scripts/read-only-server.cjs，以独立进程运行。GET引发的audit写也拒绝，旧Token版本仍核验，不能用未配套的旧CMD替代。正式步骤以RELEASE-CHECKLIST为准，未迁移原库。
