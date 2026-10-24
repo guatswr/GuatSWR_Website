@@ -1,50 +1,17 @@
-module.exports = (context) => {
-const { db, addLog } = context;
-
-const cleanupExpired = (cb) => {
-  const now = Date.now();
-  db.run('DELETE FROM banned_ips WHERE expires_at IS NOT NULL AND expires_at <= ?', [now], cb);
-};
-
-const banGuard = (req, res, next) => {
-  if (req.path.startsWith('/api/bot')) return next();
-  const ip = req.ip;
-  db.get('SELECT ip, reason, expires_at FROM banned_ips WHERE ip = ?', [ip], (err, row) => {
-    if (err || !row) return next();
-    if (row.expires_at && Number(row.expires_at) <= Date.now()) {
-      return db.run('DELETE FROM banned_ips WHERE ip = ?', [ip], () => next());
-    }
-    return res.status(403).json({ message: 'IP 已被封禁', reason: row.reason || '' });
-  });
-};
-
-const banIp = (ip, reason = '', createdBy = 'ATRI', expiresAt = null, cb) => {
-  if (expiresAt !== null && (!Number.isFinite(expiresAt) || Math.abs(expiresAt) > 8640000000000000)) {
-    const error = Object.assign(new Error('Invalid ban expiry'), { code: 'BAN_EXPIRY' });
-    if (cb) queueMicrotask(() => cb(error));
-    return;
-  }
-  const createdAt = Date.now();
-  db.run(
-    'INSERT OR REPLACE INTO banned_ips (ip, reason, created_at, expires_at, created_by) VALUES (?, ?, ?, ?, ?)',
-    [ip, reason, createdAt, expiresAt, createdBy],
-    (err) => {
-      if (!err) {
-        const until = expiresAt ? ` until ${new Date(expiresAt).toISOString()}` : '';
-        addLog(createdBy, 'BAN_IP', `封禁IP ${ip}${reason ? ` (${reason})` : ''}${until}`);
-      }
-      if (cb) cb(err);
-    }
-  );
-};
-
-const unbanIp = (ip, operator = 'ATRI', cb) => {
-  db.run('DELETE FROM banned_ips WHERE ip = ?', [ip], (err) => {
-    if (!err) addLog(operator, 'UNBAN_IP', `解封IP ${ip}`);
-    if (cb) cb(err);
-  });
-};
-
-return { banGuard, banIp, unbanIp, cleanupExpired };
-
+module.exports = context => {
+  const path = require('node:path');
+  const compiled = path.join(context.BACKEND_ROOT, 'dist/src/security');
+  const { createBanService } = require(path.join(compiled, 'bans'));
+  const { createBanController } = require(path.join(compiled, 'ban-controller'));
+  const report = error => context.logger.error('http.failed', { error, route: '/api/admin/bans' });
+  const service = createBanService({ store: context.sql.main, ready: context.securityReady, committed: context.flushSecurityAudit, report });
+  const controller = createBanController(service, report);
+  const finish = (work, callback) => { void context.track(work).then(() => callback?.(), error => { report(error); callback?.(error); }).catch(report); };
+  return {
+    service, controller,
+    banGuard: (req, res, next) => controller.guard(req, res, next).catch(next),
+    banIp: (ip, reason = '', operator = 'ATRI', expires = null, callback) => finish(service.ban(ip, reason, operator, expires), callback),
+    unbanIp: (ip, operator = 'ATRI', callback) => finish(service.unban(ip, operator), callback),
+    cleanupExpired: callback => finish(service.cleanup(), callback)
+  };
 };

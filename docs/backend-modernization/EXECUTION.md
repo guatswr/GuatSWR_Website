@@ -84,6 +84,7 @@
 | BM-27b / P1 持久清理 | 27a | 业务删除与任务同事务；Expand迁移/旧应用兼容；重启重试、引用复核、同路径新文件不删；实际清理有恢复点 |
 | BM-27c / P1 搬图补偿 | 27b | config/history/members/activities/event/upload全路径；rename/EXDEV/DB失败和提交前后崩溃；可回收孤儿且无断链引用 |
 | BM-31d / P1 剩余JS业务收口 | 27～31其余 | 每项legacy JS明确归属；event剩余CRUD等业务严格TS，允许薄装配例外；作为BM-32新增前置 |
+| BM-31d1/2 / P1 封禁缺陷与类型迁移（本地DONE） | 31c | 先修非法expiry异常，再迁封禁/限流/配置及持久审计；Win1961/Linux1962/BFF/新生产镜像通过，不代表整个31d关闭 |
 
 测试数量分层报告，精确SHA远程完成状态必须单列。重开节点保留历史通过证据并写明新发现；详见[PLAN 2.1](PLAN.md)和[复核证据](evidence/REVIEW-2026-10-24.md)。
 

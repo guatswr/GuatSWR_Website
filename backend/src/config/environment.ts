@@ -16,6 +16,8 @@ export interface RuntimeEnvironment {
   readonly guestDraftProofMode: 'optional' | 'required'
   readonly maxBodyBytes: number
   readonly shutdownTimeoutMs: number
+  readonly banMinutes: number
+  readonly globalRateLimit: number
   readonly paths: RuntimePaths
 }
 const invalid = (key: string): never => { throw new AppError(`Invalid configuration: ${key}`, 'invalid_configuration') }
@@ -50,8 +52,12 @@ export function parseEnvironment(input: EnvironmentInput, backendRoot: string): 
   if (!Number.isSafeInteger(maxBodyBytes) || maxBodyBytes <= 0 || maxBodyBytes > 50 * 1024 ** 2) return invalid('MAX_BODY_SIZE')
   const data = absolute(input, 'DATA_DIR', path.join(backendRoot, 'data'))
   const paths = { data, public: absolute(input, 'PUBLIC_DIR', path.join(data, 'public')), backups: absolute(input, 'BACKUP_ROOT', path.join(backendRoot, 'backups')) }
+  const banMinutes = Number(input.BAN_MINUTES || 5)
+  if (!Number.isFinite(banMinutes) || !Number.isFinite(new Date(Date.now() + banMinutes * 60000).getTime())) return invalid('BAN_MINUTES')
+  const globalRateLimit = Number(input.GLOBAL_RATE_LIMIT || 600)
+  if (!Number.isSafeInteger(globalRateLimit) || globalRateLimit < 0) return invalid('GLOBAL_RATE_LIMIT')
   return {
-    nodeEnv, jwtSecret, bridgeSecret, guestDraftProofMode, paths, maxBodyBytes,
+    nodeEnv, jwtSecret, bridgeSecret, guestDraftProofMode, paths, maxBodyBytes, banMinutes, globalRateLimit,
     port: integer(input, 'PORT', 3000, 0, 65535),
     bindHost: input.BIND_HOST || '127.0.0.1',
     shutdownTimeoutMs: integer(input, 'SHUTDOWN_TIMEOUT_MS', 15000, 100, 120000),

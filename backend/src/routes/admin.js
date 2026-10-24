@@ -2,13 +2,11 @@ module.exports = (context) => {
 const express = require('express');
 const path = require('path');
 
-const net = require('net');
-const { db, addLog } = context;
+const { addLog } = context;
 const { authenticateToken, requireSuperAdmin } = context.auth;
 
 
 const { runAutoBackup } = context.scheduler;
-const { banIp, unbanIp, cleanupExpired } = context.ban;
 
 const stateModule = path.join(context.BACKEND_ROOT, 'dist/src/modules/events/state');
 const { createEventStateRepository } = require(path.join(stateModule, 'repository'));
@@ -65,42 +63,9 @@ router.post('/recycle-bin/purge', authenticateToken, requireSuperAdmin, requireC
 /**
  * 获取被封禁的 IP 列表
  */
-router.get('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
-  cleanupExpired(() => {
-    db.all('SELECT * FROM banned_ips ORDER BY created_at DESC', [], (err, rows) => {
-      if (err) return res.status(500).json({ error: err.message });
-      res.json({ bans: rows || [] });
-    });
-  });
-});
-
-/**
- * 手动添加 IP 封禁
- */
-router.post('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
-  const ip = String(req.body?.ip || '').trim();
-  const reason = String(req.body?.reason || '').trim();
-  const minutes = Number(req.body?.minutes || 0);
-  if (!net.isIP(ip)) return res.status(400).json({ message: 'IP 格式不正确' });
-  const expiresAt = minutes > 0 ? Date.now() + minutes * 60 * 1000 : null;
-  if (!Number.isFinite(minutes) || (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt > 8640000000000000))) return res.status(400).json({ message: '封禁时长无效' });
-  banIp(ip, reason, req.user.username, expiresAt, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: '已封禁', ip });
-  });
-});
-
-/**
- * 解除 IP 封禁
- */
-router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, (req, res) => {
-  const ip = String(req.params.ip || '').trim();
-  if (!net.isIP(ip)) return res.status(400).json({ message: 'IP 格式不正确' });
-  unbanIp(ip, req.user.username, (err) => {
-    if (err) return res.status(500).json({ error: err.message });
-    res.json({ message: '已解封', ip });
-  });
-});
+router.get('/bans', authenticateToken, requireSuperAdmin, handle(context.ban.controller.list));
+router.post('/bans', authenticateToken, requireSuperAdmin, handle(context.ban.controller.ban));
+router.delete('/bans/:ip', authenticateToken, requireSuperAdmin, handle(context.ban.controller.unban));
 
 // ==============================================================================
 // 6. 系统备份模块 (Backup Management)
