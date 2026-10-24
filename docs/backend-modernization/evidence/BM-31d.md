@@ -79,3 +79,7 @@ storage.js搬图/配对缩略图/请求缓存/日期与config目录/暂存清理
 strict构建首次发现日期捕获组可为undefined，补显式组存在检查；lint发现旧destPath冗余赋值，删除无用赋值，不关闭规则。现有17项bootstrap及30项unit通过，完整Windows17+1956=1973、Linux17+1957=1974通过（bm31d-files-windows-final/linux-final.log），Windows1项POSIX不适用；BFF完整链路、lint通过。新生产镜像guatswr-backend-bm31d-files-runtime，manifest-list sha256:5c23d800f0d7348dfaea57a5903c478875d352f847a83753390dc49cf6cf796a，原生runtime-smoke通过（bm31d-files-production-build/runtime.log）。本节点未重跑完整恢复。
 
 JS账本物理文件仍31，auth/ban/limiter/upload及所有域路由主要为薄适配；app/lifecycle/models-db为平台资源装配。config/proxy及最终适配边界还需逐项检查。31d整体依赖BM-27退出条件，目前仍IN PROGRESS，随后从文件一致性实施接续。
+
+## BM-31d11 最终边界审阅（输入342592f，本地DONE）
+
+proxy策略与Bot请求控制器迁入strict TS，31物理JS逐项归属见[清单](BM-31d-js-review.md)。初次严格编译发现notifier类型未如实接受旧wire nullable可选值，补正输入类型，运行规则不变。build/lint与双平台proxy/Bot/wire errors各20项通过（bm31-final-*日志）；全量/BFF/镜像继承前一BM27验收，本纯适配未单独重跑全量。BM27及31a～d现本地退出，进入32；整体迁移仍未完成。

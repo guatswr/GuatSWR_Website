@@ -1,19 +1,3 @@
-const net = require('node:net');
-const proxyaddr = require('proxy-addr');
-
-// A missing topology trusts nobody. Never accept a boolean or hop count.
-const createTrustProxy = (raw = '') => {
-  if (!raw.trim()) return false;
-  if (raw.length > 4096) throw new Error('TRUST_PROXY_CIDRS is too long');
-  const ranges = raw.split(',').map(value => value.trim());
-  if (ranges.length > 32) throw new Error('Too many TRUST_PROXY_CIDRS entries');
-  for (const range of ranges) {
-    const [address, prefix, extra] = range.split('/');
-    const family = net.isIP(address);
-    if (!family || extra !== undefined || (prefix !== undefined && (!/^\d+$/.test(prefix) || Number(prefix) <= 0 || Number(prefix) > (family === 4 ? 32 : 128)))) {
-      throw new Error('TRUST_PROXY_CIDRS requires explicit IP addresses or bounded CIDRs');
-    }
-  }
-  return proxyaddr.compile(ranges);
-};
-module.exports = { createTrustProxy };
+const path = require('node:path');
+const root = require('../models/db').resolvePaths({}).BACKEND_ROOT;
+module.exports = require(path.join(root, 'dist/src/security/proxy-policy'));
