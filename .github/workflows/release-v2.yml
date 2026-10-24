@@ -1,0 +1,49 @@
+name: Publish v2 release
+
+on:
+  push:
+    tags: ['v2.0.0']
+
+permissions:
+  contents: write
+  actions: read
+
+concurrency:
+  group: release-v2.0.0
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Require the tagged main commit to pass backend migration gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          revision="$(git rev-parse HEAD)"
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor "$revision" origin/main
+          run_id=''
+          for attempt in $(seq 1 30); do
+            run_id="$(gh api "repos/$GH_REPO/actions/workflows/backend.yml/runs?event=push&head_sha=$revision&per_page=10" --jq '.workflow_runs | map(select(.head_branch == "main")) | first | .id // empty')"
+            if [[ -n "$run_id" ]]; then break; fi
+            sleep 10
+          done
+          [[ -n "$run_id" ]] || { echo 'No exact-commit main validation run found'; exit 1; }
+          gh run watch "$run_id" --exit-status --interval 15
+      - name: Publish the approved GitHub version without deployment
+        shell: bash
+        run: |
+          set -euo pipefail
+          if gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease >/dev/null 2>&1; then
+            gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease --jq 'if (.isDraft or .isPrerelease) then error("Existing release is not stable") else "Stable release already exists" end'
+          else
+            gh release create "$GITHUB_REF_NAME" --verify-tag --title 'v2.0.0' --notes-file docs/releases/v2.0.0.md --latest
+          fi

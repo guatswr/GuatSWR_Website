@@ -1,8 +1,8 @@
 # 后端迁移进度
 
-更新：2026-10-25（Asia/Shanghai）。实施分支：`codex/backend-modernization`。
+更新：2026-10-25（Asia/Shanghai）。开发分支：`codex/backend-modernization`；交付主分支：`main`；正式软件版本：`v2.0.0`。
 
-**BM-00～35必需工程节点已验收完成。生产未发布。** 工程验收不等于可直接上线：BM36仍须现场事实、前端独立发布门禁和批准窗口；BM37～39已按Plan默认形成明确延期结论。没有迁移原数据库、搬原资源或切换正式流量。
+**BM-00～35必需工程节点已验收完成。生产未发布。** 用户已明确要求暂不部署生产，本轮仅合并main并发布Git标签/GitHub Release v2.0.0；未来BM36仍须现场事实、前端独立发布门禁和批准窗口；BM37～39已按Plan默认形成明确延期结论。没有迁移原数据库、搬原资源或切换正式流量。
 
 代码候选：`8dd71383a8b8776f47c4bee0477e20a5c1caf6ce`。精确Actions [run40109087665](https://github.com/guatswr/GuatSWR_Website/actions/runs/40109087665) 四job（Windows/Linux/container/real-bff）全部success；前置13a345d run40106461480也成功。后续文档收口提交不改变此候选运行代码。
 
@@ -51,7 +51,7 @@
 | BM-33 生产镜像 | DONE（本地） | 非root/目录隔离/健康探针、真实卷重建与权限失败；Win2009/Linux2010、BFF/原生/恢复磁盘满通过，见 [证据](evidence/BM-33.md) |
 | BM-34 真实集成 | DONE（本地） | OpenAPI71/11 wire模型对齐；独立Nuxt+Express双库/BFF备份/验证点/崩溃重启通过；见 [证据](evidence/BM-34.md) |
 | BM-35 候选验收 | DONE（工程） | 历史副本/14读取差分/523资源、query_only回退、RPO0/RTO3.924s及两轮性能通过；8dd7138远程四job全通过；见 [证据](evidence/BM-35.md) |
-| BM-36 生产发布 | WAITING CONDITIONS | 未发布；现场网络/消费者/前端门禁/权限/窗口/负责人/明确批准仍缺，见 [具体清单](RELEASE-CHECKLIST.md) |
+| BM-36 生产发布 | DEFERRED（用户暂缓） | 2026-10-25用户明确暂不部署；仅批准合并main和正式Git版本v2.0.0。未来现场条件见 [清单](RELEASE-CHECKLIST.md) |
 | BM-37 驱动POC | DEFERRED | 按Plan默认延期，未更换sqlite3；见 [决策](OPTIONAL-DECISIONS.md) |
 | BM-38 Drizzle查询 | DEFERRED | 依赖37采用结论，继续一套参数化SQL/迁移账本；见 [决策](OPTIONAL-DECISIONS.md) |
 | BM-39 凭据格式 | DEFERRED | 保留CBC/bcrypt和现有密钥格式，GCM双读桥另行授权；见 [决策](OPTIONAL-DECISIONS.md) |
@@ -59,3 +59,5 @@
 接续入口：从[发布清单](RELEASE-CHECKLIST.md)核验BM36，不能再次把37～39延期分支当成阻断工程的TODO，也不能跳过现场审批自动上线。schema当前main3/audit2，最低只读回退b343784必须配套query_only启动器、禁后台任务和新恢复工具；已有新写入不得覆盖旧快照。
 
 主工作区node_modules未原地重装；安装/测试均在隔离副本和容器。原服务未启停，3100本轮没有在线基线，不作在线连续性承诺。私有快照及响应摘要保留在Git忽略的.tools；Git仅保存聚合证据/合成指标。阶段历史移至[归档](evidence/STATUS-history-through-BM35a.md)，各节点详细失败与修复保留在对应evidence及提交中。
+
+用户最新交付决定：暂不部署生产，合并已验收分支并发布v2.0.0正式Git版本。版本说明见[Release Notes](../releases/v2.0.0.md)，实际发行入口为[GitHub Release](https://github.com/guatswr/GuatSWR_Website/releases/tag/v2.0.0)。仅响应此标签的发布工作流必须等待精确main提交的后端四项门禁，无部署步骤。
