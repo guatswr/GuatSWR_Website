@@ -6,6 +6,6 @@ const queries = (db: SqlExecutor) => ({
   content: (id: number, content: string, status: string) => db.run('UPDATE events SET content = ?, status = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?', [content, status, id])
 })
 export function createEventStateRepository(db: SqliteStore) {
-  return { ...queries(db), transaction: <T>(work: (repository: ReturnType<typeof queries>) => Promise<T>) => db.transaction(tx => work(queries(tx))) }
+  return { ...queries(db), transaction: <T>(work: (repository: ReturnType<typeof queries>) => Promise<T>, executor?: SqlExecutor) => executor ? work(queries(executor)) : db.transaction(tx => work(queries(tx))) }
 }
 export type EventStateRepository = ReturnType<typeof createEventStateRepository>

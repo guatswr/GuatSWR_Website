@@ -1,5 +1,6 @@
 import type { BackendV1Activity } from '@guatswr/shared/backend-v1'
 import type { Row, SqlExecutor } from '../../database/sqlite.js'
+import { AppError } from '../../errors.js'
 
 export type ActivityText = string | null | undefined
 export interface ActivityAssets { cover: ActivityText; images: string[]; content: ActivityText }
@@ -26,15 +27,17 @@ export function createActivitiesRepository(db: SqlExecutor) {
       return result.lastID
     },
     create: async (input: BackendV1Activity, actorId: number) => {
-      const result = await db.run('INSERT INTO activities (title, tag, date, description, content, cover_image, images, created_by) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+      const result = await db.run("INSERT INTO activities (title, tag, date, description, content, cover_image, images, created_by,status) VALUES (?, ?, ?, ?, ?, ?, ?, ?,'draft')",
         [input.title, input.tag, input.date, input.description ?? null, input.content ?? null, input.cover_image ?? null, JSON.stringify(input.images || []), actorId])
       return result.lastID
     },
-    saveAssets: async (id: number, assets: ActivityAssets) => {
-      await db.run('UPDATE activities SET cover_image=?, images=?, content=? WHERE id=?', [assets.cover ?? null, JSON.stringify(assets.images), assets.content ?? null, id])
+    saveAssets: async (id: number, assets: ActivityAssets, executor: SqlExecutor = db) => {
+      const result = await executor.run("UPDATE activities SET cover_image=?, images=?, content=?,status='published' WHERE id=? AND status='draft' AND deleted_at IS NULL", [assets.cover ?? null, JSON.stringify(assets.images), assets.content ?? null, id])
+      if (!result.changes) throw new AppError('活动已变化，请重新提交', 'activity_changed', 409)
     },
-    update: async (id: string, input: BackendV1Activity, assets: ActivityAssets, actorId: number) => {
-      await db.run('UPDATE activities SET title=?, tag=?, date=?, description=?, content=?, cover_image=?, images=?, updated_by=?, status=? WHERE id=?',
+    discardDraft: (id: number) => db.run("DELETE FROM activities WHERE id=? AND status='draft'", [id]),
+    update: async (id: string, input: BackendV1Activity, assets: ActivityAssets, actorId: number, executor: SqlExecutor = db) => {
+      await executor.run('UPDATE activities SET title=?, tag=?, date=?, description=?, content=?, cover_image=?, images=?, updated_by=?, status=? WHERE id=?',
         [input.title, input.tag, input.date, input.description ?? null, assets.content ?? null, assets.cover ?? null, JSON.stringify(assets.images), actorId, 'published', id])
     },
     title: async (id: string, withAssets: boolean) => {

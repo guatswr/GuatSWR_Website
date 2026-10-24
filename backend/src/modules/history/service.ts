@@ -1,11 +1,12 @@
 import type { BackendV1History } from '@guatswr/shared/backend-v1'
 import type { Actor } from '../actor.js'
 import type { HistoryRepository, HistoryImage } from './repository.js'
+import { publishAssets, type AssetPublication } from '../../storage/publication.js'
 
 export interface HistoryNotification { id: number; date: string; title: string; description: string; image: string; sort_order: number }
 export function createHistoryService(dependencies: {
   repository: HistoryRepository
-  storage: { getHistoryDir(date: string): string; moveStagedFile(value: HistoryImage, directory: string): Promise<HistoryImage> }
+  storage: { publication?: AssetPublication; getHistoryDir(date: string): string; moveStagedFile(value: HistoryImage, directory: string): Promise<HistoryImage> }
   audit(username: string, action: string, details: string): void
   reportAuditFailure(error: unknown): void
   notify(history: HistoryNotification, actor: Actor, action: 'create' | 'update'): Promise<unknown>
@@ -23,15 +24,15 @@ export function createHistoryService(dependencies: {
   return {
     list: (includeDeleted: boolean, role?: string) => dependencies.repository.list(includeDeleted && role === 'super_admin'),
     create: async (input: BackendV1History, actor: Actor) => {
-      const image = await moved(input)
-      const id = await dependencies.repository.create(input, image)
+      const { image, id } = await publishAssets(dependencies.storage.publication, [input], () => moved(input),
+        async (image, tx) => ({ image, id: await dependencies.repository.create(input, image, tx) }))
       audit(actor, 'CREATE_HISTORY', `添加群史: ${input.title}`)
       notify(id, input, image, actor, 'create')
       return id
     },
     update: async (id: string, input: BackendV1History, actor: Actor) => {
-      const image = await moved(input)
-      await dependencies.repository.update(id, input, image)
+      const image = await publishAssets(dependencies.storage.publication, [input], () => moved(input),
+        async (image, tx) => { await dependencies.repository.update(id, input, image, tx); return image })
       audit(actor, 'UPDATE_HISTORY', `更新群史: ${input.title}`)
       notify(Number(id), input, image, actor, 'update')
     },

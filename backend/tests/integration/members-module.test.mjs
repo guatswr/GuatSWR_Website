@@ -130,7 +130,7 @@ it('does not save or audit when moving an avatar fails', async () => {
 
 it('retains prior member data when a database write fails', async () => {
   const f = await fixture()
-  f.context.sql.main.run = async () => { throw new DatabaseError('unavailable', 'SQLITE_FULL') }
+  await run(f.db, "CREATE TRIGGER fail_member_update BEFORE UPDATE ON members BEGIN SELECT RAISE(ABORT,'synthetic'); END")
   const response = await save(f, { name: 'failed update', role: 'member' }, 1)
   expect(response.status).toBe(500)
   expect(response.body).toEqual({ message: '服务器错误' })

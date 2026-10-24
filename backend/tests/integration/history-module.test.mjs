@@ -112,7 +112,7 @@ it('fails before database writes when moving the staged image fails', async () =
 
 it('does not audit a failed database write or change the previously persisted history', async () => {
   const f = await fixture()
-  f.context.sql.main.run = async () => { throw new DatabaseError('unavailable', 'SQLITE_FULL') }
+  await run(f.db, "CREATE TRIGGER fail_history_update BEFORE UPDATE ON history BEGIN SELECT RAISE(ABORT,'synthetic'); END")
   const response = await save(f, { date: '2026-10-23', title: 'failed update' }, 1)
   expect(response.status).toBe(500)
   expect(response.body).toEqual({ message: '服务器错误' })

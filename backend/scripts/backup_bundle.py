@@ -213,7 +213,10 @@ def pack_public(root, output, tag):
     output.mkdir(parents=True, exist_ok=True)
     files = []
     for directory, dirs, names in os.walk(root, followlinks=False):
+        dirs[:] = [name for name in dirs if not name.startswith('.asset-prepare-')]
         for name in dirs + names:
+            if name.startswith('.asset-prepare-'):
+                continue
             item = Path(directory) / name
             mode = item.lstat().st_mode
             if not (stat.S_ISDIR(mode) or stat.S_ISREG(mode)):
@@ -228,7 +231,8 @@ def pack_public(root, output, tag):
             for item in sorted(files):
                 archive.add(item, arcname=item.relative_to(root).as_posix(), recursive=False)
         file_hashes = scan(staged)
-        metadata = {'format': 'guatswr-public', 'version': 2, 'created_at': utcnow(), 'files': file_hashes}
+        metadata = {'format': 'guatswr-public', 'version': 2, 'created_at': utcnow(), 'files': file_hashes,
+                    'ephemeral_exclusions': ['.asset-prepare-*']}
         return finish_archive(staged, output, 'uploads_' + tag, metadata)
 
 

@@ -4,10 +4,13 @@ import { resolvePaths } from '../models/db.js'
 import { checkDatabase } from '../migrations/engine.js'
 import { createSqliteStore } from '../database/sqlite.js'
 import { runCleanupBatch } from './cleanup.js'
+import { createAssetPublication } from './publication.js'
 
 async function main() {
   const args = process.argv.slice(2), apply = args.at(-1) === '--apply'
   if (apply) args.pop()
+  let journal: string | undefined
+  if (args.length === 8 && args[6] === '--journal-dir') { journal = args[7]; args.splice(6, 2) }
   if (args.length !== 6 || args[0] !== '--main-db' || args[2] !== '--public-dir' || args[4] !== '--quarantine-dir') throw new Error('CLEANUP_ARGUMENTS')
   const filename = args[1]!, root = args[3]!, quarantine = args[5]!
   if (![filename, root, quarantine].every(path.isAbsolute)) throw new Error('CLEANUP_ARGUMENTS')
@@ -24,6 +27,11 @@ async function main() {
     }
   } finally { await new Promise<void>((resolve, reject) => db.close(error => error ? reject(error) : resolve())) }
   const store = createSqliteStore(filename)
-  try { console.log(JSON.stringify(await runCleanupBatch(store, root, quarantine))) } finally { await store.close() }
+  try {
+    const publication = createAssetPublication({ store, filename, publicRoot: root, journalRoot: journal || path.join(path.dirname(quarantine), 'asset-publications'), quarantine,
+      signal: new AbortController().signal, track: work => work(), report: () => console.error('Publication recovery retained data for inspection.') })
+    await publication.recover()
+    console.log(JSON.stringify(await runCleanupBatch(store, root, quarantine)))
+  } finally { await store.close() }
 }
 void main().catch(() => { console.error('Asset cleanup failed; inspect paths, migration and pending jobs.'); process.exitCode = 1 })

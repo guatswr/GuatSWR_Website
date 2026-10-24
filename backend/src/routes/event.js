@@ -16,12 +16,12 @@ module.exports = context => {
   const { callBotHook } = require('../utils/botHooks');
   const report = error => context.logger.error('http.failed', { error, route: '/api/event' });
   const auditFailure = error => context.logger.error('audit.failed', { error });
-  const events = createEventsController(createEventsService({ repository: createEventsRepository(context.sql.main),
+  const events = createEventsController(createEventsService({ repository: createEventsRepository(context.sql.main), publication: context.storage.publication,
     persist: createEventContentPersister({ imageRoot: context.IMG_ROOT_DIR, moveStagedFile: context.storage.moveStagedFile }),
     audit: context.addLog, notify: callBotHook, report: auditFailure }), report);
-  const signup = createSignupController(createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook }), report);
+  const signup = createSignupController(createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook, publication: context.storage.publication }), report);
   const state = createEventStateController(createEventStateService({ repository: createEventStateRepository(context.sql.main), audit: context.addLog,
-    notify: callBotHook, reportAuditFailure: auditFailure }), report);
+    notify: callBotHook, reportAuditFailure: auditFailure, publication: context.storage.publication }), report);
   const handle = fn => (req, res, next) => fn(req, res).catch(next);
   router.post('/draft', optionalAuth, context.guestGateway, context.guestProof.check('draft'), handle(events.draft));
   router.put('/:id', optionalAuth, context.guestGateway, context.guestProof.check('save'), handle(events.save));

@@ -19,6 +19,6 @@ const queries = (db: SqlExecutor) => ({
   list: (id: number) => db.all('SELECT * FROM event_participants WHERE event_id = ? ORDER BY created_at ASC', [id])
 })
 export function createSignupRepository(db: SqliteStore) {
-  return { ...queries(db), transaction: <T>(work: (repository: ReturnType<typeof queries>) => Promise<T>) => db.transaction(tx => work(queries(tx))) }
+  return { ...queries(db), transaction: <T>(work: (repository: ReturnType<typeof queries>) => Promise<T>, executor?: SqlExecutor) => executor ? work(queries(executor)) : db.transaction(tx => work(queries(tx))) }
 }
 export type SignupRepository = ReturnType<typeof createSignupRepository>

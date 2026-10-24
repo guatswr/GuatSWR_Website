@@ -3,11 +3,12 @@ import type { Actor } from '../actor.js'
 import type { MemberImage, MembersRepository } from './repository.js'
 import { normalizeTags, projectMember, type MemberStorageProjection } from './projection.js'
 import { legacyJsonBinding } from '../../database/legacy-json-binding.js'
+import { publishAssets, type AssetPublication } from '../../storage/publication.js'
 
 export function createMembersService(dependencies: {
   repository: MembersRepository
   directory: string
-  storage: MemberStorageProjection & { moveStagedFile(value: MemberImage, directory: string): Promise<MemberImage> }
+  storage: MemberStorageProjection & { publication?: AssetPublication; moveStagedFile(value: MemberImage, directory: string): Promise<MemberImage> }
   audit(username: string, action: string, details: string): void
   reportAuditFailure(error: unknown): void
   notify(member: { id: number; name: string; role: string; school: string; avatar: string }, actor: Actor): Promise<unknown>
@@ -25,15 +26,15 @@ export function createMembersService(dependencies: {
       return rows.map(row => projectMember(row, options.original, dependencies.storage))
     },
     create: async (input: BackendV1Member, actor: Actor) => {
-      const avatar = await moved(input)
-      const id = await dependencies.repository.create(input, avatar, JSON.stringify(normalizeTags(input.tags)))
+      const { avatar, id } = await publishAssets(dependencies.storage.publication, [input], () => moved(input),
+        async (avatar, tx) => ({ avatar, id: await dependencies.repository.create(input, avatar, JSON.stringify(normalizeTags(input.tags)), tx) }))
       audit(actor, 'CREATE_MEMBER', `添加成员: ${input.name}`)
       void dependencies.notify({ id, name: input.name, role: input.role, school: input.school || '', avatar: avatar || '' }, actor).catch(() => {})
       return id
     },
     update: async (id: string, input: BackendV1Member, actor: Actor) => {
-      const avatar = await moved(input)
-      await dependencies.repository.update(id, input, avatar, JSON.stringify(normalizeTags(input.tags)))
+      await publishAssets(dependencies.storage.publication, [input], () => moved(input),
+        (avatar, tx) => dependencies.repository.update(id, input, avatar, JSON.stringify(normalizeTags(input.tags)), tx))
       audit(actor, 'UPDATE_MEMBER', `更新成员: ${input.name}`)
     },
     remove: async (id: string, actor: Actor) => {

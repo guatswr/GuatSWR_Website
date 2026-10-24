@@ -1,6 +1,7 @@
 import { signupDeadlineClosed } from '@guatswr/shared'
 import type { Actor } from '../../actor.js'
 import type { EventRow, Identity, SignupRepository } from './repository.js'
+import { guardAssetReferences, type AssetPublication } from '../../../storage/publication.js'
 
 export class SignupError extends Error {
   constructor(readonly status: number, message: string) { super(message) }
@@ -14,11 +15,12 @@ export function createSignupService(options: {
   repository: SignupRepository
   notify: (name: string, payload: unknown, actor: Actor | null) => Promise<unknown>
   now?: () => number
+  publication?: AssetPublication
 }) {
   const { repository } = options
   return {
     signup: async (id: number, identity: Identity, body: Record<string, unknown> | undefined, actor: Actor | null) => {
-      const payload = await repository.transaction(async tx => {
+      const payload = await guardAssetReferences(options.publication, [body?.avatar], executor => repository.transaction(async tx => {
         const event = checkEvent(await tx.event(id))
         if (!['published', 'ongoing'].includes(event.status)) throw new SignupError(403, '当前状态不允许报名')
         let content: unknown
@@ -32,7 +34,7 @@ export function createSignupService(options: {
         if (!input.avatar) throw new SignupError(400, '请上传头像')
         await tx.save(id, identity, input)
         return { eventId: id, type: event.type, participant: { common_id: input.common_id, qq: input.qq, avatar: input.avatar, pilot_source: input.pilot_source } }
-      })
+      }, executor))
       // Hooks remain disabled in botHooks; never run a side effect inside a transaction.
       void options.notify('event.signup', payload, actor).catch(() => {})
     },

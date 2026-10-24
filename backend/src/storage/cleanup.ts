@@ -4,6 +4,7 @@ import { randomUUID } from 'node:crypto'
 import type { BigIntStats } from 'node:fs'
 import type { Row, SqlExecutor, SqliteStore } from '../database/sqlite.js'
 import { assetReferences, localAssetPath, referencesFromValues } from './reference-inventory.js'
+import { isSafePath } from '../utils/storage-boundary.js'
 
 export interface CleanupTarget { id: string; url: string; identity: string }
 interface Job extends Row, CleanupTarget { state: string; attempts: number }
@@ -15,6 +16,9 @@ const metadata = async (filename: string) => {
 }
 const paused = async (quarantine: string) => Boolean(await metadata(path.join(path.dirname(quarantine), '.asset-cleanup-fence')))
 async function safeParents(root: string, filename: string) {
+  // realpath is required in addition to reparse metadata: platform stat
+  // implementations can report a junction as a directory.
+  if (!isSafePath(root, filename)) throw new Error('CLEANUP_PATH')
   const relative = path.relative(root, filename)
   if (!relative || relative.startsWith('..') || path.isAbsolute(relative)) throw new Error('CLEANUP_PATH')
   let current = root
@@ -31,6 +35,7 @@ export async function captureCleanupTargets(root: string, values: unknown[], dir
   const walk = async (directory: string) => {
     await safeParents(root, path.join(directory, 'placeholder'))
     for (const entry of await fs.readdir(directory, { withFileTypes: true })) {
+      if (entry.name.startsWith('.asset-prepare-')) continue // owned by the publication journal
       const filename = path.join(directory, entry.name), stat = await metadata(filename)
       if (stat?.isSymbolicLink()) continue
       if (stat?.isDirectory()) await walk(filename)

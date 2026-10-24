@@ -68,16 +68,17 @@ it('rejects a failed move before persisting config or writing an audit entry', a
   expect(await get(f.db, "SELECT value FROM site_config WHERE key='home_bg'")).toBeUndefined()
   expect(await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='UPDATE_CONFIG'")).toEqual({ n: 0 })
 })
-it('keeps the pre-existing moved-file/failed-save gap explicit until BM-27', async () => {
+it('keeps staging bytes and quarantines the unused prepared copy when the database rejects publication', async () => {
   const lines = [], f = await fixture({ logDestination: { write: line => lines.push(JSON.parse(line)) } })
   await f.fs.writeFile(path.join(f.context.PUBLIC_DIR, 'upload/save-error.png'), 'moved-before-save')
-  f.context.sql.main.run = async () => { throw new DatabaseError('unavailable', 'SQLITE_FULL') }
+  await run(f.db, "CREATE TRIGGER fail_config_publication BEFORE INSERT ON site_config WHEN NEW.key='home_bg' BEGIN SELECT RAISE(ABORT,'synthetic'); END")
   const response = await post(f, { key: 'home_bg', value: '/uploads/upload/save-error.png' })
   expect(response.status).toBe(500)
   expect(response.body).toEqual({ message: '服务器错误' })
   expect(await get(f.db, "SELECT value FROM site_config WHERE key='home_bg'")).toBeUndefined()
-  expect(await f.fs.readFile(path.join(f.context.IMG_ROOT_DIR, 'bg/home/save-error.png'), 'utf8')).toBe('moved-before-save')
-  expect(lines.find(line => line.event === 'http.failed')).toMatchObject({ route: '/api/config', code: 'database_unavailable' })
+  expect(await f.fs.readFile(path.join(f.context.PUBLIC_DIR, 'upload/save-error.png'), 'utf8')).toBe('moved-before-save')
+  await expect(f.fs.stat(path.join(f.context.IMG_ROOT_DIR, 'bg/home/save-error.png'))).rejects.toHaveProperty('code', 'ENOENT')
+  expect(lines.find(line => line.event === 'http.failed')).toMatchObject({ route: '/api/config', code: 'database_constraint' })
   expect(await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='UPDATE_CONFIG'")).toEqual({ n: 0 })
 })
 it('returns the existing safe HTTP read failure without raw database details', async () => {

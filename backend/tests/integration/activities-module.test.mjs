@@ -157,7 +157,7 @@ it('does not reuse a previous request move map when a new upload uses the same s
   expect(await f.fs.readFile(f.context.storage.resolveUploadsPath(second.cover_image), 'utf8')).toBe('second-request')
 })
 
-it('keeps the known two-step create gap explicit when the later image move fails', async () => {
+it('does not leave a published activity when later image preparation fails', async () => {
   const f = await fixture(), source = path.join(f.context.PUBLIC_DIR, 'upload/create-failure.png')
   const beforeAudit = await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='CREATE_ACTIVITY'")
   await f.fs.writeFile(source, 'retained-source')
@@ -166,20 +166,20 @@ it('keeps the known two-step create gap explicit when the later image move fails
   const response = await f.http.post('/api/activities').set('Authorization', `Bearer ${token(2, 'admin')}`).send({ ...activity, title: 'failed second phase', cover_image: '/uploads/upload/create-failure.png' })
   expect(response.status).toBe(500)
   expect(response.body).toEqual({ message: '服务器错误' })
-  expect(await get(f.db, "SELECT status,cover_image FROM activities WHERE title='failed second phase'")).toEqual({ status: 'published', cover_image: '/uploads/upload/create-failure.png' })
+  expect(await get(f.db, "SELECT status,cover_image FROM activities WHERE title='failed second phase'")).toBeUndefined()
   expect(await f.fs.readFile(source, 'utf8')).toBe('retained-source')
   expect(await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='CREATE_ACTIVITY'")).toEqual(beforeAudit)
 })
 
-it('keeps the old row and moved bytes when a later update fails to persist', async () => {
+it('keeps the old row and staging bytes when a prepared update cannot commit', async () => {
   const f = await fixture()
   await f.fs.writeFile(path.join(f.context.PUBLIC_DIR, 'upload/update-failure.png'), 'moved-before-db-failure')
-  f.context.sql.main.run = async () => { throw new DatabaseError('unavailable', 'SQLITE_FULL') }
+  await run(f.db, "CREATE TRIGGER fail_activity_update BEFORE UPDATE ON activities BEGIN SELECT RAISE(ABORT,'synthetic'); END")
   const response = await update(f, '1', { ...activity, cover_image: '/uploads/upload/update-failure.png' })
   expect(response.status).toBe(500)
   expect(response.body).toEqual({ message: '服务器错误' })
   expect(await get(f.db, 'SELECT title,cover_image FROM activities WHERE id=1')).toEqual({ title: 'published', cover_image: null })
-  expect(await f.fs.readFile(path.join(f.context.IMG_ROOT_DIR, 'activity/1/update-failure.png'), 'utf8')).toBe('moved-before-db-failure')
+  expect(await f.fs.readFile(path.join(f.context.PUBLIC_DIR, 'upload/update-failure.png'), 'utf8')).toBe('moved-before-db-failure')
   expect(await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='UPDATE_ACTIVITY'")).toEqual({ n: 0 })
 })
 

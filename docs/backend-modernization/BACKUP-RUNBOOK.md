@@ -43,3 +43,5 @@ bash scripts/restore.sh /srv/guatswr/backups/full/full_<tag>.tar.gz \
 - 磁盘满测试给隔离容器挂 `--tmpfs /limited:rw,size=1m`，设 `BACKUP_TEST_LIMIT_ROOT=/limited`；不挂真实data。
 
 已执行范围及旧镜像回读证据见 [BM-10](evidence/BM-10.md)。原数据实测/版本迁移/性能及生产一致点尚须各自阶段验收。
+
+BM-27c2保留与发布：asset-quarantine默认keep-all，不按TTL自动销毁。公开暂存TTL只排队未引用且身份一致的文件进入隔离；私有未发布请求文件可过期。容量预算应包含来源/发布副本和隔离字节。派生`.asset-prepare-*`文件/目录从public归档排除，manifest记录ephemeral_exclusions；DATA_DIR/asset-publications只为中断恢复提示，不作为恢复包业务状态。停写备份先等待在途请求，接续发布日志和清理，再执行quiesced-attested备份；普通online标签不代表双库/文件同一时点。恢复后公开待清理项不得盲目重绑；隔离绑定仍须manifest字节/身份验证。

@@ -46,6 +46,7 @@ export function referencesFromValues(values: unknown[], root: string) {
     const candidates = new Set<string>()
     for (const text of texts) {
       if (text.startsWith('/uploads/')) candidates.add(text)
+      for (const quoted of text.matchAll(/["'](\/uploads\/[^"'<>\r\n]+)["']/g)) if (quoted[1]) candidates.add(quoted[1])
       for (const candidate of text.match(/\/uploads\/[^\s"'<>()[\]{},]+/g) || []) candidates.add(candidate)
     }
     for (const candidate of candidates) {

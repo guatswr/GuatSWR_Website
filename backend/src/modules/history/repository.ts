@@ -11,13 +11,13 @@ export function createHistoryRepository(db: SqlExecutor) {
     list: (includeDeleted: boolean) => db.all<HistoryRow>(includeDeleted
       ? 'SELECT * FROM history ORDER BY date ASC, sort_order ASC'
       : 'SELECT * FROM history WHERE deleted_at IS NULL ORDER BY date ASC, sort_order ASC'),
-    create: async (input: BackendV1History, image: HistoryImage) => {
-      const result = await db.run('INSERT INTO history (date, title, description, image, sort_order) VALUES (?, ?, ?, ?, ?)',
+    create: async (input: BackendV1History, image: HistoryImage, executor: SqlExecutor = db) => {
+      const result = await executor.run('INSERT INTO history (date, title, description, image, sort_order) VALUES (?, ?, ?, ?, ?)',
         [input.date, input.title, input.description ?? null, image ?? null, input.sort_order || 0])
       return result.lastID
     },
-    update: async (id: string, input: BackendV1History, image: HistoryImage) => {
-      await db.run('UPDATE history SET date=?, title=?, description=?, image=?, sort_order=? WHERE id=?',
+    update: async (id: string, input: BackendV1History, image: HistoryImage, executor: SqlExecutor = db) => {
+      await executor.run('UPDATE history SET date=?, title=?, description=?, image=?, sort_order=? WHERE id=?',
         [input.date, input.title, input.description ?? null, image ?? null, input.sort_order, id])
     },
     title: async (id: string, withImage: boolean) => {

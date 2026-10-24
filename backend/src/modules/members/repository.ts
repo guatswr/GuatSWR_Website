@@ -15,13 +15,13 @@ export function createMembersRepository(db: SqlExecutor) {
       return db.all<MemberRow>(`SELECT * FROM members${conditions.length ? ` WHERE ${conditions.join(' AND ')}` : ''} ORDER BY sort_order ASC, id ASC`, params)
     },
     schools: () => db.all<{ school: string | null; count: number }>('SELECT school, COUNT(*) as count FROM members WHERE deleted_at IS NULL GROUP BY school ORDER BY count DESC, school ASC'),
-    create: async (input: BackendV1Member, avatar: MemberImage, tags: string) => {
-      const result = await db.run('INSERT INTO members (name, role, avatar, school, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
+    create: async (input: BackendV1Member, avatar: MemberImage, tags: string, executor: SqlExecutor = db) => {
+      const result = await executor.run('INSERT INTO members (name, role, avatar, school, tags, sort_order) VALUES (?, ?, ?, ?, ?, ?)',
         [input.name, input.role, avatar ?? null, input.school || '', tags, input.sort_order || 0])
       return result.lastID
     },
-    update: async (id: string, input: BackendV1Member, avatar: MemberImage, tags: string) => {
-      await db.run('UPDATE members SET name=?, role=?, avatar=?, school=?, tags=?, sort_order=? WHERE id=?',
+    update: async (id: string, input: BackendV1Member, avatar: MemberImage, tags: string, executor: SqlExecutor = db) => {
+      await executor.run('UPDATE members SET name=?, role=?, avatar=?, school=?, tags=?, sort_order=? WHERE id=?',
         [input.name, input.role, avatar ?? null, input.school || '', tags, input.sort_order || 0, id])
     },
     name: async (id: string, withAvatar: boolean) => {

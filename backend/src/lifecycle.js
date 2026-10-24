@@ -127,6 +127,7 @@ const createApplication = async (options = {}) => {
       ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['guestGateway', './middlewares/guestGateway'], ['limiter', './middlewares/limiter'],
       ['upload', './middlewares/upload'], ['scheduler', './utils/backupScheduler']
     ]) context[key] = require(filename)(context);
+    await context.storage.publication?.recover();
     const { app } = require('./app').buildApp(context);
     const listen = (port = configuration.port, host = configuration.bindHost) => {
       if (closing || listening) return Promise.reject(new Error('Application already listening or closed'));
@@ -151,6 +152,7 @@ const createApplication = async (options = {}) => {
                   if (runningCleanup || context.isClosing()) return;
                   runningCleanup = true;
                   try {
+                    await context.storage.publication?.recover();
                     const result = await runCleanupBatch(context.sql.main, context.PUBLIC_DIR, path.join(context.DATA_DIR, 'asset-quarantine'), 20, context.shutdownSignal);
                     if (result.failed) context.logger.error('storage.cleanup.retry', { error: new Error('Pending asset cleanup requires retry') });
                   } finally { runningCleanup = false; }

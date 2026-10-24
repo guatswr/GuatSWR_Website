@@ -5,6 +5,7 @@ import { assertVisitorContent } from '../../utils/eventContentStorage.js'
 import { publicEvent } from '../../utils/public-event.js'
 import { eventStatuses } from './state/service.js'
 import { eventBinding, type EventRow, type EventsRepository } from './repository.js'
+import { publishAssets, type AssetPublication } from '../../storage/publication.js'
 
 const publicStatuses = ['published', 'ongoing', 'ended', 'settled']
 const parseContent = (row: EventRow) => {
@@ -14,6 +15,7 @@ const parseContent = (row: EventRow) => {
 }
 export function createEventsService(options: {
   repository: EventsRepository; persist(content: unknown, id: number): Promise<unknown>
+  publication?: AssetPublication
   audit(username: string, action: string, details: string): void; report(error: unknown): void
   notify(name: string, payload: unknown, actor: Actor): Promise<unknown>
 }) {
@@ -25,9 +27,11 @@ export function createEventsService(options: {
       if (!row) throw new AppError('Event not found', 'not_found', 404)
       if (row.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
       if (body.content && !['admin', 'super_admin'].includes(actor?.role || '')) assertVisitorContent(body.content)
-      let content: unknown
-      try { if (body.content) content = await options.persist(body.content, row.id) }
-      catch (cause) { throw new AppError('活动图片保存失败，请重试', 'event_asset_failed', 500, { cause }) }
+      if (!body.type && !body.title && !body.content && body.submit !== true) throw new AppError('No fields to update', 'empty_update', 400)
+      await publishAssets(options.publication, [body.content], async () => {
+        try { return body.content ? await options.persist(body.content, row.id) : undefined }
+        catch (cause) { throw new AppError('活动图片保存失败，请重试', 'event_asset_failed', 500, { cause }) }
+      }, async (content, transaction) => {
       const sets: string[] = [], params: SqlValue[] = []
       if (body.type) { sets.push('type=?'); params.push(eventBinding(body.type)) }
       if (body.title) { sets.push('title=?'); params.push(eventBinding(body.title)) }
@@ -35,11 +39,13 @@ export function createEventsService(options: {
       if (body.submit === true) { sets.push('status=?'); params.push('pending') }
       if (!sets.length) throw new AppError('No fields to update', 'empty_update', 400)
       sets.push('updated_at=CURRENT_TIMESTAMP')
-      await options.repository.store.transaction(async tx => {
+      const save = async (tx: import('../../database/sqlite.js').SqlExecutor) => {
         const current = await tx.get('SELECT id,status FROM events WHERE id=?', [id])
         if (!current) throw new AppError('Event not found', 'not_found', 404)
         if (current.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
         await tx.run(`UPDATE events SET ${sets.join(',')} WHERE id=?`, [...params, id])
+      }
+      if (transaction) await save(transaction); else await options.repository.store.transaction(save)
       })
       if (body.submit) audit(actor ? actor.username : 'Visitor', 'SUBMIT_EVENT', `提交事件审核 EID: ${id}`)
     },
@@ -64,9 +70,10 @@ export function createEventsService(options: {
       const result = await options.repository.reserve(body.type, body.title, body.content, actor.id, ip)
       let content: unknown
       try {
-        content = await options.persist(body.content || {}, result.lastID)
-        await options.repository.publish(result.lastID, content, status)
-      } catch (error) { await options.repository.discard(result.lastID); throw error }
+        content = await publishAssets(options.publication, [body.content], () => options.persist(body.content || {}, result.lastID), async (content, tx) => {
+          await options.repository.publish(result.lastID, content, status, body, actor.id, tx); return content
+        })
+      } catch (error) { await options.repository.discard(result.lastID, body, actor.id).catch(options.report); throw error }
       audit(actor.username, 'CREATE_EVENT', `管理员发布活动 EID: ${result.lastID}`)
       if (status === 'published') void options.notify('event.published', { eventId: result.lastID, type: body.type, title: body.title, content }, { id: actor.id, username: actor.username, role: actor.role }).catch(options.report)
       return result.lastID

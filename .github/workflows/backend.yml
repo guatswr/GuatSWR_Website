@@ -65,6 +65,7 @@ jobs:
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-security-bridge.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-member-binding.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-upload-work-ownership.cjs
+      - run: docker run --rm --network none --user 0 --tmpfs /tmp/guatswr-cross-volume/public/img/bg/home:rw,size=8m,mode=1777 guatswr-backend-runtime node scripts/test-publication-cross-device.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-lifecycle-signals.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-concurrency.cjs

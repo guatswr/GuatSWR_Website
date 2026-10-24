@@ -1,7 +1,9 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import { isSafePath } from '../utils/storage-boundary.js'
-export function createFileStorage(context: { PUBLIC_DIR: string; IMG_ROOT_DIR: string; PRIVATE_UPLOADS_DIR?: string }) {
+import { assetOperation, type AssetPublication } from './publication.js'
+import type { AssetRetention } from './retention.js'
+export function createFileStorage(context: { PUBLIC_DIR: string; IMG_ROOT_DIR: string; PRIVATE_UPLOADS_DIR?: string; publication?: AssetPublication; retention?: AssetRetention }) {
 const { PUBLIC_DIR, IMG_ROOT_DIR } = context;
 
 const PUBLIC_DIR_RESOLVED = path.resolve(PUBLIC_DIR);
@@ -22,6 +24,7 @@ const resolveUploadsPath = (url: unknown): string | null => {
   try {
     const rel = decodeURIComponent(url.slice('/uploads/'.length));
     if (!rel || rel.includes('\\') || /[\0?#]/.test(rel) || rel.split('/').some(part => part === '.' || part === '..')) return null;
+    if (rel.split('/').some(part => part.startsWith('.asset-prepare-'))) return null;
     const abs = path.resolve(PUBLIC_DIR, rel);
     return isSafePath(PUBLIC_DIR_RESOLVED, abs) ? abs : null;
   } catch { return null; }
@@ -30,6 +33,8 @@ const resolveUploadsPath = (url: unknown): string | null => {
 const isStagingUrl = (url: unknown): url is string => typeof url === 'string' && url.startsWith('/uploads/upload/');
 
 const moveFileSafe = async (src: string, dest: string) => {
+  const operation = assetOperation.getStore()
+  if (operation) return operation.publish(src, dest)
   try {
     await fs.promises.rename(src, dest);
   } catch (err) {
@@ -56,6 +61,7 @@ const uniqueDestPath = (targetDir: string, filename: string, reserveThumb = fals
 const moveCacheKey = (filename: string) => process.platform === 'win32' ? path.resolve(filename).toLowerCase() : path.resolve(filename);
 const moveStagedFile = async <T>(url: T, targetDir: string, movedUrls?: Map<string, string>): Promise<T | string> => {
   if (!isStagingUrl(url)) return url;
+  if (context.publication && !assetOperation.getStore()) return context.publication.standalone([url], () => moveStagedFile(url, targetDir, movedUrls))
   const srcPath = resolveUploadsPath(url);
   if (!srcPath) return url;
   const cached = movedUrls?.get(moveCacheKey(srcPath));
@@ -143,6 +149,11 @@ const deletePathSafe = async (absPath: string | null | undefined) => {
   if (!isSafePath(PUBLIC_DIR_RESOLVED, absPath)) return;
   if (!fs.existsSync(absPath)) return;
   const stat = await fs.promises.lstat(absPath);
+  if (context.retention) {
+    if (stat.isDirectory()) await context.retention.request([], [absPath]);
+    else await context.retention.request([toUploadsUrl(absPath)]);
+    return;
+  }
   if (stat.isDirectory()) {
     await fs.promises.rm(absPath, { recursive: true, force: true });
   } else {
@@ -160,6 +171,7 @@ const deleteByUrl = async (url: unknown) => {
 };
 
 const cleanupStaging = async (ttlMs: number) => {
+  if (context.retention) return context.retention.cleanupStaging(ttlMs)
   const stagingDir = path.join(PUBLIC_DIR, 'upload');
   if (!fs.existsSync(stagingDir)) return;
   const files = await fs.promises.readdir(stagingDir);
@@ -207,7 +219,7 @@ const getConfigDir = (key: string) => {
     mascot_image: path.join(IMG_ROOT_DIR, 'assets', 'mascot'),
     qq_qr_image: path.join(IMG_ROOT_DIR, 'Join_QR')
   };
-  return map[key] || path.join(IMG_ROOT_DIR, 'assets', 'misc');
+  return (Object.hasOwn(map, key) ? map[key] : undefined) || path.join(IMG_ROOT_DIR, 'assets', 'misc');
 };
 
 return {

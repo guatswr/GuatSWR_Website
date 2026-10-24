@@ -1,5 +1,6 @@
 import type { Actor } from '../../actor.js'
 import type { EventStateRepository } from './repository.js'
+import { guardAssetReferences, type AssetPublication } from '../../../storage/publication.js'
 
 export const eventStatuses: readonly string[] = ['draft', 'pending', 'published', 'ongoing', 'ended', 'settled', 'rejected', 'deleted']
 export class EventStateError extends Error {
@@ -12,6 +13,7 @@ const parseContent = (raw: string | null): Record<string, unknown> => {
 export type StateAction = 'approve' | 'reject' | 'status' | 'delete' | 'review'
 export function createEventStateService(options: {
   repository: EventStateRepository
+  publication?: AssetPublication
   audit(username: string, action: string, details: string): void
   reportAuditFailure(error: unknown): void
   notify(name: string, payload: unknown, actor: Actor): Promise<unknown>
@@ -41,23 +43,23 @@ export function createEventStateService(options: {
     settle: async (id: number, body: Record<string, unknown> | undefined, actor: Actor) => {
       const payload = body?.payload && typeof body.payload === 'object' ? body.payload : {}
       const status = String(body?.status || 'settled')
-      const event = await options.repository.transaction(async tx => {
+      const event = await guardAssetReferences(options.publication, [payload], executor => options.repository.transaction(async tx => {
         const event = await tx.event(id)
         if (!event) throw new EventStateError(404, 'Event not found')
         await tx.content(id, JSON.stringify({ ...parseContent(event.content), ...payload }), status)
         return event
-      })
+      }, executor))
       audit(actor, 'SETTLE_EVENT', `结算事件 EID: ${id}`)
       notify('event.settled', { eventId: id, type: event.type, payload }, actor)
     },
     result: async (id: number, results: unknown[], actor: Actor) => {
-      const event = await options.repository.transaction(async tx => {
+      const event = await guardAssetReferences(options.publication, [results], executor => options.repository.transaction(async tx => {
         const event = await tx.event(id)
         if (!event) throw new EventStateError(404, 'Event not found')
         if (!['STG', '则则'].includes(event.type)) throw new EventStateError(400, '此活动不支持录入结果')
         await tx.content(id, JSON.stringify({ ...parseContent(event.content), results, results_updated_at: new Date().toISOString() }), 'ended')
         return event
-      })
+      }, executor))
       audit(actor, 'SET_EVENT_RESULT', `录入比赛结果 EID: ${id}`)
       notify('event.result_set', { eventId: id, type: event.type, results }, actor)
     }

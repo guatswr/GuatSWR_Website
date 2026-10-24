@@ -13,7 +13,7 @@ const { createEventStateRepository } = require(path.join(stateModule, 'repositor
 const { createEventStateService } = require(path.join(stateModule, 'service'));
 const { createEventStateController } = require(path.join(stateModule, 'controller'));
 const stateController = createEventStateController(createEventStateService({
-  repository: createEventStateRepository(context.sql.main), audit: addLog,
+  repository: createEventStateRepository(context.sql.main), audit: addLog, publication: context.storage.publication,
   notify: require('../utils/botHooks').callBotHook,
   reportAuditFailure: error => context.logger.error('audit.failed', { error })
 }), error => context.logger.error('http.failed', { error, route: '/api/event/state' }));

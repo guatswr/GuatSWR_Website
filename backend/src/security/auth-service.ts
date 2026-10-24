@@ -8,6 +8,7 @@ import type { SecurityService } from './service.js'
 import { recordLoginFailure } from './service.js'
 import { authorizeSecurityActor, nextUserVersion, requireSecuritySchema } from './authorize.js'
 import { enqueueSecurityAudit } from './audit-outbox.js'
+import { publishAssets, type AssetPublication } from '../storage/publication.js'
 
 interface User extends Row { id: number; username: string; role: string; password: string; avatar: string | null; twofa_enabled: number; twofa_secret: string | null }
 type Login = ReturnType<typeof loginSchema.parse>
@@ -19,6 +20,7 @@ export function createAuthService(options: {
   moveAvatar(value: string | null | undefined): Promise<string | null | undefined>
   report(error: unknown): void
   committed(): void
+  publication?: AssetPublication
 }) {
   const codec = createSecondPasswordCodec(options.secondSecret)
   const committed = () => { try { options.committed() } catch (error) { options.report(error) } }
@@ -66,9 +68,8 @@ export function createAuthService(options: {
     me: (id: number) => options.store.get('SELECT id,username,role,avatar,twofa_enabled FROM users WHERE id=?', [id]),
     profile: async (input: Profile, actor: Actor) => {
       requireSecuritySchema(options.ready)
-      const avatar = await options.moveAvatar(input.avatar)
-      const hash = input.password ? hashPassword(input.password) : undefined
-      await options.store.transaction(async tx => {
+      await publishAssets(options.publication, [input.avatar], async () => ({ avatar: await options.moveAvatar(input.avatar), hash: input.password ? hashPassword(input.password) : undefined }), async ({ avatar, hash }, transaction) => {
+      const save = async (tx: import('../database/sqlite.js').SqlExecutor) => {
         const current = await authorizeSecurityActor(tx, actor)
         const second = await tx.get('SELECT twofa_enabled FROM users WHERE id=?', [actor.id])
         const sets: string[] = [], params: SqlValue[] = []
@@ -88,6 +89,8 @@ export function createAuthService(options: {
         await tx.run(`UPDATE users SET ${sets.join(',')} WHERE id=?`, [...params, actor.id])
         if (hash || input.twofa_enabled === false || input.twofa_password) await nextUserVersion(tx, actor.id)
         await enqueueSecurityAudit(tx, String(current.username || 'System'), 'UPDATE_PROFILE', secondAction ? `更新资料/二步密码(${secondAction})` : '更新个人资料')
+      }
+      if (transaction) await save(transaction); else await options.store.transaction(save)
       })
       committed()
     },

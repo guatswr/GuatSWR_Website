@@ -15,6 +15,16 @@ spec.loader.exec_module(bundle)
 
 
 class RestoreChecks(unittest.TestCase):
+    def test_public_backup_excludes_derived_publication_temporaries_even_when_hardlinked(self):
+        source = self.root / 'publication-public'
+        source.mkdir()
+        temporary = source / '.asset-prepare-synthetic.tmp'
+        temporary.write_bytes(b'verified derived copy')
+        import os
+        os.link(temporary, source / 'published.png')
+        archive = bundle.pack_public(source, self.root / 'publication-output', '20300101_000000')
+        self.assertEqual(set(bundle.scan(archive)), {'published.png'})
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory(prefix='guatswr-archive-test-')
         self.root = Path(self.temp.name).resolve()
