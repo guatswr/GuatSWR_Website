@@ -3,6 +3,8 @@ name: Publish v2 release
 on:
   push:
     tags: ['v2.0.0']
+    branches: [main]
+    paths: ['docs/releases/v2.0.0.md']
 
 permissions:
   contents: write
@@ -19,6 +21,7 @@ jobs:
     env:
       GH_TOKEN: ${{ github.token }}
       GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: v2.0.0
     steps:
       - uses: actions/checkout@v4
         with:
@@ -27,8 +30,8 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          revision="$(git rev-parse HEAD)"
-          git fetch origin main --no-tags
+          git fetch origin main --tags
+          revision="$(git rev-parse "$RELEASE_TAG^{}")"
           git merge-base --is-ancestor "$revision" origin/main
           run_id=''
           for attempt in $(seq 1 30); do
@@ -42,8 +45,9 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          if gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease >/dev/null 2>&1; then
-            gh release view "$GITHUB_REF_NAME" --json isDraft,isPrerelease --jq 'if (.isDraft or .isPrerelease) then error("Existing release is not stable") else "Stable release already exists" end'
+          if gh release view "$RELEASE_TAG" --json isDraft,isPrerelease >/dev/null 2>&1; then
+            gh release view "$RELEASE_TAG" --json isDraft,isPrerelease --jq 'if (.isDraft or .isPrerelease) then error("Existing release is not stable") else "Stable release already exists" end'
+            gh release edit "$RELEASE_TAG" --notes-file docs/releases/v2.0.0.md --latest
           else
-            gh release create "$GITHUB_REF_NAME" --verify-tag --title 'v2.0.0' --notes-file docs/releases/v2.0.0.md --latest
+            gh release create "$RELEASE_TAG" --verify-tag --title 'v2.0.0' --notes-file docs/releases/v2.0.0.md --latest
           fi
