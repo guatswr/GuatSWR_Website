@@ -19,6 +19,11 @@ const banGuard = (req, res, next) => {
 };
 
 const banIp = (ip, reason = '', createdBy = 'ATRI', expiresAt = null, cb) => {
+  if (expiresAt !== null && (!Number.isFinite(expiresAt) || Math.abs(expiresAt) > 8640000000000000)) {
+    const error = Object.assign(new Error('Invalid ban expiry'), { code: 'BAN_EXPIRY' });
+    if (cb) queueMicrotask(() => cb(error));
+    return;
+  }
   const createdAt = Date.now();
   db.run(
     'INSERT OR REPLACE INTO banned_ips (ip, reason, created_at, expires_at, created_by) VALUES (?, ?, ?, ?, ?)',

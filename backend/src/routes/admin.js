@@ -83,6 +83,7 @@ router.post('/bans', authenticateToken, requireSuperAdmin, (req, res) => {
   const minutes = Number(req.body?.minutes || 0);
   if (!net.isIP(ip)) return res.status(400).json({ message: 'IP 格式不正确' });
   const expiresAt = minutes > 0 ? Date.now() + minutes * 60 * 1000 : null;
+  if (!Number.isFinite(minutes) || (expiresAt !== null && (!Number.isFinite(expiresAt) || expiresAt > 8640000000000000))) return res.status(400).json({ message: '封禁时长无效' });
   banIp(ip, reason, req.user.username, expiresAt, (err) => {
     if (err) return res.status(500).json({ error: err.message });
     res.json({ message: '已封禁', ip });

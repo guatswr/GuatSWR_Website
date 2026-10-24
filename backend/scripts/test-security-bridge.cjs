@@ -47,6 +47,9 @@ const { bootstrapAdministrator } = require('../dist/src/admin/bootstrap');
     assert.equal(jwt.verify(login.token, env.JWT_SECRET).user_token_version, 1);
     assert.equal((await me(login.token)).status, 200);
     if (app.context.securityReady) {
+      const invalidBan = await fetch(origin + '/api/admin/bans', { method: 'POST', headers: { Authorization: `Bearer ${login.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ ip: '203.0.113.66', minutes: 'Infinity' }) });
+      assert.equal(invalidBan.status, 400);
+      assert.equal(await app.context.sql.main.get("SELECT ip FROM banned_ips WHERE ip='203.0.113.66'"), undefined);
       const changed = await fetch(origin + '/api/auth/profile', { method: 'PUT', headers: { Authorization: `Bearer ${login.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ password: 'synthetic-updated-bridge-password' }) });
       assert.equal(changed.status, 200);
       assert.equal((await me(login.token)).status, 401);
