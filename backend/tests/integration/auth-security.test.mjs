@@ -41,8 +41,11 @@ it('A02 incorrect second passwords count toward the same five-attempt lock',asyn
  }
 })
 
-it('A02 malformed legacy CBC produces a controlled response without crashing',async()=>{
+it('A02 fixed legacy CBC remains readable and malformed ciphertext fails safely',async()=>{
  const f=await fixture()
+ // Frozen CBC bytes produced before the TypeScript extraction, using the fixture key.
+ await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret=? WHERE id=2",['BwcHBwcHBwcHBwcHBwcHBw==:tHx0e38DbY3/JeeueK45eyfKCqmMl+vDt2fwZ6xqfuk='])
+ expect((await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'legacy-second-password'})).status).toBe(200)
  await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret='bad:bad' WHERE id=2")
  const response=await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'second-password'})
  expect(response.status).toBe(503)

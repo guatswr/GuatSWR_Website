@@ -1,31 +1,7 @@
-module.exports = (context) => {
-  const { db } = context;
-  const get = (sql, params = []) => new Promise((resolve, reject) => db.get(sql, params, (error, row) => error ? reject(error) : resolve(row)));
-  const readVersion = (value) => {
-    if (value === null || value === undefined) return 0;
-    if (!/^\d+$/.test(String(value))) throw new Error('Invalid token version');
-    const version = Number(value);
-    if (!Number.isSafeInteger(version) || version < 0) throw new Error('Invalid token version');
-    return version;
-  };
-  const incrementVersion = async () => {
-    const row = await get(`INSERT INTO site_config (key,value) VALUES ('token_version','1')
-      ON CONFLICT(key) DO UPDATE SET value=CAST(CAST(site_config.value AS INTEGER)+1 AS TEXT)
-      WHERE site_config.value != '' AND site_config.value NOT GLOB '*[^0-9]*'
-        AND CAST(site_config.value AS INTEGER) BETWEEN 0 AND 9007199254740990
-      RETURNING value`);
-    if (!row) throw new Error('Invalid token version');
-    return readVersion(row.value);
-  };
-  const deleteAdmin = (id, actorId) => get(`DELETE FROM users
-    WHERE id=? AND id<>? AND EXISTS(SELECT 1 FROM users WHERE id=? AND role='super_admin')
-      AND (COALESCE(role,'')<>'super_admin' OR (SELECT count(*) FROM users WHERE role='super_admin')>1)
-    RETURNING username`, [id, actorId, actorId]);
-  const recordFailure = (ip, now) => get(`INSERT INTO login_attempts(ip,count,lock_until,updated_at) VALUES (?,1,0,?)
-    ON CONFLICT(ip) DO UPDATE SET
-      count=MIN(CASE WHEN login_attempts.lock_until>0 AND login_attempts.lock_until<=? THEN 1 ELSE login_attempts.count+1 END,5),
-      lock_until=CASE WHEN (CASE WHEN login_attempts.lock_until>0 AND login_attempts.lock_until<=? THEN 1 ELSE login_attempts.count+1 END)>=5 THEN ? ELSE 0 END,
-      updated_at=?
-    RETURNING count,lock_until`, [ip,now,now,now,now+60000,now]);
-  return { readVersion, incrementVersion, deleteAdmin, recordFailure };
+module.exports = context => {
+  const path = require('node:path');
+  const root = context.BACKEND_ROOT || require('./db').resolvePaths({}).BACKEND_ROOT;
+  const { createSecurityService } = require(path.join(root, 'dist/src/security/service'));
+  const store = context.sql?.main || { get: (sql, params = []) => new Promise((resolve, reject) => context.db.get(sql, params, (error, row) => error ? reject(error) : resolve(row))) };
+  return createSecurityService(store);
 };
