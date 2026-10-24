@@ -17,7 +17,7 @@ const loadStorage = (publicDir) => {
     : nativeRequire(name);
   const source = fs.readFileSync(filename, 'utf8');
   vm.runInThisContext(`(function(require, module, exports) { ${source}\n})`, { filename })(load, module, module.exports);
-  return module.exports({ PUBLIC_DIR: publicDir, IMG_ROOT_DIR: path.join(publicDir, 'img') });
+  return module.exports({ BACKEND_ROOT: path.resolve(__dirname, '../..'), PUBLIC_DIR: publicDir, IMG_ROOT_DIR: path.join(publicDir, 'img') });
 };
 
 test('admin content images and thumbnails persist outside staging and survive its cleanup', async (t) => {

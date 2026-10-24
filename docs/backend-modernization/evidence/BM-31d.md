@@ -71,3 +71,11 @@ Windows17+1953=1970通过、1项POSIX不适用；Linux17+1954=1971通过（bm31d
 使用真实Multer磁盘解析和TCP断开、受控处理工作屏障复现与验证；不把合成parser字节称为通过Sharp的真实图片。3项专项验证已关闭入口不解析、8个处理中的断开客户端仍占槽、第9个429、完成释放后再次200及私有文件清空。此前红灯activeWork=9，现原生生产检查activeWork=8、heldLimit=true；新增8秒上限的test-upload-work-ownership.cjs接入容器CI。
 
 完整Windows17+1956=1973通过，1项POSIX不适用；Linux17+1957=1974通过（bm31d-upload-lease-windows-final/linux-final.log）。strict build/lint、BFF完整链路通过。新生产镜像guatswr-backend-bm31d-upload-lease-runtime，manifest-list sha256:daf71a819ee15c539068619a28d356acb1d55624ac54753f70e1275a2202ce5c；无源码覆盖真实TCP断开资源检查与runtime-smoke通过（bm31d-upload-lease-production-build/native/runtime.log）。完整恢复本节点未重跑。剩余storage和BM-27补偿/引用保留继续，31d尚未完成。
+
+## BM-31d10 搬图与通用帮助函数类型迁移（输入c94bea3）
+
+storage.js搬图/配对缩略图/请求缓存/日期与config目录/暂存清理及utils.js的JSON/校验帮助函数迁入strict TS，JS仅保留接线。TS描述输入未知值、泛型透传和Schema safeParse结果；没有新增直接Zod依赖或靠主目录hoisted包解析。保持既有文件行为，BM-27的移动前后补偿、保留引用与进程中断缺口继续开放；不能将纯类型迁移写成文件事务已经完成。
+
+strict构建首次发现日期捕获组可为undefined，补显式组存在检查；lint发现旧destPath冗余赋值，删除无用赋值，不关闭规则。现有17项bootstrap及30项unit通过，完整Windows17+1956=1973、Linux17+1957=1974通过（bm31d-files-windows-final/linux-final.log），Windows1项POSIX不适用；BFF完整链路、lint通过。新生产镜像guatswr-backend-bm31d-files-runtime，manifest-list sha256:5c23d800f0d7348dfaea57a5903c478875d352f847a83753390dc49cf6cf796a，原生runtime-smoke通过（bm31d-files-production-build/runtime.log）。本节点未重跑完整恢复。
+
+JS账本物理文件仍31，auth/ban/limiter/upload及所有域路由主要为薄适配；app/lifecycle/models-db为平台资源装配。config/proxy及最终适配边界还需逐项检查。31d整体依赖BM-27退出条件，目前仍IN PROGRESS，随后从文件一致性实施接续。
