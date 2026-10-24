@@ -25,3 +25,11 @@
 publicLog/publicEvent、guestGateway与storageBoundary迁至strict TS；CJS只保留工厂或纯包路径接线。TS业务直接导入对应typed模块，避免通过allowJs适配器重新落回any。保留4096字符界限、固定安全动作文本、线性token过滤、公开config白名单、递归私有字段/32层深度过滤、已有字段/NULL、原CIDR/XFF/常量时间bridge校验，以及同前缀/根目录/symlink安全规则。没有新API或schema变化，JS账本物理文件数量仍31，业务已从这4个位置移除；其余文件继续审查。
 
 Windows17+1944=1961通过、1项POSIX专用不适用；Linux17+1945=1962全通过（bm31d-projection-windows/linux.log）。strict build/lint、真实BFF双会话完整链路通过（bm31d-projection-build/lint/bff.log）。新生产镜像guatswr-backend-bm31d-projection-runtime，无源码覆盖runtime-smoke及真实改密/封禁/可靠审计通过（bm31d-projection-production-build/runtime/native-security.log）。首次机械转换误给isInside调用处加类型注解，被TS构建拒绝后修正；未降低编译或测试门禁。未新增镜像恢复演练，本节点沿用31c恢复证据。下步事件CRUD与文件流程，未标记31d完成。
+
+## BM-31d4 原生绑定复核（输入4cc8e00）
+
+在事件类型化时核对sqlite3原生Statement::BindParameter及Windows/Linux直接SELECT参数，实测JSON对象和数组均绑定固定文本`[object Object]`，布尔值为0/1；不是NULL，也不是JavaScript String(array)。发现BM-22早先将structured school过滤器转NULL的假设错误：原fixture没有学校名恰为该文本的行，未能检出差异。新增含该历史学校名的真实DB用例先红（bm31d-member-binding-red.log），再恢复原生语义；不引入新业务协议或schema。
+
+新增strict legacyJsonBinding，限定既有JSON/query输入边界，参数仍绑定而不拼SQL；members Repository的过滤值类型改为SqlValue。此修复与事件结构重构分开提交，后续Event复用同一已验证边界。成员专项及联合完整回归/独立镜像证据接续补入。
+
+成员10项专项通过（bm31d-member-binding-targeted.log）。联合工作树（含后续事件类型迁移）完整Windows17+1948=1965、Linux17+1949=1966通过，Windows1项POSIX不适用（bm31d-events-binding-windows/linux.log），BFF完整链路通过。另单独构建仅绑定修复的生产上下文：恢复HEAD事件路由和单测夹具、移除尚未提交的3个事件TS源，镜像guatswr-backend-bm31d-member-runtime，manifest-list sha256:b77fb8b0d029dc0b428e8b36e507e436ae7db4c2ef5a40347318747b2ea1ebca；runtime-smoke与真实HTTP structuredSchool回归通过（bm31d-member-production-build/runtime/native-binding.log）。新增test-member-binding.cjs接入容器CI。此修复不宣称事件结构迁移已经提交或31d完成。

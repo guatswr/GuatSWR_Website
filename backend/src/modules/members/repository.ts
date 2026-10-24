@@ -8,7 +8,7 @@ export type MemberRow = Row & {
 }
 export function createMembersRepository(db: SqlExecutor) {
   return {
-    list: (includeDeleted: boolean, school: { enabled: boolean; value: string | null }) => {
+    list: (includeDeleted: boolean, school: { enabled: boolean; value: SqlValue }) => {
       const conditions: string[] = [], params: SqlValue[] = []
       if (!includeDeleted) conditions.push('deleted_at IS NULL')
       if (school.enabled) { conditions.push('school = ?'); params.push(school.value) }

@@ -2,6 +2,7 @@ import type { BackendV1Member } from '@guatswr/shared/backend-v1'
 import type { Actor } from '../actor.js'
 import type { MemberImage, MembersRepository } from './repository.js'
 import { normalizeTags, projectMember, type MemberStorageProjection } from './projection.js'
+import { legacyJsonBinding } from '../../database/legacy-json-binding.js'
 
 export function createMembersService(dependencies: {
   repository: MembersRepository
@@ -19,8 +20,7 @@ export function createMembersService(dependencies: {
   return {
     schools: dependencies.repository.schools,
     list: async (options: { includeDeleted: boolean; original: boolean; school?: unknown }, role?: string) => {
-      // Express structured school parameters were bound as NULL by sqlite3, never interpolated.
-      const school = { enabled: Boolean(options.school), value: typeof options.school === 'string' ? options.school : null }
+      const school = { enabled: Boolean(options.school), value: legacyJsonBinding(options.school) }
       const rows = await dependencies.repository.list(options.includeDeleted && role === 'super_admin', school)
       return rows.map(row => projectMember(row, options.original, dependencies.storage))
     },
