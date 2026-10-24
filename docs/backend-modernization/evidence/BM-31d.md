@@ -55,3 +55,11 @@ Windows17+1944=1961通过、1项POSIX专用不适用；Linux17+1945=1962全通�
 Windows夹具使用已知绝对fixture根内的链接路径，PowerShell核验LinkType后以LiteralPath/无Recurse移除链接，再运行普通fixture清理；初次直接依赖Node lstat出现与原生junction信息不一致、遗留链接导致ENOTEMPTY，已修正夹具，不递归删除junction树。Linux仍lstat确认后unlink，未跳过测试。
 
 两项专项及完整Windows17+1953=1970、Linux17+1954=1971通过（bm31d-upload-boundary-targeted/windows/linux.log），Windows1项POSIX不适用；真实BFF完整链路通过。新生产镜像guatswr-backend-bm31d-upload-boundary-runtime的原生runtime-smoke通过（bm31d-upload-boundary-production-build/runtime.log），正常内容/头像路径不改。未重跑完整恢复；上传类型迁移、文件发布补偿及保留策略继续，未关闭整个31d/BM-27。
+
+## BM-31d8 上传/图片/multipart类型迁移（输入ae13d74）
+
+管理员与游客内容/头像上传、图片验证/缩略图/发布、Multer配置与请求计数迁入strict TS，4个JS位置只保留接线。保留MIME/扩展名、50MiB/parts/fields/8 HTTP请求限制、40MP与200页、SVG不生成缩略图、Cache files=0、EXDEV复制与私有验证先行、URL/消息、EID状态/凭据及原生参数绑定；目录创建前边界检查沿用31d7。上传控制器工作纳入应用track，关闭等待已进入控制器的异步工作。未实现后续BM-27的跨资源文件补偿，不声称所有文件操作已原子。
+
+Windows17+1953=1970通过、1项POSIX不适用；Linux17+1954=1971通过（bm31d-uploads-windows/linux.log），strict build/lint与真实BFF完整链路通过。新生产镜像guatswr-backend-bm31d-uploads-runtime，manifest-list sha256:4ff6e102f774086f1af0ed6d836af57db3beda384b4455e9c6e67556230209ab，无业务源码覆盖runtime-smoke通过（bm31d-uploads-production-build/runtime.log）。本节点未重跑完整恢复。
+
+新增资源生命周期实测（非本纯类型变更）：8个multipart已解析、后台工作被屏障暂停的真实TCP客户端断开后，原计数释放，允许第9个工作进入（bm31d-aborted-upload-red.log，activeWork=9、heldLimit=false）。源码原HTTP计数不能代表实际图片工作上限，须31d9独立修复与回归，不将这一已知缺口写为完成。
