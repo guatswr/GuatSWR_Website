@@ -60,4 +60,6 @@
 
 主工作区node_modules未原地重装；安装/测试均在隔离副本和容器。原服务未启停，3100本轮没有在线基线，不作在线连续性承诺。私有快照及响应摘要保留在Git忽略的.tools；Git仅保存聚合证据/合成指标。阶段历史移至[归档](evidence/STATUS-history-through-BM35a.md)，各节点详细失败与修复保留在对应evidence及提交中。
 
-用户最新交付决定：暂不部署生产，合并已验收分支并发布v2.0.0正式Git版本。版本说明见[Release Notes](../releases/v2.0.0.md)，实际发行入口为[GitHub Release](https://github.com/guatswr/GuatSWR_Website/releases/tag/v2.0.0)。仅响应此标签的发布工作流必须等待精确main提交的后端四项门禁，无部署步骤。
+用户最新交付决定：暂不部署生产，合并已验收分支并发布v2.0.0正式Git版本。版本说明见[Release Notes](../releases/v2.0.0.md)，实际发行入口为[GitHub Release](https://github.com/guatswr/GuatSWR_Website/releases/tag/v2.0.0)。发布工作流只发行固定v2.0.0标签，并允许main上的该版本说明修订同步Release正文；发行前必须等待标签对应main精确提交的后端四项门禁，无部署步骤。
+
+版本交付已完成（2026-10-25 00:24:59 Asia/Shanghai）：迁移分支已快进合并main，v2.0.0标签固定于d85ed1ce319b96d85f2599cff514a0383ea7d7b0；对应main后端门禁run40110958429四job全部success，Release发布run40110966317及说明修订run40111334030成功。GitHub Latest版本为v2.0.0，draft=false、prerelease=false。后续仅文档记录不改变该发行提交；生产部署仍按用户要求暂缓。
