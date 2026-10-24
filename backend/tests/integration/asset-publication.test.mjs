@@ -2,6 +2,7 @@ import path from 'node:path'
 import { createRequire } from 'node:module'
 import { spawn } from 'node:child_process'
 import { once } from 'node:events'
+import { randomUUID } from 'node:crypto'
 import fs from 'node:fs/promises'
 import { expect, it, onTestFinished, vi } from 'vitest'
 import { fixture, token, run, get } from '../helpers/fixture.mjs'
@@ -13,6 +14,17 @@ async function staged(f, name = 'prepared.png') {
   await f.fs.writeFile(filename, 'synthetic immutable image bytes')
   return { filename, url }
 }
+
+it('rotates recovery past retained live-process journals without starving later work', async () => {
+  const f = await fixture(), root = path.join(f.context.DATA_DIR, 'asset-publications')
+  const journals = Array.from({ length: 21 }, () => ({ version: 1, id: randomUUID(), pid: process.ppid, state: 'preparing', entries: [] }))
+  journals.sort((a, b) => a.id.localeCompare(b.id))
+  journals.at(-1).state = 'failed'
+  for (const journal of journals) await f.fs.writeFile(path.join(root, journal.id + '.json'), JSON.stringify(journal))
+  expect(await f.context.storage.publication.recover()).toEqual({ recovered: 0, retained: 20 })
+  expect(await f.context.storage.publication.recover()).toEqual({ recovered: 1, retained: 19 })
+  expect((await f.fs.readdir(root)).filter(name => name.endsWith('.json'))).toHaveLength(20)
+})
 
 it('keeps an existing staging reference readable when the final database mutation rolls back', async () => {
   const f = await fixture(), source = await staged(f)

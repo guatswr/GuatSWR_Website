@@ -93,13 +93,18 @@ export function createAssetPublication(options: {
     if (!ambiguous) await fs.unlink(filename)
     return !ambiguous
   }
+  let recoveryOffset = 0
   const recover: AssetPublication['recover'] = async (limit = 20) => {
     options.signal.throwIfAborted()
     if (options.ready === false) return { recovered: 0, retained: 0 }
     if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error('ASSET_RECOVERY_LIMIT')
     await initialize()
     const result = { recovered: 0, retained: 0 }
-    for (const name of (await fs.readdir(options.journalRoot)).filter(name => /^[a-f0-9-]{36}\.json$/.test(name)).slice(0, limit)) {
+    const names = (await fs.readdir(options.journalRoot)).filter(name => /^[a-f0-9-]{36}\.json$/.test(name)).sort()
+    const start = names.length ? recoveryOffset % names.length : 0
+    const selected = [...names.slice(start), ...names.slice(0, start)].slice(0, limit)
+    recoveryOffset = names.length ? (start + selected.length) % names.length : 0
+    for (const name of selected) {
       if (options.signal.aborted) break
       try { if (await recoverOne(path.join(options.journalRoot, name))) result.recovered++; else result.retained++ }
       catch (error) { report(error); result.retained++ }

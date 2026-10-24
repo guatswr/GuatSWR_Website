@@ -1,0 +1,339 @@
+{
+  "conditions": {
+    "platform": "Linux Docker Desktop",
+    "node": "24.16.0",
+    "cpuLimit": 2,
+    "memoryMiB": 1024,
+    "uid": 1000,
+    "seedActivities": 1000,
+    "seedMembers": 1000,
+    "baseline": "b343784 compatible bridge",
+    "note": "two orders, synthetic workload; production SLA not inferred"
+  },
+  "runs": {
+    "bridgeFirst": {
+      "label": "bridge-b343784",
+      "node": "v24.16.0",
+      "platform": "linux",
+      "schema": {
+        "main": 2,
+        "audit": 1
+      },
+      "seed": {
+        "activities": 1000,
+        "members": 1000
+      },
+      "coldStartMs": 298.080991,
+      "warmup": "one request per workload excluded",
+      "measurements": {
+        "list": {
+          "requests": 60,
+          "concurrency": 4,
+          "p50Ms": 11.402971999999863,
+          "p95Ms": 15.950211000000081,
+          "p99Ms": 18.442080999999916
+        },
+        "login": {
+          "requests": 30,
+          "concurrency": 2,
+          "p50Ms": 148.9932769999998,
+          "p95Ms": 170.43212300000005,
+          "p99Ms": 171.29158999999981
+        },
+        "upload": {
+          "requests": 20,
+          "concurrency": 2,
+          "p50Ms": 42.97791600000028,
+          "p95Ms": 50.95878700000003,
+          "p99Ms": 51.184727000000294
+        },
+        "signup": {
+          "requests": 30,
+          "concurrency": 4,
+          "p50Ms": 9.810100000000148,
+          "p95Ms": 13.1296540000003,
+          "p99Ms": 14.080708999999842
+        },
+        "backupWithConcurrentReadsAndSignup": {
+          "requests": 3,
+          "concurrency": 1,
+          "p50Ms": 280.18104200000016,
+          "p95Ms": 329.63908400000037,
+          "p99Ms": 329.63908400000037
+        }
+      },
+      "failures": 0,
+      "wallMs": 4372.364988,
+      "cpuMs": {
+        "user": 4027.745,
+        "system": 514.801
+      },
+      "rssPeak": 170078208,
+      "rssRounds": [
+        170078208,
+        170078208,
+        170078208
+      ],
+      "eventLoopDelayMs": {
+        "p50": 10.272767,
+        "p95": 72.417279,
+        "p99": 80.412671
+      },
+      "wal": {
+        "guatswr_web_main.db": 1289592,
+        "guatswr_web_logs.db": 869352
+      },
+      "disk": {
+        "bytes": 2960394,
+        "files": 70
+      }
+    },
+    "candidateSecond": {
+      "label": "candidate",
+      "node": "v24.16.0",
+      "platform": "linux",
+      "schema": {
+        "main": 3,
+        "audit": 2
+      },
+      "seed": {
+        "activities": 1000,
+        "members": 1000
+      },
+      "coldStartMs": 297.002894,
+      "warmup": "one request per workload excluded",
+      "measurements": {
+        "list": {
+          "requests": 60,
+          "concurrency": 4,
+          "p50Ms": 13.947135000000117,
+          "p95Ms": 18.960710000000063,
+          "p99Ms": 20.573239000000058
+        },
+        "login": {
+          "requests": 30,
+          "concurrency": 2,
+          "p50Ms": 165.6111890000002,
+          "p95Ms": 193.18355399999996,
+          "p99Ms": 195.61128200000007
+        },
+        "upload": {
+          "requests": 20,
+          "concurrency": 2,
+          "p50Ms": 47.17817300000024,
+          "p95Ms": 58.039476999999806,
+          "p99Ms": 58.65350100000023
+        },
+        "signup": {
+          "requests": 30,
+          "concurrency": 4,
+          "p50Ms": 39.27451799999926,
+          "p95Ms": 62.80440799999997,
+          "p99Ms": 64.55743400000028
+        },
+        "backupWithConcurrentReadsAndSignup": {
+          "requests": 3,
+          "concurrency": 1,
+          "p50Ms": 256.05147600000055,
+          "p95Ms": 283.5931180000007,
+          "p99Ms": 283.5931180000007
+        }
+      },
+      "failures": 0,
+      "wallMs": 5461.471358000001,
+      "cpuMs": {
+        "user": 4463.343,
+        "system": 746.439
+      },
+      "rssPeak": 169934848,
+      "rssRounds": [
+        169934848,
+        169934848,
+        169803776
+      ],
+      "eventLoopDelayMs": {
+        "p50": 10.231807,
+        "p95": 69.337087,
+        "p99": 77.987839
+      },
+      "wal": {
+        "guatswr_web_main.db": 0,
+        "guatswr_web_logs.db": 1001192
+      },
+      "disk": {
+        "bytes": 1822098,
+        "files": 68
+      }
+    },
+    "candidateFirst": {
+      "label": "candidate-reverse-order",
+      "node": "v24.16.0",
+      "platform": "linux",
+      "schema": {
+        "main": 3,
+        "audit": 2
+      },
+      "seed": {
+        "activities": 1000,
+        "members": 1000
+      },
+      "coldStartMs": 320.245372,
+      "warmup": "one request per workload excluded",
+      "measurements": {
+        "list": {
+          "requests": 60,
+          "concurrency": 4,
+          "p50Ms": 13.976474000000053,
+          "p95Ms": 19.184637000000066,
+          "p99Ms": 20.311770999999908
+        },
+        "login": {
+          "requests": 30,
+          "concurrency": 2,
+          "p50Ms": 174.97552700000006,
+          "p95Ms": 197.088847,
+          "p99Ms": 200.78213099999994
+        },
+        "upload": {
+          "requests": 20,
+          "concurrency": 2,
+          "p50Ms": 47.371869999999944,
+          "p95Ms": 49.767171999999846,
+          "p99Ms": 50.2648020000006
+        },
+        "signup": {
+          "requests": 30,
+          "concurrency": 4,
+          "p50Ms": 31.098863999999594,
+          "p95Ms": 55.09258899999986,
+          "p99Ms": 56.1636469999994
+        },
+        "backupWithConcurrentReadsAndSignup": {
+          "requests": 3,
+          "concurrency": 1,
+          "p50Ms": 270.6697840000006,
+          "p95Ms": 305.09328599999935,
+          "p99Ms": 305.09328599999935
+        }
+      },
+      "failures": 0,
+      "wallMs": 5528.289157,
+      "cpuMs": {
+        "user": 4519.434,
+        "system": 694.37
+      },
+      "rssPeak": 171081728,
+      "rssRounds": [
+        170950656,
+        170950656,
+        170950656
+      ],
+      "eventLoopDelayMs": {
+        "p50": 10.248191,
+        "p95": 71.041023,
+        "p99": 78.577663
+      },
+      "wal": {
+        "guatswr_web_main.db": 0,
+        "guatswr_web_logs.db": 959992
+      },
+      "disk": {
+        "bytes": 1779374,
+        "files": 68
+      }
+    },
+    "bridgeSecond": {
+      "label": "bridge-reverse-order",
+      "node": "v24.16.0",
+      "platform": "linux",
+      "schema": {
+        "main": 2,
+        "audit": 1
+      },
+      "seed": {
+        "activities": 1000,
+        "members": 1000
+      },
+      "coldStartMs": 297.78329199999996,
+      "warmup": "one request per workload excluded",
+      "measurements": {
+        "list": {
+          "requests": 60,
+          "concurrency": 4,
+          "p50Ms": 12.736533999999892,
+          "p95Ms": 21.15627100000006,
+          "p99Ms": 22.580378999999994
+        },
+        "login": {
+          "requests": 30,
+          "concurrency": 2,
+          "p50Ms": 150.10778600000003,
+          "p95Ms": 166.71816999999987,
+          "p99Ms": 168.77284099999997
+        },
+        "upload": {
+          "requests": 20,
+          "concurrency": 2,
+          "p50Ms": 47.07135999999991,
+          "p95Ms": 50.1404120000002,
+          "p99Ms": 56.457238999999845
+        },
+        "signup": {
+          "requests": 30,
+          "concurrency": 4,
+          "p50Ms": 9.725825000000441,
+          "p95Ms": 13.734331999999995,
+          "p99Ms": 14.76026499999989
+        },
+        "backupWithConcurrentReadsAndSignup": {
+          "requests": 3,
+          "concurrency": 1,
+          "p50Ms": 261.1464369999994,
+          "p95Ms": 271.174626,
+          "p99Ms": 271.174626
+        }
+      },
+      "failures": 0,
+      "wallMs": 4358.605592,
+      "cpuMs": {
+        "user": 4100.362,
+        "system": 574.26
+      },
+      "rssPeak": 168701952,
+      "rssRounds": [
+        168439808,
+        168439808,
+        168701952
+      ],
+      "eventLoopDelayMs": {
+        "p50": 10.264575,
+        "p95": 73.662463,
+        "p99": 80.084991
+      },
+      "wal": {
+        "guatswr_web_main.db": 1293712,
+        "guatswr_web_logs.db": 869352
+      },
+      "disk": {
+        "bytes": 2964992,
+        "files": 70
+      }
+    }
+  },
+  "recovery": {
+    "consistency": "quiesced-attested",
+    "controlledWrites": 2,
+    "restoredControlledWrites": 2,
+    "lostControlledWrites": 0,
+    "controlledRpoMs": 0,
+    "obsoletePointWouldLoseWrites": 1,
+    "firstBackupMs": 4465.101957000001,
+    "finalBackupMs": 5455.442086999999,
+    "verifyMs": 2151.810705,
+    "restoreMs": 1692.6899909999993,
+    "startupAndHttpMs": 79.45856300000014,
+    "rtoMs": 3923.9629849999983,
+    "archiveBytes": 70499075,
+    "originalPathsOverwritten": false
+  }
+}

@@ -60,8 +60,9 @@ jobs:
       - run: docker build -t guatswr-backend-test "$RUNNER_TEMP/backend-context"
       - run: docker run --rm --network none guatswr-backend-test
       - run: docker run --rm --network none guatswr-backend-test node backend/scripts/test-development-watch.cjs
-      - run: docker build -f backend/Dockerfile -t guatswr-backend-runtime .
+      - run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} -f backend/Dockerfile -t guatswr-backend-runtime .
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-runtime-ownership.cjs
+      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-read-only-launcher.cjs
       - name: Verify non-root persistent volumes and recreation
         shell: pwsh
         run: ./backend/scripts/test-runtime-volumes.ps1 -Image guatswr-backend-runtime

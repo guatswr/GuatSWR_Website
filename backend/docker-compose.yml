@@ -5,6 +5,7 @@ services:
       dockerfile: backend/Dockerfile
       args:
         IMAGE_REGISTRY: ""
+        SOURCE_REVISION: "${BACKEND_SOURCE_REVISION:-unknown}"
     container_name: guatswr_backend
     restart: always
     ports:
