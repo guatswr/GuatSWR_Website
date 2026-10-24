@@ -1,6 +1,6 @@
 # 后端接口清单与消费者映射
 
-更新：2026-10-23。基线为 PLAN 中的提交。静态登记 70 个 router 操作及 version，共 71 个；OpenAPI 56 个，缺 15 个。下表鉴权是当前中间件事实，不表示安全验收通过。隐式 HEAD/OPTIONS、static、Swagger 子路径另行测试，不计入 71。
+历史基线：2026-10-23，保留原源码位置/鉴权事实。当前71操作覆盖与测试/EX关联见[CONTRACT-COVERAGE](CONTRACT-COVERAGE.md)；BM34 OpenAPI已补齐71项。下表为冻结时状态，不是当前权限说明。基线为 PLAN 中的提交。静态登记 70 个 router 操作及 version，共 71 个；OpenAPI 56 个，缺 15 个。下表鉴权是当前中间件事实，不表示安全验收通过。隐式 HEAD/OPTIONS、static、Swagger 子路径另行测试，不计入 71。
 
 | 编号 | 方法与完整路径 | 当前鉴权 | 源码行 | OpenAPI 登记 | 固定 BFF operation / 消费组 |
 | --- | --- | --- | --- | --- | --- |

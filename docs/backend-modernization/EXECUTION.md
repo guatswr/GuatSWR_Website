@@ -99,3 +99,5 @@ BM-31d最终本地DONE：见evidence/BM-31d-js-review.md，31个JS只保留已�
 BM-32本地DONE：Windows1999/Linux2000、全工作区类型/shared79/web730/新Nuxt+BFF/生产信号通过，见evidence/BM-32.md；历史OpenAPI15缺口归34。接续33，未切生产。
 
 BM-33本地DONE：见evidence/BM-33.md，非root与目录布局/真实持久卷/权限负例/恢复和双平台2010级回归完成；生产UID/ACL仍属条件发布事实。
+
+BM-34本地DONE：71操作文档/3项OpenAPI契约及真实独立Nuxt+BFF/备份/崩溃重启闭环，详见evidence/BM-34.md。35最终候选仍开放，当前main3/audit2，无生产变更。

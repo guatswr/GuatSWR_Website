@@ -10,6 +10,8 @@ security:
 paths:
   /api/version:
     get:
+      operationId: API_71
+      x-contract-id: API-71
       summary: 获取服务版本
       tags: [system]
       security: []
@@ -27,6 +29,8 @@ paths:
                     type: string
   /api/auth/login:
     post:
+      operationId: API_28
+      x-contract-id: API-28
       summary: 登录
       tags: [auth]
       security: []
@@ -51,6 +55,8 @@ paths:
           $ref: '#/components/responses/TooManyRequests'
   /api/auth/me:
     get:
+      operationId: API_30
+      x-contract-id: API-30
       summary: 获取当前用户
       tags: [auth]
       responses:
@@ -66,6 +72,8 @@ paths:
           $ref: '#/components/responses/NotFound'
   /api/auth/profile:
     put:
+      operationId: API_29
+      x-contract-id: API-29
       summary: 更新个人资料
       tags: [auth]
       requestBody:
@@ -87,6 +95,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/auth/register:
     post:
+      operationId: API_31
+      x-contract-id: API-31
       summary: 创建管理员
       tags: [auth]
       description: 仅 super_admin 可用。
@@ -111,6 +121,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/activities:
     get:
+      operationId: API_01
+      x-contract-id: API-01
       summary: 活动列表
       tags: [activities]
       security: []
@@ -148,6 +160,8 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
     post:
+      operationId: API_04
+      x-contract-id: API-04
       summary: 发布活动
       tags: [activities]
       requestBody:
@@ -174,6 +188,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/activities/draft:
     post:
+      operationId: API_03
+      x-contract-id: API-03
       summary: 创建草稿
       tags: [activities]
       responses:
@@ -190,6 +206,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/activities/{id}:
     get:
+      operationId: API_02
+      x-contract-id: API-02
       summary: 活动详情
       tags: [activities]
       security: []
@@ -205,6 +223,8 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
     put:
+      operationId: API_05
+      x-contract-id: API-05
       summary: 更新活动
       tags: [activities]
       parameters:
@@ -227,6 +247,8 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
     delete:
+      operationId: API_06
+      x-contract-id: API-06
       summary: 软删除活动
       tags: [activities]
       parameters:
@@ -242,6 +264,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/activities/{id}/restore:
     post:
+      operationId: API_07
+      x-contract-id: API-07
       summary: 恢复活动
       tags: [activities]
       parameters:
@@ -259,6 +283,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/members:
     get:
+      operationId: API_63
+      x-contract-id: API-63
       summary: 成员列表
       tags: [members]
       security: []
@@ -289,6 +315,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/Member'
     post:
+      operationId: API_64
+      x-contract-id: API-64
       summary: 添加成员
       tags: [members]
       requestBody:
@@ -313,6 +341,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/members/stats/schools:
     get:
+      operationId: API_62
+      x-contract-id: API-62
       summary: 学校成员统计
       tags: [members]
       security: []
@@ -327,6 +357,8 @@ paths:
                   $ref: '#/components/schemas/MemberSchoolStat'
   /api/members/{id}:
     put:
+      operationId: API_65
+      x-contract-id: API-65
       summary: 更新成员
       tags: [members]
       parameters:
@@ -349,6 +381,8 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
     delete:
+      operationId: API_66
+      x-contract-id: API-66
       summary: 软删除成员
       tags: [members]
       parameters:
@@ -364,6 +398,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/members/{id}/restore:
     post:
+      operationId: API_67
+      x-contract-id: API-67
       summary: 恢复成员
       tags: [members]
       parameters:
@@ -381,6 +417,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/history:
     get:
+      operationId: API_54
+      x-contract-id: API-54
       summary: 群史列表
       tags: [history]
       security: []
@@ -400,6 +438,8 @@ paths:
                 items:
                   $ref: '#/components/schemas/HistoryItem'
     post:
+      operationId: API_55
+      x-contract-id: API-55
       summary: 添加群史
       tags: [history]
       requestBody:
@@ -424,6 +464,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/history/{id}:
     put:
+      operationId: API_56
+      x-contract-id: API-56
       summary: 更新群史
       tags: [history]
       parameters:
@@ -446,6 +488,8 @@ paths:
         '401':
           $ref: '#/components/responses/Unauthorized'
     delete:
+      operationId: API_57
+      x-contract-id: API-57
       summary: 软删除群史
       tags: [history]
       parameters:
@@ -461,6 +505,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/history/{id}/restore:
     post:
+      operationId: API_58
+      x-contract-id: API-58
       summary: 恢复群史
       tags: [history]
       parameters:
@@ -478,6 +524,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/config:
     get:
+      operationId: API_35
+      x-contract-id: API-35
       summary: 获取站点配置
       tags: [config]
       responses:
@@ -492,6 +540,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
+      operationId: API_36
+      x-contract-id: API-36
       summary: 更新站点配置
       tags: [config]
       requestBody:
@@ -515,6 +565,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/upload:
     post:
+      operationId: API_68
+      x-contract-id: API-68
       summary: 上传文件
       tags: [upload]
       requestBody:
@@ -552,9 +604,14 @@ paths:
           $ref: '#/components/responses/PayloadTooLarge'
   /api/upload/visitor:
     post:
+      operationId: API_69
+      x-contract-id: API-69
       summary: 访客上传事件图片
       tags: [upload]
-      security: []
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+          guestDraftProof: []
       requestBody:
         required: true
         content:
@@ -592,9 +649,14 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/event/draft:
     post:
+      operationId: API_37
+      x-contract-id: API-37
       summary: 创建事件草稿
       tags: [event]
-      security: []
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+          guestDraftProof: []
       responses:
         '200':
           description: OK
@@ -606,6 +668,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/event:
     get:
+      operationId: API_39
+      x-contract-id: API-39
       summary: 事件列表
       tags: [event]
       security: []
@@ -636,6 +700,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/event/{id}:
     get:
+      operationId: API_40
+      x-contract-id: API-40
       summary: 事件详情
       tags: [event]
       security: []
@@ -655,9 +721,14 @@ paths:
         '500':
           $ref: '#/components/responses/ServerError'
     put:
+      operationId: API_38
+      x-contract-id: API-38
       summary: 提交/更新事件
       tags: [event]
-      security: []
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+          guestDraftProof: []
       parameters:
         - $ref: '#/components/parameters/IdParam'
       requestBody:
@@ -683,6 +754,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/logs:
     get:
+      operationId: API_59
+      x-contract-id: API-59
       summary: 审计日志列表
       tags: [logs]
       parameters:
@@ -713,6 +786,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/logs/stats:
     get:
+      operationId: API_60
+      x-contract-id: API-60
       summary: 编辑统计
       tags: [logs]
       parameters:
@@ -730,6 +805,8 @@ paths:
                 $ref: '#/components/schemas/LogStatsResponse'
   /api/bot/notify/activity:
     post:
+      operationId: API_32
+      x-contract-id: API-32
       summary: 发送活动通知
       tags: [bot]
       requestBody:
@@ -753,6 +830,8 @@ paths:
           $ref: '#/components/responses/BadGateway'
   /api/bot/notify/history:
     post:
+      operationId: API_33
+      x-contract-id: API-33
       summary: 发送群史通知
       tags: [bot]
       requestBody:
@@ -776,6 +855,8 @@ paths:
           $ref: '#/components/responses/BadGateway'
   /api/bot/notify/member:
     post:
+      operationId: API_34
+      x-contract-id: API-34
       summary: 发送成员通知
       tags: [bot]
       requestBody:
@@ -799,6 +880,8 @@ paths:
           $ref: '#/components/responses/BadGateway'
   /api/admin/users:
     get:
+      operationId: API_08
+      x-contract-id: API-08
       summary: 管理员列表
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -817,6 +900,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/users/{id}:
     delete:
+      operationId: API_09
+      x-contract-id: API-09
       summary: 删除管理员
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -837,6 +922,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/users/{id}/password:
     put:
+      operationId: API_10
+      x-contract-id: API-10
       summary: 重置管理员密码
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -863,6 +950,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/users/{id}/twofa/reset:
     put:
+      operationId: API_11
+      x-contract-id: API-11
       summary: 重置管理员二步密码
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -881,6 +970,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/token-version/refresh:
     post:
+      operationId: API_12
+      x-contract-id: API-12
       summary: 强制刷新登录状态
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -897,6 +988,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/logs:
     get:
+      operationId: API_13
+      x-contract-id: API-13
       summary: 管理端审计日志列表
       description: admin 可用。
       tags: [admin]
@@ -928,6 +1021,8 @@ paths:
           $ref: '#/components/responses/Unauthorized'
   /api/admin/logs/{id}:
     delete:
+      operationId: API_14
+      x-contract-id: API-14
       summary: 删除审计日志
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -946,6 +1041,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/recycle-bin/purge:
     post:
+      operationId: API_15
+      x-contract-id: API-15
       summary: 清空回收站并清理图片
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -962,6 +1059,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/bans:
     get:
+      operationId: API_16
+      x-contract-id: API-16
       summary: 获取封禁列表
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -977,6 +1076,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
+      operationId: API_17
+      x-contract-id: API-17
       summary: 添加封禁
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1001,6 +1102,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/bans/{ip}:
     delete:
+      operationId: API_18
+      x-contract-id: API-18
       summary: 解除封禁
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1025,6 +1128,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/backups/settings:
     get:
+      operationId: API_19
+      x-contract-id: API-19
       summary: 获取自动备份设置
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1040,6 +1145,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     post:
+      operationId: API_20
+      x-contract-id: API-20
       summary: 更新自动备份设置
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1064,6 +1171,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/backups:
     get:
+      operationId: API_21
+      x-contract-id: API-21
       summary: 获取备份列表
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1079,6 +1188,8 @@ paths:
         '403':
           $ref: '#/components/responses/Forbidden'
     delete:
+      operationId: API_23
+      x-contract-id: API-23
       summary: 删除备份文件
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1109,6 +1220,8 @@ paths:
           $ref: '#/components/responses/NotFound'
   /api/admin/backups/download:
     get:
+      operationId: API_22
+      x-contract-id: API-22
       summary: 下载备份文件
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1140,6 +1253,8 @@ paths:
           $ref: '#/components/responses/NotFound'
   /api/admin/backups/run:
     post:
+      operationId: API_24
+      x-contract-id: API-24
       summary: 立即执行备份
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1156,6 +1271,8 @@ paths:
           $ref: '#/components/responses/Forbidden'
   /api/admin/events/pending:
     get:
+      operationId: API_25
+      x-contract-id: API-25
       summary: 待审核事件列表
       tags: [admin]
       parameters:
@@ -1177,6 +1294,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/admin/events/{id}/review:
     post:
+      operationId: API_26
+      x-contract-id: API-26
       summary: 审核事件
       tags: [admin]
       parameters:
@@ -1204,6 +1323,8 @@ paths:
           $ref: '#/components/responses/ServerError'
   /api/admin/events/{id}:
     delete:
+      operationId: API_27
+      x-contract-id: API-27
       summary: 删除事件(含文件)
       description: 仅 super_admin 可用。
       tags: [admin]
@@ -1224,8 +1345,516 @@ paths:
           $ref: '#/components/responses/NotFound'
         '500':
           $ref: '#/components/responses/ServerError'
+  /api/event/{id}/signup:
+    post:
+      operationId: API_41
+      x-contract-id: API-41
+      summary: 创建或更新当前身份的报名
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+      description: >-
+        STG/则则且published/ongoing；明确deadline按北京时间判定。保留user_id/visitor_ip双UNIQUE身份规则。推荐字符串字段，兼容原有String
+        coercion。浏览器必须经BFF，服务器不得把bridge密钥交给浏览器。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}, eventId: {type: integer}}, required: [message, eventId]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, properties: {common_id: {type: string}, qq: {type: string}, avatar: {type: string}, machine_sign: {type: string}, pilot_source: {type: string}}, required: [common_id, qq, avatar]}
+    get:
+      operationId: API_42
+      x-contract-id: API-42
+      summary: 读取当前身份的报名
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+      description: 仅当前用户/可信入口IP身份；无记录data为null，移除visitor_ip。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {data: {type: object, properties: {id: {type: integer}, common_id: {type: string}, qq: {type: string}, avatar: {type: string}, machine_sign: {type: string}, pilot_source: {type: string}, created_at: {type: string}}, nullable: true}}, required: [data]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+    delete:
+      operationId: API_43
+      x-contract-id: API-43
+      summary: 取消当前身份的报名
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+      description: 无记录404；登录/游客身份规则与报名一致。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}}, required: [message]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+  /api/event/{id}/participants/public:
+    get:
+      operationId: API_44
+      x-contract-id: API-44
+      summary: 公开可见活动的报名列表
+      tags:
+        - event
+      security: []
+      description: STG/则则且published/ongoing/ended/settled；保持旧公开字段含QQ，不返回visitor_ip/user_id。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {items: {type: array, items: {type: object, properties: {id: {type: integer}, common_id: {type: string}, qq: {type: string}, avatar: {type: string}, machine_sign: {type: string}, pilot_source: {type: string}, created_at: {type: string}}}}}, required: [items]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+  /api/event/admin/list:
+    get:
+      operationId: API_45
+      x-contract-id: API-45
+      summary: 管理员事件列表
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: 管理员投影可含审核私有字段，不使用公开缓存。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {$ref: '#/components/schemas/EventAdminListResponse'}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - name: page
+          in: query
+          schema:
+            type: integer
+          description: ''
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            maximum: 100
+          description: ''
+        - name: status
+          in: query
+          schema:
+            type: string
+          description: 逗号分隔八种已有状态；无有效状态时保持原全部状态回退
+        - name: type
+          in: query
+          schema:
+            type: string
+          description: ''
+      x-required-role: admin/super_admin
+  /api/event/admin:
+    post:
+      operationId: API_46
+      x-contract-id: API-46
+      summary: 管理员创建并发布事件
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: type沿用历史真值/原生绑定；content保留任意历史JSON形状。status无效回退published，先准备图片再最终SQL发布。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {id: {type: integer}, message: {type: string}}, required: [id, message]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, properties: {type: {}, title: {}, content: {}, status: {type: string}}, required: [type]}
+      x-required-role: admin/super_admin
+  /api/event/{id}/approve:
+    post:
+      operationId: API_47
+      x-contract-id: API-47
+      summary: 发布事件
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: 保留历史宽状态转换，不强制pending起点；不存在404。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}}, required: [message]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      x-required-role: admin/super_admin
+  /api/event/{id}/reject:
+    post:
+      operationId: API_48
+      x-contract-id: API-48
+      summary: 驳回事件
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: 保留历史宽状态转换，不强制pending起点；不存在404。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}}, required: [message]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      x-required-role: admin/super_admin
+  /api/event/{id}/delete:
+    post:
+      operationId: API_50
+      x-contract-id: API-50
+      summary: 软删除事件
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: 保留历史宽状态转换，不强制pending起点；不存在404。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}}, required: [message]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      x-required-role: admin/super_admin
+  /api/event/{id}/status:
+    post:
+      operationId: API_49
+      x-contract-id: API-49
+      summary: 修改事件状态
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: ''
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}}, required: [message]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, properties: {status: {type: string, enum: [draft, pending, published, ongoing, ended, settled, rejected, deleted]}}, required: [status]}
+      x-required-role: admin/super_admin
+  /api/event/{id}/settle:
+    post:
+      operationId: API_51
+      x-contract-id: API-51
+      summary: 结算并合并事件内容
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: 默认status settled；保留历史自定义结算状态和浅合并，不套用status接口枚举。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}, id: {type: integer}}}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, properties: {status: {}, payload: {}}}
+      x-required-role: admin/super_admin
+  /api/event/{id}/set_result:
+    post:
+      operationId: API_52
+      x-contract-id: API-52
+      summary: 录入比赛结果
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: STG/则则；事务合并results及results_updated_at，状态ended。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}, id: {type: integer}}}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: {type: object, properties: {results: {type: array, items: {}}}, required: [results]}
+      x-required-role: admin/super_admin
+  /api/event/{id}/participants:
+    get:
+      operationId: API_53
+      x-contract-id: API-53
+      summary: 管理员读取完整报名记录
+      tags:
+        - event
+      security:
+        - bearerAuth: []
+      description: 管理投影包含私有报名字段；不得公开缓存。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {items: {type: array, items: {type: object, additionalProperties: true}}}, required: [items]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - $ref: '#/components/parameters/IdParam'
+      x-required-role: admin/super_admin
+  /api/logs/umami:
+    get:
+      operationId: API_61
+      x-contract-id: API-61
+      summary: 获取公开Umami统计汇总
+      tags:
+        - logs
+      security: []
+      description: 未配置/隔离模式503；外部失败502或保持既有非2xx空结构；缓存按全部维度分隔。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {meta: {type: object}, summary: {type: object}, series: {type: object}, top: {type: object}}, required: [meta, summary, series, top]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+        '502':
+          description: 无法获取统计数据
+        '503':
+          description: Umami未配置或不可启用
+      parameters:
+        - name: startAt
+          in: query
+          schema:
+            type: number
+          description: ''
+        - name: endAt
+          in: query
+          schema:
+            type: number
+          description: ''
+        - name: unit
+          in: query
+          schema:
+            type: string
+          description: ''
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            maximum: 100
+          description: ''
+        - name: envType
+          in: query
+          schema:
+            type: string
+            enum: [browser, os, device]
+          description: ''
+  /api/upload/visitor/avatar:
+    post:
+      operationId: API_70
+      x-contract-id: API-70
+      summary: 上传活动报名头像
+      tags:
+        - upload
+      security:
+        - bearerAuth: []
+        - bffBridge: []
+      description: 50MiB；已验证PNG/JPEG/GIF/WebP/SVG；活动状态published/ongoing/ended/settled，浏览器经可信BFF。此入口按原逻辑不收紧活动type。
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json: {schema: {type: object, properties: {message: {type: string}, eid: {}, url: {type: string}}, required: [message, eid, url]}}
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '500':
+          $ref: '#/components/responses/ServerError'
+      parameters:
+        - name: eid
+          in: query
+          schema:
+            type: string
+          description: ''
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: {type: object, properties: {file: {type: string, format: binary}, eid: {type: string}}, required: [file]}
 components:
   securitySchemes:
+    bffBridge:
+      type: apiKey
+      in: header
+      name: x-bff-bridge
+      description: 仅受信BFF服务器使用；浏览器不得持有或自行构造。
+    guestDraftProof:
+      type: apiKey
+      in: header
+      name: x-bff-draft-proof
+      description: BFF签发绑定EID/操作/期限/IP的证明；不向浏览器公开。
     bearerAuth:
       type: http
       scheme: bearer
@@ -1300,15 +1929,26 @@ components:
           type: string
     AuthLoginRequest:
       type: object
-      required: [username, password]
       properties:
         username:
           type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[a-zA-Z0-9_-]+$
         password:
           type: string
+          minLength: 1
+          maxLength: 100
         twofa:
-          type: string
           nullable: true
+          type: string
+          minLength: 4
+          maxLength: 50
+      required:
+        - username
+        - password
+      x-wire-schema: loginSchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     AuthLoginResponse:
       type: object
       properties:
@@ -1342,24 +1982,37 @@ components:
       properties:
         password:
           type: string
-          nullable: true
+          minLength: 6
+          maxLength: 100
         avatar:
           type: string
-          nullable: true
+          maxLength: 500
         twofa_password:
-          type: string
           nullable: true
+          type: string
+          minLength: 4
+          maxLength: 50
         twofa_enabled:
           type: boolean
-          nullable: true
+      x-wire-schema: profileSchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     RegisterRequest:
       type: object
-      required: [username, password]
       properties:
         username:
           type: string
+          minLength: 1
+          maxLength: 50
+          pattern: ^[a-zA-Z0-9_-]+$
         password:
           type: string
+          minLength: 6
+          maxLength: 100
+      required:
+        - username
+        - password
+      x-wire-schema: registerSchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     Activity:
       type: object
       properties:
@@ -1407,27 +2060,41 @@ components:
           nullable: true
     ActivityInput:
       type: object
-      required: [title, tag, date, description, content, cover_image, images]
       properties:
         title:
           type: string
+          minLength: 1
+          maxLength: 200
         tag:
           type: string
+          minLength: 1
+          maxLength: 50
         date:
           type: string
+          minLength: 1
+          maxLength: 50
         description:
-          type: string
           nullable: true
+          type: string
+          maxLength: 2000
         content:
-          type: string
           nullable: true
+          type: string
         cover_image:
-          type: string
           nullable: true
+          type: string
+          maxLength: 500
         images:
           type: array
           items:
             type: string
+            maxLength: 500
+      required:
+        - title
+        - tag
+        - date
+      x-wire-schema: activitySchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     ActivityListResponse:
       type: object
       properties:
@@ -1486,28 +2153,37 @@ components:
           type: integer
     MemberInput:
       type: object
-      required: [name, role, avatar]
       properties:
         name:
           type: string
+          minLength: 1
+          maxLength: 50
         role:
           type: string
-        bio:
-          type: string
-          nullable: true
+          minLength: 1
+          maxLength: 50
         avatar:
-          type: string
           nullable: true
+          type: string
+          maxLength: 500
         school:
-          type: string
           nullable: true
+          type: string
+          maxLength: 50
         tags:
+          default: []
           type: array
           items:
             type: string
+            maxLength: 30
         sort_order:
-          type: integer
-          nullable: true
+          type: number
+          description: 输入按Number转换后必须整数；省略默认0。
+      required:
+        - name
+        - role
+      x-wire-schema: memberSchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     HistoryItem:
       type: object
       properties:
@@ -1533,53 +2209,35 @@ components:
           nullable: true
     HistoryInput:
       type: object
-      required: [date, title, description, image]
       properties:
         date:
           type: string
+          minLength: 1
+          maxLength: 50
         title:
           type: string
+          minLength: 1
+          maxLength: 200
         description:
-          type: string
           nullable: true
+          type: string
+          maxLength: 2000
         image:
-          type: string
           nullable: true
+          type: string
+          maxLength: 500
         sort_order:
-          type: integer
-          nullable: true
+          type: number
+          description: 输入按Number转换后必须整数；省略默认0。
+      required:
+        - date
+        - title
+      x-wire-schema: historySchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     Event:
-      type: object
-      properties:
-        id:
-          type: integer
-        type:
-          type: string
-        title:
-          type: string
-          nullable: true
-        content:
-          type: object
-        status:
-          type: string
-        created_by:
-          type: integer
-          nullable: true
-        visitor_ip:
-          type: string
-          nullable: true
-        created_at:
-          type: string
-          nullable: true
-        updated_at:
-          type: string
-          nullable: true
-        created_by_name:
-          type: string
-          nullable: true
-        created_by_avatar:
-          type: string
-          nullable: true
+      anyOf:
+        - $ref: '#/components/schemas/EventPublic'
+        - $ref: '#/components/schemas/EventAdmin'
     EventListResponse:
       type: object
       properties:
@@ -1592,7 +2250,7 @@ components:
         items:
           type: array
           items:
-            $ref: '#/components/schemas/Event'
+            $ref: '#/components/schemas/EventPublic'
     EventDraftResponse:
       type: object
       properties:
@@ -1617,19 +2275,26 @@ components:
         message:
           type: string
         id:
-          type: integer
+          type: string
     ConfigMap:
       type: object
       additionalProperties:
         type: string
     ConfigUpdateRequest:
       type: object
-      required: [key, value]
       properties:
         key:
           type: string
+          minLength: 1
+          maxLength: 100
         value:
+          default: ''
           type: string
+          maxLength: 5000
+      required:
+        - key
+      x-wire-schema: configSchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     BackupSettingsResponse:
       type: object
       properties:
@@ -1764,60 +2429,100 @@ components:
             $ref: '#/components/schemas/LogStatsItem'
     BotActivityNotify:
       type: object
-      required: [id, title, tag, date]
       properties:
         id:
-          type: integer
+          type: number
         title:
           type: string
+          minLength: 1
+          maxLength: 200
         tag:
           type: string
+          minLength: 1
+          maxLength: 50
         date:
           type: string
+          minLength: 1
+          maxLength: 50
         description:
-          type: string
           nullable: true
+          type: string
+          maxLength: 2000
         cover_image:
-          type: string
           nullable: true
+          type: string
+          maxLength: 500
+      required:
+        - id
+        - title
+        - tag
+        - date
+      x-wire-schema: activityNotifySchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     BotHistoryNotify:
       type: object
-      required: [id, date, title]
       properties:
         id:
-          type: integer
+          type: number
         date:
           type: string
+          minLength: 1
+          maxLength: 50
         title:
           type: string
+          minLength: 1
+          maxLength: 200
         description:
-          type: string
           nullable: true
+          type: string
+          maxLength: 2000
         image:
-          type: string
           nullable: true
+          type: string
+          maxLength: 500
         sort_order:
-          type: integer
-          nullable: true
+          type: number
+          description: 输入按Number转换后必须整数；省略默认0。
         action:
+          default: update
           type: string
-          enum: [create, update, delete]
+          enum:
+            - create
+            - update
+            - delete
+      required:
+        - id
+        - date
+        - title
+      x-wire-schema: historyNotifySchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     BotMemberNotify:
       type: object
-      required: [id, name, role]
       properties:
         id:
-          type: integer
+          type: number
         name:
           type: string
+          minLength: 1
+          maxLength: 50
         role:
           type: string
+          minLength: 1
+          maxLength: 50
         school:
-          type: string
           nullable: true
+          type: string
+          maxLength: 50
         avatar:
-          type: string
           nullable: true
+          type: string
+          maxLength: 500
+      required:
+        - id
+        - name
+        - role
+      x-wire-schema: memberNotifySchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     AdminUser:
       type: object
       properties:
@@ -1841,10 +2546,15 @@ components:
           type: string
     AdminResetPasswordRequest:
       type: object
-      required: [password]
       properties:
         password:
           type: string
+          minLength: 6
+          maxLength: 100
+      required:
+        - password
+      x-wire-schema: resetPasswordSchema
+      description: 源自shared/backend-v1输入契约；trim/coercion、自定义refine和权限以实际控制器及差分测试为准，未知键沿用strip。
     TokenVersionRefreshResponse:
       type: object
       properties:
@@ -1940,3 +2650,80 @@ components:
           type: string
         ip:
           type: string
+
+    EventPublic:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+          nullable: true
+        content:
+          description: 保留任意历史JSON形状；递归去除IP/凭据/内部字段。
+        status:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+        created_by_name:
+          type: string
+          nullable: true
+        created_by_avatar:
+          type: string
+          nullable: true
+      additionalProperties: false
+    EventAdmin:
+      type: object
+      properties:
+        id:
+          type: integer
+        type:
+          type: string
+        title:
+          type: string
+          nullable: true
+        content:
+          description: 保留任意历史JSON及管理员扩展字段。
+        status:
+          type: string
+        created_by:
+          type: integer
+          nullable: true
+        visitor_ip:
+          type: string
+          nullable: true
+        created_at:
+          type: string
+          nullable: true
+        updated_at:
+          type: string
+          nullable: true
+        created_by_name:
+          type: string
+          nullable: true
+        created_by_avatar:
+          type: string
+          nullable: true
+      additionalProperties: true
+    EventAdminListResponse:
+      type: object
+      properties:
+        total:
+          type: integer
+        page:
+          type: integer
+        limit:
+          type: integer
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/EventAdmin'

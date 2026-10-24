@@ -98,7 +98,14 @@ jobs:
           docker build -t guatswr-shared-consumer "$RUNNER_TEMP/shared-consumer"
           docker run --rm --network none guatswr-shared-consumer
       - run: pnpm --filter @guatswr/web build
+      - name: Prepare isolated Nuxt runtime and native backup tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y sqlite3
+          node backend/scripts/prepare-bff-output.cjs web/.output "$RUNNER_TEMP/backend-nuxt-output"
       - run: pnpm --filter guiair-backend run test:bff --reporter=default --reporter=json --outputFile=test-results/bff.json
+        env:
+          BACKEND_BFF_OUTPUT: ${{ runner.temp }}/backend-nuxt-output
       - uses: actions/upload-artifact@v4
         if: always()
         with:

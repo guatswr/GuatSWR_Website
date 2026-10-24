@@ -7,7 +7,7 @@ import fs from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
 import { fixture, get, png } from '../helpers/fixture.mjs'
 
-it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity without exposing JWT', async () => {
+it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and restart boundaries', async () => {
  const f=await fixture({env:{TRUST_PROXY_CIDRS:"127.0.0.1/32",GUEST_DRAFT_PROOF_MODE:process.env.BACKEND_BFF_PROOF_MODE === 'optional' ? 'optional' : 'required'}})
  const root=fileURLToPath(new URL('../../../',import.meta.url))
  const output=path.resolve(process.env.BACKEND_BFF_OUTPUT || path.join(root,'web/.output'))
@@ -19,31 +19,36 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  await new Promise(resolve=>reserve.close(resolve))
  const origin=`http://127.0.0.1:${port}`
  let logs=''
- const child=spawn(process.execPath,[entry],{cwd:path.dirname(entry),env:{...process.env,
+ const spawnBff=()=>spawn(process.execPath,[entry],{cwd:path.dirname(entry),env:{...process.env,
    NODE_ENV:'test',NITRO_HOST:'127.0.0.1',HOST:'127.0.0.1',PORT:String(port),NITRO_PORT:String(port),
    NUXT_API_BASE:f.origin,NUXT_BFF_BRIDGE_SECRET:f.context.env.BFF_BRIDGE_SECRET,NUXT_SESSION_PASSWORD:'isolated-bff-session-key-at-least-32-characters',
    NUXT_BFF_AUTH_ALLOWED_ORIGINS:JSON.stringify([origin]),NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS:'[]',
    NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES:'true'
  },stdio:['ignore','pipe','pipe']})
- child.stdout.on('data',data=>{logs+=data});child.stderr.on('data',data=>{logs+=data})
- const exited=once(child,'exit')
+ let child=spawnBff()
+ const capture=()=>{child.stdout.on('data',data=>{logs+=data});child.stderr.on('data',data=>{logs+=data})}
+ capture()
+ let exited=once(child,'exit')
  onTestFinished(async()=>{ if(child.exitCode===null){child.kill();await exited} })
  const cookies=new Map()
  const call=async(url,options={},jar=cookies)=>{
-   const response=await fetch(origin+url,{...options,headers:{...options.headers,cookie:[...jar].map(([k,v])=>`${k}=${v}`).join('; ')}})
+   const response=await fetch(origin+url,{...options,headers:{connection:'close',...options.headers,cookie:[...jar].map(([k,v])=>`${k}=${v}`).join('; ')}})
    for(const cookie of response.headers.getSetCookie()){
      const [pair]=cookie.split(';'); const split=pair.indexOf('=');jar.set(pair.slice(0,split),pair.slice(split+1))
    }
    const data=await response.json()
    return {response,data}
  }
+ const ready=async()=>{
  const deadline=Date.now()+15000
  while(true){
-   try { await fetch(origin+'/api/bff/auth/session');break } catch(error){
+   try { const probe=await fetch(origin+'/api/bff/auth/session',{headers:{connection:'close'},signal:AbortSignal.timeout(1000)});await probe.arrayBuffer();break } catch(error){
      if(child.exitCode!==null||Date.now()>deadline)throw new Error(`Nuxt did not become ready: ${logs}`)
      await new Promise(resolve=>setTimeout(resolve,100))
    }
  }
+ }
+ await ready()
  const csrf=await call('/api/bff/auth/csrf')
  expect(csrf.response.status).toBe(200)
  const login=await call('/api/bff/auth/login',{method:'POST',headers:{origin,'content-type':'application/json','x-csrf-token':csrf.data.csrfToken},body:JSON.stringify({username:'admin',password:'fixture-password'})})
@@ -132,7 +137,7 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  expect(JSON.parse(finalEvent.content)).toMatchObject({ completion: true, results: [{ rank: 1, id: 'fixture' }] })
  expect((await get(f.logDb,"SELECT count(*) AS n FROM audit_logs WHERE action='SUBMIT_EVENT'")).n).toBe(1)
  expect(JSON.stringify([a.data,b.data,saved.data])).not.toContain(f.context.env.BFF_BRIDGE_SECRET)
- const home=await fetch(origin+'/')
+ const home=await fetch(origin+'/',{headers:{connection:'close'}})
  expect(home.status).toBe(200)
  expect(await home.text()).not.toContain(f.context.env.BFF_BRIDGE_SECRET)
  const cleanupUrl = '/uploads/img/bff-cleanup.png'
@@ -143,6 +148,32 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  const ownerCsrf = await call('/api/bff/auth/csrf', {}, ownerJar)
  const ownerLogin = await call('/api/bff/auth/login', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': ownerCsrf.data.csrfToken }, body: JSON.stringify({ username: 'owner', password: 'fixture-password' }) }, ownerJar)
  expect(ownerLogin.response.status, JSON.stringify(ownerLogin.data)).toBe(200)
+ // Real backup management uses the actual Express endpoints and streamed bytes.
+ const ownerHeaders = { origin, 'content-type': 'application/json', 'x-csrf-token': ownerLogin.data.csrfToken }
+ expect((await call('/api/bff/admin/backups/settings', {}, ownerJar)).response.status).toBe(200)
+ expect((await call('/api/bff/admin/backups/settings', { method: 'PUT', headers: ownerHeaders, body: JSON.stringify({ enabled: false, time: '02:30' }) }, ownerJar)).response.status).toBe(200)
+ expect((await call('/api/bff/admin/backups', {}, ownerJar)).data.full.some(row => row.name === 'fixture.tar.gz')).toBe(true)
+ const downloaded = await fetch(origin + '/api/bff/admin/backups/download?file=fixture.tar.gz', { headers: { connection: 'close', cookie: [...ownerJar].map(([k,v])=>`${k}=${v}`).join('; ') } })
+ expect(downloaded.status).toBe(200)
+ expect(await downloaded.text()).toBe('synthetic backup bytes')
+ if (process.platform !== 'win32') {
+   // Linux is the production script platform; no mock process or upstream here.
+   f.context.externalServices = true
+   try {
+     const backup = await call('/api/bff/admin/backups/run', { method: 'POST', headers: ownerHeaders, body: '{}' }, ownerJar)
+     expect(backup.response.status, JSON.stringify(backup.data)).toBe(200)
+     expect(backup.data).toEqual({ message: '备份完成' })
+     console.info('BFF native backup completed')
+     const files = await f.fs.readdir(path.join(f.root, 'backups', 'full'))
+     const archive = files.find(name => /^full_.*\.tar\.gz$/.test(name))
+     expect(archive).toBeDefined()
+     const { promisify } = await import('node:util'), { execFile } = await import('node:child_process')
+     await promisify(execFile)('python3', [path.join(f.context.BACKEND_ROOT, 'scripts', 'backup_bundle.py'), 'verify', path.join(f.root, 'backups', 'full', archive), '--work-dir', f.root])
+     const protectedPoint = await call('/api/bff/admin/backups?file=' + encodeURIComponent(archive), { method: 'DELETE', headers: ownerHeaders }, ownerJar)
+     expect(protectedPoint.response.status).toBe(409)
+     console.info('BFF verified restore-point protection completed')
+   } finally { f.context.externalServices = false }
+ }
  const purge = await call('/api/bff/admin/recycle-bin/purge', { method: 'POST', headers: { origin, 'x-csrf-token': ownerLogin.data.csrfToken } }, ownerJar)
  expect(purge.response.status, JSON.stringify(purge.data)).toBe(200)
  expect(await get(f.db, 'SELECT id FROM members WHERE id=?', [memberCreated.data.id])).toBeUndefined()
@@ -160,4 +191,24 @@ it('I01 scaffold: real Nuxt BFF logs into Express, writes and reads an activity 
  const relogin = await call('/api/bff/auth/login', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': refreshedCsrf.data.csrfToken }, body: JSON.stringify({ username: 'admin', password: 'bff-updated-password' }) })
  expect(relogin.response.status, JSON.stringify(relogin.data)).toBe(200)
  expect((await call('/api/bff/auth/session')).data.authenticated).toBe(true)
+ // Ownership is deliberately in-memory: restart must fail closed and keep DB bytes.
+ const pending = await visitor()
+ const draftBody = JSON.stringify({ ...JSON.parse(body), title: 'restart draft fixture' })
+ const pendingUpload = new FormData()
+ pendingUpload.set('eid', String(pending.id)); pendingUpload.set('file', new Blob([png], { type: 'image/png' }), 'restart-owned.png')
+ const beforeRestart = await call('/api/bff/guest/upload/content', { method: 'POST', headers: { origin, 'x-csrf-token': pending.csrf }, body: pendingUpload }, pending.jar)
+ expect(beforeRestart.response.status, JSON.stringify(beforeRestart.data)).toBe(200)
+ child.kill('SIGKILL'); await exited
+ console.info('BFF process crash observed')
+ child=spawnBff(); capture(); exited=once(child,'exit'); await ready()
+ console.info('BFF restarted process ready')
+ const lostOwnership = await call(`/api/bff/guest/events/${pending.id}`, { method: 'PUT', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': pending.csrf }, body: draftBody }, pending.jar)
+ expect(lostOwnership.response.status, JSON.stringify(lostOwnership.data)).toBe(404)
+ expect(await get(f.db, 'SELECT title,status FROM events WHERE id=?', [pending.id])).toEqual({ title: null, status: 'draft' })
+ expect((await f.http.get(beforeRestart.data.url)).status).toBe(200)
+ const newIntent = await visitor()
+ expect(newIntent.id).not.toBe(pending.id)
+ expect((await submit(newIntent, pending.id)).response.status).toBe(404)
+ console.info('BFF crash restart ownership checks completed')
+
 })
