@@ -1,6 +1,6 @@
 import type { BackendV1Config } from '@guatswr/shared/backend-v1'
 import { AppError } from '../../errors.js'
-import { PUBLIC_CONFIG_KEYS } from '../../utils/publicLog.js'
+import { PUBLIC_CONFIG_KEYS } from '../../utils/public-log.js'
 import type { ConfigRepository } from './repository.js'
 
 export interface ConfigActor { username: string; role: string }

@@ -1,4 +1,4 @@
-import { projectLog, projectLogStat } from '../../utils/publicLog.js'
+import { projectLog, projectLogStat } from '../../utils/public-log.js'
 import type { UsernameRow, LogsRepository } from './repository.js'
 export function createLogsService(repository: LogsRepository) {
   const hydrate = async <T extends UsernameRow>(rows: T[]) => {

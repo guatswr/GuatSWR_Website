@@ -19,3 +19,9 @@
 新增5项真实DB/HTTP专项：过期/永久/绕过、意图失败回滚与stale actor、实际超限自动封禁、非法配置无目录副作用、排队写入在shutdown前落库。Windows/Linux最终7项专项（含31d1两项）通过，BFF完整双会话链路1项通过，strict build/lint通过（bm31d-bans-final-targeted/final-targeted-linux/bff/lint.log）。完整回归及镜像结果待补。
 
 最终完整回归：Windows17+1944=1961通过、1项POSIX专用不适用（bm31d-bans-windows-final.log），Linux17+1945=1962通过（bm31d-bans-linux.log；执行到该文件时已纳入第五项shutdown屏障，另7项最终专项复核通过）。初轮Windows在追加第五项前17+1943通过，最终已重跑全套，未混用数量。新生产镜像guatswr-backend-bm31d-bans-runtime，manifest-list sha256:211c671f2a7cfd9f570ace636b1c7cb595c95973a7767acd41506f36ce555c2f，无业务源码覆盖实际HTTP非法封禁拒绝、合法封禁/解封及主库审计意图、改密撤销/日志投递通过（bm31d-bans-production-build/runtime.log）。本节点未重跑完整恢复，沿用31c证据。31d仍有事件CRUD、公开投影与文件业务等待收口。
+
+## BM-31d3 公开投影/游客入口/路径边界类型迁移（输入73a791b）
+
+publicLog/publicEvent、guestGateway与storageBoundary迁至strict TS；CJS只保留工厂或纯包路径接线。TS业务直接导入对应typed模块，避免通过allowJs适配器重新落回any。保留4096字符界限、固定安全动作文本、线性token过滤、公开config白名单、递归私有字段/32层深度过滤、已有字段/NULL、原CIDR/XFF/常量时间bridge校验，以及同前缀/根目录/symlink安全规则。没有新API或schema变化，JS账本物理文件数量仍31，业务已从这4个位置移除；其余文件继续审查。
+
+Windows17+1944=1961通过、1项POSIX专用不适用；Linux17+1945=1962全通过（bm31d-projection-windows/linux.log）。strict build/lint、真实BFF双会话完整链路通过（bm31d-projection-build/lint/bff.log）。新生产镜像guatswr-backend-bm31d-projection-runtime，无源码覆盖runtime-smoke及真实改密/封禁/可靠审计通过（bm31d-projection-production-build/runtime/native-security.log）。首次机械转换误给isInside调用处加类型注解，被TS构建拒绝后修正；未降低编译或测试门禁。未新增镜像恢复演练，本节点沿用31c恢复证据。下步事件CRUD与文件流程，未标记31d完成。
