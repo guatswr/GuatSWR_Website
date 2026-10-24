@@ -61,6 +61,10 @@ jobs:
       - run: docker run --rm --network none guatswr-backend-test
       - run: docker run --rm --network none guatswr-backend-test node backend/scripts/test-development-watch.cjs
       - run: docker build -f backend/Dockerfile -t guatswr-backend-runtime .
+      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-runtime-ownership.cjs
+      - name: Verify non-root persistent volumes and recreation
+        shell: pwsh
+        run: ./backend/scripts/test-runtime-volumes.ps1 -Image guatswr-backend-runtime
       - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e BFF_BRIDGE_SECRET=synthetic-runtime-bridge-key-at-least-32 -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-security-bridge.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-member-binding.cjs
@@ -70,7 +74,7 @@ jobs:
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-concurrency.cjs
       - run: docker run --rm --network none guatswr-backend-runtime python3 scripts/backup_bundle_test.py
-      - run: docker run --rm --network none --tmpfs /limited:rw,size=1m -e BACKUP_TEST_LIMIT_ROOT=/limited guatswr-backend-runtime node scripts/test-backup-restore.cjs
+      - run: docker run --rm --network none --tmpfs /limited:rw,size=1m,mode=1777 -e BACKUP_TEST_LIMIT_ROOT=/limited guatswr-backend-runtime node scripts/test-backup-restore.cjs
   real-bff:
     runs-on: ubuntu-latest
     timeout-minutes: 30

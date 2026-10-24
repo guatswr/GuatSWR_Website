@@ -1,5 +1,6 @@
 import path from 'node:path'
 import { AppError } from '../errors.js'
+import { validateStorageLayout } from './storage-layout.js'
 
 export type EnvironmentInput = Readonly<Record<string, string | undefined>>
 export interface RuntimePaths {
@@ -52,6 +53,7 @@ export function parseEnvironment(input: EnvironmentInput, backendRoot: string): 
   if (!Number.isSafeInteger(maxBodyBytes) || maxBodyBytes <= 0 || maxBodyBytes > 50 * 1024 ** 2) return invalid('MAX_BODY_SIZE')
   const data = absolute(input, 'DATA_DIR', path.join(backendRoot, 'data'))
   const paths = { data, public: absolute(input, 'PUBLIC_DIR', path.join(data, 'public')), backups: absolute(input, 'BACKUP_ROOT', path.join(backendRoot, 'backups')) }
+  validateStorageLayout(paths, input)
   const banMinutes = Number(input.BAN_MINUTES || 5)
   if (!Number.isFinite(banMinutes) || !Number.isFinite(new Date(Date.now() + banMinutes * 60000).getTime())) return invalid('BAN_MINUTES')
   const globalRateLimit = Number(input.GLOBAL_RATE_LIMIT || 600)

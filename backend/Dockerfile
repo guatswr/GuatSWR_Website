@@ -22,6 +22,11 @@ RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends python3 sqlite3 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 COPY --from=build /runtime ./
-ENV NODE_ENV=production BIND_HOST=0.0.0.0
+RUN mkdir -p /app/data /app/backups \
+    && chown node:node /app/data /app/backups \
+    && chmod 700 /app/data /app/backups
+USER node:node
+ENV NODE_ENV=production BIND_HOST=0.0.0.0 DATA_DIR=/app/data PUBLIC_DIR=/app/data/public BACKUP_ROOT=/app/backups
 EXPOSE 3000
+HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 CMD ["node", "scripts/healthcheck.cjs"]
 CMD ["node", "dist/server.js"]

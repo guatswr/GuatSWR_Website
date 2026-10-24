@@ -11,8 +11,16 @@ services:
       - "127.0.0.1:8088:3000"
     volumes:
       - ./data:/app/data
-      - ./uploads:/app/uploads
       - ./backups:/app/backups
+    init: true
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    environment:
+      DATA_DIR: /app/data
+      PUBLIC_DIR: /app/data/public
+      BACKUP_ROOT: /app/backups
+      BIND_HOST: 0.0.0.0
     extra_hosts:
       - "host.docker.internal:host-gateway"
     env_file:
