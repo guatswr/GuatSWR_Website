@@ -3,40 +3,67 @@ import type { Actor } from '../modules/actor.js'
 import { createLogsRepository } from '../modules/logs/repository.js'
 import { AppError } from '../errors.js'
 import { hashPassword } from '../security/credentials.js'
-import type { SecurityService } from '../security/service.js'
+import { createSecurityService } from '../security/service.js'
+import { authorizeSecurityActor, nextUserVersion, requireSecuritySchema } from '../security/authorize.js'
+import { enqueueSecurityAudit } from '../security/audit-outbox.js'
+import { randomUUID } from 'node:crypto'
 
 export function createAdminService(options: {
-  main: SqliteStore; audit: SqliteStore; security: SecurityService
-  log(username: string, action: string, details: string): void; report(error: unknown): void
+  main: SqliteStore; audit: SqliteStore; report(error: unknown): void
+  ready?: boolean; committed(): void
 }) {
-  const log = (actor: Actor, action: string, details: string) => { try { options.log(actor.username, action, details) } catch (error) { options.report(error) } }
+  const committed = () => { try { options.committed() } catch (error) { options.report(error) } }
   const logs = createLogsRepository(options.main, options.audit)
   return {
     users: () => options.main.all('SELECT id,username,role,avatar,twofa_enabled FROM users ORDER BY id ASC'),
     deleteUser: async (id: string, actor: Actor) => {
       if (parseInt(id) === actor.id) throw new AppError('无法删除自己', 'delete_self', 400)
-      const deleted = await options.security.deleteAdmin(id, actor.id)
-      if (!deleted) {
-        const target = await options.main.get('SELECT role FROM users WHERE id=?', [id])
-        throw new AppError(target ? '不能删除最后一个超级管理员或使用已失效权限' : '用户不存在', 'delete_admin_rejected', target ? 409 : 404)
-      }
-      log(actor, 'DELETE_USER', `删除管理员: ${deleted.username}`)
+      requireSecuritySchema(options.ready)
+      const deleted = await options.main.transaction(async tx => {
+        const current = await authorizeSecurityActor(tx, actor, true)
+        const deleted = await createSecurityService(tx).deleteAdmin(id, actor.id)
+        if (!deleted) {
+          const target = await tx.get('SELECT role FROM users WHERE id=?', [id])
+          throw new AppError(target ? '不能删除最后一个超级管理员或使用已失效权限' : '用户不存在', 'delete_admin_rejected', target ? 409 : 404)
+        }
+        await enqueueSecurityAudit(tx, String(current.username || 'System'), 'DELETE_USER', `删除管理员: ${deleted.username}`)
+        return deleted
+      })
+      committed()
       return deleted.username
     },
     resetPassword: async (id: string, password: string, actor: Actor) => {
+      requireSecuritySchema(options.ready)
       const hash = hashPassword(password)
-      const target = await options.main.get('SELECT username FROM users WHERE id=?', [id]).catch(() => undefined)
-      await options.main.run('UPDATE users SET password=? WHERE id=?', [hash, id])
-      log(actor, 'RESET_PWD', `重置密码: ${target ? target.username : 'Unknown'}`)
+      await options.main.transaction(async tx => {
+        const current = await authorizeSecurityActor(tx, actor, true)
+        const target = await tx.get('SELECT username FROM users WHERE id=?', [id])
+        await tx.run('UPDATE users SET password=? WHERE id=?', [hash, id])
+        await nextUserVersion(tx, id)
+        await enqueueSecurityAudit(tx, String(current.username || 'System'), 'RESET_PWD', `重置密码: ${target ? target.username : 'Unknown'}`)
+      })
+      committed()
     },
     resetSecondPassword: async (id: string, actor: Actor) => {
-      const target = await options.main.get('SELECT username FROM users WHERE id=?', [id]).catch(() => undefined)
-      await options.main.run('UPDATE users SET twofa_enabled=0,twofa_secret=NULL WHERE id=?', [id])
-      log(actor, 'RESET_2FA', `重置二步密码: ${target ? target.username : 'Unknown'}`)
+      requireSecuritySchema(options.ready)
+      await options.main.transaction(async tx => {
+        const current = await authorizeSecurityActor(tx, actor, true)
+        const target = await tx.get('SELECT username FROM users WHERE id=?', [id])
+        await tx.run('UPDATE users SET twofa_enabled=0,twofa_secret=NULL WHERE id=?', [id])
+        await nextUserVersion(tx, id)
+        await enqueueSecurityAudit(tx, String(current.username || 'System'), 'RESET_2FA', `重置二步密码: ${target ? target.username : 'Unknown'}`)
+      })
+      committed()
     },
     refreshVersion: async (actor: Actor) => {
-      const version = await options.security.incrementVersion()
-      log(actor, 'REFRESH_TOKEN_VERSION', `强制刷新登录: version=${version}`)
+      requireSecuritySchema(options.ready)
+      const version = await options.main.transaction(async tx => {
+        const current = await authorizeSecurityActor(tx, actor, true)
+        const version = await createSecurityService(tx).incrementVersion()
+        await enqueueSecurityAudit(tx, String(current.username || 'System'), 'REFRESH_TOKEN_VERSION', `强制刷新登录: version=${version}`)
+        return version
+      })
+      committed()
       return version
     },
     logs: async (query: Record<string, unknown>) => {
@@ -45,8 +72,13 @@ export function createAdminService(options: {
       return { total, logs: rows }
     },
     deleteLog: async (id: string, actor: Actor) => {
-      await options.audit.run('DELETE FROM audit_logs WHERE id=?', [id])
-      log(actor, 'DELETE_LOG', `删除日志: ${id}`)
+      requireSecuritySchema(options.ready)
+      const current = await options.main.transaction(tx => authorizeSecurityActor(tx, actor, true))
+      // Both this mutation and its audit record live in the audit database.
+      await options.audit.transaction(async tx => {
+        await tx.run('DELETE FROM audit_logs WHERE id=?', [id])
+        await tx.run('INSERT INTO audit_logs(username,action,details,source_id) VALUES(?,?,?,?)', [String(current.username || 'System'), 'DELETE_LOG', `删除日志: ${id}`, randomUUID()])
+      })
     },
     pending: async (pageValue: unknown) => {
       const page = Math.max(1, parseInt(String(pageValue), 10) || 1)

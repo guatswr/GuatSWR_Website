@@ -7,8 +7,8 @@ export default bffProtectedHandler(async (event) => {
   const body = await requireBffWriteBody(event, session.runtime, 16 * 1024)
   const result = await updateOwnProfile(session.admin, body)
   if (result.credentialsChanged) {
-    // Confirmed password/second-password change: the frozen backend keeps the
-    // old JWT valid, so the BFF revokes every local session for this user.
+    // Confirmed credential change: revoke opaque BFF sessions as well as the
+    // backend's user-level JWT version so every browser must authenticate again.
     session.runtime.auth.revokeForUser(session.identity.id)
     await clearCookieSession(event, session.runtime)
     clearCsrfCookie(event, session.runtime)

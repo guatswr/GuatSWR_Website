@@ -124,7 +124,7 @@ it('background cleanup starts after listen and drains persisted work with manage
   try {
     expect(other.context.timers.size).toBe(0)
     await other.listen(0,'127.0.0.1')
-    expect(other.context.timers.size).toBe(4)
+    expect(other.context.timers.size).toBe(5)
     await vi.advanceTimersByTimeAsync(30000)
     await expect.poll(async()=>(await c.store.get('SELECT state FROM asset_cleanup_jobs WHERE id=?',[id])).state).toBe('quarantined')
   } finally { await other.close();vi.useRealTimers() }

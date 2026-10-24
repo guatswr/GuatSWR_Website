@@ -2439,9 +2439,7 @@
             ]
           }
         }
-      }
-    ],
-    "compatibleUpgrades": [
+      },
       {
         "version": 3,
         "file": "main-003-security.sql",
@@ -4002,7 +4000,7 @@
         ]
       }
     },
-    "compatibleUpgrades": [
+    "upgrades": [
       {
         "version": 2,
         "file": "audit-002-source.sql",

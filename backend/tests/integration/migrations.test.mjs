@@ -15,8 +15,10 @@ beforeAll(async () => {
   directory = await fs.mkdtemp(path.join(os.tmpdir(), 'guatswr-v1-definitions-'))
   await fs.cp(productionDirectory, directory, { recursive: true })
   const manifest = JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8'))
-  delete manifest.main.upgrades
-  delete manifest.main.compatibleUpgrades
+  for (const kind of ['main', 'audit']) {
+    delete manifest[kind].upgrades
+    delete manifest[kind].compatibleUpgrades
+  }
   await fs.writeFile(path.join(directory, 'manifest.json'), JSON.stringify(manifest))
 })
 afterAll(async () => {
@@ -134,7 +136,8 @@ it('CLI initializes and checks explicitly named custom database files', async ()
   const args = ['--data-dir', f.root, '--main-db', path.join(f.root, 'custom-main.db'), '--audit-db', path.join(f.root, 'custom-audit.db')]
   const created = await command(process.execPath, [cli, 'initialize', ...args])
   expect(created.stdout).toContain('"applied":true')
-  expect((await command(process.execPath, [cli, 'check', ...args])).stdout).toContain('"version":1')
+  const checked = (await command(process.execPath, [cli, 'check', ...args])).stdout.trim().split('\n').map(line => JSON.parse(line))
+  expect(checked).toEqual([expect.objectContaining({ database: 'main', version: 3 }), expect.objectContaining({ database: 'audit', version: 2 })])
   await expect(command(process.execPath, [cli, 'check', '--data-dir', f.root])).rejects.toHaveProperty('code', 1)
   await expect(fs.access(path.join(f.root, 'guatswr_web_main.db'))).rejects.toHaveProperty('code', 'ENOENT')
 })
@@ -209,7 +212,7 @@ it('CLI upgrade opens existing databases only and succeeds as a no-op at the cur
   await command(process.execPath, [cli, 'initialize', '--data-dir', f.root])
   const response = await command(process.execPath, [cli, 'upgrade', '--data-dir', f.root])
   expect(response.stdout.trim().split('\n').map(line => JSON.parse(line))).toEqual([
-    expect.objectContaining({ database: 'main', version: 2, applied: false }), expect.objectContaining({ database: 'audit', version: 1, applied: false })
+    expect.objectContaining({ database: 'main', version: 3, applied: false }), expect.objectContaining({ database: 'audit', version: 2, applied: false })
   ])
   await expect(command(process.execPath, [cli, 'upgrade', '--data-dir', path.join(f.root, 'missing')])).rejects.toMatchObject({ code: 1 })
   await expect(fs.stat(path.join(f.root, 'missing'))).rejects.toMatchObject({ code: 'ENOENT' })
@@ -230,7 +233,7 @@ it('bridge validator accepts only declared compatible v2 without enabling it at 
   expect((await checkDatabase(db, productionDirectory, 'main', { compatible: true })).version).toBe(1)
   await fs.cp(productionDirectory, custom, { recursive: true })
   const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
-  manifest.main.upgrades = manifest.main.upgrades || manifest.main.compatibleUpgrades
+  manifest.main.upgrades = (manifest.main.upgrades || manifest.main.compatibleUpgrades).filter(step => step.version <= 2)
   delete manifest.main.compatibleUpgrades
   await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
   await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })

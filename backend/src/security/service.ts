@@ -7,6 +7,16 @@ export function readVersion(value: unknown): number {
   if (!Number.isSafeInteger(version) || version < 0) throw new Error('Invalid token version')
   return version
 }
+export async function recordLoginFailure(store: Pick<SqlExecutor, 'get'>, ip: string, now: number) {
+  const attempt = await store.get<Row & { count: number; lock_until: number }>(`INSERT INTO login_attempts(ip,count,lock_until,updated_at) VALUES (?,1,0,?)
+    ON CONFLICT(ip) DO UPDATE SET
+      count=MIN(CASE WHEN login_attempts.lock_until>0 AND login_attempts.lock_until<=? THEN 1 ELSE login_attempts.count+1 END,5),
+      lock_until=CASE WHEN (CASE WHEN login_attempts.lock_until>0 AND login_attempts.lock_until<=? THEN 1 ELSE login_attempts.count+1 END)>=5 THEN ? ELSE 0 END,
+      updated_at=?
+    RETURNING count,lock_until`, [ip, now, now, now, now + 60000, now])
+  if (!attempt) throw new Error('Login attempt unavailable')
+  return attempt
+}
 export function createSecurityService(store: Pick<SqlExecutor, 'get'>) {
   return {
     readVersion,
@@ -23,16 +33,7 @@ export function createSecurityService(store: Pick<SqlExecutor, 'get'>) {
       WHERE id=? AND id<>? AND EXISTS(SELECT 1 FROM users WHERE id=? AND role='super_admin')
         AND (COALESCE(role,'')<>'super_admin' OR (SELECT count(*) FROM users WHERE role='super_admin')>1)
       RETURNING username`, [id, actorId, actorId]),
-    recordFailure: async (ip: string, now: number) => {
-      const attempt = await store.get<Row & { count: number; lock_until: number }>(`INSERT INTO login_attempts(ip,count,lock_until,updated_at) VALUES (?,1,0,?)
-        ON CONFLICT(ip) DO UPDATE SET
-          count=MIN(CASE WHEN login_attempts.lock_until>0 AND login_attempts.lock_until<=? THEN 1 ELSE login_attempts.count+1 END,5),
-          lock_until=CASE WHEN (CASE WHEN login_attempts.lock_until>0 AND login_attempts.lock_until<=? THEN 1 ELSE login_attempts.count+1 END)>=5 THEN ? ELSE 0 END,
-          updated_at=?
-        RETURNING count,lock_until`, [ip, now, now, now, now + 60000, now])
-      if (!attempt) throw new Error('Login attempt unavailable')
-      return attempt
-    }
+    recordFailure: (ip: string, now: number) => recordLoginFailure(store, ip, now)
   }
 }
 export type SecurityService = ReturnType<typeof createSecurityService>

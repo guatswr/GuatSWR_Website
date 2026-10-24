@@ -46,7 +46,18 @@ const { bootstrapAdministrator } = require('../dist/src/admin/bootstrap');
     const login = await response.json();
     assert.equal(jwt.verify(login.token, env.JWT_SECRET).user_token_version, 1);
     assert.equal((await me(login.token)).status, 200);
-    console.log(JSON.stringify({ ok: true, main: 3, audit: 2, credentialsPreserved: true, legacyZero: true, selectiveVersion: true, freshLogin: true }));
+    if (app.context.securityReady) {
+      const changed = await fetch(origin + '/api/auth/profile', { method: 'PUT', headers: { Authorization: `Bearer ${login.token}`, 'content-type': 'application/json' }, body: JSON.stringify({ password: 'synthetic-updated-bridge-password' }) });
+      assert.equal(changed.status, 200);
+      assert.equal((await me(login.token)).status, 401);
+      assert.equal((await app.context.sql.main.get('SELECT auth_version FROM users WHERE id=1')).auth_version, 2);
+      // Include any intent committed while the first dispatcher batch was active.
+      await app.context.securityAudit.flush(); await app.context.securityAudit.flush();
+      const intent = await app.context.sql.main.get("SELECT id,delivered_at FROM security_audit_outbox WHERE action='UPDATE_PROFILE'");
+      assert.ok(intent.delivered_at);
+      assert.equal((await app.context.sql.audit.get('SELECT count(*) AS n FROM audit_logs WHERE source_id=?', [intent.id])).n, 1);
+    }
+    console.log(JSON.stringify({ ok: true, main: 3, audit: 2, credentialsPreserved: true, legacyZero: true, selectiveVersion: true, freshLogin: true, durableSecurity: Boolean(app.context.securityReady) }));
   } finally {
     await app?.close(); await store?.close();
     if (path.dirname(path.resolve(root)) !== path.resolve(os.tmpdir()) || !path.basename(root).startsWith('guatswr-security-bridge-')) throw new Error('Unsafe cleanup');

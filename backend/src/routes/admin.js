@@ -31,7 +31,7 @@ const router = express.Router();
 const { createAdminService } = require(path.join(context.BACKEND_ROOT, 'dist/src/admin/service'));
 const { createAdminController } = require(path.join(context.BACKEND_ROOT, 'dist/src/admin/controller'));
 const report = error => context.logger.error('http.failed', { error, route: '/api/admin' });
-const admin = createAdminController(createAdminService({ main: context.sql.main, audit: context.sql.audit, security: context.security, log: addLog, report }), report);
+const admin = createAdminController(createAdminService({ main: context.sql.main, audit: context.sql.audit, ready: context.securityReady, committed: context.flushSecurityAudit, report }), report);
 const handle = fn => (req, res, next) => fn(req, res).catch(next);
 router.get('/users', authenticateToken, requireSuperAdmin, handle(admin.users));
 router.delete('/users/:id', authenticateToken, requireSuperAdmin, handle(admin.deleteUser));

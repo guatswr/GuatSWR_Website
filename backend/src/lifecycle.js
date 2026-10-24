@@ -113,6 +113,15 @@ const createApplication = async (options = {}) => {
     return closing;
   };
   try {
+    context.securityReady = context.mainSchemaVersion >= 3 && context.auditSchemaVersion >= 2;
+    if (context.securityReady) {
+      const { createSecurityAuditDispatcher } = require(path.join(root, 'dist/src/security/audit-outbox.js'));
+      context.securityAudit = createSecurityAuditDispatcher(context.sql.main, context.sql.audit, error => context.logger.error('audit.failed', { error }));
+    }
+    context.flushSecurityAudit = () => {
+      if (!context.securityAudit || context.isClosing()) return;
+      context.track(() => context.securityAudit.flush(context.shutdownSignal)).catch(error => context.logger.error('audit.failed', { error }));
+    };
     for (const [key, filename] of [
       ['security', './models/security'], ['storage', './utils/storage'], ['images', './utils/imageUpload'], ['backup', './utils/backup'], ['bot', './utils/bot'],
       ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['guestGateway', './middlewares/guestGateway'], ['limiter', './middlewares/limiter'],
@@ -131,6 +140,10 @@ const createApplication = async (options = {}) => {
               context.startLoginCleanup();
               context.startStagingCleanup();
               context.scheduler.startBackupScheduler();
+              if (context.securityAudit) {
+                context.every(() => context.securityAudit.flush(context.shutdownSignal), 30000);
+                context.flushSecurityAudit();
+              }
               if (context.mainSchemaVersion >= 2) {
                 const { runCleanupBatch } = require(path.join(root, 'dist/src/storage/cleanup.js'));
                 let runningCleanup = false;

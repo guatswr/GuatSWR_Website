@@ -67,7 +67,7 @@ it('bind failure can retry without duplicating scheduled tasks', async () => {
     expect(other.context.timers.size).toBe(0)
     const server = await other.listen(0)
     expect(server.address().address).toBe('127.0.0.1')
-    expect(other.context.timers.size).toBe(4)
+    expect(other.context.timers.size).toBe(5)
   } finally { await other.close() }
 })
 

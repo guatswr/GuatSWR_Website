@@ -5,6 +5,7 @@ it('retains reset behavior for missing users and audit text for a historical NUL
   const f = await fixture(), authorize = `Bearer ${token()}`
   await run(f.db, 'UPDATE users SET username=NULL WHERE id=4')
   expect((await f.http.put('/api/admin/users/4/password').set('Authorization', authorize).send({ password: 'new-target-password' })).body).toEqual({ message: '重置成功' })
+  await f.context.securityAudit.flush()
   expect((await get(f.logDb, "SELECT details FROM audit_logs WHERE action='RESET_PWD' ORDER BY id DESC LIMIT 1")).details).toBe('重置密码: null')
   expect((await f.http.put('/api/admin/users/999/password').set('Authorization', authorize).send({ password: 'missing-target-password' })).body).toEqual({ message: '重置成功' })
   expect((await f.http.put('/api/admin/users/999/twofa/reset').set('Authorization', authorize)).body).toEqual({ message: '二步密码已重置' })

@@ -8,12 +8,12 @@ const sqlite = require('sqlite3'), request = require('supertest'), jwt = require
 const { migrateDatabase } = require('../../dist/src/migrations/engine.js')
 const production = path.resolve('src/migrations')
 
-it('declares future security Expand definitions without applying them during initialization', async () => {
+it('initializes security Expand with zero user versions and an empty durable audit queue', async () => {
   const f = await fixture()
-  expect(f.context.mainSchemaVersion).toBe(2)
-  expect(f.context.auditSchemaVersion).toBe(1)
-  expect(await f.context.sql.main.get("SELECT name FROM sqlite_master WHERE name='security_audit_outbox'")).toBeUndefined()
-  expect((await f.context.sql.main.all("SELECT name FROM pragma_table_xinfo('users')")).some(row => row.name === 'auth_version')).toBe(false)
+  expect(f.context.mainSchemaVersion).toBe(3)
+  expect(f.context.auditSchemaVersion).toBe(2)
+  expect((await f.context.sql.main.get('SELECT count(*) AS n FROM security_audit_outbox')).n).toBe(0)
+  expect((await f.context.sql.main.get('SELECT MAX(auth_version) AS version FROM users')).version).toBe(0)
 })
 
 it('boots the compatibility bridge against expanded databases and enforces and issues user versions', async () => {
@@ -23,7 +23,7 @@ it('boots the compatibility bridge against expanded databases and enforces and i
   await fs.cp(production, custom, { recursive: true })
   const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
   for (const kind of ['main', 'audit']) {
-    manifest[kind].upgrades = [...(manifest[kind].upgrades || []), ...manifest[kind].compatibleUpgrades]
+    manifest[kind].upgrades = [...(manifest[kind].upgrades || []), ...(manifest[kind].compatibleUpgrades || [])]
     delete manifest[kind].compatibleUpgrades
   }
   await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
@@ -48,5 +48,5 @@ it('boots the compatibility bridge against expanded databases and enforces and i
   expect(login.status).toBe(200)
   expect(jwt.verify(login.body.token, f.context.env.JWT_SECRET).user_token_version).toBe(1)
   expect((await http.get('/api/auth/me').set('Authorization', `Bearer ${login.body.token}`)).status).toBe(200)
-  expect((await app.context.sql.main.get('SELECT COUNT(*) AS n FROM security_audit_outbox')).n).toBe(0)
+  expect((await app.context.sql.main.get("SELECT COUNT(*) AS n FROM security_audit_outbox WHERE action='LOGIN'")).n).toBe(1)
 })
