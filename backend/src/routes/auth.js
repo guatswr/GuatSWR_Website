@@ -6,7 +6,7 @@ module.exports = context => {
   const { createAuthController } = require(path.join(compiled, 'auth-controller'));
   const report = error => context.logger.error('http.failed', { error, route: '/api/auth' });
   const service = createAuthService({ store: context.sql.main, security: context.security,
-    secret: context.env.JWT_SECRET, secondSecret: context.env.TWOFA_SECRET || context.env.JWT_SECRET,
+    secret: context.env.JWT_SECRET, secondSecret: context.env.TWOFA_SECRET || context.env.JWT_SECRET, userVersions: context.mainSchemaVersion >= 3,
     moveAvatar: value => context.storage.moveStagedFile(value, path.join(context.IMG_ROOT_DIR, 'user')),
     audit: context.addLog, report });
   const controller = createAuthController(service, report);

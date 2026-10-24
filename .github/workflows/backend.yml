@@ -62,6 +62,7 @@ jobs:
       - run: docker run --rm --network none guatswr-backend-test node backend/scripts/test-development-watch.cjs
       - run: docker build -f backend/Dockerfile -t guatswr-backend-runtime .
       - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e BFF_BRIDGE_SECRET=synthetic-runtime-bridge-key-at-least-32 -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
+      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-security-bridge.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-lifecycle-signals.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-concurrency.cjs

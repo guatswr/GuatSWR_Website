@@ -1,6 +1,6 @@
 # 数据库迁移运行手册
 
-当前版本：main 001 / audit 001。所有命令在仓库根目录执行，使用 Node 24.16.0、pnpm 11.25.0；先运行 `pnpm --filter @guatswr/shared build` 和 `pnpm --filter guiair-backend build`。生产镜像已经包含编译结果，可在 `/app` 使用 `node dist/src/migrations/cli.js` 替代下面的 pnpm 入口。
+当前激活版本：main 002 / audit 001；BM-31兼容桥另声明未激活的main003/audit002。所有命令在仓库根目录执行，使用 Node 24.16.0、pnpm 11.25.0；先运行 `pnpm --filter @guatswr/shared build` 和 `pnpm --filter guiair-backend build`。生产镜像已经包含编译结果，可在 `/app` 使用 `node dist/src/migrations/cli.js` 替代下面的 pnpm 入口。
 
 正常应用启动要求两个数据库已存在且账本、SQL checksum、完整结构指纹匹配。启动不执行 CREATE / ALTER，也不会补齐缺失索引。未迁移的旧库必须先显式接管；缺库或漂移会终止启动。BM-31a已将SUPER_ADMIN初始化移到显式命令；常规启动不创建或重新提升账户。
 
@@ -97,3 +97,5 @@ pnpm --filter guiair-backend storage:cleanup --main-db E:\data\guatswr_web_main.
 BM-27c1跟进：完整备份现输出包含私有隔离区的v3包，恢复仍接受v1/v2。新恢复工具对归属已验证的隔离文件重新绑定任务文件身份，并在RESTORE_READY.json记录数量；不对公开路径同名新文件自动重绑。backup_all围栏暂停清理并排空在途元数据事务，不能替代业务停写。崩溃遗留.asset-cleanup-fence须先核查任务/备份进程后处理，不自动抢占。旧工具不理解v3包，回退须随附本版本恢复工具。详见BM-27证据。
 
 BM-30备份保留：默认keep-all，不自动按天删除。完整包验证命令为`python3 backend/scripts/backup_bundle.py verify /absolute/full_TAG.tar.gz --work-dir /absolute/private-work-dir`，工作目录必须预先存在；验包并恢复至临时新目录成功才写入绑定归档身份的`.verified.json`。管理员删除接口至少保留一个有效标记的完整包；过期/损坏标记409，验证标记及其checksum不能单独删除。它证明包曾完整恢复验证，应用HTTP启动仍须另行演练。verify与删除共用归档目录`.backup-retention.lock`，崩溃锁须核查后手工处理。Windows验证及v3私有文件身份重绑需要Node24，可设`BACKUP_NODE_BIN`绝对路径，Linux无需此额外提供器。BACKUP_ROOT不能位于PUBLIC_DIR内，含symlink解析结果；新旧脚本均需Python3。
+
+BM-31兼容桥：main003/users.auth_version与security_audit_outbox、audit002/source_id目前仅声明兼容，显式CLI也不应用它们。后续激活保持同一SQL/checksum；回退最低基线见BM-31证据的桥接提交及镜像。用户级撤销启用后只能停写回退到本桥，不能开放旧密码/注册/管理写入口。旧JWT缺用户版本只在该用户版本0有效，桥接登录可签当前用户版本；不更换JWT或CBC密钥。

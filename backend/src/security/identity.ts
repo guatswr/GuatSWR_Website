@@ -9,18 +9,20 @@ type Next = (error?: unknown) => void
 const jwt = createRequire(__filename)('jsonwebtoken') as {
   verify(token: string, key: string, callback: (error: Error | null, claims?: unknown) => void): void
 }
-export function createIdentityMiddleware(store: SqliteStore, secret: string) {
+export function createIdentityMiddleware(store: SqliteStore, secret: string, userVersions = false) {
   if (!secret) throw new Error('JWT_SECRET is required')
   const expired = (res: Response) => res.status(401).json({ message: '会话已失效，请重新登录' })
   const verifyIdentity = async (req: Request, res: Response, next: Next, raw: unknown) => {
     if (!raw || typeof raw !== 'object' || !('id' in raw) || !Number.isSafeInteger(raw.id) || Number(raw.id) <= 0) return expired(res)
     const claims = raw as Record<string, unknown>
     try {
-      const user = await store.get<Row & Actor>(`SELECT id,username,role,
+      const user = await store.get<Row & Actor>(`SELECT id,username,role,${userVersions ? 'auth_version' : '0'} AS auth_version,
         (SELECT value FROM site_config WHERE key='token_version') AS current_token_version FROM users WHERE id=?`, [Number(claims.id)])
       if (!user) return expired(res)
       if (readVersion(user.current_token_version) !== readVersion(claims.token_version)) return expired(res)
-      req.user = { ...claims, id: user.id, username: user.username, role: user.role }
+      if (userVersions && readVersion(user.auth_version) !== readVersion(claims.user_token_version)) return expired(res)
+      req.user = { ...claims, id: user.id, username: user.username, role: user.role,
+        token_version: readVersion(user.current_token_version), user_token_version: readVersion(user.auth_version) }
     } catch { return res.status(503).json({ message: '认证暂时不可用' }) }
     return next()
   }

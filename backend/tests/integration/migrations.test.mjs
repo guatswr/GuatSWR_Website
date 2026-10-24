@@ -230,7 +230,7 @@ it('bridge validator accepts only declared compatible v2 without enabling it at 
   expect((await checkDatabase(db, productionDirectory, 'main', { compatible: true })).version).toBe(1)
   await fs.cp(productionDirectory, custom, { recursive: true })
   const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
-  manifest.main.upgrades = manifest.main.compatibleUpgrades || manifest.main.upgrades
+  manifest.main.upgrades = manifest.main.upgrades || manifest.main.compatibleUpgrades
   delete manifest.main.compatibleUpgrades
   await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
   await migrateDatabase(db, custom, 'main', { mode: 'upgrade' })

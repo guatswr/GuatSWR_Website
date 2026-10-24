@@ -12,7 +12,7 @@ type Profile = ReturnType<typeof profileSchema.parse>
 type Registration = ReturnType<typeof registerSchema.parse>
 const jwt = createRequire(__filename)('jsonwebtoken') as { sign(claims: Record<string, unknown>, key: string, options: { expiresIn: string }): string }
 export function createAuthService(options: {
-  store: SqliteStore; security: SecurityService; secret: string; secondSecret: string
+  store: SqliteStore; security: SecurityService; secret: string; secondSecret: string; userVersions?: boolean
   moveAvatar(value: string | null | undefined): Promise<string | null | undefined>
   audit(username: string, action: string, details: string): void; report(error: unknown): void
 }) {
@@ -42,7 +42,8 @@ export function createAuthService(options: {
       }
       await options.store.run('DELETE FROM login_attempts WHERE ip=?', [ip]).catch(options.report)
       const version = await options.store.get("SELECT value FROM site_config WHERE key='token_version'")
-      const token = jwt.sign({ id: user.id, username: user.username, role: user.role, token_version: options.security.readVersion(version?.value) }, options.secret, { expiresIn: '24h' })
+      const token = jwt.sign({ id: user.id, username: user.username, role: user.role, token_version: options.security.readVersion(version?.value),
+        ...(options.userVersions ? { user_token_version: options.security.readVersion(user.auth_version) } : {}) }, options.secret, { expiresIn: '24h' })
       audit(user.username, 'LOGIN', `登录成功 (IP: ${ip})`)
       return { token, username: user.username, role: user.role, avatar: user.avatar, id: user.id }
     },
