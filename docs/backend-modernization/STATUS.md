@@ -40,7 +40,7 @@ M0～M2工程节点及远程门禁已通过，当前推进M3逐模块迁移（co
 | BM-28 Bot集成 | DONE（本地） | 严格TS传输/三事件，64KiB响应/期限/重定向限制；双平台1917项/生产镜像通过；见 [证据](evidence/BM-28.md) |
 | BM-29 logs/Umami | DONE（本地） | 严格TS/公开投影兼容；Umami缓存/内存/并发/期限与单次共享刷新；双平台1929项/BFF/生产镜像通过；见 [证据](evidence/BM-29.md) |
 | BM-30 备份调度 | DONE（本地） | 路径/上海时钟、期限/互斥/事务设置、100MiB取消、异步文件管理及最后已验证恢复点保护完成；Win1941/Linux1942、Python双平台各19项、BFF/新生产镜像/原生恢复通过；见 [证据](evidence/BM-30.md) |
-| BM-31其余认证管理 | IN PROGRESS | 31a～c、31d1～6本地完成，含事件CRUD/sitemap及成员绑定纠偏；最新Win1968/Linux1969/镜像通过；storage/upload仍待完成，上传目录副作用边界正独立修复；见 [认证证据](evidence/BM-31.md) 与 [收口证据](evidence/BM-31d.md) |
+| BM-31其余认证管理 | IN PROGRESS | 31a～c、31d1～7本地完成，含事件/sitemap及目录副作用补验；最新Win1970/Linux1971/BFF/镜像通过；storage/upload类型化和文件一致性仍待完成；见 [认证证据](evidence/BM-31.md) 与 [收口证据](evidence/BM-31d.md) |
 | BM-32～39 | TODO | 仍按执行表前置条件推进；36 生产发布须后续明确授权 |
 
 M0远程验收：`f89777d`，Actions run `39827544551`，4个job全通过。BM-06d远程run39831366762、BM-07远程run39832294837全部通过。生产代理链/旧直连消费者仍需发布前核验；依赖门禁沿用BM-15统一补丁及0未解决审计，不代表发布例外已全部关闭。

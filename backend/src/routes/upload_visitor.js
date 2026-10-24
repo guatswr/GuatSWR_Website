@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 const { upload } = context.upload;
 const sharp = require('sharp');
-const { positiveId } = require('../utils/storageBoundary');
+const { positiveId, isSafePath } = require('../utils/storageBoundary');
 const { uploadLimiter } = context.limiter;
 const { db, IMG_ROOT_DIR } = context; // 引入 IMG_ROOT_DIR
 
@@ -93,6 +93,7 @@ router.post('/', context.auth.optionalAuth, context.guestGateway, context.guestP
 
     // 4. 存入目录: backend/data/public/img/events/{eid}
     const eventDir = path.join(EVENT_IMG_ROOT, String(eid));
+    if (!isSafePath(context.PUBLIC_DIR, eventDir)) throw new Error('Unsafe storage path');
     if (!fs.existsSync(eventDir)) {
       await fs.promises.mkdir(eventDir, { recursive: true });
     }
@@ -169,6 +170,7 @@ router.post('/avatar', context.auth.optionalAuth, context.guestGateway, uploadLi
     }
 
     const avatarDir = path.join(EVENT_IMG_ROOT, String(eid), 'avatars');
+    if (!isSafePath(context.PUBLIC_DIR, avatarDir)) throw new Error('Unsafe storage path');
     if (!fs.existsSync(avatarDir)) {
       await fs.promises.mkdir(avatarDir, { recursive: true });
     }

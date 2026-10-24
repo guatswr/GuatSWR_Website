@@ -47,3 +47,11 @@ Windows17+1944=1961通过、1项POSIX专用不适用；Linux17+1945=1962全通�
 将app.js中的SQL、日期规则和XML拼接迁入strict TS sitemap控制器，应用保留HTTP装配。先在旧实现运行3项真实HTTP/SQLite用例，再用同一组验证新实现（bm31d-sitemap-legacy/targeted.log）：已发布/NULL状态可见、软删排除、date文本前缀与无效日期、原排序/XML转义、固定no-cache头、SITE_URL及原协议/Host回退、DB故障plain Server Error 500。未收紧日期或更改URL来源协议。
 
 完整Windows17+1951=1968通过，1项POSIX不适用；Linux17+1952=1969通过（bm31d-sitemap-windows/linux.log），strict build/lint通过。新生产镜像guatswr-backend-bm31d-sitemap-runtime无源码覆盖runtime-smoke通过，已加入实际XML Content-Type及新活动URL验证（bm31d-sitemap-production-build/runtime.log）。本节点未重跑BFF/恢复，沿用31d5/31c对应证据。后续上传路径补验发现目录创建前缺边界检查，将独立修复，不把该未完成项藏入本纯类型节点。
+
+## BM-31d7 上传目录副作用边界修复（输入ce38fd9）
+
+旧visitor内容/头像入口最终moveVerifiedFile会拒绝越界，但先mkdir目标子目录：events根目录或某EID目录为指向public外的symlink/junction时，拒绝上传之前已在外部创建空目录。用合成目录与真实PNG multipart复现两项红灯（bm31d-upload-boundary-red.log）；不是文件内容已逃逸，也不声称已写出图片。新增mkdir前isSafePath检查，保持原HTTP500与清理策略，消除该目录副作用。此为已有路径边界修复补验，无新协议。
+
+Windows夹具使用已知绝对fixture根内的链接路径，PowerShell核验LinkType后以LiteralPath/无Recurse移除链接，再运行普通fixture清理；初次直接依赖Node lstat出现与原生junction信息不一致、遗留链接导致ENOTEMPTY，已修正夹具，不递归删除junction树。Linux仍lstat确认后unlink，未跳过测试。
+
+两项专项及完整Windows17+1953=1970、Linux17+1954=1971通过（bm31d-upload-boundary-targeted/windows/linux.log），Windows1项POSIX不适用；真实BFF完整链路通过。新生产镜像guatswr-backend-bm31d-upload-boundary-runtime的原生runtime-smoke通过（bm31d-upload-boundary-production-build/runtime.log），正常内容/头像路径不改。未重跑完整恢复；上传类型迁移、文件发布补偿及保留策略继续，未关闭整个31d/BM-27。
