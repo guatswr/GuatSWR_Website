@@ -32,9 +32,10 @@ export function buildThumbUrl(url: unknown, storage: MemberStorageProjection): u
   const projected = storage.toUploadsUrl(thumb)
   return origin ? `${origin}${projected}` : projected
 }
-export function projectMember(row: MemberRow, original: boolean, storage: MemberStorageProjection): Row {
-  const publicRow: Row = { ...row }
-  delete publicRow.bio
+export function projectMember(row: MemberRow, original: boolean, storage: MemberStorageProjection, privileged=false): Row {
+  const fields=['id','name','role','avatar','school','tags','sort_order','deleted_at','deleted_by']
+  if(privileged)fields.push('qq','profile_status','sync_managed','sync_hidden','sync_protected','follow_group_name','follow_group_avatar')
+  const publicRow: Row = Object.fromEntries(fields.filter(field=>field in row).map(field=>[field,row[field]]))
   const thumb = buildThumbUrl(row.avatar, storage)
   return { ...publicRow, tags: parseTags(row.tags), avatar_thumb: thumb, avatar_original: row.avatar, avatar: original ? row.avatar : thumb || row.avatar }
 }

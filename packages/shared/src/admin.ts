@@ -199,6 +199,10 @@ export const adminMemberRowSchema = z.object({
   tags: imagesSchema,
   sort_order: numberOrZero,
   deleted_at: stringOrNull,
+  qq:z.string().nullable().optional(),
+  profile_status:z.enum(['complete','pending']).optional(),
+  sync_managed:numberOrZero.optional(), sync_hidden:numberOrZero.optional(),sync_protected:numberOrZero.optional(),
+  follow_group_name:numberOrZero.optional(),follow_group_avatar:numberOrZero.optional(),
 })
 
 export type AdminMember = z.infer<typeof adminMemberRowSchema>

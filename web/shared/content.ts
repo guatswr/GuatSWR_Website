@@ -39,6 +39,7 @@ export interface MemberSortKey {
 
 /** `GET /api/content/members` */
 export interface MembersContentResponse {
+  readonly revision?:number
   readonly members: readonly PublicMember[]
   /** Keyed by member id, as it appears in the projection. */
   readonly sortKeys: Readonly<Record<string, MemberSortKey>>

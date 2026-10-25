@@ -8,6 +8,7 @@ module.exports = (context) => {
   const service = createHistoryService({
     repository: createHistoryRepository(context.sql.main), storage: context.storage,
     audit: context.addLog, notify: context.bot.notifyHistoryUpdated,
+    ...(context.botPlatform ? { enqueue: context.botPlatform.enqueue } : {}),
     reportAuditFailure: error => context.logger.error('audit.failed', { error })
   });
   const controller = createHistoryController(service, error => context.logger.error('http.failed', { error, route: '/api/history' }));

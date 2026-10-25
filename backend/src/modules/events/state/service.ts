@@ -1,6 +1,7 @@
 import type { Actor } from '../../actor.js'
 import type { EventStateRepository } from './repository.js'
 import { guardAssetReferences, type AssetPublication } from '../../../storage/publication.js'
+import type { Enqueue } from '../../../integrations/bot/platform.js'
 
 export const eventStatuses: readonly string[] = ['draft', 'pending', 'published', 'ongoing', 'ended', 'settled', 'rejected', 'deleted']
 export class EventStateError extends Error {
@@ -17,6 +18,7 @@ export function createEventStateService(options: {
   audit(username: string, action: string, details: string): void
   reportAuditFailure(error: unknown): void
   notify(name: string, payload: unknown, actor: Actor): Promise<unknown>
+  enqueue?: Enqueue
 }) {
   const audit = (actor: Actor, action: string, details: string) => {
     try { options.audit(actor.username, action, details) } catch (error) { options.reportAuditFailure(error) }
@@ -24,7 +26,13 @@ export function createEventStateService(options: {
   const notify = (name: string, payload: unknown, actor: Actor) => { void options.notify(name, payload, actor).catch(() => {}) }
   return {
     change: async (id: number | string, action: StateAction, status: string, actor: Actor) => {
-      const result = await options.repository.status(id, status)
+      const queuedHook = action === 'review' ? status === 'published' ? 'event.approved' : 'event.rejected'
+        : { approve:'event.approved',reject:'event.rejected',status:'event.status',delete:'event.deleted' }[action]
+      const result = options.enqueue ? await options.repository.transaction(async tx => {
+        const changed = await tx.status(id,status)
+        if (changed.changes) await options.enqueue!(queuedHook,{ eventId:Number(id),status },actor,tx.executor)
+        return changed
+      }) : await options.repository.status(id, status)
       if (!result.changes) throw new EventStateError(404, 'Event not found')
       if (action === 'review') {
         audit(actor, 'REVIEW_EVENT', `审核事件 EID: ${id} -> ${status}`)
@@ -38,7 +46,7 @@ export function createEventStateService(options: {
       } as const
       const [auditAction, details, hook] = metadata[action]
       audit(actor, auditAction, details)
-      notify(hook, action === 'status' ? { eventId: id, status } : { eventId: id }, actor)
+      if (!options.enqueue) notify(hook, action === 'status' ? { eventId: id, status } : { eventId: id }, actor)
     },
     settle: async (id: number, body: Record<string, unknown> | undefined, actor: Actor) => {
       const payload = body?.payload && typeof body.payload === 'object' ? body.payload : {}
@@ -47,10 +55,11 @@ export function createEventStateService(options: {
         const event = await tx.event(id)
         if (!event) throw new EventStateError(404, 'Event not found')
         await tx.content(id, JSON.stringify({ ...parseContent(event.content), ...payload }), status)
+        if (options.enqueue) await options.enqueue('event.settled',{ eventId:id,type:event.type },actor,tx.executor)
         return event
       }, executor))
       audit(actor, 'SETTLE_EVENT', `结算事件 EID: ${id}`)
-      notify('event.settled', { eventId: id, type: event.type, payload }, actor)
+      if (!options.enqueue) notify('event.settled', { eventId: id, type: event.type, payload }, actor)
     },
     result: async (id: number, results: unknown[], actor: Actor) => {
       const event = await guardAssetReferences(options.publication, [results], executor => options.repository.transaction(async tx => {
@@ -58,10 +67,11 @@ export function createEventStateService(options: {
         if (!event) throw new EventStateError(404, 'Event not found')
         if (!['STG', '则则'].includes(event.type)) throw new EventStateError(400, '此活动不支持录入结果')
         await tx.content(id, JSON.stringify({ ...parseContent(event.content), results, results_updated_at: new Date().toISOString() }), 'ended')
+        if (options.enqueue) await options.enqueue('event.result_set',{ eventId:id,type:event.type,result_count:results.length },actor,tx.executor)
         return event
       }, executor))
       audit(actor, 'SET_EVENT_RESULT', `录入比赛结果 EID: ${id}`)
-      notify('event.result_set', { eventId: id, type: event.type, results }, actor)
+      if (!options.enqueue) notify('event.result_set', { eventId: id, type: event.type, results }, actor)
     }
   }
 }

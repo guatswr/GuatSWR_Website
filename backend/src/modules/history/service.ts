@@ -2,6 +2,7 @@ import type { BackendV1History } from '@guatswr/shared/backend-v1'
 import type { Actor } from '../actor.js'
 import type { HistoryRepository, HistoryImage } from './repository.js'
 import { publishAssets, type AssetPublication } from '../../storage/publication.js'
+import type { Enqueue } from '../../integrations/bot/platform.js'
 
 export interface HistoryNotification { id: number; date: string; title: string; description: string; image: string; sort_order: number }
 export function createHistoryService(dependencies: {
@@ -10,6 +11,7 @@ export function createHistoryService(dependencies: {
   audit(username: string, action: string, details: string): void
   reportAuditFailure(error: unknown): void
   notify(history: HistoryNotification, actor: Actor, action: 'create' | 'update'): Promise<unknown>
+  enqueue?: Enqueue
 }) {
   const audit = (actor: Actor, action: string, details: string) => {
     try { dependencies.audit(actor.username, action, details) }
@@ -25,16 +27,24 @@ export function createHistoryService(dependencies: {
     list: (includeDeleted: boolean, role?: string) => dependencies.repository.list(includeDeleted && role === 'super_admin'),
     create: async (input: BackendV1History, actor: Actor) => {
       const { image, id } = await publishAssets(dependencies.storage.publication, [input], () => moved(input),
-        async (image, tx) => ({ image, id: await dependencies.repository.create(input, image, tx) }))
+        async (image, tx) => {
+          const id = await dependencies.repository.create(input, image, tx)
+          if (dependencies.enqueue) await dependencies.enqueue('history.updated',{ id,...input,image:image || '',action:'create' },actor,tx)
+          return { image,id }
+        })
       audit(actor, 'CREATE_HISTORY', `添加群史: ${input.title}`)
-      notify(id, input, image, actor, 'create')
+      if (!dependencies.enqueue) notify(id, input, image, actor, 'create')
       return id
     },
     update: async (id: string, input: BackendV1History, actor: Actor) => {
       const image = await publishAssets(dependencies.storage.publication, [input], () => moved(input),
-        async (image, tx) => { await dependencies.repository.update(id, input, image, tx); return image })
+        async (image, tx) => {
+          await dependencies.repository.update(id, input, image, tx)
+          if (dependencies.enqueue) await dependencies.enqueue('history.updated',{ id:Number(id),...input,image:image || '',action:'update' },actor,tx)
+          return image
+        })
       audit(actor, 'UPDATE_HISTORY', `更新群史: ${input.title}`)
-      notify(Number(id), input, image, actor, 'update')
+      if (!dependencies.enqueue) notify(Number(id), input, image, actor, 'update')
     },
     remove: async (id: string, actor: Actor) => {
       const name = await title(id, true)

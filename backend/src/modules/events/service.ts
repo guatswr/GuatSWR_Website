@@ -6,6 +6,7 @@ import { publicEvent } from '../../utils/public-event.js'
 import { eventStatuses } from './state/service.js'
 import { eventBinding, type EventRow, type EventsRepository } from './repository.js'
 import { publishAssets, type AssetPublication } from '../../storage/publication.js'
+import type { Enqueue } from '../../integrations/bot/platform.js'
 
 const publicStatuses = ['published', 'ongoing', 'ended', 'settled']
 const parseContent = (row: EventRow) => {
@@ -18,6 +19,7 @@ export function createEventsService(options: {
   publication?: AssetPublication
   audit(username: string, action: string, details: string): void; report(error: unknown): void
   notify(name: string, payload: unknown, actor: Actor): Promise<unknown>
+  enqueue?: Enqueue
 }) {
   const audit = (username: string, action: string, details: string) => { try { options.audit(username, action, details) } catch (error) { options.report(error) } }
   return {
@@ -44,6 +46,9 @@ export function createEventsService(options: {
         if (!current) throw new AppError('Event not found', 'not_found', 404)
         if (current.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
         await tx.run(`UPDATE events SET ${sets.join(',')} WHERE id=?`, [...params, id])
+        if (options.enqueue && (body.submit === true || ['published','ongoing'].includes(String(current.status)))) {
+          await options.enqueue(body.submit === true ? 'event.pending' : 'event.updated',{ eventId:row.id },actor,tx)
+        }
       }
       if (transaction) await save(transaction); else await options.repository.store.transaction(save)
       })
@@ -71,11 +76,13 @@ export function createEventsService(options: {
       let content: unknown
       try {
         content = await publishAssets(options.publication, [body.content], () => options.persist(body.content || {}, result.lastID), async (content, tx) => {
-          await options.repository.publish(result.lastID, content, status, body, actor.id, tx); return content
+          await options.repository.publish(result.lastID, content, status, body, actor.id, tx)
+          if (options.enqueue && status === 'published') await options.enqueue('event.published',{ eventId:result.lastID,type:body.type,title:body.title },actor,tx)
+          return content
         })
       } catch (error) { await options.repository.discard(result.lastID, body, actor.id).catch(options.report); throw error }
       audit(actor.username, 'CREATE_EVENT', `管理员发布活动 EID: ${result.lastID}`)
-      if (status === 'published') void options.notify('event.published', { eventId: result.lastID, type: body.type, title: body.title, content }, { id: actor.id, username: actor.username, role: actor.role }).catch(options.report)
+      if (status === 'published' && !options.enqueue) void options.notify('event.published', { eventId: result.lastID, type: body.type, title: body.title, content }, { id: actor.id, username: actor.username, role: actor.role }).catch(options.report)
       return result.lastID
     },
     participants: (id: string) => {

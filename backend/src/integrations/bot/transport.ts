@@ -1,4 +1,4 @@
-export type WebhookResult = { ok: true } | { skipped: true; reason: string }
+export type WebhookResult = { ok: true } | { skipped: true; reason: string } | { queued: true; id: string; status: 'queued' | 'skipped' }
 export class WebhookError extends Error {
   constructor(readonly code: string, options?: ErrorOptions) {
     super(code, options)

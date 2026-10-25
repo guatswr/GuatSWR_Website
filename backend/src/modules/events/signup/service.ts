@@ -2,6 +2,8 @@ import { signupDeadlineClosed } from '@guatswr/shared'
 import type { Actor } from '../../actor.js'
 import type { EventRow, Identity, SignupRepository } from './repository.js'
 import { guardAssetReferences, type AssetPublication } from '../../../storage/publication.js'
+import type { Enqueue } from '../../../integrations/bot/platform.js'
+import type { SqlExecutor } from '../../../database/sqlite.js'
 
 export class SignupError extends Error {
   constructor(readonly status: number, message: string) { super(message) }
@@ -16,11 +18,14 @@ export function createSignupService(options: {
   notify: (name: string, payload: unknown, actor: Actor | null) => Promise<unknown>
   now?: () => number
   publication?: AssetPublication
+  enqueue?: Enqueue
+  authorize?: (tx: SqlExecutor, identity: Identity, action: 'signup' | 'remove') => Promise<void>
 }) {
   const { repository } = options
   return {
     signup: async (id: number, identity: Identity, body: Record<string, unknown> | undefined, actor: Actor | null) => {
       const payload = await guardAssetReferences(options.publication, [body?.avatar], executor => repository.transaction(async tx => {
+        if (options.authorize) await options.authorize(tx.executor,identity,'signup')
         const event = checkEvent(await tx.event(id))
         if (!['published', 'ongoing'].includes(event.status)) throw new SignupError(403, '当前状态不允许报名')
         let content: unknown
@@ -33,9 +38,10 @@ export function createSignupService(options: {
         if (!input.common_id || !input.qq) throw new SignupError(400, '请填写常用ID与QQ')
         if (!input.avatar) throw new SignupError(400, '请上传头像')
         await tx.save(id, identity, input)
+        if (options.enqueue) await options.enqueue('event.signup', { eventId:id,type:event.type,common_id:input.common_id },actor,tx.executor)
         return { eventId: id, type: event.type, participant: { common_id: input.common_id, qq: input.qq, avatar: input.avatar, pilot_source: input.pilot_source } }
       }, executor))
-      // Hooks remain disabled in botHooks; never run a side effect inside a transaction.
+      // Legacy callbacks run after commit; the durable Bot intent is recorded above.
       void options.notify('event.signup', payload, actor).catch(() => {})
     },
     find: async (id: number, identity: Identity) => {
@@ -43,11 +49,16 @@ export function createSignupService(options: {
       if (!row) return null
       const safe = { ...row }
       delete safe.visitor_ip
+      delete safe.bot_identity_id
       return safe
     },
     remove: async (id: number, identity: Identity) => {
-      const result = await repository.remove(id, identity)
-      if (!result.changes) throw new SignupError(404, '报名记录不存在')
+      await repository.transaction(async tx => {
+        if (options.authorize) await options.authorize(tx.executor,identity,'remove')
+        const result = await tx.remove(id, identity)
+        if (!result.changes) throw new SignupError(404, '报名记录不存在')
+        if (options.enqueue) await options.enqueue('event.signup_cancelled',{ eventId:id },null,tx.executor)
+      })
     },
     list: async (id: number) => {
       const event = checkEvent(await repository.event(id))

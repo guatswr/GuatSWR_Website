@@ -127,6 +127,25 @@ const createApplication = async (options = {}) => {
       ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['guestGateway', './middlewares/guestGateway'], ['limiter', './middlewares/limiter'],
       ['upload', './middlewares/upload'], ['scheduler', './utils/backupScheduler']
     ]) context[key] = require(filename)(context);
+    if (env.BOT_PLATFORM_ENABLED === 'true') {
+      if (context.mainSchemaVersion < 4) throw new Error('Bot platform requires explicit main database migration to version 4');
+      const { createBotPlatform } = require(path.join(root, 'dist/src/integrations/bot/platform'));
+      context.botPlatform = createBotPlatform({ store: context.sql.main, env, enabled: context.externalServices,
+        syncSchema: context.mainSchemaVersion >= 5,
+        shutdown: context.shutdownSignal, report: error => context.logger.error('task.failed', { error }) });
+      const { createBotNotifier } = require(path.join(root, 'dist/src/integrations/bot/notifier'));
+      context.bot = createBotNotifier(async payload => {
+        const result = await context.botPlatform.enqueue(payload.event, payload.data, payload.actor);
+        return { queued: true, ...result };
+      });
+      if(context.mainSchemaVersion >= 5) {
+        const { createMemberSync } = require(path.join(root,'dist/src/integrations/bot/member-sync'));
+        context.memberSync = createMemberSync({store:context.sql.main,notify:context.botPlatform.enqueueDirected,
+          publicRoot:context.PUBLIC_DIR,imageRoot:context.IMG_ROOT_DIR,publication:context.storage.publication,
+          moveStagedFile:context.storage.moveStagedFile,resolveUploadsPath:context.storage.resolveUploadsPath,
+          report:error=>context.logger.error('task.failed',{error})});
+      }
+    }
     await context.storage.publication?.recover();
     const { app } = require('./app').buildApp(context);
     const listen = (port = configuration.port, host = configuration.bindHost) => {
@@ -141,6 +160,22 @@ const createApplication = async (options = {}) => {
               context.startLoginCleanup();
               context.startStagingCleanup();
               context.scheduler.startBackupScheduler();
+              if(context.memberSync) {
+                const memberTick=()=>context.memberSync.tick();
+                context.every(memberTick,30000);
+                context.track(memberTick).catch(error=>context.logger.error('task.failed',{error}));
+              }
+              if (context.botPlatform) {
+                let ticking = false;
+                const tick = async () => {
+                  if (ticking || context.isClosing()) return;
+                  ticking = true;
+                  try { await context.botPlatform.reminders(); await context.botPlatform.flush(); }
+                  finally { ticking = false; }
+                };
+                context.every(tick, 30000);
+                context.track(tick).catch(error => context.logger.error('task.failed', { error }));
+              }
               if (context.securityAudit) {
                 context.every(() => context.securityAudit.flush(context.shutdownSignal), 30000);
                 context.flushSecurityAudit();

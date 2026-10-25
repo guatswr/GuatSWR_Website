@@ -54,6 +54,18 @@ const serveLogs = async (rows: FixtureLogRow[]) => startServer((request, respons
 })
 
 describe('public log description projection', () => {
+  it('replaces Bot identity and review audit details with fixed public descriptions', async () => {
+    const server = await serveLogs([
+      logRow(1, 'BOT_IDENTITY_BIND', 'identity=private-binding-identifier'),
+      logRow(2, 'BOT_REVIEW_EVENT', '{"reason":"private review note"}'),
+    ])
+    try {
+      const page = await readLogsPage({ apiBase: server.apiBase }, parseLogQuery({}))
+      expect(page.logs.map(log => log.details)).toEqual(['绑定了机器人身份', '通过机器人审核了活动'])
+      expect(JSON.stringify(page)).not.toContain('private')
+    }
+    finally { server.close() }
+  })
   it('treats inherited object names as ordinary actions, never as fixed text', async () => {
     const actions = ['constructor', '__proto__', 'toString', 'hasOwnProperty', 'valueOf']
     const server = await serveLogs(actions.map((action, index) => logRow(index + 1, action, `内容:${action}`)))

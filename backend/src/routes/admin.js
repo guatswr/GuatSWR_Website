@@ -15,6 +15,7 @@ const { createEventStateController } = require(path.join(stateModule, 'controlle
 const stateController = createEventStateController(createEventStateService({
   repository: createEventStateRepository(context.sql.main), audit: addLog, publication: context.storage.publication,
   notify: require('../utils/botHooks').callBotHook,
+  ...(context.botPlatform ? { enqueue: context.botPlatform.enqueue } : {}),
   reportAuditFailure: error => context.logger.error('audit.failed', { error })
 }), error => context.logger.error('http.failed', { error, route: '/api/event/state' }));
 const { createRecycleService, RecycleError } = require(path.join(context.BACKEND_ROOT, 'dist/src/modules/recycle/service'));

@@ -3891,6 +3891,5688 @@
             ]
           }
         }
+      },
+      {
+        "version": 4,
+        "file": "main-004-bot.sql",
+        "sha256": "c568b08094cb9c0a95a4a8568273cf14cbe33f0bb3b3fabf8e426b0004a17d36",
+        "shape": {
+          "activities": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "title",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "tag",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "date",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "description",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "content",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "cover_image",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "images",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "created_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                9,
+                "created_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                10,
+                "updated_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                11,
+                "status",
+                "TEXT",
+                0,
+                "'published'",
+                0,
+                0
+              ],
+              [
+                12,
+                "deleted_at",
+                "DATETIME",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                13,
+                "deleted_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_activities_deleted_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    12,
+                    "deleted_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_activities_date",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "date",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_activities_created_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    8,
+                    "created_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "asset_cleanup_jobs": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "url",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "identity",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "state",
+                "TEXT",
+                1,
+                "'pending'",
+                0,
+                0
+              ],
+              [
+                4,
+                "attempts",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                5,
+                "last_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "created_at",
+                "TEXT",
+                1,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                7,
+                "updated_at",
+                "TEXT",
+                1,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_asset_cleanup_queue",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "state",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    7,
+                    "updated_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_asset_cleanup_jobs_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "banned_ips": {
+            "columns": [
+              [
+                0,
+                "ip",
+                "TEXT",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "reason",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "created_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "expires_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "created_by",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_banned_ips_expires",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "expires_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_banned_ips_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "event_participants": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "event_id",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "user_id",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "visitor_ip",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "common_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "machine_sign",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "pilot_source",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "qq",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "avatar",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                9,
+                "created_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                10,
+                "updated_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                11,
+                "bot_identity_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "events",
+                "event_id",
+                "id",
+                "NO ACTION",
+                "CASCADE",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_participant_bot_identity",
+                "unique": 1,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    11,
+                    "bot_identity_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_event_participants_user",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "user_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_event_participants_ip",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "visitor_ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_event_participants_event",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_event_participants_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    3,
+                    "visitor_ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_event_participants_1",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "user_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "events": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "type",
+                "TEXT",
+                1,
+                "'general'",
+                0,
+                0
+              ],
+              [
+                2,
+                "title",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "content",
+                "TEXT",
+                0,
+                "'{}'",
+                0,
+                0
+              ],
+              [
+                4,
+                "status",
+                "TEXT",
+                0,
+                "'draft'",
+                0,
+                0
+              ],
+              [
+                5,
+                "created_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "visitor_ip",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "created_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                8,
+                "updated_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": []
+          },
+          "history": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "date",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "title",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "description",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "image",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "sort_order",
+                "INTEGER",
+                0,
+                "0",
+                0,
+                0
+              ],
+              [
+                6,
+                "deleted_at",
+                "DATETIME",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "deleted_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_history_sort",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    5,
+                    "sort_order",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_history_deleted_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    6,
+                    "deleted_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_history_date",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "date",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "login_attempts": {
+            "columns": [
+              [
+                0,
+                "ip",
+                "TEXT",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "count",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                2,
+                "lock_until",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                3,
+                "updated_at",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_login_attempts_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "members": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "name",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "role",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "avatar",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "school",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "tags",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "sort_order",
+                "INTEGER",
+                0,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "deleted_at",
+                "DATETIME",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "deleted_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_members_name",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "name",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_members_deleted_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    7,
+                    "deleted_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "security_audit_outbox": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "username",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "action",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "details",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "created_at",
+                "TEXT",
+                1,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                5,
+                "delivered_at",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "attempts",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "last_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_security_audit_pending",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    5,
+                    "delivered_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    6,
+                    "attempts",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    4,
+                    "created_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    4,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_security_audit_outbox_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "site_config": {
+            "columns": [
+              [
+                0,
+                "key",
+                "TEXT",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "value",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_site_config_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "key",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "users": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "username",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "password",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "role",
+                "TEXT",
+                0,
+                "'admin'",
+                0,
+                0
+              ],
+              [
+                4,
+                "avatar",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "twofa_secret",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "twofa_enabled",
+                "INTEGER",
+                0,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "auth_version",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_users_1",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "username",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_credentials": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "name",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "secret_hash",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "scopes",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "groups_json",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "created_by",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "revoked_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_credentials_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "secret_hash",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_credentials_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_subscriptions": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "credential_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "group_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "event_name",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "event_id",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                5,
+                "lead_minutes",
+                "INTEGER",
+                1,
+                "60",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_subscriptions_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "credential_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    3,
+                    "event_name",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    4,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    4,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_subscriptions_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_notifications": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "dedupe_key",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "event_name",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "payload",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_notifications_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "dedupe_key",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_notifications_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_deliveries": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "notification_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "credential_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "subscription_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "group_id",
+                "TEXT",
+                1,
+                "''",
+                0,
+                0
+              ],
+              [
+                5,
+                "status",
+                "TEXT",
+                1,
+                "'pending'",
+                0,
+                0
+              ],
+              [
+                6,
+                "attempts",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "next_attempt_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "lease_until",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                9,
+                "lease_token",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                10,
+                "last_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                11,
+                "delivered_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ],
+              [
+                1,
+                0,
+                "bot_notifications",
+                "notification_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_bot_delivery_due",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    5,
+                    "status",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    7,
+                    "next_attempt_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    8,
+                    "lease_until",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_deliveries_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "notification_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "credential_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    4,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_deliveries_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_identities": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "owner_hash",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "user_id",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "credential_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "qq",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ],
+              [
+                1,
+                0,
+                "users",
+                "user_id",
+                "id",
+                "NO ACTION",
+                "SET NULL",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_identities_4",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "credential_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    4,
+                    "qq",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_identities_3",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "user_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_identities_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "owner_hash",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_identities_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_link_codes": {
+            "columns": [
+              [
+                0,
+                "code_hash",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "identity_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "expires_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_identities",
+                "identity_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_bot_link_expiry",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "expires_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_link_codes_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "code_hash",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          }
+        }
+      },
+      {
+        "version": 5,
+        "file": "main-005-member-sync.sql",
+        "sha256": "9dda554e00401ee8a9b986a70328fb1fd40490223108e680aba1c0156c503571",
+        "shape": {
+          "activities": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "title",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "tag",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "date",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "description",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "content",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "cover_image",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "images",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "created_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                9,
+                "created_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                10,
+                "updated_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                11,
+                "status",
+                "TEXT",
+                0,
+                "'published'",
+                0,
+                0
+              ],
+              [
+                12,
+                "deleted_at",
+                "DATETIME",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                13,
+                "deleted_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_activities_deleted_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    12,
+                    "deleted_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_activities_date",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "date",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_activities_created_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    8,
+                    "created_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "asset_cleanup_jobs": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "url",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "identity",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "state",
+                "TEXT",
+                1,
+                "'pending'",
+                0,
+                0
+              ],
+              [
+                4,
+                "attempts",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                5,
+                "last_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "created_at",
+                "TEXT",
+                1,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                7,
+                "updated_at",
+                "TEXT",
+                1,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_asset_cleanup_queue",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "state",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    7,
+                    "updated_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_asset_cleanup_jobs_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "banned_ips": {
+            "columns": [
+              [
+                0,
+                "ip",
+                "TEXT",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "reason",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "created_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "expires_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "created_by",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_banned_ips_expires",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "expires_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_banned_ips_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "event_participants": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "event_id",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "user_id",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "visitor_ip",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "common_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "machine_sign",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "pilot_source",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "qq",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "avatar",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                9,
+                "created_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                10,
+                "updated_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                11,
+                "bot_identity_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "events",
+                "event_id",
+                "id",
+                "NO ACTION",
+                "CASCADE",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_participant_bot_identity",
+                "unique": 1,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    11,
+                    "bot_identity_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_event_participants_user",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "user_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_event_participants_ip",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "visitor_ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_event_participants_event",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_event_participants_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    3,
+                    "visitor_ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_event_participants_1",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "user_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "events": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "type",
+                "TEXT",
+                1,
+                "'general'",
+                0,
+                0
+              ],
+              [
+                2,
+                "title",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "content",
+                "TEXT",
+                0,
+                "'{}'",
+                0,
+                0
+              ],
+              [
+                4,
+                "status",
+                "TEXT",
+                0,
+                "'draft'",
+                0,
+                0
+              ],
+              [
+                5,
+                "created_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "visitor_ip",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "created_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                8,
+                "updated_at",
+                "DATETIME",
+                0,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": []
+          },
+          "history": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "date",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "title",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "description",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "image",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "sort_order",
+                "INTEGER",
+                0,
+                "0",
+                0,
+                0
+              ],
+              [
+                6,
+                "deleted_at",
+                "DATETIME",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "deleted_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_history_sort",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    5,
+                    "sort_order",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_history_deleted_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    6,
+                    "deleted_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_history_date",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "date",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "login_attempts": {
+            "columns": [
+              [
+                0,
+                "ip",
+                "TEXT",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "count",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                2,
+                "lock_until",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                3,
+                "updated_at",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_login_attempts_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "ip",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "members": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "name",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "role",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "avatar",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "school",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "tags",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "sort_order",
+                "INTEGER",
+                0,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "deleted_at",
+                "DATETIME",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "deleted_by",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                9,
+                "qq",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                10,
+                "profile_status",
+                "TEXT",
+                1,
+                "'complete'",
+                0,
+                0
+              ],
+              [
+                11,
+                "sync_managed",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                12,
+                "sync_hidden",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                13,
+                "sync_protected",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                14,
+                "follow_group_name",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                15,
+                "follow_group_avatar",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_members_qq",
+                "unique": 1,
+                "origin": "c",
+                "partial": 1,
+                "columns": [
+                  [
+                    0,
+                    9,
+                    "qq",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_members_name",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "name",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "idx_members_deleted_at",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    7,
+                    "deleted_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "security_audit_outbox": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "username",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "action",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "details",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "created_at",
+                "TEXT",
+                1,
+                "CURRENT_TIMESTAMP",
+                0,
+                0
+              ],
+              [
+                5,
+                "delivered_at",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "attempts",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "last_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "idx_security_audit_pending",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    5,
+                    "delivered_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    6,
+                    "attempts",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    4,
+                    "created_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    4,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_security_audit_outbox_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "site_config": {
+            "columns": [
+              [
+                0,
+                "key",
+                "TEXT",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "value",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_site_config_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "key",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "users": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "username",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "password",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "role",
+                "TEXT",
+                0,
+                "'admin'",
+                0,
+                0
+              ],
+              [
+                4,
+                "avatar",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "twofa_secret",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "twofa_enabled",
+                "INTEGER",
+                0,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "auth_version",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_users_1",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "username",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_credentials": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "name",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "secret_hash",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "scopes",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "groups_json",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "created_by",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "revoked_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_credentials_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "secret_hash",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_credentials_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_subscriptions": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "credential_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "group_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "event_name",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "event_id",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                5,
+                "lead_minutes",
+                "INTEGER",
+                1,
+                "60",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_subscriptions_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "credential_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    3,
+                    "event_name",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    4,
+                    "event_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    4,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_subscriptions_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_notifications": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "dedupe_key",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "event_name",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "payload",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_notifications_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "dedupe_key",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_notifications_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_deliveries": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "notification_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "credential_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "subscription_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "group_id",
+                "TEXT",
+                1,
+                "''",
+                0,
+                0
+              ],
+              [
+                5,
+                "status",
+                "TEXT",
+                1,
+                "'pending'",
+                0,
+                0
+              ],
+              [
+                6,
+                "attempts",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "next_attempt_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "lease_until",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                9,
+                "lease_token",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                10,
+                "last_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                11,
+                "delivered_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                12,
+                "target_type",
+                "TEXT",
+                1,
+                "'group'",
+                0,
+                0
+              ],
+              [
+                13,
+                "target_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                14,
+                "recipient_user_id",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                15,
+                "message_status",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                16,
+                "receipt_error",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ],
+              [
+                1,
+                0,
+                "bot_notifications",
+                "notification_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_bot_delivery_due",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    5,
+                    "status",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    7,
+                    "next_attempt_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    8,
+                    "lease_until",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_deliveries_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "notification_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "credential_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    4,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    3,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_deliveries_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_identities": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "owner_hash",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "user_id",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "credential_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "qq",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ],
+              [
+                1,
+                0,
+                "users",
+                "user_id",
+                "id",
+                "NO ACTION",
+                "SET NULL",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_bot_identities_4",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    3,
+                    "credential_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    4,
+                    "qq",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_identities_3",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "user_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_identities_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "owner_hash",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_identities_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "bot_link_codes": {
+            "columns": [
+              [
+                0,
+                "code_hash",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "identity_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "expires_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_identities",
+                "identity_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_bot_link_expiry",
+                "unique": 0,
+                "origin": "c",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    2,
+                    "expires_at",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_bot_link_codes_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "code_hash",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "member_sync_meta": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "revision",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": []
+          },
+          "member_sync_settings": {
+            "columns": [
+              [
+                0,
+                "id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "revision",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "value",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": []
+          },
+          "member_sync_groups": {
+            "columns": [
+              [
+                0,
+                "group_id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "generation",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                2,
+                "last_applied_generation",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                3,
+                "initialized",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                4,
+                "next_due_at",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                5,
+                "last_count",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_member_sync_groups_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "member_sync_requests": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "group_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "credential_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "config_revision",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "generation",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "status",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                6,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                7,
+                "expires_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "batch_count",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                9,
+                "member_count",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                10,
+                "summary",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                11,
+                "error_code",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_credentials",
+                "credential_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ],
+              [
+                1,
+                0,
+                "member_sync_groups",
+                "group_id",
+                "group_id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "idx_member_sync_active",
+                "unique": 1,
+                "origin": "c",
+                "partial": 1,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_member_sync_requests_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    4,
+                    "generation",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_member_sync_requests_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "member_sync_batches": {
+            "columns": [
+              [
+                0,
+                "request_id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "batch_no",
+                "INTEGER",
+                1,
+                null,
+                2,
+                0
+              ],
+              [
+                2,
+                "checksum",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "members_json",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "member_count",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "member_sync_requests",
+                "request_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_member_sync_batches_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "request_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    1,
+                    "batch_no",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "member_sync_avatars": {
+            "columns": [
+              [
+                0,
+                "id",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "request_id",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "qq",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "url",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "checksum",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "status",
+                "TEXT",
+                1,
+                "'pending'",
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "member_sync_requests",
+                "request_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_member_sync_avatars_2",
+                "unique": 1,
+                "origin": "u",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    1,
+                    "request_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    2,
+                    "qq",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              },
+              {
+                "name": "sqlite_autoindex_member_sync_avatars_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "member_group_memberships": {
+            "columns": [
+              [
+                0,
+                "qq",
+                "TEXT",
+                1,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "group_id",
+                "TEXT",
+                1,
+                null,
+                2,
+                0
+              ],
+              [
+                2,
+                "group_card",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "nickname",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "group_role",
+                "TEXT",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                5,
+                "active",
+                "INTEGER",
+                1,
+                "1",
+                0,
+                0
+              ],
+              [
+                6,
+                "misses",
+                "INTEGER",
+                1,
+                "0",
+                0,
+                0
+              ],
+              [
+                7,
+                "last_seen_generation",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                8,
+                "avatar_checksum",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "member_sync_groups",
+                "group_id",
+                "group_id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ]
+            ],
+            "indexes": [
+              {
+                "name": "sqlite_autoindex_member_group_memberships_1",
+                "unique": 1,
+                "origin": "pk",
+                "partial": 0,
+                "columns": [
+                  [
+                    0,
+                    0,
+                    "qq",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    1,
+                    1,
+                    "group_id",
+                    0,
+                    "BINARY",
+                    1
+                  ],
+                  [
+                    2,
+                    -1,
+                    null,
+                    0,
+                    "BINARY",
+                    0
+                  ]
+                ]
+              }
+            ]
+          },
+          "member_profile_tasks": {
+            "columns": [
+              [
+                0,
+                "member_id",
+                "INTEGER",
+                0,
+                null,
+                1,
+                0
+              ],
+              [
+                1,
+                "created_at",
+                "INTEGER",
+                1,
+                null,
+                0,
+                0
+              ],
+              [
+                2,
+                "completed_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                3,
+                "notified_at",
+                "INTEGER",
+                0,
+                null,
+                0,
+                0
+              ],
+              [
+                4,
+                "notification_id",
+                "TEXT",
+                0,
+                null,
+                0,
+                0
+              ]
+            ],
+            "foreignKeys": [
+              [
+                0,
+                0,
+                "bot_notifications",
+                "notification_id",
+                "id",
+                "NO ACTION",
+                "NO ACTION",
+                "NONE"
+              ],
+              [
+                1,
+                0,
+                "members",
+                "member_id",
+                "id",
+                "NO ACTION",
+                "CASCADE",
+                "NONE"
+              ]
+            ],
+            "indexes": []
+          }
+        }
       }
     ]
   },

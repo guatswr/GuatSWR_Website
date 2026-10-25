@@ -33,6 +33,7 @@ import {
   resolvePublicConfigOrigin,
   resolvePublicReadOrigin,
 } from './public-read'
+import { readMemberRevision,invalidateMemberRevisionCache } from './member-revision'
 import type {
   PublicLogQuery,
   PublicPageQuery,
@@ -79,8 +80,10 @@ export const publicDataCache = createPublicDataCache()
  * a synchronous throw. Callers therefore observe one shape - a promise that
  * either resolves with the projected DTO or rejects with the reader's error.
  */
-export const invalidatePublicData = (kinds: readonly PublicDataKind[]): void =>
+export const invalidatePublicData = (kinds: readonly PublicDataKind[]): void => {
+  if(kinds.includes('members'))invalidateMemberRevisionCache()
   publicDataCache.invalidate(kinds)
+}
 
 export const readCachedSiteConfig = async (
   ctx: PublicReadContext,
@@ -129,10 +132,11 @@ export const readCachedMembers = async (
   cache: PublicDataCache = publicDataCache,
 ): Promise<PublicMember[]> => {
   const origin = resolvePublicReadOrigin(ctx)
+  const revision=await readMemberRevision(ctx)
   return cache.read({
     kind: 'members',
     origin,
-    parameters: ['list', school ?? null],
+    parameters: ['list', school ?? null,revision],
     load: () => readMembers(ctx, school),
   })
 }
@@ -142,10 +146,11 @@ export const readCachedSchoolStats = async (
   cache: PublicDataCache = publicDataCache,
 ): Promise<PublicSchoolStat[]> => {
   const origin = resolvePublicReadOrigin(ctx)
+  const revision=await readMemberRevision(ctx)
   return cache.read({
     kind: 'members',
     origin,
-    parameters: ['school-stats'],
+    parameters: ['school-stats',revision],
     load: () => readSchoolStats(ctx),
   })
 }

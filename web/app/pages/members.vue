@@ -50,10 +50,30 @@ const { data: memberContent, error: membersError, status: membersStatus, refresh
 
 const members = computed(() => memberContent.value.members)
 
-const { data: schoolStats } = await useFetch<PublicSchoolStat[]>('/api/members/stats/schools', {
+const { data: schoolStats,refresh:refreshSchoolStats,error:schoolStatsError } = await useFetch<PublicSchoolStat[]>('/api/members/stats/schools', {
   key: 'public-member-school-stats',
   default: () => [],
 })
+
+const observedRevision=ref(memberContent.value.revision ?? 0)
+let revisionTimer:ReturnType<typeof setInterval>|undefined
+const revisionAbort=new AbortController()
+onMounted(()=>{
+  let checking=false
+  revisionTimer=setInterval(async()=>{
+    if(checking || document.visibilityState!=='visible')return
+    checking=true
+    try {
+      const {revision}=await $fetch<{revision:number}>('/api/content/members-revision',{signal:revisionAbort.signal})
+      if(revision!==observedRevision.value) {
+        await Promise.all([refreshMembers(),refreshSchoolStats()])
+        if(!membersError.value && !schoolStatsError.value)observedRevision.value=revision
+      }
+    } catch { /* Preserve the current roster; retry on the next visible tick. */ }
+    finally {checking=false}
+  },60000)
+})
+onBeforeUnmount(()=>{if(revisionTimer)clearInterval(revisionTimer);revisionAbort.abort()})
 
 if (import.meta.server && membersError.value) setResponseStatus(502)
 

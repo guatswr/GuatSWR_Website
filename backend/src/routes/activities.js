@@ -8,6 +8,7 @@ module.exports = (context) => {
   const service = createActivitiesService({
     repository: createActivitiesRepository(context.sql.main), storage: context.storage,
     directory: path.join(context.IMG_ROOT_DIR, 'activity'), audit: context.addLog, notify: context.bot.notifyActivityPublished,
+    ...(context.botPlatform ? { enqueue: context.botPlatform.enqueue } : {}),
     reportAuditFailure: error => context.logger.error('audit.failed', { error })
   });
   const controller = createActivitiesController(service, error => context.logger.error('http.failed', { error, route: '/api/activities' }));

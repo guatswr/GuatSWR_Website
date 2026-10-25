@@ -13,9 +13,13 @@ import { useRuntimeConfig } from '#imports'
 import { parseSchoolQuery } from '../../utils/public-read'
 import { readCachedMembers } from '../../utils/public-data'
 import { deriveMemberSortKeys } from '../../utils/member-sort'
+import { readMemberRevision } from '../../utils/member-revision'
 
 export default defineEventHandler(async (event): Promise<MembersContentResponse> => {
   const { apiBase } = useRuntimeConfig(event)
+  const revision=await readMemberRevision({apiBase})
   const members = await readCachedMembers({ apiBase }, parseSchoolQuery(getQuery(event)))
-  return { members, sortKeys: deriveMemberSortKeys(members) }
+  // A concurrent newer revision can cause one harmless refresh, never tag an
+  // older roster with a revision it has not yet observed.
+  return { members, sortKeys: deriveMemberSortKeys(members),revision }
 })

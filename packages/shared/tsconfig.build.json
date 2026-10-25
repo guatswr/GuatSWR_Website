@@ -6,6 +6,6 @@
     "rootDir": "src",
     "outDir": "dist"
   },
-  "include": ["src/index.ts", "src/admin-workflows.ts", "src/backend-v1.ts"],
+  "include": ["src/index.ts", "src/admin-workflows.ts", "src/backend-v1.ts", "src/bot.ts"],
   "exclude": ["src/**/*.test.ts"]
 }

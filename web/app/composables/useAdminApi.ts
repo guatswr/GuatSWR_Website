@@ -20,5 +20,6 @@ export function useAdminApi() {
       transport.command(name, body, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     removeBan: (ip: string) => transport.removeBan(ip, lifetime.signal),
     deleteBackup: (file: string) => transport.deleteBackup(file, lifetime.signal),
+    memberSync:<T>(action:Parameters<typeof transport.memberSync>[0],method:Parameters<typeof transport.memberSync>[1],body:unknown,project:(value:unknown)=>T,id?:string|number,signal?:AbortSignal)=>transport.memberSync(action,method,body,project,id,signal?AbortSignal.any([signal,lifetime.signal]):lifetime.signal),
   }
 }

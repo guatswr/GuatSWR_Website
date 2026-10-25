@@ -9,6 +9,25 @@ const { inspectSchema, migrateDatabase } = require('../dist/src/migrations/engin
 const migrations = path.resolve(__dirname, '../src/migrations');
 const adoptFixture = async db => {
   // Construct a synthetic pre-v2 legacy fixture, never discard real pending intent.
+  await new Promise((resolve,reject)=>db.exec(`
+    DROP TRIGGER members_revision_insert; DROP TRIGGER members_revision_update; DROP TRIGGER members_revision_delete;
+    DROP TABLE member_profile_tasks; DROP TABLE member_group_memberships; DROP TABLE member_sync_avatars;
+    DROP TABLE member_sync_batches; DROP TABLE member_sync_requests; DROP TABLE member_sync_groups;
+    DROP TABLE member_sync_settings; DROP TABLE member_sync_meta; DROP INDEX idx_members_qq;
+    ALTER TABLE members DROP COLUMN qq; ALTER TABLE members DROP COLUMN profile_status;
+    ALTER TABLE members DROP COLUMN sync_managed; ALTER TABLE members DROP COLUMN sync_hidden;
+    ALTER TABLE members DROP COLUMN sync_protected; ALTER TABLE members DROP COLUMN follow_group_name;
+    ALTER TABLE members DROP COLUMN follow_group_avatar;
+  `,error=>error?reject(error):resolve()));
+  const botJobs = await new Promise((resolve, reject) => db.get('SELECT count(*) AS n FROM bot_notifications', (error, row) => error ? reject(error) : resolve(row)));
+  assert.equal(botJobs.n, 0);
+  await new Promise((resolve, reject) => db.exec(`
+    DROP INDEX idx_participant_bot_identity;
+    ALTER TABLE event_participants DROP COLUMN bot_identity_id;
+    DROP TABLE bot_link_codes; DROP TABLE bot_identities;
+    DROP TABLE bot_deliveries; DROP TABLE bot_notifications;
+    DROP TABLE bot_subscriptions; DROP TABLE bot_credentials;
+  `, error => error ? reject(error) : resolve()));
   const securityJobs = await new Promise((resolve, reject) => db.get('SELECT count(*) AS n FROM security_audit_outbox', (error, row) => error ? reject(error) : resolve(row)));
   assert.equal(securityJobs.n, 0);
   const revoked = await new Promise((resolve, reject) => db.get('SELECT count(*) AS n FROM users WHERE auth_version<>0', (error, row) => error ? reject(error) : resolve(row)));
@@ -54,7 +73,7 @@ test('two applications have independent real databases, resources and HTTP state
   for (const instance of [a, b]) {
     assert.equal((await get(instance.context.db, 'PRAGMA foreign_keys')).foreign_keys, 1);
     assert.equal((await get(instance.context.logDb, 'PRAGMA journal_mode')).journal_mode, 'wal');
-    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 11);
+    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 25);
     assert.equal((await get(instance.context.logDb, "SELECT count(*) AS n FROM audit_logs")).n, 0);
     assert.equal(instance.context.timers.size, 0);
     const server = await instance.listen(0, '127.0.0.1');
@@ -94,7 +113,9 @@ test('all 71 frozen API operations are still mounted', async (t) => {
     }
   });
   const frozen = require('../../docs/backend-modernization/evidence/baseline.json');
-  assert.deepEqual(operations.sort(), frozen.operations.map((entry) => entry.operation).sort());
+  assert.ok(operations.includes('GET /api/bot/docs/openapi.yaml'));
+  assert.ok(operations.includes('GET /api/members/revision'));
+  assert.deepEqual(operations.filter(operation => !['GET /api/bot/docs/openapi.yaml','GET /api/members/revision'].includes(operation)).sort(), frozen.operations.map((entry) => entry.operation).sort());
 });
 
 test('background tasks start after listen and close clears timers and both connections', async (t) => {
@@ -138,7 +159,7 @@ test('reopening a synthetic legacy database preserves records, extra columns and
   assert.deepEqual(await get(second.context.db, 'SELECT name, bio, tags FROM members'), {
     name: 'synthetic-member', bio: 'legacy extra', tags: '["old"]'
   });
-  assert.equal((await get(second.context.db, "SELECT count(*) AS n FROM pragma_index_list('event_participants') WHERE [unique]=1")).n, 2);
+  assert.equal((await get(second.context.db, "SELECT count(*) AS n FROM pragma_index_list('event_participants') WHERE [unique]=1")).n, 3);
   assert.equal((await get(second.context.db, "SELECT on_delete FROM pragma_foreign_key_list('event_participants')")).on_delete, 'CASCADE');
 });
 

@@ -31,6 +31,7 @@ export const resolveUpstreamTimeout = (ctx: PublicReadContext): number => {
 }
 
 interface ReadOptions {
+  forbiddenIsNotFound?:boolean
   query?: Record<string, string | number | undefined> | undefined
   /** Legacy statuses that carry public meaning for one specific route. */
   statusOverrides?: Record<number, () => Error> | undefined
@@ -117,7 +118,7 @@ export const readUpstreamJson = async (
     throw upstreamUnavailable()
   }
   // Upstream 403 means "not public"; public readers must not learn the difference.
-  if (response.status === 404 || response.status === 403) {
+  if (response.status === 404 || (response.status === 403 && options.forbiddenIsNotFound!==false)) {
     cancelUpstreamBody(response)
     throw publicNotFound()
   }

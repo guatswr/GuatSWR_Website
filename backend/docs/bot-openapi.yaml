@@ -1,0 +1,3519 @@
+openapi: 3.0.3
+info:
+  title: GuatSWR Bot Platform
+  version: 1.0.0
+  description: Additive APIs. Core requires main4; member sync requires main5. BOT_PLATFORM_ENABLED=true. See BOT-API.md.
+servers:
+  - url: /api/bot
+paths:
+  /admin/credentials:
+    post:
+      operationId: bot_1
+      summary: Create service credential (super_admin); plaintext returned once
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CredentialInput'
+      parameters: []
+    get:
+      operationId: bot_2
+      summary: List service credentials without secret hashes (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters: []
+  /admin/credentials/{id}:
+    delete:
+      operationId: bot_3
+      summary: Revoke service credential and pending deliveries (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /admin/deliveries:
+    get:
+      operationId: bot_4
+      summary: List deliveries (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+  /admin/deliveries/{id}/retry:
+    post:
+      operationId: bot_5
+      summary: Retry failed/skipped delivery (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /link-codes:
+    post:
+      operationId: bot_6
+      summary: Create a five-minute one-time website binding code
+      security:
+        - websiteJwt: []
+        - bffBridge: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: X-Bot-Owner
+          in: header
+          description: Required for guests; BFF-owned browser-session random secret.
+          schema:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+  /binding:
+    delete:
+      operationId: bot_7
+      summary: Unbind the website identity
+      security:
+        - websiteJwt: []
+        - bffBridge: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: X-Bot-Owner
+          in: header
+          description: Required for guests; BFF-owned browser-session random secret.
+          schema:
+            type: string
+            pattern: ^[a-f0-9]{64}$
+  /v1/identity/bind:
+    post:
+      operationId: bot_8
+      summary: Consume binding code for QQ from trusted message context
+      security:
+        - botToken: []
+      x-required-scope: identity:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BindInput'
+      parameters: []
+  /v1/events:
+    get:
+      operationId: bot_9
+      summary: Query public events
+      security:
+        - botToken: []
+      x-required-scope: query:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: type
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 50
+  /v1/articles:
+    get:
+      operationId: bot_10
+      summary: Query public articles
+      security:
+        - botToken: []
+      x-required-scope: query:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+  /v1/members:
+    get:
+      operationId: bot_11
+      summary: Query public members
+      security:
+        - botToken: []
+      x-required-scope: query:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+  /v1/history:
+    get:
+      operationId: bot_12
+      summary: Query public history
+      security:
+        - botToken: []
+      x-required-scope: query:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+  /v1/events/{id}:
+    get:
+      operationId: bot_13
+      summary: Read public event including rules/results
+      security:
+        - botToken: []
+      x-required-scope: query:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/subscriptions:
+    get:
+      operationId: bot_14
+      summary: List own group subscriptions
+      security:
+        - botToken: []
+      x-required-scope: subscriptions:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters: []
+    post:
+      operationId: bot_15
+      summary: Upsert own subscription within allowed groups
+      security:
+        - botToken: []
+      x-required-scope: subscriptions:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SubscriptionInput'
+      parameters: []
+  /v1/subscriptions/{id}:
+    delete:
+      operationId: bot_16
+      summary: Delete own subscription
+      security:
+        - botToken: []
+      x-required-scope: subscriptions:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/deliveries:
+    get:
+      operationId: bot_17
+      summary: List own delivery status
+      security:
+        - botToken: []
+      x-required-scope: deliveries:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+  /v1/deliveries/{id}/retry:
+    post:
+      operationId: bot_18
+      summary: Retry own failed/skipped delivery
+      security:
+        - botToken: []
+      x-required-scope: deliveries:retry
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/events/{id}/signup:
+    get:
+      operationId: bot_19
+      summary: Read bound QQ signup
+      security:
+        - botToken: []
+      x-required-scope: signup:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: qq
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: ^\d{5,12}$
+    post:
+      operationId: bot_20
+      summary: Create/update bound QQ signup
+      security:
+        - botToken: []
+      x-required-scope: signup:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignupInput'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+    delete:
+      operationId: bot_21
+      summary: Cancel bound QQ signup
+      security:
+        - botToken: []
+      x-required-scope: signup:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: qq
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: ^\d{5,12}$
+  /v1/reviews:
+    get:
+      operationId: bot_22
+      summary: List pending events for a bound current administrator
+      security:
+        - botToken: []
+      x-required-scope: review:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: qq
+          in: query
+          required: true
+          schema:
+            type: string
+            pattern: ^\d{5,12}$
+  /v1/events/{id}/review:
+    post:
+      operationId: bot_23
+      summary: Atomically review pending event with reason and audit
+      security:
+        - botToken: []
+      x-required-scope: review:write
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ReviewInput'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/on-this-day:
+    get:
+      operationId: bot_24
+      summary: 历史上的今天：往年同月同日的公开活动文章与群史
+      security:
+        - botToken: []
+      x-required-scope: query:read
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/OnThisDayResponse'
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+        - name: date
+          in: query
+          required: false
+          schema:
+            type: string
+            format: date
+            description: Reference date YYYY-MM-DD; defaults to today in Asia/Shanghai. Only prior years match.
+        - name: source
+          in: query
+          required: false
+          schema:
+            type: string
+            enum:
+              - all
+              - articles
+              - history
+            default: all
+  /admin/member-sync/settings:
+    get:
+      operationId: bot_25
+      summary: Read member sync settings (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters: []
+    put:
+      operationId: bot_26
+      summary: Configure assigned Bot, groups, interval and bound admin recipients (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSyncSettings'
+      parameters: []
+  /admin/member-sync/requests:
+    get:
+      operationId: bot_27
+      summary: List latest 50 sync jobs (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters: []
+    post:
+      operationId: bot_28
+      summary: Request a complete group snapshot (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSyncRequest'
+      parameters: []
+  /admin/member-sync/requests/{id}:
+    get:
+      operationId: bot_29
+      summary: Inspect sync job and paginated baseline comparison (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 1000000
+        - name: search
+          in: query
+          required: false
+          schema:
+            type: string
+            maxLength: 50
+  /admin/member-sync/requests/{id}/apply:
+    post:
+      operationId: bot_30
+      summary: Apply verified baseline or confirm an exceptional snapshot (super_admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSyncApply'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /admin/members/{id}/sync-profile:
+    put:
+      operationId: bot_31
+      summary: Associate unique QQ, preserve overrides and complete profile task (admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSyncProfile'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /admin/member-sync/profiles:
+    get:
+      operationId: bot_32
+      summary: List latest 500 pending profile tasks and private delivery status (admin)
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters: []
+  /v1/member-sync/requests/{id}:
+    get:
+      operationId: bot_33
+      summary: Read own assigned synchronization job
+      security:
+        - botToken: []
+      x-required-scope: members:sync
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/member-sync/requests/{id}/batches/{batch_no}:
+    put:
+      operationId: bot_34
+      summary: Stage an immutable batch of up to 500 members
+      security:
+        - botToken: []
+      x-required-scope: members:sync
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSyncBatch'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: batch_no
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/member-sync/requests/{id}/avatars:
+    post:
+      operationId: bot_35
+      summary: Upload validated avatar after its QQ batch; at most 2 MiB
+      security:
+        - botToken: []
+      x-required-scope: members:sync
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+        - name: X-Member-QQ
+          in: header
+          required: true
+          schema:
+            type: string
+            pattern: ^[1-9]\d{4,11}$
+      requestBody:
+        required: true
+        content:
+          image/png:
+            schema:
+              type: string
+              format: binary
+              maxLength: 2097152
+          image/jpeg:
+            schema:
+              type: string
+              format: binary
+              maxLength: 2097152
+          image/webp:
+            schema:
+              type: string
+              format: binary
+              maxLength: 2097152
+  /v1/member-sync/requests/{id}/complete:
+    post:
+      operationId: bot_36
+      summary: Validate all batches; baseline previews instead of changing live members
+      security:
+        - botToken: []
+      x-required-scope: members:sync
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MemberSyncComplete'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/member-sync/requests/{id}/fail:
+    post:
+      operationId: bot_37
+      summary: Fail own active collection without changing the roster
+      security:
+        - botToken: []
+      x-required-scope: members:sync
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /v1/deliveries/{id}/receipt:
+    post:
+      operationId: bot_38
+      summary: Acknowledge actual private message delivery, separately from HTTP acceptance
+      security:
+        - botToken: []
+      x-required-scope: deliveries:ack
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BotReceipt'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+  /members/revision:
+    get:
+      operationId: members_revision
+      summary: Public member-data revision, without QQ or group details
+      security: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters: []
+      servers:
+        - url: /api
+      x-public-extension: true
+components:
+  securitySchemes:
+    botToken:
+      type: http
+      scheme: bearer
+      description: Scoped gwb_ service token; never a website JWT.
+    websiteJwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+    bffBridge:
+      type: apiKey
+      in: header
+      name: X-BFF-Bridge
+      description: Trusted BFF peer/CIDR and a single X-Forwarded-For required. Guest requests also need X-Bot-Owner.
+  schemas:
+    CredentialInput:
+      type: object
+      properties:
+        name:
+          type: string
+          minLength: 1
+          maxLength: 80
+        scopes:
+          minItems: 1
+          maxItems: 11
+          type: array
+          items:
+            type: string
+            enum:
+              - query:read
+              - subscriptions:write
+              - identity:write
+              - signup:write
+              - signup:read
+              - review:read
+              - review:write
+              - deliveries:read
+              - deliveries:retry
+              - members:sync
+              - deliveries:ack
+        groups:
+          default: []
+          maxItems: 100
+          type: array
+          items:
+            type: string
+            pattern: ^\d{5,12}$
+      required:
+        - name
+        - scopes
+      additionalProperties: false
+    SubscriptionInput:
+      type: object
+      properties:
+        group_id:
+          type: string
+          pattern: ^\d{5,12}$
+        event:
+          type: string
+          enum:
+            - activity.published
+            - history.updated
+            - member.added
+            - event.pending
+            - event.published
+            - event.updated
+            - event.approved
+            - event.rejected
+            - event.status
+            - event.deleted
+            - event.settled
+            - event.result_set
+            - event.signup
+            - event.signup_cancelled
+            - reminder.deadline
+            - reminder.start
+        event_id:
+          type: integer
+          minimum: 0
+          exclusiveMinimum: true
+          maximum: 9007199254740991
+        lead_minutes:
+          default: 60
+          type: integer
+          minimum: 1
+          maximum: 10080
+      required:
+        - group_id
+        - event
+      additionalProperties: false
+    BindInput:
+      type: object
+      properties:
+        code:
+          type: string
+          pattern: ^[a-f0-9]{32}$
+        qq:
+          type: string
+          pattern: ^\d{5,12}$
+      required:
+        - code
+        - qq
+      additionalProperties: false
+    SignupInput:
+      type: object
+      properties:
+        qq:
+          type: string
+          pattern: ^\d{5,12}$
+        common_id:
+          type: string
+          minLength: 1
+          maxLength: 100
+        avatar:
+          type: string
+          maxLength: 500
+          pattern: ^\/uploads\/
+        machine_sign:
+          default: ''
+          type: string
+          maxLength: 200
+        pilot_source:
+          default: ''
+          type: string
+          maxLength: 200
+      required:
+        - qq
+        - common_id
+        - avatar
+      additionalProperties: false
+    ReviewInput:
+      type: object
+      properties:
+        qq:
+          type: string
+          pattern: ^\d{5,12}$
+        action:
+          type: string
+          enum:
+            - approve
+            - reject
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+      required:
+        - qq
+        - action
+        - reason
+      additionalProperties: false
+    MemberSyncSettings:
+      type: object
+      properties:
+        enabled:
+          type: boolean
+        credential_id:
+          nullable: true
+          type: string
+          format: uuid
+          pattern: >-
+            ^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-8][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}|00000000-0000-0000-0000-000000000000|ffffffff-ffff-ffff-ffff-ffffffffffff)$
+        groups:
+          maxItems: 20
+          type: array
+          items:
+            type: string
+            pattern: ^[1-9]\d{4,11}$
+        interval_minutes:
+          default: 360
+          type: integer
+          minimum: 30
+          maximum: 10080
+        admin_user_ids:
+          maxItems: 20
+          type: array
+          items:
+            type: integer
+            minimum: 0
+            exclusiveMinimum: true
+            maximum: 9007199254740991
+      required:
+        - enabled
+        - credential_id
+        - groups
+        - admin_user_ids
+      additionalProperties: false
+    MemberSyncBatch:
+      type: object
+      properties:
+        members:
+          maxItems: 500
+          type: array
+          items:
+            type: object
+            properties:
+              qq:
+                type: string
+                pattern: ^[1-9]\d{4,11}$
+              group_card:
+                default: ''
+                type: string
+                maxLength: 50
+              nickname:
+                default: ''
+                type: string
+                maxLength: 50
+              group_role:
+                default: member
+                type: string
+                enum:
+                  - member
+                  - admin
+                  - owner
+            required:
+              - qq
+            additionalProperties: false
+      required:
+        - members
+      additionalProperties: false
+    MemberSyncComplete:
+      type: object
+      properties:
+        batch_count:
+          type: integer
+          minimum: 1
+          maximum: 100
+        member_count:
+          type: integer
+          minimum: 0
+          maximum: 10000
+        complete:
+          type: boolean
+          enum:
+            - true
+      required:
+        - batch_count
+        - member_count
+        - complete
+      additionalProperties: false
+    MemberSyncApply:
+      type: object
+      properties:
+        reason:
+          type: string
+          minLength: 1
+          maxLength: 500
+        allow_large_drop:
+          default: false
+          type: boolean
+        allow_unlinked:
+          default: false
+          type: boolean
+      required:
+        - reason
+      additionalProperties: false
+    MemberSyncProfile:
+      type: object
+      properties:
+        qq:
+          nullable: true
+          type: string
+          pattern: ^[1-9]\d{4,11}$
+        follow_group_name:
+          type: boolean
+        follow_group_avatar:
+          type: boolean
+        sync_protected:
+          type: boolean
+        complete:
+          type: boolean
+      required:
+        - qq
+        - follow_group_name
+        - follow_group_avatar
+        - sync_protected
+        - complete
+      additionalProperties: false
+    BotReceipt:
+      type: object
+      properties:
+        status:
+          type: string
+          enum:
+            - sent
+            - failed
+        error_code:
+          type: string
+          enum:
+            - unavailable
+            - not_friend
+            - rate_limited
+            - unknown
+      required:
+        - status
+      additionalProperties: false
+    Error:
+      type: object
+      required:
+        - message
+      properties:
+        message:
+          type: string
+    MemberSyncRequest:
+      type: object
+      required:
+        - group_id
+      additionalProperties: false
+      properties:
+        group_id:
+          type: string
+          pattern: ^[1-9]\d{4,11}$
+    OnThisDayItem:
+      type: object
+      required:
+        - source
+        - id
+        - title
+        - date
+        - years_ago
+        - description
+        - image
+        - image_url
+        - images
+        - images_truncated
+        - tag
+        - url
+      properties:
+        source:
+          type: string
+          enum:
+            - articles
+            - history
+        id:
+          type: integer
+        title:
+          type: string
+          maxLength: 200
+        date:
+          type: string
+          format: date
+        years_ago:
+          type: integer
+          minimum: 1
+        description:
+          type: string
+          maxLength: 500
+        image:
+          type: string
+        tag:
+          type: string
+        image_url:
+          type: string
+          description: First available public image as absolute HTTP(S) URL; empty if unavailable.
+        images:
+          type: array
+          maxItems: 50
+          items:
+            type: string
+            format: uri
+          description: >-
+            Articles: at most one available cover, without gallery/body fallback. History: deduplicated
+            primary/description images. Absolute public URLs.
+        images_truncated:
+          type: boolean
+          description: >-
+            History image count, candidate count or description extraction budget was reached; always false
+            for articles.
+        url:
+          type: string
+          description: Relative website URL; articles use /activity/:id, history uses /history.
+    OnThisDayResponse:
+      type: object
+      required:
+        - date
+        - month_day
+        - timezone
+        - source
+        - page
+        - limit
+        - total
+        - has_more
+        - items
+        - broadcast_text
+        - broadcast_images
+      properties:
+        date:
+          type: string
+          format: date
+        month_day:
+          type: string
+          pattern: ^\d{2}-\d{2}$
+        timezone:
+          type: string
+          enum:
+            - Asia/Shanghai
+        source:
+          type: string
+          enum:
+            - all
+            - articles
+            - history
+        page:
+          type: integer
+          minimum: 1
+          maximum: 1000000
+        limit:
+          type: integer
+          minimum: 1
+          maximum: 100
+        total:
+          type: integer
+          minimum: 0
+        has_more:
+          type: boolean
+        broadcast_text:
+          type: string
+          description: Plain-text digest of this page only; no automatic message delivery.
+        broadcast_images:
+          type: array
+          uniqueItems: true
+          items:
+            type: string
+            format: uri
+          description: >-
+            Deduplicated image URLs from this page, to accompany broadcast_text without sending a Bot token to
+            image URLs.
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OnThisDayItem'

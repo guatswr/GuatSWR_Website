@@ -16,20 +16,29 @@ module.exports = context => {
   const { callBotHook } = require('../utils/botHooks');
   const report = error => context.logger.error('http.failed', { error, route: '/api/event' });
   const auditFailure = error => context.logger.error('audit.failed', { error });
+  const queued = context.botPlatform ? { enqueue: context.botPlatform.enqueue } : {};
   const events = createEventsController(createEventsService({ repository: createEventsRepository(context.sql.main), publication: context.storage.publication,
     persist: createEventContentPersister({ imageRoot: context.IMG_ROOT_DIR, moveStagedFile: context.storage.moveStagedFile }),
-    audit: context.addLog, notify: callBotHook, report: auditFailure }), report);
-  const signup = createSignupController(createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook, publication: context.storage.publication }), report);
+    audit: context.addLog, notify: callBotHook, report: auditFailure, ...queued }), report);
+  const signup = createSignupController(createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook, publication: context.storage.publication, ...queued }), report);
   const state = createEventStateController(createEventStateService({ repository: createEventStateRepository(context.sql.main), audit: context.addLog,
-    notify: callBotHook, reportAuditFailure: auditFailure, publication: context.storage.publication }), report);
+    notify: callBotHook, reportAuditFailure: auditFailure, publication: context.storage.publication, ...queued }), report);
+  const websiteIdentity = async (req, res, next) => {
+    if (!context.botPlatform || req.user || !req.headers['x-bot-owner']) return next();
+    try {
+      const { createBotIdentityService } = require(path.join(context.BACKEND_ROOT, 'dist/src/integrations/bot/identity'));
+      req.botIdentityId = await createBotIdentityService(context.sql.main).websiteIdentity(req.headers['x-bot-owner']);
+      next();
+    } catch { res.status(400).json({ message: 'Bot 网站身份无效' }); }
+  };
   const handle = fn => (req, res, next) => fn(req, res).catch(next);
   router.post('/draft', optionalAuth, context.guestGateway, context.guestProof.check('draft'), handle(events.draft));
   router.put('/:id', optionalAuth, context.guestGateway, context.guestProof.check('save'), handle(events.save));
   router.get('/', optionalAuth, handle(events.list));
   router.get('/:id', optionalAuth, handle(events.detail));
-  router.post('/:id/signup', optionalAuth, context.guestGateway, handle(signup.signup));
-  router.get('/:id/signup', optionalAuth, context.guestGateway, handle(signup.find));
-  router.delete('/:id/signup', optionalAuth, context.guestGateway, handle(signup.remove));
+  router.post('/:id/signup', optionalAuth, context.guestGateway, websiteIdentity, handle(signup.signup));
+  router.get('/:id/signup', optionalAuth, context.guestGateway, websiteIdentity, handle(signup.find));
+  router.delete('/:id/signup', optionalAuth, context.guestGateway, websiteIdentity, handle(signup.remove));
   router.get('/:id/participants/public', optionalAuth, handle(signup.list));
   router.get('/admin/list', authenticateToken, requireAdmin, handle(events.adminList));
   router.post('/admin', authenticateToken, requireAdmin, handle(events.create));

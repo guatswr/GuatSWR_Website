@@ -1,6 +1,6 @@
 import type { Actor } from '../../modules/actor.js'
 import type { WebhookResult } from './transport.js'
-export function createBotNotifier(post: (payload: unknown) => Promise<WebhookResult>) {
+export function createBotNotifier(post: (payload: { event: string; data: unknown; actor: Actor | null; source: string; timestamp: string }) => Promise<WebhookResult>) {
   const envelope = (event: string, data: unknown, actor?: Actor | null) => ({
     event, data, actor: actor ? { id: actor.id, username: actor.username, role: actor.role } : null,
     source: 'guatswr_web', timestamp: new Date().toISOString()

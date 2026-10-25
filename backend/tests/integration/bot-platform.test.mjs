@@ -1,0 +1,222 @@
+import http from 'node:http'
+import path from 'node:path'
+import { createRequire } from 'node:module'
+import { expect, it, onTestFinished } from 'vitest'
+import { fixture, token, run, get, all, bridgeHeaders, png } from '../helpers/fixture.mjs'
+const require=createRequire(import.meta.url)
+const { createBotPlatform,digest }=require('../../dist/src/integrations/bot/platform.js')
+const { botScopes }=require('@guatswr/shared/bot')
+const auth=(value)=>({ Authorization:`Bearer ${value}` })
+const setup=async()=>{
+ const f=await fixture({ env:{ BOT_PLATFORM_ENABLED:'true',TRUST_PROXY_CIDRS:'127.0.0.1/32,::1/128' } })
+ await f.fs.writeFile(path.join(f.context.PUBLIC_DIR,'avatar.png'),png)
+ return f
+}
+const credential=async(f,scopes=[...botScopes],groups=['123456'])=>{
+ const r=await f.http.post('/api/bot/admin/credentials').set(auth(token())).send({name:'AstrBot',scopes,groups})
+ expect(r.status).toBe(200); return r.body
+}
+const subscribe=async(f,c,event,extra={})=>{
+ const r=await f.http.post('/api/bot/v1/subscriptions').set(auth(c.token)).send({group_id:'123456',event,...extra})
+ expect(r.status).toBe(200);return r.body
+}
+const bind=async(f,c,qq,owner='a'.repeat(64),user)=>{
+ const issued=await f.http.post('/api/bot/link-codes').set(user ? auth(token(user)) : {...bridgeHeaders(),'x-bot-owner':owner}).send({})
+ expect(issued.status).toBe(200)
+ const r=await f.http.post('/api/bot/v1/identity/bind').set(auth(c.token)).send({qq,code:issued.body.code})
+ expect(r.status).toBe(200);return issued.body.code
+}
+const input=(qq)=>({qq,common_id:'pilot-'+qq,avatar:'/uploads/avatar.png'})
+
+it('mounts exactly the 38 documented Bot operations and serves their contract',async()=>{
+ const f=await setup()
+ const response=await f.http.get('/api/bot/docs/openapi.yaml')
+ expect(response.status).toBe(200)
+ const document=require('js-yaml').load(response.text)
+ const outer=f.app.router.stack.find(layer=>layer.name==='router'&&layer.matchers.some(match=>match('/api/bot')))
+ const extension=outer.handle.stack.find(layer=>layer.name==='router')
+ const collect=stack=>stack.flatMap(layer=>layer.route ? Object.keys(layer.route.methods).map(method=>`${method.toUpperCase()} ${layer.route.path}`) : layer.name==='router' ? collect(layer.handle.stack) : [])
+ const mounted=collect(extension.handle.stack).sort()
+ const documented=Object.entries(document.paths).flatMap(([route,methods])=>Object.entries(methods).filter(([,op])=>!op['x-public-extension']).map(([method])=>`${method.toUpperCase()} ${route.replace(/\{([^}]+)\}/g,':$1')}`)).sort()
+ expect(mounted).toEqual(documented)
+})
+
+it('issues hashed, scoped service credentials only to super admins and revokes them immediately',async()=>{
+ const f=await setup(),c=await credential(f,['query:read'])
+ expect(c.token).toMatch(/^gwb_[a-f0-9]{64}$/)
+ const stored=await get(f.db,'SELECT * FROM bot_credentials WHERE id=?',[c.id])
+ expect(stored.secret_hash).toBe(digest(c.token));expect(JSON.stringify(stored)).not.toContain(c.token)
+ expect((await f.http.post('/api/bot/admin/credentials').set(auth(token(2))).send({name:'x',scopes:['query:read']})).status).toBe(403)
+ expect((await f.http.get('/api/bot/v1/events').set(auth(token()))).status).toBe(401)
+ expect((await f.http.post('/api/bot/v1/subscriptions').set(auth(c.token)).send({})).status).toBe(403)
+ expect((await f.http.get('/api/bot/v1/events').set(auth(c.token))).status).toBe(200)
+ expect((await f.http.delete('/api/bot/admin/credentials/'+c.id).set(auth(token()))).status).toBe(200)
+ expect((await f.http.get('/api/bot/v1/events').set(auth(c.token))).status).toBe(401)
+ expect((await get(f.db,"SELECT count(*) AS n FROM security_audit_outbox WHERE action LIKE 'BOT_CREDENTIAL_%'")).n).toBe(2)
+})
+it('projects public queries without drafts, private metadata or unbounded query parameters',async()=>{
+ const f=await setup(),c=await credential(f,['query:read'])
+ await run(f.db,'UPDATE events SET content=? WHERE id=1',[JSON.stringify({rules:'rule',internal_token:'secret',nested:{visitor_ip:'private'}})])
+ const r=await f.http.get('/api/bot/v1/events').set(auth(c.token))
+ expect(r.body.items.map(e=>e.id)).toEqual([1]);expect(JSON.stringify(r.body)).not.toMatch(/visitor_ip|internal_token|203\.0\.113/)
+ expect(r.body.items[0].content.rules).toBe('rule')
+ expect((await f.http.get('/api/bot/v1/events/2').set(auth(c.token))).status).toBe(404)
+ for(const suffix of ['?limit=101','?page=0','?page[]=1']) expect((await f.http.get('/api/bot/v1/events'+suffix).set(auth(c.token))).status).toBe(400)
+ for(const name of ['articles','members','history']) expect((await f.http.get('/api/bot/v1/'+name).set(auth(c.token))).status).toBe(200)
+})
+it('limits subscriptions to granted groups and scopes and isolates other bot credentials',async()=>{
+ const f=await setup(),c=await credential(f,['subscriptions:write']),other=await credential(f)
+ const sub=await subscribe(f,c,'event.approved')
+ expect((await subscribe(f,c,'event.approved',{lead_minutes:30})).id).toBe(sub.id)
+ expect((await f.http.post('/api/bot/v1/subscriptions').set(auth(c.token)).send({event:'event.pending',group_id:'123456'})).status).toBe(403)
+ expect((await f.http.post('/api/bot/v1/subscriptions').set(auth(c.token)).send({event:'event.approved',group_id:'999999'})).status).toBe(403)
+ expect((await f.http.delete('/api/bot/v1/subscriptions/'+sub.id).set(auth(other.token))).status).toBe(404)
+ expect((await f.http.get('/api/bot/v1/subscriptions').set(auth(c.token))).body.items).toHaveLength(1)
+})
+it('reports skipped legacy notifications honestly and persists their status when enabled',async()=>{
+ const f=await setup()
+ const r=await f.http.post('/api/bot/notify/member').set(auth(token())).send({id:1,name:'x',role:'member'})
+ expect(r.body.status).toBe('skipped');expect(r.body.message).not.toBe('已通知')
+ expect((await get(f.db,'SELECT status FROM bot_deliveries WHERE notification_id=?',[r.body.event_id])).status).toBe('skipped')
+})
+it('consumes one-time binding codes exactly once, invalidates older codes and separates same-IP visitors',async()=>{
+ const f=await setup(),c=await credential(f)
+ const code=await bind(f,c,'11111')
+ expect((await f.http.post('/api/bot/v1/identity/bind').set(auth(c.token)).send({qq:'22222',code})).status).toBe(400)
+ await bind(f,c,'22222','b'.repeat(64))
+ for(const qq of ['11111','22222']) expect((await f.http.post('/api/bot/v1/events/1/signup').set(auth(c.token)).send(input(qq))).status).toBe(200)
+ const rows=await all(f.db,'SELECT bot_identity_id,visitor_ip,qq FROM event_participants WHERE bot_identity_id IS NOT NULL')
+ expect(rows).toHaveLength(2);expect(rows.every(r=>r.visitor_ip===null)).toBe(true)
+ expect(new Set(rows.map(r=>r.bot_identity_id)).size).toBe(2)
+ const own=await f.http.get('/api/bot/v1/events/1/signup?qq=11111').set(auth(c.token))
+ expect(own.body.data.qq).toBe('11111');expect(own.body.data).not.toHaveProperty('bot_identity_id')
+ const website=await f.http.get('/api/event/1/signup').set({...bridgeHeaders(),'x-bot-owner':'a'.repeat(64)})
+ expect(website.body.data.qq).toBe('11111')
+ expect((await f.http.delete('/api/bot/v1/events/1/signup?qq=11111').set(auth(c.token))).status).toBe(200)
+ expect((await f.http.get('/api/bot/v1/events/1/signup?qq=22222').set(auth(c.token))).body.data.qq).toBe('22222')
+})
+it('enforces expiry, explicit unbinding and credential isolation instead of trusting arbitrary QQs',async()=>{
+ const f=await setup(),c=await credential(f),other=await credential(f)
+ await bind(f,c,'11111')
+ expect((await f.http.get('/api/bot/v1/events/1/signup?qq=11111').set(auth(other.token))).status).toBe(403)
+ expect((await f.http.post('/api/bot/link-codes').send({})).status).toBe(403)
+ const code=await f.http.post('/api/bot/link-codes').set({...bridgeHeaders(),'x-bot-owner':'c'.repeat(64)}).send({})
+ await run(f.db,'UPDATE bot_link_codes SET expires_at=0')
+ expect((await f.http.post('/api/bot/v1/identity/bind').set(auth(c.token)).send({qq:'33333',code:code.body.code})).status).toBe(400)
+ expect((await f.http.delete('/api/bot/binding').set({...bridgeHeaders(),'x-bot-owner':'a'.repeat(64)})).status).toBe(200)
+ expect((await f.http.get('/api/bot/v1/events/1/signup?qq=11111').set(auth(c.token))).status).toBe(403)
+})
+it('shares logged-in website signup ownership and enforces existing deadlines and event types',async()=>{
+ const f=await setup(),c=await credential(f)
+ await bind(f,c,'11111',undefined,2)
+ expect((await f.http.get('/api/bot/v1/events/1/signup?qq=11111').set(auth(c.token))).body.data.common_id).toBe('pilot')
+ expect((await f.http.post('/api/bot/v1/events/1/signup').set(auth(c.token)).send(input('11111'))).status).toBe(200)
+ expect((await f.http.get('/api/event/1/signup').set(auth(token(2)))).body.data.common_id).toBe('pilot-11111')
+ await run(f.db,'UPDATE events SET content=? WHERE id=1',[JSON.stringify({deadline:'2000-01-01T00:00'})])
+ expect((await f.http.post('/api/bot/v1/events/1/signup').set(auth(c.token)).send(input('11111'))).status).toBe(403)
+ await run(f.db,"UPDATE events SET type='general',content='{}' WHERE id=1")
+ expect((await f.http.post('/api/bot/v1/events/1/signup').set(auth(c.token)).send(input('11111'))).status).toBe(400)
+})
+it('requires a bound current administrator, handles concurrent review and atomically writes audit and notification',async()=>{
+ const f=await setup(),c=await credential(f)
+ await bind(f,c,'11111',undefined,2)
+ expect((await f.http.get('/api/bot/v1/reviews?qq=11111').set(auth(c.token))).body.items.map(r=>r.id)).toEqual([3])
+ const review=()=>f.http.post('/api/bot/v1/events/3/review').set(auth(c.token)).send({qq:'11111',action:'approve',reason:'verified'})
+ const outcomes=await Promise.all([review(),review()])
+ expect(outcomes.map(r=>r.status).sort()).toEqual([200,409])
+ expect((await get(f.db,"SELECT count(*) AS n FROM security_audit_outbox WHERE action='BOT_REVIEW_EVENT'")).n).toBe(1)
+ expect((await get(f.db,"SELECT count(*) AS n FROM bot_notifications WHERE event_name='event.approved'")).n).toBe(1)
+ await run(f.db,"UPDATE users SET role='member' WHERE id=2")
+ expect((await f.http.get('/api/bot/v1/reviews?qq=11111').set(auth(c.token))).status).toBe(403)
+})
+it('keeps binding identifiers and review reasons out of public logs while preserving private audit',async()=>{
+ const f=await setup(),c=await credential(f)
+ await bind(f,c,'11111',undefined,2)
+ const reason='private review note for moderation'
+ expect((await f.http.post('/api/bot/v1/events/3/review').set(auth(c.token)).send({qq:'11111',action:'approve',reason})).status).toBe(200)
+ await f.context.securityAudit.flush()
+ const publicLogs=await f.http.get('/api/logs')
+ expect(JSON.stringify(publicLogs.body)).not.toContain(reason)
+ expect(JSON.stringify(publicLogs.body)).not.toContain('identity=')
+ expect(JSON.stringify(publicLogs.body)).toContain('通过机器人审核了活动')
+ const privateLogs=await f.http.get('/api/admin/logs').set(auth(token()))
+ expect(JSON.stringify(privateLogs.body)).toContain(reason)
+})
+it('rolls back business status when its notification intent cannot be recorded',async()=>{
+ const f=await setup(),c=await credential(f)
+ await bind(f,c,'11111',undefined,2)
+ await run(f.db,"CREATE TRIGGER fail_bot_intent BEFORE INSERT ON bot_notifications BEGIN SELECT RAISE(ABORT,'synthetic'); END")
+ const r=await f.http.post('/api/bot/v1/events/3/review').set(auth(c.token)).send({qq:'11111',action:'approve',reason:'verified'})
+ expect(r.status).toBe(500)
+ expect((await get(f.db,'SELECT status FROM events WHERE id=3')).status).toBe('pending')
+ expect((await get(f.db,"SELECT count(*) AS n FROM security_audit_outbox WHERE action='BOT_REVIEW_EVENT'")).n).toBe(0)
+})
+it('queues website publish, edit, review, signup and cancellation in their business transactions',async()=>{
+ const f=await setup(),c=await credential(f)
+ await subscribe(f,c,'event.approved')
+ expect((await f.http.post('/api/event/3/approve').set(auth(token(2))).send({})).status).toBe(200)
+ expect((await f.http.put('/api/event/1').set(auth(token(2))).send({title:'rescheduled'})).status).toBe(200)
+ await bind(f,c,'11111')
+ await f.http.post('/api/bot/v1/events/1/signup').set(auth(c.token)).send(input('11111'))
+ await f.http.delete('/api/bot/v1/events/1/signup?qq=11111').set(auth(c.token))
+ const names=(await all(f.db,'SELECT event_name FROM bot_notifications')).map(r=>r.event_name)
+ expect(names).toEqual(expect.arrayContaining(['event.approved','event.updated','event.signup','event.signup_cancelled']))
+})
+it('atomically records content notifications and rolls back signup if its intent cannot be saved',async()=>{
+ const f=await setup(),c=await credential(f)
+ for(const [route,body] of [
+  ['/api/activities',{title:'new article',tag:'STG',date:'2026-10-25',images:[]}],
+  ['/api/history',{title:'new history',date:'2026-10-25'}],
+  ['/api/members',{name:'new member',role:'member'}],
+ ]) expect((await f.http.post(route).set(auth(token(2))).send(body)).status).toBe(200)
+ const names=(await all(f.db,'SELECT event_name FROM bot_notifications')).map(r=>r.event_name)
+ expect(names).toEqual(expect.arrayContaining(['activity.published','history.updated','member.added']))
+ await bind(f,c,'11111')
+ await run(f.db,"CREATE TRIGGER fail_signup_intent BEFORE INSERT ON bot_notifications WHEN NEW.event_name='event.signup' BEGIN SELECT RAISE(ABORT,'synthetic'); END")
+ expect((await f.http.post('/api/bot/v1/events/1/signup').set(auth(c.token)).send(input('11111'))).status).toBe(500)
+ expect((await get(f.db,"SELECT count(*) AS n FROM event_participants WHERE qq='11111'")).n).toBe(0)
+})
+it('leases delivery, retries with stable IDs, survives worker recreation and isolates retry access',async()=>{
+ const f=await setup(),c=await credential(f),other=await credential(f)
+ await subscribe(f,c,'event.approved')
+ const received=[];let fail=true
+ const server=http.createServer((req,res)=>{let raw='';req.on('data',b=>raw+=b);req.on('end',()=>{received.push(JSON.parse(raw));res.writeHead(fail ? 500 : 204).end()})})
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve));onTestFinished(()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve)}))
+ let clock=Date.now();const options={store:f.context.sql.main,env:{ASTRBOT_WEBHOOK_URL:`http://127.0.0.1:${server.address().port}`},enabled:true,shutdown:new AbortController().signal,now:()=>clock,report:()=>{}}
+ let worker=createBotPlatform(options)
+ const event=await worker.enqueue('event.approved',{eventId:1},null,undefined,'unique-event')
+ expect((await worker.enqueue('event.approved',{eventId:1},null,undefined,'unique-event')).id).toBe(event.id)
+ const first=await worker.flush();expect(first.failed).toBe(1)
+ expect(received).toHaveLength(1);fail=false;clock+=2000;worker=createBotPlatform(options)
+ const [a,b]=await Promise.all([worker.flush(),createBotPlatform(options).flush()])
+ expect(a.sent+b.sent).toBe(1);expect(received).toHaveLength(2)
+ expect(received[0].delivery_id).toBe(received[1].delivery_id);expect(received[1].target.group_id).toBe('123456')
+ const id=received[0].delivery_id
+ expect((await f.http.post(`/api/bot/v1/deliveries/${id}/retry`).set(auth(other.token))).status).toBe(409)
+ expect((await f.http.post(`/api/bot/v1/deliveries/${id}/retry`).set(auth(c.token))).status).toBe(409)
+})
+it('recovers expired leases, caps attempts, cancels revoked and unsubscribed deliveries',async()=>{
+ const f=await setup(),c=await credential(f)
+ const sub=await subscribe(f,c,'event.approved')
+ const event=await f.context.botPlatform.enqueue('event.approved',{eventId:1},null)
+ await run(f.db,"UPDATE bot_deliveries SET status='sending',attempts=5,lease_until=0 WHERE notification_id=?",[event.id])
+ const worker=createBotPlatform({store:f.context.sql.main,env:{},enabled:true,shutdown:new AbortController().signal,report:()=>{}})
+ await worker.flush()
+ expect((await get(f.db,'SELECT status FROM bot_deliveries WHERE notification_id=?',[event.id])).status).toBe('failed')
+ const later=await f.context.botPlatform.enqueue('event.approved',{eventId:1},null)
+ await f.http.delete('/api/bot/v1/subscriptions/'+sub.id).set(auth(c.token))
+ await worker.flush()
+ expect((await get(f.db,'SELECT status FROM bot_deliveries WHERE notification_id=?',[later.id])).status).toBe('cancelled')
+})
+it('deduplicates Beijing-time reminders and cancels queued reminders after rescheduling',async()=>{
+ const f=await setup(),c=await credential(f)
+ await subscribe(f,c,'reminder.start',{lead_minutes:60})
+ const now=Date.parse('2026-10-25T11:30:00+08:00')
+ await run(f.db,'UPDATE events SET content=? WHERE id=1',[JSON.stringify({time:'2026-10-25T12:00'})])
+ const worker=createBotPlatform({store:f.context.sql.main,env:{},enabled:true,shutdown:new AbortController().signal,now:()=>now,report:()=>{}})
+ await worker.reminders();await worker.reminders()
+ expect((await get(f.db,"SELECT count(*) AS n FROM bot_notifications WHERE event_name='reminder.start'")).n).toBe(1)
+ await run(f.db,'UPDATE events SET content=? WHERE id=1',[JSON.stringify({time:'2026-10-26T12:00'})])
+ await worker.flush()
+ expect((await get(f.db,"SELECT status,last_error FROM bot_deliveries d JOIN bot_notifications n ON n.id=d.notification_id WHERE n.event_name='reminder.start'"))).toEqual({status:'cancelled',last_error:'BOT_STALE_REMINDER'})
+})

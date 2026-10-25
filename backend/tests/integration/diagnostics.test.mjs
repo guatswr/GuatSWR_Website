@@ -1,6 +1,16 @@
 import { expect, it } from 'vitest'
 import { fixture } from '../helpers/fixture.mjs'
 
+it('records versioned Bot route templates without logging raw identifiers or credentials', async () => {
+  const lines=[]
+  const instance=await fixture({env:{BOT_PLATFORM_ENABLED:'true'},logDestination:{write:text=>lines.push(JSON.parse(text))}})
+  const response=await instance.http.get('/api/bot/v1/events/123456?qq=55555555').set('Authorization','Bearer synthetic-private-bot-token')
+  expect(response.status).toBe(401)
+  const completed=lines.find(line=>line.event==='http.completed'&&line.requestId===response.headers['x-request-id'])
+  expect(completed.route).toBe('/api/bot/v1/events/:id')
+  expect(JSON.stringify(lines)).not.toMatch(/123456|55555555|synthetic-private-bot-token/)
+})
+
 it('HTTP correlation is generated server side and diagnostics exclude hostile headers/query/body', async () => {
   const lines = []
   const instance = await fixture({ logDestination: { write: text => lines.push(JSON.parse(text)) } })

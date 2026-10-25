@@ -29,6 +29,15 @@ const PUBLIC_LOG_DETAILS = new Map<string, string>([
   ['AUTO_BACKUP', '执行了自动备份'],
   ['AUTO_BACKUP_FAILED', '自动备份失败'],
   ['DELETE_EVENT_FILE_FAIL', '清理事件文件失败'],
+  ['BOT_CREDENTIAL_CREATE', '创建了机器人访问凭据'],
+  ['BOT_CREDENTIAL_REVOKE', '撤销了机器人访问凭据'],
+  ['BOT_IDENTITY_BIND', '绑定了机器人身份'],
+  ['BOT_IDENTITY_UNBIND', '解除了机器人身份绑定'],
+  ['BOT_REVIEW_EVENT', '通过机器人审核了活动'],
+  ['BOT_DELIVERY_RETRY', '重新提交了机器人通知'],
+  ['MEMBER_SYNC_APPLY', '同步了社群成员名册'],
+  ['MEMBER_SYNC_SETTINGS', '更新了成员同步设置'],
+  ['MEMBER_PROFILE_UPDATE', '更新了成员身份资料'],
 ])
 
 /** `site_config` keys that are already public through `/api/config`. */

@@ -15,6 +15,7 @@ export interface UpstreamRouteDefinition {
   maxResponseBytes?: number
   /** Only explicitly allowlisted upload routes accept a server-built form. */
   multipart?: boolean
+  paramFormats?:Readonly<Record<string,'uuid'>>
 }
 
 export type UpstreamRouteTable = Record<string, UpstreamRouteDefinition>
@@ -176,13 +177,14 @@ function isSafePathParam(value: unknown): value is string | number {
   return typeof value === 'string' && /^\d{1,15}$/.test(value) && Number.parseInt(value, 10) > 0
 }
 
-function buildPath(path: string, params: Record<string, string | number> | undefined): string {
+function buildPath(path: string, params: Record<string, string | number> | undefined,formats?:Readonly<Record<string,'uuid'>>): string {
   const supplied = params ?? {}
   const names = Object.keys(supplied)
   let used = 0
   const built = path.replace(PATH_TOKEN, (_match, name: string) => {
     const value = supplied[name]
-    if (!isSafePathParam(value)) throw new BffConfigError('Route parameter is missing or invalid')
+    const valid=formats?.[name]==='uuid' ? typeof value==='string' && /^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i.test(value) : isSafePathParam(value)
+    if (!valid) throw new BffConfigError('Route parameter is missing or invalid')
     used += 1
     return String(value)
   })
@@ -249,7 +251,7 @@ export function createFixedUpstreamClient<Routes extends UpstreamRouteTable, Rou
     async request(request) {
       const route = options.routes[request.route] as UpstreamRouteDefinition | undefined
       if (!route) throw new BffConfigError('Upstream route is not allowlisted')
-      const path = buildPath(route.path, request.params)
+      const path = buildPath(route.path, request.params,route.paramFormats)
       const url = upstreamUrl(origin, path) + buildQuery(route, request.query)
 
       let payload: string | FormData | undefined

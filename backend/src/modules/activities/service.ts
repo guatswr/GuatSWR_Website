@@ -7,6 +7,7 @@ import type { Actor } from '../actor.js'
 import type { ActivitiesRepository, ActivityText, ActivityAssets } from './repository.js'
 import { normalizeActivityImages } from './projection.js'
 import { publishAssets, type AssetPublication } from '../../storage/publication.js'
+import type { Enqueue } from '../../integrations/bot/platform.js'
 
 export function createActivitiesService(dependencies: {
   repository: ActivitiesRepository
@@ -20,6 +21,7 @@ export function createActivitiesService(dependencies: {
   audit(username: string, action: string, details: string): void
   reportAuditFailure(error: unknown): void
   notify(activity: { id: number; title: string; tag: string; date: string; description: string; cover_image: string }, actor: Actor): Promise<unknown>
+  enqueue?: Enqueue
 }) {
   const audit = (actor: Actor, action: string, details: string) => {
     try { dependencies.audit(actor.username, action, details) }
@@ -51,10 +53,14 @@ export function createActivitiesService(dependencies: {
       let assets: ActivityAssets
       try {
         assets = await publishAssets(dependencies.storage.publication, [input], () => move(String(id), input),
-          async (assets, tx) => { await dependencies.repository.saveAssets(id, assets, tx); return assets })
+          async (assets, tx) => {
+            await dependencies.repository.saveAssets(id, assets, tx)
+            if (dependencies.enqueue) await dependencies.enqueue('activity.published', { id,title:input.title,tag:input.tag,date:input.date,description:input.description || '',cover_image:assets.cover || '' },actor,tx)
+            return assets
+          })
       } catch (error) { await dependencies.repository.discardDraft(id).catch(dependencies.reportAuditFailure); throw error }
       audit(actor, 'CREATE_ACTIVITY', `发布活动: ${input.title}`)
-      void dependencies.notify({ id, title: input.title, tag: input.tag, date: input.date, description: input.description || '', cover_image: assets.cover || '' }, actor).catch(() => {})
+      if (!dependencies.enqueue) void dependencies.notify({ id, title: input.title, tag: input.tag, date: input.date, description: input.description || '', cover_image: assets.cover || '' }, actor).catch(() => {})
       return id
     },
     update: async (id: string, input: BackendV1Activity, actor: Actor) => {

@@ -9,7 +9,8 @@
     "./config": { "import": { "types": "./dist/config.d.ts", "default": "./dist/config.js" }, "require": { "types": "./dist/cjs/config.d.ts", "default": "./dist/cjs/config.js" } },
     "./event-labels": { "import": { "types": "./dist/event-labels.d.ts", "default": "./dist/event-labels.js" }, "require": { "types": "./dist/cjs/event-labels.d.ts", "default": "./dist/cjs/event-labels.js" } },
     "./admin-workflows": { "import": { "types": "./dist/admin-workflows.d.ts", "default": "./dist/admin-workflows.js" }, "require": { "types": "./dist/cjs/admin-workflows.d.ts", "default": "./dist/cjs/admin-workflows.js" } },
-    "./backend-v1": { "import": { "types": "./dist/backend-v1.d.ts", "default": "./dist/backend-v1.js" }, "require": { "types": "./dist/cjs/backend-v1.d.ts", "default": "./dist/cjs/backend-v1.js" } }
+    "./backend-v1": { "import": { "types": "./dist/backend-v1.d.ts", "default": "./dist/backend-v1.js" }, "require": { "types": "./dist/cjs/backend-v1.d.ts", "default": "./dist/cjs/backend-v1.js" } },
+    "./bot": { "import": { "types": "./dist/bot.d.ts", "default": "./dist/bot.js" }, "require": { "types": "./dist/cjs/bot.d.ts", "default": "./dist/cjs/bot.js" } }
   },
   "scripts": {
     "typecheck": "tsc --noEmit",

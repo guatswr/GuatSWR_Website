@@ -122,6 +122,14 @@ export function createAdminTransport(session: Session, fetchImpl: typeof fetch =
       }
     }
   return {
+    memberSync<T>(action:'settings'|'requests'|'job'|'apply'|'profile'|'profiles',method:Method,body:unknown,project:(value:unknown)=>T,id?:string|number,signal?:AbortSignal) {
+      const query=new URLSearchParams(id===undefined?{}:{id:String(id)})
+      if(action==='job' && body && typeof body==='object') {
+        if('page' in body)query.set('page',String(body.page))
+        if('search' in body && typeof body.search==='string' && body.search)query.set('search',body.search)
+      }
+      return execute(`/api/bff/admin/member-sync/${action}${query.size?'?'+query:''}`,method,body,project,signal)
+    },
     uploadEventAvatar(file: File, eventId: number, signal?: AbortSignal): Promise<string> {
       const path = adminRequestPath({ resource: 'events', id: eventId })
       if (!file.type.startsWith('image/') || file.size > 50 * 1024 * 1024) throw new Error('图片类型或大小无效')

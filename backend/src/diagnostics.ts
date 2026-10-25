@@ -12,6 +12,8 @@ const errors = new Set(['SQLITE_BUSY', 'SQLITE_LOCKED', 'SQLITE_ERROR', 'SQLITE_
   'BAN_EXPIRY',
   'asset_changed', 'asset_limit', 'asset_migration_required', 'ASSET_PUBLICATION_RECOVERY_REQUIRED',
   'BOT_CONFIGURATION', 'BOT_RESPONSE_LIMIT', 'BOT_HTTP_FAILURE', 'BOT_CANCELLED', 'BOT_TIMEOUT', 'BOT_REQUEST_FAILED',
+  'BOT_DELIVERY_FAILED',
+  'BOT_RECEIPT_TIMEOUT',
   'UMAMI_CONFIGURATION', 'UMAMI_CANCELLED', 'UMAMI_TIMEOUT', 'UMAMI_BUSY', 'UMAMI_RESPONSE_LIMIT', 'UMAMI_BAD_JSON', 'UMAMI_REQUEST_FAILED', 'UMAMI_LOGIN_FAILED', 'UMAMI_UPSTREAM_FAILURE',
   'BACKUP_CONFIGURATION', 'BACKUP_CANCELLED', 'BACKUP_TIMEOUT', 'BACKUP_OUTPUT_LIMIT', 'BACKUP_EXECUTION_FAILED', 'BACKUP_DISABLED', 'BACKUP_BUSY', 'BACKUP_FAILED', 'BACKUP_SETTINGS_FAILED',
   'BACKUP_FILENAME', 'BACKUP_VERIFICATION_INVALID', 'BACKUP_VERIFICATION_PROTECTED', 'BACKUP_LAST_VERIFIED',
@@ -32,7 +34,7 @@ export function createDiagnosticLogger(options: { destination?: DestinationStrea
     const record: Record<string, unknown> = { ...context.getStore(), event }
     if (fields.method && /^(GET|POST|PUT|PATCH|DELETE|HEAD|OPTIONS)$/.test(fields.method)) record.method = fields.method
     // Callers provide a matched route template, never a URL/query/identifier.
-    if (fields.route && fields.route.length <= 160 && /^\/[a-zA-Z/:_*-]*$/.test(fields.route)) record.route = fields.route
+    if (fields.route && fields.route.length <= 160 && /^\/[a-zA-Z/:_*-]*$/.test(fields.route.replace(/\/v[1-9]\d*(?=\/|$)/g, '/version'))) record.route = fields.route
     if (fields.status !== undefined && Number.isInteger(fields.status)) record.status = fields.status
     if (fields.durationMs !== undefined && Number.isFinite(fields.durationMs)) record.durationMs = Math.max(0, Math.round(fields.durationMs * 100) / 100)
     if (fields.port !== undefined && Number.isInteger(fields.port)) record.port = fields.port

@@ -56,9 +56,15 @@ it('selects existing local thumbnails, preserves original mode and falls back wh
 
 it('preserves staged-avatar moves, normalized tag JSON, school default and actual created ID', async () => {
   const f = await fixture()
+  const failures = []
+  const originalError = f.context.logger.error
+  f.context.logger.error = (event, fields) => {
+    if (fields?.error) failures.push({ event, code: fields.error.code, kind: fields.error.kind, message: fields.error.message })
+    originalError(event, fields)
+  }
   await f.fs.writeFile(path.join(f.context.PUBLIC_DIR, 'upload/member.png'), 'synthetic-member-image')
   const created = await save(f, { name: ' new member ', role: 'member', avatar: '/uploads/upload/member.png', tags: [' A ', 'A', '', ' B '], school: null })
-  expect(created.status).toBe(200)
+  expect(created.status, JSON.stringify({ body: created.body, failures })).toBe(200)
   expect(created.body.id).toEqual(expect.any(Number))
   expect(await get(f.db, 'SELECT name,avatar,tags,school,sort_order FROM members WHERE id=?', [created.body.id])).toEqual({ name: 'new member', avatar: '/uploads/img/user/member.png', tags: '["A","B"]', school: '', sort_order: 0 })
   expect(await f.fs.readFile(path.join(f.context.IMG_ROOT_DIR, 'user/member.png'), 'utf8')).toBe('synthetic-member-image')

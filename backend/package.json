@@ -12,6 +12,7 @@
     "test:integration": "npm run build && vitest run --configLoader native tests/integration",
     "test:contracts": "npm run build && vitest run --configLoader native tests/contracts",
     "test:bff": "npm run build && vitest run --configLoader native --config vitest.bff.config.mjs",
+    "test:ui": "npm run build && vitest run --configLoader native --config vitest.ui.config.mjs",
     "check:legacy": "node scripts/check-legacy-budget.cjs",
     "build": "npm run check:legacy && tsc -p tsconfig.build.json",
     "typecheck": "npm run check:legacy && tsc -p tsconfig.json --noEmit",
