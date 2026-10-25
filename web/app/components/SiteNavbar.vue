@@ -304,7 +304,7 @@ onBeforeUnmount(() => {
           <NuxtLink
             :prefetch="false"
             to="/join"
-            class="club-invitation club-nav-join ml-4 whitespace-nowrap"
+            class="club-invitation club-nav-join whitespace-nowrap"
             @click="closeMenus"
           >
             <span class="club-nav-join-seal-wrap" aria-hidden="true">
@@ -777,7 +777,8 @@ onBeforeUnmount(() => {
   opacity: 0;
 }
 .nav-divider {
-  margin-inline: 0.5rem;
+  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   width: 1px;
   height: 1.25rem;
   flex-shrink: 0;
@@ -785,11 +786,13 @@ onBeforeUnmount(() => {
   opacity: 0.2;
   transition:
     height var(--nav-duration) var(--nav-spring),
-    margin-inline var(--nav-duration) var(--nav-spring);
+    margin-left var(--nav-duration) var(--nav-spring),
+    margin-right var(--nav-duration) var(--nav-spring);
 }
 .club-navbar[data-compact='true'] .nav-divider {
   height: 1rem;
-  margin-inline: 0.65rem;
+  margin-left: -0.15rem;
+  margin-right: 0.45rem;
 }
 .nav-icon {
   @apply inline-flex h-11 w-10 shrink-0 items-center justify-center transition-colors;
@@ -798,10 +801,12 @@ onBeforeUnmount(() => {
   transition:
     color 220ms ease,
     opacity 220ms ease,
-    height var(--nav-duration) var(--nav-spring);
+    height var(--nav-duration) var(--nav-spring),
+    width var(--nav-duration) var(--nav-spring);
 }
 .club-navbar[data-compact='true'] .nav-icon {
   height: 2.125rem;
+  width: 2.25rem;
 }
 .nav-icon:hover {
   color: var(--nav-accent);
@@ -837,6 +842,7 @@ onBeforeUnmount(() => {
   gap: 0;
   min-height: 2.75rem;
   height: 2.75rem;
+  margin-left: 1rem;
   transition:
     min-height var(--nav-duration) var(--nav-spring),
     height var(--nav-duration) var(--nav-spring),
@@ -845,10 +851,10 @@ onBeforeUnmount(() => {
     border-color 250ms ease;
 }
 .club-navbar[data-compact='true'] .club-nav-join {
-  min-height: 2rem;
-  height: 2rem;
-  padding: 0 0.85rem;
-  margin-left: 1.25rem;
+  min-height: 2.125rem;
+  height: 2.125rem;
+  padding: 0 0.15rem;
+  margin-left: 0.45rem;
 }
 .club-nav-join-seal-wrap {
   display: inline-flex;
@@ -880,6 +886,12 @@ onBeforeUnmount(() => {
 }
 .club-nav-join :deep(.club-invitation-arrow) {
   margin-left: 0.75rem;
+  transition:
+    transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
+    margin-left var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .club-nav-join :deep(.club-invitation-arrow) {
+  margin-left: 0.5rem;
 }
 .club-nav-join-mobile {
   transition: border-color 250ms ease;
