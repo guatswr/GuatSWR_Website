@@ -17,6 +17,9 @@ export const ADMIN_UPSTREAM_ROUTES = {
   'activity.update': { method: 'PUT', path: '/api/activities/:id', maxRequestBytes: 4 * 1024 * 1024 },
   'activity.delete': { method: 'DELETE', path: '/api/activities/:id' },
   'activity.restore': { method: 'POST', path: '/api/activities/:id/restore' },
+  'activity.revisions': { method: 'GET', path: '/api/activities/:id/revisions', query: ['page','limit'] },
+  'activity.revision': { method: 'GET', path: '/api/activities/:id/revisions/:revisionId' },
+  'activity.revert': { method: 'POST', path: '/api/activities/:id/revisions/:revisionId/restore' },
 
   'member.list': { method: 'GET', path: '/api/members', query: ['includeDeleted', 'original', 'school'] },
   'member.create': { method: 'POST', path: '/api/members', maxRequestBytes: 64 * 1024 },

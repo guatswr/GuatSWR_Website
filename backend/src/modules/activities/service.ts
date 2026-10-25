@@ -8,6 +8,7 @@ import type { ActivitiesRepository, ActivityText, ActivityAssets } from './repos
 import { normalizeActivityImages } from './projection.js'
 import { publishAssets, type AssetPublication } from '../../storage/publication.js'
 import type { Enqueue } from '../../integrations/bot/platform.js'
+import type { ActivityRevisions } from './revisions.js'
 
 export function createActivitiesService(dependencies: {
   repository: ActivitiesRepository
@@ -22,6 +23,7 @@ export function createActivitiesService(dependencies: {
   reportAuditFailure(error: unknown): void
   notify(activity: { id: number; title: string; tag: string; date: string; description: string; cover_image: string }, actor: Actor): Promise<unknown>
   enqueue?: Enqueue
+  revisions?: ActivityRevisions
 }) {
   const audit = (actor: Actor, action: string, details: string) => {
     try { dependencies.audit(actor.username, action, details) }
@@ -47,14 +49,18 @@ export function createActivitiesService(dependencies: {
       if (!row || (row.deleted_at && actor?.role !== 'super_admin') || (row.status === 'draft' && !actor)) throw new AppError('Not Found', 'not_found', 404)
       return { ...row, images: normalizeActivityImages(row.images), created_by: row.created_by_name, updated_by: row.updated_by_name }
     },
-    draft: (actor: Actor) => dependencies.repository.draft(new Date().toISOString().slice(0, 10), actor.id),
+    draft: (actor: Actor) => dependencies.revisions ? dependencies.revisions.transaction(async tx=>{
+      const id=await dependencies.repository.draft(new Date().toISOString().slice(0,10),actor.id,tx)
+      await dependencies.revisions!.record(tx,id,actor,'create');return id
+    }) : dependencies.repository.draft(new Date().toISOString().slice(0, 10), actor.id),
     create: async (input: BackendV1Activity, actor: Actor) => {
       const id = await dependencies.repository.create(input, actor.id)
       let assets: ActivityAssets
       try {
         assets = await publishAssets(dependencies.storage.publication, [input], () => move(String(id), input),
           async (assets, tx) => {
-            await dependencies.repository.saveAssets(id, assets, tx)
+            if (dependencies.revisions) await dependencies.revisions.mutate(id,actor,'create',executor=>dependencies.repository.saveAssets(id,assets,executor),tx)
+            else await dependencies.repository.saveAssets(id, assets, tx)
             if (dependencies.enqueue) await dependencies.enqueue('activity.published', { id,title:input.title,tag:input.tag,date:input.date,description:input.description || '',cover_image:assets.cover || '' },actor,tx)
             return assets
           })
@@ -66,7 +72,7 @@ export function createActivitiesService(dependencies: {
     update: async (id: string, input: BackendV1Activity, actor: Actor) => {
       if (!positiveId(id)) throw new AppError('Invalid activity id', 'invalid_activity_id', 400)
       await publishAssets(dependencies.storage.publication, [input], () => move(id, input),
-        (assets, tx) => dependencies.repository.update(id, input, assets, actor.id, tx))
+        (assets, tx) => dependencies.revisions ? dependencies.revisions.mutate(Number(id),actor,'update',executor=>dependencies.repository.update(id,input,assets,actor.id,executor),tx) : dependencies.repository.update(id, input, assets, actor.id, tx))
       audit(actor, 'UPDATE_ACTIVITY', `更新活动: ${input.title}`)
     },
     remove: async (id: string, actor: Actor) => {

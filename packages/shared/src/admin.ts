@@ -189,6 +189,22 @@ export const adminActivityRowSchema = z.object({
 })
 
 export type AdminActivity = z.infer<typeof adminActivityRowSchema>
+export const activityRevisionRestoreSchema = z.object({ base_revision: z.number().int().positive() }).strict()
+const revisionFields = ['title','tag','date','description','content','cover_image','images'] as const
+export const activityRevisionSummarySchema = z.object({
+  id:z.number().int().positive(),activity_id:z.number().int().positive(),version:z.number().int().positive(),
+  action:z.enum(['baseline','create','update','restore']),actor_name:z.string(),created_at:z.number().int(),restored_from:z.number().int().positive().nullable(),
+  title:z.string().nullable(),source_status:z.string().nullable(),
+  changed_fields:z.preprocess(value=>{if(typeof value!=='string')return value;try{return JSON.parse(value)}catch{return []}},z.array(z.enum(revisionFields))),
+})
+export const activityRevisionListSchema = z.object({page:z.number().int().positive(),limit:z.number().int().positive(),total:z.number().int().nonnegative(),current_revision:z.number().int().nonnegative(),items:z.array(activityRevisionSummarySchema)})
+export const activityRevisionDetailSchema = activityRevisionSummarySchema.extend({tag:z.string().nullable(),date:z.string().nullable(),description:z.string().nullable(),content:z.string().nullable(),cover_image:z.string().nullable(),images:imagesSchema})
+export const activityRevisionRestoreResultSchema = z.object({revision_id:z.number().int().positive(),restored:z.boolean()})
+export const publishedRevisionLogSchema = z.object({
+  available:z.boolean(),page:z.number().int().positive(),limit:z.number().int().positive(),total:z.number().int().nonnegative(),
+  items:z.array(z.object({sequence:z.number().int().positive(),action:z.enum(['baseline','create','update','restore']),actor_name:z.string(),created_at:z.number().int(),changed_fields:z.preprocess(value=>{if(typeof value!=='string')return value;try{return JSON.parse(value)}catch{return []}},z.array(z.enum(revisionFields)))})).max(100),
+})
+export type PublishedRevisionLog = z.infer<typeof publishedRevisionLogSchema>
 
 export const adminMemberRowSchema = z.object({
   id: z.number().int().positive(),

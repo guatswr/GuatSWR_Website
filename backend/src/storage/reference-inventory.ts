@@ -17,12 +17,14 @@ export function localAssetPath(root: string, url: string): string | undefined {
 // One SELECT sees a consistent database snapshot, including soft-deleted rows which
 // may still be restored. Keep this list in sync when adding an asset-bearing column.
 export async function assetReferences(db: SqlExecutor, root: string) {
+  const revisions = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='activity_revisions'")
   const rows = await db.all<{ value: unknown }>(`
     SELECT avatar AS value FROM users UNION ALL SELECT avatar FROM members
     UNION ALL SELECT image FROM history UNION ALL SELECT cover_image FROM activities
     UNION ALL SELECT images FROM activities UNION ALL SELECT content FROM activities
     UNION ALL SELECT description FROM activities UNION ALL SELECT content FROM events
     UNION ALL SELECT avatar FROM event_participants UNION ALL SELECT value FROM site_config
+    ${revisions ? 'UNION ALL SELECT cover_image FROM activity_revisions UNION ALL SELECT images FROM activity_revisions UNION ALL SELECT content FROM activity_revisions UNION ALL SELECT description FROM activity_revisions' : ''}
   `)
   return referencesFromValues(rows.map(row => row.value), root)
 }

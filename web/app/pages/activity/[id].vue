@@ -10,6 +10,7 @@
  * - 纯粹的 SSR 状态码契约（404 / 502）与无 JS 优雅降级契约
  */
 import type { ActivityContentResponse } from '#shared/content'
+import type { PublishedRevisionLog } from '@guatswr/shared'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import { DEFAULT_DESCRIPTION } from '~/utils/public-seo'
@@ -76,14 +77,36 @@ const openLightbox = (src: string): void => {
   lightboxOpen.value = true
 }
 
-/** 类似维基百科：查看更改记录/修订历史弹窗状态 */
-const historyOpen = ref(false)
-const openHistory = (): void => {
+/** Published change summaries are public; full snapshots stay in the admin area. */
+const historyOpen = ref(false), historyPage = ref(1)
+const historyDialog = ref<HTMLDialogElement | null>(null)
+const { data: revisionLog, status: historyStatus, error: historyError, refresh: refreshHistory, clear: clearHistory } = await useFetch<PublishedRevisionLog>(
+  () => `/api/content/activity/${activityId.value}/revisions`,
+  { key: () => `activity-revision-log-${activityId.value}`, query: { page: historyPage }, immediate: false, server: false, watch: false },
+)
+const historyAdminPath = computed(() => `/admin/activities?history=${activityId.value}`)
+const revisionActions: Record<string, string> = { baseline: '启用时基线', create: '发布文章', update: '保存发布', restore: '恢复历史内容' }
+const revisionFieldLabels: Record<string, string> = { title: '标题', tag: '标签', date: '日期', description: '摘要', content: '正文', cover_image: '封面', images: '相册' }
+const revisionTime = (value: number) => new Date(value).toLocaleString('zh-CN', { timeZone: 'Asia/Shanghai' })
+const revisionAction = (value: string) => revisionActions[value] || '内容更新'
+const revisionChanges = (fields: readonly string[]) => fields.map(field => revisionFieldLabels[field] || field).join('、')
+const openHistory = async (): Promise<void> => {
+  historyPage.value = 1
   historyOpen.value = true
+  await nextTick()
+  if (historyDialog.value && !historyDialog.value.open) historyDialog.value.showModal()
+  await refreshHistory()
 }
 const closeHistory = (): void => {
+  if (historyDialog.value?.open) historyDialog.value.close()
   historyOpen.value = false
+  clearHistory()
 }
+async function changeHistoryPage(offset: number) {
+  historyPage.value += offset
+  await refreshHistory()
+}
+onBeforeUnmount(closeHistory)
 
 /** Archived `router.back()`, with an ordinary-link fallback when there is no history. */
 const goBack = (event: MouseEvent): void => {
@@ -443,22 +466,22 @@ useHead({
                   >同好校订</span>
                 </span>
                 <span class="memory-meta-sub">
-                  {{ activity.updated_by ? '文章内容已完成最新校对' : '初稿保持中' }}
+                  {{ activity.updated_by ? '当前保存内容的编辑者' : '未单独登记编辑者' }}
                 </span>
               </div>
             </div>
 
-            <!-- 3. 类似维基百科的查看更改记录按钮（指向功能正在开放中） -->
+            <!-- Published revision log; no private snapshots are loaded on the public page. -->
             <div class="memory-meta-actions">
               <button
                 type="button"
                 class="memory-history-btn"
-                title="查看本篇文章的历史修订记录（功能正在开放中）"
+                title="查看本篇文章已发布内容的修订摘要"
                 @click="openHistory"
               >
                 <ClubIcon name="book" class="h-3.5 w-3.5 text-sky-600 dark:text-sky-400" />
                 <span>查看更改记录</span>
-                <span class="memory-history-btn-badge" aria-hidden="true">开放中</span>
+                <span class="memory-history-btn-badge" aria-hidden="true">LOG</span>
               </button>
             </div>
           </div>
@@ -655,101 +678,40 @@ useHead({
       alt="活动配图预览"
     />
 
-    <!-- 维基百科风格：文章更改记录与修订历史弹窗（指向功能正在开放中） -->
+    <!-- Native top-layer dialog keeps focus and keyboard dismissal within the log. -->
     <Teleport to="body">
-      <div
-        v-if="historyOpen"
-        class="memory-stage memory-history-overlay"
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="history-modal-title"
-        @click.self="closeHistory"
-        @keydown.esc="closeHistory"
-      >
+      <dialog v-if="historyOpen" ref="historyDialog" class="memory-stage memory-history-overlay" aria-labelledby="history-modal-title" @click.self="closeHistory" @cancel.prevent="closeHistory">
         <div class="memory-history-panel">
           <div class="memory-history-header">
             <div class="flex items-center gap-2.5">
-              <span class="memory-history-tag font-mono" aria-hidden="true">DIFF</span>
-              <div>
-                <h3 id="history-modal-title" class="memory-history-title">
-                  文章修订记录 · 功能正在开放中
-                </h3>
-                <p class="memory-history-subtitle">
-                  《{{ activity?.title }}》的历史版本比对与编辑日志
-                </p>
-              </div>
+              <span class="memory-history-tag font-mono" aria-hidden="true">LOG</span>
+              <div><h3 id="history-modal-title" class="memory-history-title">文章修订记录</h3><p class="memory-history-subtitle">《{{ activity?.title }}》已发布内容的更改日志</p></div>
             </div>
-            <button
-              type="button"
-              class="memory-history-close-btn"
-              aria-label="关闭更改记录"
-              @click="closeHistory"
-            >
-              &times;
-            </button>
+            <button type="button" class="memory-history-close-btn" aria-label="关闭更改记录" @click="closeHistory">&times;</button>
           </div>
-
           <div class="memory-history-body">
-            <!-- 核心提示：功能正在开放中 -->
-            <div class="memory-history-dev-banner">
-              <div class="memory-history-dev-badge" aria-hidden="true">
-                <ClubIcon name="sparkles" class="h-5 w-5 text-sky-600 dark:text-sky-300" />
+            <p v-if="historyStatus === 'pending'" class="memory-history-state" role="status">正在读取更改记录…</p>
+            <div v-else-if="historyError" class="memory-history-state" role="alert"><p>暂时无法读取修订记录，请稍后重试。</p><button type="button" class="memory-history-confirm-btn" @click="refreshHistory()">重新读取记录</button></div>
+            <template v-else>
+              <div class="memory-history-dev-banner">
+                <div class="memory-history-dev-texts"><h4 class="memory-history-dev-title">{{ revisionLog?.available ? `已收录 ${revisionLog.total} 条发布记录` : '该文章尚未启用修订归档' }}</h4><p class="memory-history-dev-desc">这里仅显示已发布修订的摘要。基线记录表示功能启用时的快照，无法重建更早的编辑过程。历史全文、草稿和恢复操作仅供管理员使用。</p></div>
               </div>
-              <div class="memory-history-dev-texts">
-                <h4 class="memory-history-dev-title">
-                  更改记录系统正在开放中
-                </h4>
-                <p class="memory-history-dev-desc">
-                  维基式多版本对比（Diff）、编辑快照与详细修改日志功能正在后端联调中，敬请期待！
-                </p>
-              </div>
-            </div>
-
-            <!-- 当前文章已收录的基础档案归档信息 -->
+              <ol v-if="revisionLog?.items.length" class="memory-revision-list" aria-label="已发布修订摘要">
+                <li v-for="item in revisionLog.items" :key="item.sequence" class="memory-revision-entry">
+                  <div class="memory-revision-heading"><strong>发布记录 {{ item.sequence }} · {{ revisionAction(item.action) }}</strong><time :datetime="new Date(item.created_at).toISOString()">{{ revisionTime(item.created_at) }}</time></div>
+                  <p>记录者：{{ item.actor_name }}</p><p v-if="item.action === 'baseline'">当前内容基线，不代表文章首次编辑时间。</p><p v-else>变更范围：{{ revisionChanges(item.changed_fields) || '发布状态或初始内容' }}</p>
+                </li>
+              </ol>
+              <p v-else-if="revisionLog?.available" class="memory-history-state">暂无已发布修订记录。文章保存发布后会自动记录。</p>
+              <nav v-if="revisionLog && revisionLog.total > revisionLog.limit" class="memory-history-pagination" aria-label="修订摘要分页"><button type="button" class="memory-history-confirm-btn" :disabled="historyPage <= 1" @click="changeHistoryPage(-1)">上一页</button><span>{{ historyPage }} / {{ Math.ceil(revisionLog.total / revisionLog.limit) }}</span><button type="button" class="memory-history-confirm-btn" :disabled="historyPage * revisionLog.limit >= revisionLog.total" @click="changeHistoryPage(1)">下一页</button></nav>
+            </template>
             <div class="memory-history-summary-box">
-              <h5 class="memory-history-summary-title">
-                当前文章基础档案存根
-              </h5>
-              <ul class="memory-history-summary-list">
-                <li class="memory-history-summary-item">
-                  <span class="memory-summary-label">记录初创：</span>
-                  <span class="memory-summary-value">{{ activity?.created_by || '桂航同好' }}</span>
-                  <span v-if="activity?.created_at" class="memory-summary-time">（{{ activity.created_at }}）</span>
-                </li>
-                <li class="memory-history-summary-item">
-                  <span class="memory-summary-label">最近校订：</span>
-                  <span class="memory-summary-value">
-                    {{ activity?.updated_by || activity?.created_by || '桂航同好' }}
-                    <span
-                      v-if="activity?.updated_by && activity.updated_by === activity.created_by"
-                      class="memory-summary-badge"
-                    >原作者</span>
-                  </span>
-                  <span class="memory-summary-time">（已完成正文与配图最新校对）</span>
-                </li>
-                <li v-if="activity?.date" class="memory-history-summary-item">
-                  <span class="memory-summary-label">活动时点：</span>
-                  <span class="memory-summary-value">{{ formatArchiveDate(activity.date) }}</span>
-                  <span class="memory-summary-time">（线下聚会开展日）</span>
-                </li>
-              </ul>
+              <h5 class="memory-history-summary-title">当前文章档案</h5><ul class="memory-history-summary-list"><li class="memory-history-summary-item"><span class="memory-summary-label">创建登记：</span><span class="memory-summary-value">{{ activity?.created_by || '桂航同好' }}</span><span v-if="activity?.created_at" class="memory-summary-time">（{{ activity.created_at }}）</span></li><li class="memory-history-summary-item"><span class="memory-summary-label">最近编辑登记：</span><span class="memory-summary-value">{{ activity?.updated_by || activity?.created_by || '桂航同好' }}</span></li><li v-if="activity?.date" class="memory-history-summary-item"><span class="memory-summary-label">活动日期：</span><span class="memory-summary-value">{{ formatArchiveDate(activity.date) }}</span></li></ul>
             </div>
           </div>
-
-          <div class="memory-history-footer">
-            <span class="memory-history-notice">
-              注：多版本历史记录功能上线后，将在此支持版本差异对比与回溯。
-            </span>
-            <button
-              type="button"
-              class="memory-history-confirm-btn"
-              @click="closeHistory"
-            >
-              我知道了
-            </button>
-          </div>
+          <div class="memory-history-footer"><span class="memory-history-notice">访客可查看发布摘要；管理员可进入后台对比全文与恢复。</span><div class="memory-history-footer-actions"><NuxtLink class="memory-history-confirm-btn" :to="historyAdminPath" @click="closeHistory">管理员查看完整历史</NuxtLink><button type="button" class="memory-history-confirm-btn" @click="closeHistory">关闭记录</button></div></div>
         </div>
-      </div>
+      </dialog>
     </Teleport>
 
     <!-- 右下角阅读辅助浮动罗盘 (Floating Reading Dock) -->
@@ -2215,6 +2177,12 @@ useHead({
 
   position: fixed;
   inset: 0;
+  width: 100%;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  border: 0;
   z-index: 100;
   display: flex;
   align-items: center;
@@ -2242,8 +2210,8 @@ useHead({
 .memory-history-panel {
   position: relative;
   width: 100%;
-  max-width: 36rem;
-  max-height: 85vh;
+  max-width: 48rem;
+  max-height: 90dvh;
   display: flex;
   flex-direction: column;
   background-color: #ffffff;
@@ -2608,6 +2576,18 @@ useHead({
     transition: none !important;
   }
 }
+/* Live published revision summaries. */
+.memory-history-overlay::backdrop { background: transparent; }
+.memory-history-state { padding: 1rem 0; color: var(--act-body); }
+.memory-revision-list { display: grid; gap: 0.75rem; list-style: none; padding: 0; margin: 0 0 1.25rem; }
+.memory-history-confirm-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.memory-revision-entry { padding: 1rem; border: 1px solid var(--act-border); border-radius: 3px; background: var(--act-subtle-bg); overflow-wrap: anywhere; }
+.memory-revision-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+.memory-revision-heading time { font-size: 0.75rem; color: var(--act-muted); }
+.memory-revision-entry p { margin-top: 0.4rem; font-size: 0.8125rem; color: var(--act-body); }
+.memory-history-pagination,.memory-history-footer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.memory-history-pagination { justify-content: space-between; margin-bottom: 1.25rem; }
+@media (max-width: 600px) { .memory-history-footer { flex-wrap: wrap; } .memory-history-footer-actions { width: 100%; } }
 </style>
 
 <style>
@@ -2621,4 +2601,17 @@ body.activity-detail-bg #__nuxt > div,
 body.activity-detail-bg main {
   background: transparent !important;
 }
+/* Live published revision summaries. */
+.memory-history-overlay::backdrop { background: transparent; }
+.memory-history-state { padding: 1rem 0; color: var(--act-body); }
+.memory-revision-list { display: grid; gap: 0.75rem; list-style: none; padding: 0; margin: 0 0 1.25rem; }
+.memory-history-confirm-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.memory-revision-entry { padding: 1rem; border: 1px solid var(--act-border); border-radius: 3px; background: var(--act-subtle-bg); overflow-wrap: anywhere; }
+.memory-revision-heading { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0.5rem; }
+.memory-revision-heading time { font-size: 0.75rem; color: var(--act-muted); }
+.memory-revision-entry p { margin-top: 0.4rem; font-size: 0.8125rem; color: var(--act-body); }
+.memory-history-pagination,.memory-history-footer-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.6rem; }
+.memory-history-pagination { justify-content: space-between; margin-bottom: 1.25rem; }
+@media (max-width: 600px) { .memory-history-footer { flex-wrap: wrap; } .memory-history-footer-actions { width: 100%; } }
 </style>
+

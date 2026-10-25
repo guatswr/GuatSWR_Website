@@ -21,8 +21,8 @@ export function createActivitiesRepository(db: SqlExecutor) {
     detail: (id: string) => db.get<ActivityDetail>(`SELECT a.*, u1.username as created_by_name, u1.avatar as created_by_avatar,
       u2.username as updated_by_name, u2.avatar as updated_by_avatar FROM activities a
       LEFT JOIN users u1 ON a.created_by = u1.id LEFT JOIN users u2 ON a.updated_by = u2.id WHERE a.id = ?`, [id]),
-    draft: async (date: string, actorId: number) => {
-      const result = await db.run('INSERT INTO activities (title, tag, date, description, content, cover_image, images, created_by, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+    draft: async (date: string, actorId: number, executor:SqlExecutor=db) => {
+      const result = await executor.run('INSERT INTO activities (title, tag, date, description, content, cover_image, images, created_by, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
         ['(草稿)', '', date, '', '', '', '[]', actorId, 'draft'])
       return result.lastID
     },

@@ -20,6 +20,8 @@ export function useAdminApi() {
       transport.command(name, body, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     removeBan: (ip: string) => transport.removeBan(ip, lifetime.signal),
     deleteBackup: (file: string) => transport.deleteBackup(file, lifetime.signal),
+    articleRevisions:<T>(method:'GET'|'POST',input:{id:number;page?:number;revision?:number;base_revision?:number},project:(value:unknown)=>T,signal?:AbortSignal)=>
+      transport.articleRevisions(method,input,project,signal?AbortSignal.any([signal,lifetime.signal]):lifetime.signal),
     botDeliveries: <T>(method:'GET'|'POST', body:{page?:number;id?:string}, project:(value:unknown)=>T, signal?:AbortSignal) =>
       transport.botDeliveries(method,body,project,signal?AbortSignal.any([signal,lifetime.signal]):lifetime.signal),
     botCredentials: <T>(method: 'GET' | 'POST' | 'DELETE' | 'REVEAL', body: unknown, project: (value: unknown) => T, id?: string, signal?: AbortSignal) =>

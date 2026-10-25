@@ -122,6 +122,10 @@ export function createAdminTransport(session: Session, fetchImpl: typeof fetch =
       }
     }
   return {
+    articleRevisions<T>(method:'GET'|'POST', input:{id:number;page?:number;revision?:number;base_revision?:number},project:(value:unknown)=>T,signal?:AbortSignal) {
+      const query=new URLSearchParams({id:String(input.id),...(input.revision?{revision:String(input.revision)}:{page:String(input.page||1)})})
+      return execute(`/api/bff/admin/article-revisions?${query}`,method,method==='POST'?{base_revision:input.base_revision}:undefined,project,signal)
+    },
     botDeliveries<T>(method: 'GET' | 'POST', body: { page?: number; id?: string }, project: (value: unknown) => T, signal?: AbortSignal) {
       const query = method === 'GET' ? new URLSearchParams({page:String(body.page || 1),limit:'20'}) : new URLSearchParams({id:body.id || ''})
       return execute(`/api/bff/admin/bot-deliveries?${query}`,method,{},project,signal)

@@ -31,6 +31,10 @@ function frozenRoutes() {
     for(const route of source.matchAll(/router\.(get|post|put|delete)\(['"]([^'"]+)['"]/g))
       routes.push({method:route[1]!.toUpperCase(),path:`/api/bot${route[2]}`})
   }
+  const activities=readFileSync(new URL('routes/activities.js',root),'utf8')
+  expect(activities).toMatch(/router\.use\(require\(path\.join\(compiled,'revision-api'\)\)\.createActivityRevisionApi\(/)
+  const revisions=readFileSync(new URL('modules/activities/revision-api.ts',root),'utf8')
+  for(const route of revisions.matchAll(/router\.(get|post)\(['"]([^'"]+)['"]/g))routes.push({method:route[1]!.toUpperCase(),path:`/api/activities${route[2]}`})
   return routes
 }
 const routes = frozenRoutes()

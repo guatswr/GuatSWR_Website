@@ -151,7 +151,9 @@ export default defineNuxtConfig({
   nitro: {
     preset: 'node-server',
     compressPublicAssets: true,
-    externals: { inline: ['pinia'] },
+    // Keep the Markdown HTML-parser dependency chain together. Standalone
+    // tracing can otherwise lose nested conditional-export links on Windows.
+    externals: { inline: ['pinia', 'rehype-raw', 'hast-util-raw', 'parse5', 'entities'] },
   },
   app: {
     head: {

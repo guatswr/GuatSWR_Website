@@ -1,0 +1,57 @@
+import { it,expect } from 'vitest'
+import { chromium } from '@playwright/test'
+import path from 'node:path'
+import { fixture,token,get } from '../helpers/fixture.mjs'
+import { startNuxt } from '../helpers/nuxt-server.mjs'
+it('reviews versions, cancels or confirms restore and protects unsaved editor content in the real UI',async()=>{
+ const f=await fixture(),headers={Authorization:`Bearer ${token()}`}
+ const original={title:'UI original article',tag:'STG',date:'2026-10-26',content:'First stable article body',images:[]}
+ await f.http.put('/api/activities/1').set(headers).send(original)
+ await f.http.put('/api/activities/1').set(headers).send({...original,title:'UI latest article',content:'Later article body'})
+ const {origin}=await startNuxt(f),browser=await chromium.launch({headless:true})
+ try{
+  const page=await browser.newPage({viewport:{width:1440,height:1000}})
+  await page.goto(origin+'/login');await page.getByLabel('Username').fill('owner');await page.getByLabel('Password',{exact:true}).fill('fixture-password')
+  await page.getByRole('button',{name:'登录系统',exact:true}).click();await page.getByRole('button',{name:'进入管理端',exact:true}).click();await page.waitForURL(origin+'/admin')
+  await page.goto(origin+'/admin/activities')
+  await page.getByTestId('admin-article-card').filter({hasText:'UI latest article'}).getByRole('button',{name:'修订记录',exact:true}).click()
+  const dialog=page.getByRole('dialog',{name:'文章修订记录',exact:true})
+  await dialog.getByRole('button',{name:/版本 2/}).click()
+  await dialog.getByText(original.content,{exact:true}).waitFor({state:'visible'})
+  await page.setViewportSize({width:390,height:844})
+  expect(await dialog.evaluate(el=>el.getBoundingClientRect().width<=innerWidth && getComputedStyle(el).backgroundColor!=='rgba(0, 0, 0, 0)')).toBe(true)
+  await page.screenshot({path:path.resolve('../article-revisions-mobile.png')})
+  await page.setViewportSize({width:1440,height:1000})
+  await dialog.getByRole('button',{name:'恢复此版本',exact:true}).click();await dialog.getByRole('button',{name:'取消恢复',exact:true}).click()
+  expect((await get(f.db,'SELECT title FROM activities WHERE id=1')).title).toBe('UI latest article')
+  await f.http.put('/api/activities/1').set(headers).send({...original,title:'Concurrent edit',content:'Concurrent content'})
+  await dialog.getByRole('button',{name:'恢复此版本',exact:true}).click();await dialog.getByRole('button',{name:'确认恢复此版本',exact:true}).click()
+  await dialog.getByText('文章已有新修订或状态已改变。已刷新，请重新核对后确认。',{exact:true}).waitFor({state:'visible'})
+  expect((await get(f.db,'SELECT title FROM activities WHERE id=1')).title).toBe('Concurrent edit')
+  await dialog.getByRole('button',{name:'恢复此版本',exact:true}).click();await dialog.getByRole('button',{name:'确认恢复此版本',exact:true}).click()
+  await dialog.getByText('已恢复为新修订，历史记录已保留',{exact:true}).waitFor({state:'visible'})
+  expect((await get(f.db,'SELECT title FROM activities WHERE id=1')).title).toBe(original.title)
+  await dialog.getByRole('button',{name:'关闭修订记录',exact:true}).click()
+  await page.getByTestId('admin-article-card').filter({hasText:original.title}).getByRole('button',{name:'编辑',exact:true}).click()
+  await page.getByRole('textbox',{name:'标题',exact:true}).fill('Unsaved editor title')
+  await page.getByRole('button',{name:'修订记录',exact:true}).click();await dialog.getByRole('button',{name:/版本 3/}).click()
+  expect(await dialog.getByRole('button',{name:'恢复此版本',exact:true}).isDisabled()).toBe(true)
+  await dialog.getByRole('button',{name:'关闭修订记录',exact:true}).click()
+  expect(await page.getByRole('textbox',{name:'标题',exact:true}).inputValue()).toBe('Unsaved editor title')
+  await page.getByRole('button',{name:'返回列表',exact:true}).click();await page.getByRole('button',{name:'放弃修改',exact:true}).click()
+  await page.goto(origin+'/activity/1');await page.getByText(original.content,{exact:true}).waitFor({state:'visible'})
+  expect(await page.getByRole('button',{name:'修订记录',exact:true}).count()).toBe(0)
+  await page.getByRole('button',{name:/查看更改记录/}).click()
+  const publicDialog=page.getByRole('dialog',{name:'文章修订记录',exact:true})
+  await publicDialog.getByText('已收录 5 条发布记录',{exact:true}).waitFor({state:'visible'})
+  await publicDialog.getByText('发布记录 5 · 恢复历史内容',{exact:true}).waitFor({state:'visible'})
+  await publicDialog.getByText('发布记录 1 · 启用时基线',{exact:true}).waitFor({state:'visible'})
+  expect(await publicDialog.textContent()).not.toMatch(/Later article body|Concurrent content/)
+  await page.setViewportSize({width:390,height:844})
+  expect(await publicDialog.evaluate(el=>el.getBoundingClientRect().width<=innerWidth)).toBe(true)
+  await page.setViewportSize({width:1440,height:1000})
+  await publicDialog.getByRole('link',{name:'管理员查看完整历史',exact:true}).click()
+  await page.waitForURL(origin+'/admin/activities?history=1')
+  await dialog.getByText('文章 #1 · 共 5 个版本。基线仅代表功能启用时保存的内容。',{exact:true}).waitFor({state:'visible'})
+ }finally{await browser.close()}
+})
