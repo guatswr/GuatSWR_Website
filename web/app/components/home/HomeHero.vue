@@ -42,7 +42,7 @@ defineProps({
       aria-hidden="true"
     />
     <div
-      class="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-slate-950/70 to-transparent"
+      class="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-slate-950/35 to-transparent"
       aria-hidden="true"
     />
 

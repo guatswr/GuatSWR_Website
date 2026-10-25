@@ -12,8 +12,10 @@ const isMenuOpen = ref(false)
 const isActivitiesOpen = ref(false)
 const isMobileActivitiesOpen = ref(false)
 const isScrolled = ref(false)
+const isPastFirstScreen = ref(false)
 const readingProgress = ref(0)
-const isImmersive = computed(() => route.path === '/' && !isScrolled.value && !isMenuOpen.value)
+const isCompact = computed(() => isScrolled.value && !isMenuOpen.value)
+const isImmersive = computed(() => route.path === '/' && !isPastFirstScreen.value && !isMenuOpen.value)
 let desktopQuery: MediaQueryList | undefined
 
 const { themeMode, isDark, toggleTheme } = useTheme()
@@ -69,11 +71,32 @@ let scrollFrame: number | null = null
 function updateScrollState() {
   scrollFrame = null
   const scrollY = window.scrollY
-  const threshold = route.path === '/' ? Math.max(64, window.innerHeight * 0.6) : 16
-  const nextScrolled = scrollY > threshold
+  // Hysteresis avoids rapid toggling near the top threshold: collapse into the
+  // compact bar after scrolling past 36px, and restore the full header when
+  // scrolling back up to the top (<= 12px).
+  const nextScrolled = isScrolled.value ? scrollY > 12 : scrollY > 36
   if (isScrolled.value !== nextScrolled) {
     isScrolled.value = nextScrolled
   }
+
+  // On the homepage ('/'), keep the translucent frosted-glass navbar across the
+  // first screen (.club-banner), and transition to opaque once scrolled past it.
+  if (route.path === '/') {
+    const bannerEl = document.querySelector('.club-banner') as HTMLElement | null
+    const firstScreenHeight = bannerEl ? bannerEl.offsetHeight : window.innerHeight
+    const navHeight = navRef.value?.offsetHeight ?? 56
+    const threshold = Math.max(80, firstScreenHeight - navHeight)
+    const nextPastFirstScreen = isPastFirstScreen.value
+      ? scrollY > threshold - 12
+      : scrollY > threshold
+    if (isPastFirstScreen.value !== nextPastFirstScreen) {
+      isPastFirstScreen.value = nextPastFirstScreen
+    }
+  }
+  else if (isPastFirstScreen.value) {
+    isPastFirstScreen.value = false
+  }
+
   const scrollable = document.documentElement.scrollHeight - window.innerHeight
   const nextProgress = scrollable > 0 ? Math.min(1, Math.max(0, scrollY / scrollable)) : 0
   if (Math.abs(readingProgress.value - nextProgress) > 0.002) {
@@ -119,29 +142,32 @@ onBeforeUnmount(() => {
     aria-label="主导航"
     class="club-navbar fixed inset-x-0 top-0 z-50"
     :data-immersive="isImmersive"
+    :data-compact="isCompact"
     :style="{ '--reading-progress': readingProgress }"
   >
     <div class="club-container">
-      <div class="flex h-16 items-center justify-between gap-3">
+      <div class="club-navbar-row">
         <NuxtLink
-:prefetch="false"
+          :prefetch="false"
           to="/"
-          class="club-wordmark flex min-h-11 shrink-0 items-center gap-2.5"
+          class="club-wordmark shrink-0"
           aria-label="桂航绯想天 GUAT TOUHOU FANS CLUB 首页"
           @click="closeMenus"
         >
-          <ClubAvatar
-            :src="site.config.badge_image"
-            loading="lazy"
-            class="hidden h-9 w-9 lg:block"
-          />
-          <span class="flex flex-col gap-0.5">
+          <span class="club-wordmark-avatar" aria-hidden="true">
+            <ClubAvatar
+              :src="site.config.badge_image"
+              loading="lazy"
+              class="h-9 w-9 shrink-0"
+            />
+          </span>
+          <span class="club-wordmark-text">
             <span
-              class="club-display whitespace-nowrap font-serif text-lg font-bold tracking-wider"
+              class="club-wordmark-title club-display whitespace-nowrap font-serif font-bold tracking-wider"
               >桂航绯想天</span
             >
             <span
-              class="club-wordmark-subtitle text-[8px] font-medium tracking-[.22em]"
+              class="club-wordmark-subtitle whitespace-nowrap font-medium"
               >GUAT TOUHOU FANS CLUB</span
             >
           </span>
@@ -149,20 +175,20 @@ onBeforeUnmount(() => {
 
         <div class="hidden items-center gap-1 lg:flex">
           <NuxtLink
-:prefetch="false"
+            :prefetch="false"
             to="/"
             class="nav-link"
             exact-active-class="nav-link-active"
             @click="closeMenus"
             ><span class="nav-number" aria-hidden="true">01</span
-            >首页</NuxtLink
+            ><span class="nav-label">首页</span></NuxtLink
           >
-          <div class="relative" @focusout="handleActivityFocusOut">
+          <div class="relative flex items-center" @focusout="handleActivityFocusOut">
             <button
               id="desktop-activities-trigger"
               ref="desktopActivityButton"
               type="button"
-              class="nav-link gap-1.5"
+              class="nav-link"
               :class="
                 isActivityRoute || isActivitiesOpen ? 'nav-link-active' : ''
               "
@@ -170,9 +196,10 @@ onBeforeUnmount(() => {
               aria-controls="desktop-activities-panel"
               @click="isActivitiesOpen = !isActivitiesOpen"
             >
-              <span class="nav-number" aria-hidden="true">02</span>活动
+              <span class="nav-number" aria-hidden="true">02</span
+              ><span class="nav-label">活动</span>
               <svg
-                class="h-3.5 w-3.5 transition-transform duration-200"
+                class="nav-chevron transition-transform duration-300"
                 :class="isActivitiesOpen ? 'rotate-180' : ''"
                 viewBox="0 0 24 24"
                 fill="none"
@@ -197,7 +224,7 @@ onBeforeUnmount(() => {
                 class="club-nav-panel absolute left-0 top-full mt-2 w-72 border p-2 shadow-lg"
               >
                 <NuxtLink
-v-for="link in activityLinks"
+                  v-for="link in activityLinks"
                   :key="link.path"
                   :prefetch="false"
                   :to="link.path"
@@ -222,7 +249,7 @@ v-for="link in activityLinks"
             </Transition>
           </div>
           <NuxtLink
-v-for="link in navLinks"
+            v-for="link in navLinks"
             :key="link.path"
             :prefetch="false"
             :to="link.path"
@@ -231,10 +258,10 @@ v-for="link in navLinks"
             active-class="nav-link-active"
             @click="closeMenus"
             ><span class="nav-number" aria-hidden="true">{{ link.number }}</span
-            >{{ link.name }}</NuxtLink
+            ><span class="nav-label">{{ link.name }}</span></NuxtLink
           >
           <div
-            class="mx-2 h-5 w-px bg-current opacity-20"
+            class="nav-divider"
             aria-hidden="true"
           />
           <button
@@ -275,14 +302,17 @@ v-for="link in navLinks"
             </svg>
           </button>
           <NuxtLink
-:prefetch="false"
+            :prefetch="false"
             to="/join"
             class="club-invitation club-nav-join ml-4 whitespace-nowrap"
             @click="closeMenus"
-            ><span class="club-invitation-seal" aria-hidden="true">入社</span>
+          >
+            <span class="club-nav-join-seal-wrap" aria-hidden="true">
+              <span class="club-invitation-seal">入社</span>
+            </span>
             <span class="club-invitation-label">加入我们</span>
-            <ClubIcon name="arrow" class="club-invitation-arrow"
-          /></NuxtLink>
+            <ClubIcon name="arrow" class="club-invitation-arrow" />
+          </NuxtLink>
         </div>
 
         <div class="flex shrink-0 items-center gap-1 lg:hidden">
@@ -361,7 +391,7 @@ v-for="link in navLinks"
       >
         <div class="mx-auto max-w-7xl space-y-1">
           <NuxtLink
-:prefetch="false"
+            :prefetch="false"
             to="/"
             class="mobile-nav-link"
             exact-active-class="nav-link-active"
@@ -408,7 +438,7 @@ v-for="link in navLinks"
               class="ml-4 space-y-1 border-l border-sky-100 pl-3 dark:border-slate-800"
             >
               <NuxtLink
-v-for="link in activityLinks"
+                v-for="link in activityLinks"
                 :key="link.path"
                 :prefetch="false"
                 :to="link.path"
@@ -424,7 +454,7 @@ v-for="link in activityLinks"
             </div>
           </Transition>
           <NuxtLink
-v-for="link in navLinks"
+            v-for="link in navLinks"
             :key="link.path"
             :prefetch="false"
             :to="link.path"
@@ -439,14 +469,14 @@ v-for="link in navLinks"
             class="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 dark:border-slate-800"
           >
             <NuxtLink
-:prefetch="false"
+              :prefetch="false"
               to="/logs"
               class="mobile-nav-link justify-center text-sm"
               @click="closeMenus"
               >站点日志</NuxtLink
             >
             <NuxtLink
-:prefetch="false"
+              :prefetch="false"
               to="/login"
               class="mobile-nav-link justify-center text-sm"
               @click="closeMenus"
@@ -454,9 +484,9 @@ v-for="link in navLinks"
             >
           </div>
           <NuxtLink
-:prefetch="false"
+            :prefetch="false"
             to="/join"
-            class="club-invitation club-nav-join mt-3 flex w-full min-h-12"
+            class="club-invitation club-nav-join-mobile mt-3 flex w-full min-h-12"
             @click="closeMenus"
             ><span class="club-invitation-seal" aria-hidden="true">入社</span>
             <span class="club-invitation-label">加入桂航绯想天</span>
@@ -481,27 +511,50 @@ v-for="link in navLinks"
 .club-navbar {
   --nav-ink: #334155;
   --nav-accent: #0369a1;
+  --nav-spring: cubic-bezier(0.34, 1.24, 0.64, 1);
+  --nav-collapse: cubic-bezier(0.32, 0.94, 0.6, 1);
+  --nav-duration: 540ms;
   color: var(--nav-ink);
-  background: rgb(251 251 248 / 0.96);
+  background-color: #fbfbf8;
   border-bottom: 1px solid rgb(148 163 184 / 0.22);
-  backdrop-filter: blur(14px);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow: 0 2px 12px -4px rgb(15 23 42 / 0.05);
   transform: translateZ(0);
   transition:
-    background-color 250ms ease,
-    color 250ms ease,
-    border-color 250ms ease;
+    background-color 480ms ease-in-out,
+    color 380ms ease-in-out,
+    border-color 480ms ease-in-out,
+    box-shadow 480ms ease-in-out;
 }
 :global(.dark .club-navbar) {
   --nav-ink: #e2e8f0;
   --nav-accent: #bae6fd;
-  background: rgb(16 25 35 / 0.96);
+  background-color: #101923;
+  border-bottom-color: rgb(71 85 105 / 0.36);
+  box-shadow: 0 2px 14px -4px rgb(2 6 23 / 0.42);
 }
+.club-navbar[data-compact='true'] {
+  border-bottom-color: rgb(148 163 184 / 0.3);
+  box-shadow: 0 6px 20px -6px rgb(15 23 42 / 0.1);
+}
+:global(.dark .club-navbar[data-compact='true']) {
+  border-bottom-color: rgb(71 85 105 / 0.48);
+  box-shadow: 0 6px 24px -6px rgb(2 6 23 / 0.56);
+}
+/* Homepage first screen: translucent frosted glass over the hero banner */
 .club-navbar[data-immersive='true'] {
   --nav-ink: #f1f5f9;
   --nav-accent: #bae6fd;
-  background: transparent;
-  border-color: rgb(255 255 255 / 0.22);
-  backdrop-filter: none;
+  background-color: rgb(15 23 42 / 0.28);
+  border-bottom-color: rgb(255 255 255 / 0.22);
+  box-shadow:
+    0 4px 24px -4px rgb(2 6 23 / 0.22),
+    inset 0 1px 0 0 rgb(255 255 255 / 0.16);
+}
+.club-navbar[data-immersive='true'][data-compact='true'] {
+  background-color: rgb(15 23 42 / 0.4);
+  border-bottom-color: rgb(255 255 255 / 0.26);
 }
 .club-navbar::after {
   content: '';
@@ -515,21 +568,165 @@ v-for="link in navLinks"
   transform-origin: left;
   pointer-events: none;
 }
+.club-navbar-row {
+  display: flex;
+  height: 4rem;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  transition: height var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .club-navbar-row {
+  height: 3.25rem;
+}
 .club-wordmark {
+  display: flex;
+  min-height: 2.75rem;
+  align-items: center;
   color: var(--nav-ink);
+  text-decoration: none;
+}
+.club-wordmark-avatar {
+  display: none;
+}
+@media (min-width: 1024px) {
+  .club-wordmark-avatar {
+    display: inline-flex;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-right: 0.625rem;
+    flex-shrink: 0;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transform-origin: left center;
+    transition:
+      width var(--nav-duration) var(--nav-spring),
+      margin-right var(--nav-duration) var(--nav-spring),
+      opacity 380ms ease-out 40ms,
+      transform var(--nav-duration) var(--nav-spring);
+  }
+  .club-navbar[data-compact='true'] .club-wordmark-avatar {
+    width: 0;
+    margin-right: 0;
+    opacity: 0;
+    transform: translateX(-8px) scale(0.72);
+    pointer-events: none;
+    transition:
+      width 480ms var(--nav-collapse),
+      margin-right 480ms var(--nav-collapse),
+      opacity 280ms ease-out,
+      transform 480ms var(--nav-collapse);
+  }
+}
+.club-wordmark-text {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.club-wordmark-title {
+  display: inline-block;
+  font-size: 1.1875rem;
+  line-height: 1.2;
+  transition: letter-spacing var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .club-wordmark-title {
+  letter-spacing: 0.12em;
 }
 .club-wordmark-subtitle {
-  opacity: 0.65;
+  display: block;
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  line-height: 1;
+  height: 0.75rem;
+  margin-top: 0.15rem;
+  opacity: 0.68;
+  overflow: hidden;
+  transform-origin: left top;
+  transition:
+    height var(--nav-duration) var(--nav-spring),
+    margin-top var(--nav-duration) var(--nav-spring),
+    opacity 380ms ease-out 40ms,
+    transform var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .club-wordmark-subtitle {
+  height: 0;
+  margin-top: 0;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    height 480ms var(--nav-collapse),
+    margin-top 480ms var(--nav-collapse),
+    opacity 280ms ease-out,
+    transform 480ms var(--nav-collapse);
 }
 .nav-number {
+  display: inline-flex;
+  align-items: center;
   font-family: ui-monospace, monospace;
-  font-size: 9px;
+  font-size: 10.5px;
   font-weight: 400;
-  opacity: 0.55;
+  line-height: 1;
+  opacity: 0.6;
+  width: 1.05rem;
+  margin-right: 0.375rem;
+  overflow: hidden;
+  transform-origin: left center;
+  transition:
+    width var(--nav-duration) var(--nav-spring),
+    margin-right var(--nav-duration) var(--nav-spring),
+    opacity 380ms ease-out 40ms,
+    transform var(--nav-duration) var(--nav-spring);
 }
+.club-navbar[data-compact='true'] .nav-link .nav-number {
+  width: 0;
+  margin-right: 0;
+  opacity: 0;
+  transform: translateY(-3px) scale(0.75);
+  transition:
+    width 480ms var(--nav-collapse),
+    margin-right 480ms var(--nav-collapse),
+    opacity 280ms ease-out,
+    transform 480ms var(--nav-collapse);
+}
+.nav-label {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+.nav-chevron {
+  width: 0.875rem;
+  height: 0.875rem;
+  margin-left: 0.375rem;
+  flex-shrink: 0;
+}
+/* Default state: exact original .nav-link and underline/diamond bar design */
 .nav-link {
-  @apply relative inline-flex min-h-11 items-center justify-center gap-1.5 whitespace-nowrap px-2.5 text-sm font-medium;
+  position: relative;
+  display: inline-flex;
+  height: 2.75rem;
+  align-items: center;
+  justify-content: center;
+  padding: 0 0.625rem;
+  border: 0;
+  background: transparent;
+  font-family: inherit;
+  font-size: 0.875rem;
+  font-weight: 500;
+  line-height: 1;
+  white-space: nowrap;
   color: var(--nav-ink);
+  cursor: pointer;
+  transition:
+    color 240ms ease,
+    height var(--nav-duration) var(--nav-spring),
+    padding var(--nav-duration) var(--nav-spring);
+}
+/* Compact state: wider button spacing absorbs the collapsed 01-05 numbers so
+   horizontal shift is minimal, and switches to a clean minimalist bar */
+.club-navbar[data-compact='true'] .nav-link {
+  height: 2.125rem;
+  padding: 0 1.35rem;
 }
 .nav-link::after {
   content: '';
@@ -540,8 +737,22 @@ v-for="link in navLinks"
   height: 1px;
   background: currentColor;
   transform: scaleX(0);
-  transition: transform 220ms ease;
+  transition:
+    transform 240ms ease,
+    bottom var(--nav-duration) var(--nav-spring),
+    left var(--nav-duration) var(--nav-spring),
+    right var(--nav-duration) var(--nav-spring),
+    height 260ms ease,
+    border-radius 260ms ease;
   transform-origin: left;
+}
+.club-navbar[data-compact='true'] .nav-link::after {
+  bottom: 1px;
+  left: 0.85rem;
+  right: 0.85rem;
+  height: 2px;
+  border-radius: 999px;
+  transform-origin: center;
 }
 .nav-link:hover::after,
 .nav-link-active::after {
@@ -554,13 +765,43 @@ v-for="link in navLinks"
   left: calc(50% - 2px);
   width: 5px;
   height: 5px;
-  transform: rotate(45deg);
+  transform: rotate(45deg) scale(1);
+  opacity: 1;
   background: var(--nav-accent);
+  transition:
+    transform 320ms var(--nav-spring),
+    opacity 220ms ease;
+}
+.club-navbar[data-compact='true'] .nav-link-active::before {
+  transform: rotate(45deg) scale(0);
+  opacity: 0;
+}
+.nav-divider {
+  margin-inline: 0.5rem;
+  width: 1px;
+  height: 1.25rem;
+  flex-shrink: 0;
+  background: currentColor;
+  opacity: 0.2;
+  transition:
+    height var(--nav-duration) var(--nav-spring),
+    margin-inline var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .nav-divider {
+  height: 1rem;
+  margin-inline: 0.65rem;
 }
 .nav-icon {
   @apply inline-flex h-11 w-10 shrink-0 items-center justify-center transition-colors;
   color: var(--nav-ink);
   opacity: 0.8;
+  transition:
+    color 220ms ease,
+    opacity 220ms ease,
+    height var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .nav-icon {
+  height: 2.125rem;
 }
 .nav-icon:hover {
   color: var(--nav-accent);
@@ -584,31 +825,80 @@ v-for="link in navLinks"
   background: #101923;
   border-color: #334155;
 }
-.club-nav-join {
+/* Default state: exact original "加入我们" invitation button layout */
+.club-nav-join,
+.club-nav-join-mobile {
   --invitation-ink: var(--nav-ink);
   padding: 0.35rem 0.15rem;
   border-bottom: 1px solid var(--invitation-line);
   background: transparent;
+}
+.club-nav-join {
+  gap: 0;
+  min-height: 2.75rem;
+  height: 2.75rem;
+  transition:
+    min-height var(--nav-duration) var(--nav-spring),
+    height var(--nav-duration) var(--nav-spring),
+    padding var(--nav-duration) var(--nav-spring),
+    margin-left var(--nav-duration) var(--nav-spring),
+    border-color 250ms ease;
+}
+.club-navbar[data-compact='true'] .club-nav-join {
+  min-height: 2rem;
+  height: 2rem;
+  padding: 0 0.85rem;
+  margin-left: 1.25rem;
+}
+.club-nav-join-seal-wrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.25rem;
+  height: 2rem;
+  margin-right: 0.75rem;
+  flex-shrink: 0;
+  overflow: hidden;
+  transform-origin: left center;
+  transition:
+    width var(--nav-duration) var(--nav-spring),
+    margin-right var(--nav-duration) var(--nav-spring),
+    opacity 380ms ease-out 40ms,
+    transform var(--nav-duration) var(--nav-spring);
+}
+.club-navbar[data-compact='true'] .club-nav-join-seal-wrap {
+  width: 0;
+  margin-right: 0;
+  opacity: 0;
+  transform: translateX(-6px) scale(0.68) rotate(-8deg);
+  pointer-events: none;
+  transition:
+    width 480ms var(--nav-collapse),
+    margin-right 480ms var(--nav-collapse),
+    opacity 280ms ease-out,
+    transform 480ms var(--nav-collapse);
+}
+.club-nav-join :deep(.club-invitation-arrow) {
+  margin-left: 0.75rem;
+}
+.club-nav-join-mobile {
   transition: border-color 250ms ease;
 }
-.club-navbar[data-immersive='true'] .club-nav-join {
+.club-navbar[data-immersive='true'] :is(.club-nav-join, .club-nav-join-mobile) {
   --invitation-line: rgb(224 242 254 / 0.4);
   --invitation-accent: #edb2a5;
 }
-:global(.dark .club-navbar .club-nav-join) {
+:global(.dark .club-navbar) :is(.club-nav-join, .club-nav-join-mobile) {
   --invitation-line: rgb(186 230 253 / 0.35);
   --invitation-accent: #edb2a5;
 }
-.club-nav-join:is(:hover, :focus-visible) {
+:is(.club-nav-join, .club-nav-join-mobile):is(:hover, :focus-visible) {
   border-bottom-color: var(--invitation-accent);
 }
 @media (max-width: 359px) {
   .club-wordmark-subtitle {
     letter-spacing: 0.12em;
     font-size: 7px;
-  }
-  .club-wordmark {
-    gap: 0.5rem;
   }
 }
 .club-navbar :is(a, button):focus-visible {
@@ -619,6 +909,7 @@ v-for="link in navLinks"
   .club-navbar,
   .club-navbar * {
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 }
 </style>
