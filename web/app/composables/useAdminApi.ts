@@ -20,6 +20,10 @@ export function useAdminApi() {
       transport.command(name, body, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     removeBan: (ip: string) => transport.removeBan(ip, lifetime.signal),
     deleteBackup: (file: string) => transport.deleteBackup(file, lifetime.signal),
+    botDeliveries: <T>(method:'GET'|'POST', body:{page?:number;id?:string}, project:(value:unknown)=>T, signal?:AbortSignal) =>
+      transport.botDeliveries(method,body,project,signal?AbortSignal.any([signal,lifetime.signal]):lifetime.signal),
+    botCredentials: <T>(method: 'GET' | 'POST' | 'DELETE' | 'REVEAL', body: unknown, project: (value: unknown) => T, id?: string, signal?: AbortSignal) =>
+      transport.botCredentials(method, body, project, id, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     memberSync:<T>(action:Parameters<typeof transport.memberSync>[0],method:Parameters<typeof transport.memberSync>[1],body:unknown,project:(value:unknown)=>T,id?:string|number,signal?:AbortSignal)=>transport.memberSync(action,method,body,project,id,signal?AbortSignal.any([signal,lifetime.signal]):lifetime.signal),
   }
 }

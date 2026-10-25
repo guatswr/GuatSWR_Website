@@ -10,7 +10,7 @@ const production = path.resolve('src/migrations')
 
 it('initializes security Expand with zero user versions and an empty durable audit queue', async () => {
   const f = await fixture()
-  expect(f.context.mainSchemaVersion).toBe(5)
+  expect(f.context.mainSchemaVersion).toBe(6)
   expect(f.context.auditSchemaVersion).toBe(2)
   expect((await f.context.sql.main.get('SELECT count(*) AS n FROM security_audit_outbox')).n).toBe(0)
   expect((await f.context.sql.main.get('SELECT MAX(auth_version) AS version FROM users')).version).toBe(0)
@@ -36,7 +36,7 @@ it('boots the compatibility bridge against expanded databases and enforces and i
     paths: { data: path.join(f.root, 'data'), public: path.join(f.root, 'public'), backups: path.join(f.root, 'backups') },
     backgroundTasks: false, externalServices: false })
   onTestFinished(() => app.close())
-  expect(app.context.mainSchemaVersion).toBe(5)
+  expect(app.context.mainSchemaVersion).toBe(6)
   expect(app.context.auditSchemaVersion).toBe(2)
   expect(await app.context.sql.main.get('SELECT password,twofa_secret FROM users WHERE id=2')).toEqual(before)
   const http = request(await app.listen(0, '127.0.0.1'))

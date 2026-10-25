@@ -45,7 +45,8 @@ export function createBotApi(options: {
     const input = botCredentialSchema.parse(req.body)
     return res.json(await platform.createCredential(input,req.user!))
   }))
-  router.get('/admin/credentials', options.authenticateToken, options.requireSuperAdmin, handle(async (_req,res) => res.json({ items: await store.all('SELECT id,name,scopes,groups_json,created_at,revoked_at FROM bot_credentials ORDER BY created_at DESC LIMIT 100') })))
+  router.get('/admin/credentials', options.authenticateToken, options.requireSuperAdmin, handle(async (_req,res) => res.json(await platform.listCredentials())))
+  router.post('/admin/credentials/:id/reveal', options.authenticateToken, options.requireSuperAdmin, handle(async (req,res) => res.json(await platform.revealCredential(String(req.params.id),req.user!))))
   router.delete('/admin/credentials/:id', options.authenticateToken, options.requireSuperAdmin, handle(async (req,res) => { await platform.revoke(String(req.params.id),req.user!); return res.json({ revoked:true }) }))
   router.get('/admin/deliveries', options.authenticateToken, options.requireSuperAdmin, handle(async (req,res) => {
     const limit=integer(req.query.limit,20,100), page=integer(req.query.page,1,1000000)

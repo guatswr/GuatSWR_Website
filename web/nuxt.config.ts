@@ -17,7 +17,9 @@ export default defineNuxtConfig({
   vite: { plugins: [tailwindcss()] },
   build: { transpile: ['@guatswr/shared'] },
   sourcemap: { server: false, client: false },
-  features: { inlineStyles: true },
+  // Emit regular CSS assets: Nuxt's inline-style extraction can drop the
+  // global entry stylesheet when dependencies resolve through directory links.
+  features: { inlineStyles: false },
   // Fetch the next route on pointer/focus intent. Viewport prefetch on the
   // homepage otherwise downloads event validators before any navigation.
   experimental: {

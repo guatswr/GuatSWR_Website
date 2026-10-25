@@ -2,7 +2,9 @@ openapi: 3.0.3
 info:
   title: GuatSWR Bot Platform
   version: 1.0.0
-  description: Additive APIs. Core requires main4; member sync requires main5. BOT_PLATFORM_ENABLED=true. See BOT-API.md.
+  description: >-
+    Additive APIs. Core requires main4; member sync requires main5; recoverable tokens require main6 and an
+    independent encryption key. BOT_PLATFORM_ENABLED=true. See BOT-API.md.
 servers:
   - url: /api/bot
 paths:
@@ -3086,6 +3088,82 @@ paths:
       servers:
         - url: /api
       x-public-extension: true
+  /admin/credentials/{id}/reveal:
+    post:
+      operationId: bot_40
+      summary: >-
+        Reveal encrypted service token for current super_admin; no-store and audited; main6 and external
+        encryption key required
+      security:
+        - websiteJwt: []
+      responses:
+        '200':
+          description: Success; response shapes and examples are in BOT-API.md
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties: true
+        '400':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '401':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '403':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '404':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '409':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '410':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '413':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '500':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '503':
+          description: Rejected or unavailable
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
 components:
   securitySchemes:
     botToken:

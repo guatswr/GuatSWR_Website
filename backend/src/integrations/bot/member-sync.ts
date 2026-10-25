@@ -125,7 +125,7 @@ export function createMemberSync(options:{
         const recipient=await tx.get<{qq:string}>('SELECT b.qq FROM bot_identities b JOIN users u ON u.id=b.user_id WHERE b.user_id=? AND b.credential_id=? AND b.qq IS NOT NULL AND u.role IN (\'admin\',\'super_admin\')',[userId,job.credential_id])
         if (!recipient) continue // The persistent website tasks remain visible.
         const notificationId=await options.notify(tx,{event:'members.profile_required',kind:'notification',credentialId:job.credential_id,targetType:'private',targetId:recipient.qq,recipientUserId:userId,
-          data:{request_id:id,group_id:job.group_id,initial:!group.initialized,count:created.length,members:created.slice(0,50),truncated:created.length>50,admin_path:'/admin/members?pending=1'},key:`member-profiles:${id}:${userId}`})
+          data:{request_id:id,group_id:job.group_id,initial:!group.initialized,count:created.length,members:created.slice(0,50),truncated:created.length>50,admin_path:'/admin/bot?section=profiles'},key:`member-profiles:${id}:${userId}`})
         for(const member of created)await tx.run('UPDATE member_profile_tasks SET notified_at=?,notification_id=? WHERE member_id=?',[now(),notificationId,member.id])
       }
     }
@@ -300,7 +300,7 @@ export function createMemberSync(options:{
             const recipient=await tx.get<{qq:string}>("SELECT b.qq FROM bot_identities b JOIN users u ON u.id=b.user_id WHERE b.user_id=? AND b.credential_id=? AND b.qq IS NOT NULL AND u.role IN ('admin','super_admin')",[userId,config.settings.credential_id])
             if(!recipient)continue
             const notificationId=await options.notify(tx,{event:'members.profile_required',kind:'notification',credentialId:config.settings.credential_id,targetType:'private',targetId:recipient.qq,recipientUserId:userId,
-              data:{count:pending.length,members:pending,admin_path:'/admin/members?pending=1'},key:`member-backlog:${pending.map(member=>member.id).join(',')}:${userId}`})
+              data:{count:pending.length,members:pending,admin_path:'/admin/bot?section=profiles'},key:`member-backlog:${pending.map(member=>member.id).join(',')}:${userId}`})
             for(const member of pending)await tx.run('UPDATE member_profile_tasks SET notified_at=?,notification_id=? WHERE member_id=?',[now(),notificationId,member.id])
           }
         })

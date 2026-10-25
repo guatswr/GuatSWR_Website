@@ -7,6 +7,7 @@ import { createSecurityService } from '../security/service.js'
 import { authorizeSecurityActor, nextUserVersion, requireSecuritySchema } from '../security/authorize.js'
 import { enqueueSecurityAudit } from '../security/audit-outbox.js'
 import { randomUUID } from 'node:crypto'
+import { redactSecrets } from '../security/redact-secrets.js'
 
 export function createAdminService(options: {
   main: SqliteStore; audit: SqliteStore; report(error: unknown): void
@@ -69,7 +70,7 @@ export function createAdminService(options: {
     logs: async (query: Record<string, unknown>) => {
       const page = parseInt(String(query.page)) || 1, limit = parseInt(String(query.limit)) || 20
       const { total, rows } = await logs.list(query.username || '', query.action || '', limit, (page - 1) * limit)
-      return { total, logs: rows }
+      return { total, logs: rows.map(row => ({ ...row, details: redactSecrets(row.details || '') })) }
     },
     deleteLog: async (id: string, actor: Actor) => {
       requireSecuritySchema(options.ready)

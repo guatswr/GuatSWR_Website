@@ -5,16 +5,28 @@
 ## 启用与迁移
 
 1. 按现有备份手册建立可恢复点，在隔离副本先验证。
-2. 显式执行 `pnpm --filter guiair-backend db:migrate upgrade --data-dir /absolute/private/data`（具体参数和自定义路径遵循 [MIGRATIONS](../../docs/backend-modernization/MIGRATIONS.md)）。Bot 核心要求主库至少 **4**；当前最新为 **5**，新增群成员同步要求 main5，审计库仍为 **2**。启动不会执行 DDL。
+2. 显式执行 `pnpm --filter guiair-backend db:migrate upgrade --data-dir /absolute/private/data`（具体参数和自定义路径遵循 [MIGRATIONS](../../docs/backend-modernization/MIGRATIONS.md)）。Bot 核心要求主库至少 **4**；当前最新为 **6**，群成员同步要求 main5，Token 加密查看要求 main6，审计库仍为 **2**。启动不会执行 DDL。
 3. 设置 `BOT_PLATFORM_ENABLED=true`、最终地址 `ASTRBOT_WEBHOOK_URL`、出站 `ASTRBOT_TOKEN`。默认平台关闭；打开但未升级主库会拒绝启动。未启用时旧接口和旧通知行为保留。
-4. 超级管理员调用 `POST /api/bot/admin/credentials` 创建 Bot API 凭据，并限制权限及允许接收的群。明文只返回这一次；数据库仅存 SHA-256 摘要。
+4. 站长（`super_admin`）登录管理面板，进入「系统 → Bot 管理 → 凭据与权限」（`/admin/bot`），手动填写名称、勾选接口权限、配置授权群号，点击「创建凭据」。历史上的今天只需 `query:read`；群成员同步需 `members:sync`、`deliveries:ack` 和对应群号。系统不会在启动、升级或进入页面时自动创建凭据。
 5. 将返回的 `gwb_…` 凭据放入 AstrBot 插件的私有配置。它与 `ASTRBOT_TOKEN`、网站 JWT 是三个不同用途的凭据。
+
+创建或查看响应中的明文仅保存在当前页面内存，60 秒或切后台/离开时隐藏，不写入浏览器持久存储或查询缓存。列表不返回密钥或摘要。未启用加密存储时关闭后无法再查看；启用后的查看方式见下节。创建/查看/撤销经 BFF 校验当前站长角色、Origin 和 CSRF，后端独立核验并记录不含 Token 的审计。若创建结果因网络中断不确定，先刷新列表核查；只有摘要的条目需撤销后重新创建。
 
 主库 4 是添加表/列/索引的 Expand 迁移，不改旧迁移的 SQL 或 checksum。既有主库 3 在平台关闭时仍可由兼容校验启动。旧 v2.0.0 构建不认识新迁移账本，不能直接把它作为主库 4 的回退应用；回退需保留本次兼容校验代码并关闭平台。不得恢复旧快照覆盖新写入。
 
+## 站长按需查看 Token（main6 扩展）
+
+主库显式升级到 **6** 后，可配置独立的 `BOT_CREDENTIAL_ENCRYPTION_KEY`（32 字节随机密钥，64 位十六进制），为新创建的 Token 保存 AES-256-GCM 加密副本。鉴权仍使用摘要。管理面板默认遮蔽，在凭据卡片点击「查看 Token」后展示 60 秒，失焦、切后台、登出或离开时提前隐藏。
+
+`POST /api/bot/admin/credentials/:id/reveal` 仅接受当前站长的 JWT，经 BFF 访问时还校验 Origin/CSRF；响应 `private, no-store`，审计只记录凭据 ID。列表仅增加 `secret_available` 和顶层 `vault_enabled`，不返回密文、摘要或 Token。已撤销项删除密文。未配置加密密钥时继续兼容原来的一次性展示。
+
+**历史摘要无法还原为 Token。** 原凭据继续可用，站长可创建替代凭据，完成插件切换后再撤销旧项。加密密钥必须单独安全备份，不能丢失或直接更换；当前没有批量重加密工具。配置密钥而数据库未到 main6 时拒绝启动。日志新增写入和管理端读取均过滤 Token 等敏感值。
+
+后文「只返回一次」描述的是创建响应及未启用加密存储的兼容模式；启用 main6 加密存储后，站长可通过上述独立接口再次查看。当前契约为 **39 个 Bot 操作 + 1 个公共成员版本接口**。
+
 ## 权限与接口
 
-群成员定时采集、QQ 唯一关联、头像回传、管理员私信与网站后台联动见 [成员同步协议](MEMBER-SYNC.md)。机器契约现有 38 个 Bot 操作和 1 个公共成员版本接口。
+群成员定时采集、QQ 唯一关联、头像回传、管理员私信与网站后台联动见 [成员同步协议](MEMBER-SYNC.md)。机器契约现有 39 个 Bot 操作和 1 个公共成员版本接口。
 
 所有 `/v1` 请求使用 `Authorization: Bearer <gwb_…>`。没有通配权限；权限不足返回 403，凭据错误或撤销返回 401。所有 Bot API 响应 `Cache-Control: private, no-store`。
 
@@ -179,3 +191,5 @@ Webhook 仍是 JSON POST，携带出站 `Authorization: Bearer <ASTRBOT_TOKEN>`�
 ## 接入边界
 
 这次提供后端能力和契约。AstrBot 指令、群消息格式、接收端幂等存储，以及网站 BFF 的绑定 UI/owner 会话接线仍需调用这些接口完成。没有部署生产、创建真实 Bot 凭据、调用外部 AstrBot、迁移原数据库或发送群消息。
+
+Bot 管理统一在 `/admin/bot`：凭据使用 `?section=credentials`，群同步使用 `?section=sync`，资料任务使用 `?section=profiles`，通知投递使用 `?section=deliveries`。成员页和 Bot 审计日志的相关入口跳到对应区域，REST API 路径不随页面归类改变。

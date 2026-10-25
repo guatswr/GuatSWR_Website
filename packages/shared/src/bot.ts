@@ -7,6 +7,33 @@ export const botCredentialSchema = z.object({
   name: z.string().trim().min(1).max(80), scopes: z.array(z.enum(botScopes)).min(1).max(botScopes.length),
   groups: z.array(botQqSchema).max(100).default([]),
 }).strict()
+export const botCredentialCreatedSchema = z.object({
+  id: z.string().uuid(), name: z.string(), token: z.string().regex(/^gwb_[a-f0-9]{64}$/),
+  scopes: z.array(z.enum(botScopes)), groups: z.array(botQqSchema),
+})
+export const botCredentialRowSchema = botCredentialCreatedSchema.omit({ token: true }).extend({
+  created_at: z.number().int(), revoked_at: z.number().int().nullable(),
+  secret_available: z.boolean().default(false),
+})
+export const botCredentialListSchema = z.object({ items: z.array(botCredentialRowSchema).max(100), vault_enabled: z.boolean().default(false) })
+export const botCredentialSecretSchema = z.object({ id: z.string().uuid(), token: z.string().regex(/^gwb_[a-f0-9]{64}$/) })
+export const botDeliveryRowSchema = z.object({
+  id: z.string().uuid(), status: z.enum(['pending','sending','sent','failed','skipped','cancelled']),
+  event_name: z.string().max(100), group_id: z.string().max(20), attempts: z.number().int().nonnegative(),
+  target_type: z.enum(['group','service','private']).default('group'),
+  message_status: z.enum(['pending','sent','failed']).nullable().optional(),
+  last_error: z.string().max(500).nullable(), delivered_at: z.number().int().nullable(),
+})
+export const botDeliveryListSchema = z.object({ page: z.number().int().positive(), limit: z.number().int().positive(), items: z.array(botDeliveryRowSchema).max(100) })
+const credentialJsonArray = <T>(schema: z.ZodType<T>) => z.string().transform((value, ctx) => {
+  try { return JSON.parse(value) as unknown }
+  catch { ctx.addIssue({ code: 'custom', message: '凭据数据无效' }); return z.NEVER }
+}).pipe(schema)
+export const botCredentialUpstreamListSchema = z.object({ items: z.array(z.object({
+  id: z.string().uuid(), name: z.string(), scopes: credentialJsonArray(z.array(z.enum(botScopes))),
+  groups_json: credentialJsonArray(z.array(botQqSchema)), created_at: z.number().int(), revoked_at: z.number().int().nullable(),
+  secret_available: z.union([z.boolean(), z.literal(0), z.literal(1)]).transform(Boolean).default(false),
+}).transform(({ groups_json, ...row }) => ({ ...row, groups: groups_json }))).max(100), vault_enabled: z.boolean().default(false) })
 export const botSubscriptionSchema = z.object({
   group_id: botQqSchema, event: z.enum(botEventNames), event_id: z.number().int().positive().optional(),
   lead_minutes: z.number().int().min(1).max(10080).default(60),

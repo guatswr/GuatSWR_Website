@@ -122,6 +122,15 @@ export function createAdminTransport(session: Session, fetchImpl: typeof fetch =
       }
     }
   return {
+    botDeliveries<T>(method: 'GET' | 'POST', body: { page?: number; id?: string }, project: (value: unknown) => T, signal?: AbortSignal) {
+      const query = method === 'GET' ? new URLSearchParams({page:String(body.page || 1),limit:'20'}) : new URLSearchParams({id:body.id || ''})
+      return execute(`/api/bff/admin/bot-deliveries?${query}`,method,{},project,signal)
+    },
+    botCredentials<T>(method: 'GET' | 'POST' | 'DELETE' | 'REVEAL', body: unknown, project: (value: unknown) => T, id?: string, signal?: AbortSignal) {
+      if ((method === 'DELETE' || method === 'REVEAL') && (!id || !/^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$/i.test(id))) throw new Error('Invalid credential id')
+      const query = method === 'DELETE' || method === 'REVEAL' ? '?' + new URLSearchParams({ id: id!, ...(method === 'REVEAL' ? { action: 'reveal' } : {}) }) : ''
+      return execute(`/api/bff/admin/bot-credentials${query}`, method === 'REVEAL' ? 'POST' : method, body, project, signal)
+    },
     memberSync<T>(action:'settings'|'requests'|'job'|'apply'|'profile'|'profiles',method:Method,body:unknown,project:(value:unknown)=>T,id?:string|number,signal?:AbortSignal) {
       const query=new URLSearchParams(id===undefined?{}:{id:String(id)})
       if(action==='job' && body && typeof body==='object') {

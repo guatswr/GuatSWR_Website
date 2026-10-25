@@ -32,6 +32,7 @@ const PUBLIC_LOG_DETAILS = new Map([
   ['DELETE_EVENT_FILE_FAIL', '清理事件文件失败'],
   ['BOT_CREDENTIAL_CREATE', '创建了机器人访问凭据'],
   ['BOT_CREDENTIAL_REVOKE', '撤销了机器人访问凭据'],
+  ['BOT_CREDENTIAL_REVEAL', '查看了机器人访问凭据'],
   ['BOT_IDENTITY_BIND', '绑定了机器人身份'],
   ['BOT_IDENTITY_UNBIND', '解除了机器人身份绑定'],
   ['BOT_REVIEW_EVENT', '通过机器人审核了活动'],

@@ -132,6 +132,7 @@ const createApplication = async (options = {}) => {
       const { createBotPlatform } = require(path.join(root, 'dist/src/integrations/bot/platform'));
       context.botPlatform = createBotPlatform({ store: context.sql.main, env, enabled: context.externalServices,
         syncSchema: context.mainSchemaVersion >= 5,
+        vaultSchema: context.mainSchemaVersion >= 6,
         shutdown: context.shutdownSignal, report: error => context.logger.error('task.failed', { error }) });
       const { createBotNotifier } = require(path.join(root, 'dist/src/integrations/bot/notifier'));
       context.bot = createBotNotifier(async payload => {

@@ -10,6 +10,7 @@ const actions = computed(() => [
   { title: '管理首页链接', description: '整理常用社群入口与公开链接。', path: '/admin/home-links', icon: 'external' },
   { title: '查看操作日志', description: '查阅近期管理操作，定位需要关注的变更。', path: '/admin/logs', icon: 'book' },
   ...(session.isSuperAdmin.value ? [{ title: '管理站点备份', description: '设置备份计划，下载和管理备份文件。', path: '/admin/backups', icon: 'calendar' }] : []),
+  { title: 'Bot 管理', description: '机器人凭据、群同步、资料待办与通知投递。', path: session.isSuperAdmin.value ? '/admin/bot' : '/admin/bot?section=profiles', icon: 'external' },
 ])
 </script>
 <template>

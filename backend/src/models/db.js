@@ -81,9 +81,10 @@ const createDatabase = async ({ env, paths, logger }) => {
       }
     }
     const addLog = (username, action, details) => {
+      const { redactSecrets } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/security/redact-secrets'));
       const report = (error) => { if (error) logger?.error('audit.failed', { error }); };
       logDb.run('INSERT INTO audit_logs (username, action, details) VALUES (?, ?, ?)',
-        [username || 'System', action, details], logger ? logger.bind(report) : report);
+        [username || 'System', action, redactSecrets(String(details || ''))], logger ? logger.bind(report) : report);
     };
     const sql = { main: createSqliteStore(resolved.dbPath), audit: createSqliteStore(resolved.logDbPath) };
     stores.push(sql.main, sql.audit);

@@ -8,6 +8,7 @@ import { enqueueSecurityAudit } from '../../security/audit-outbox.js'
 import { authorizeSecurityActor } from '../../security/authorize.js'
 import { publicContent } from '../../utils/public-event.js'
 import { createWebhookTransport } from './transport.js'
+import { createBotSecretVault } from './secret-vault.js'
 
 export const digest = (value: string) => createHash('sha256').update(value).digest('hex')
 export interface Credential extends Row { id: string; name: string; scopes: string; groups_json: string; revoked_at: number | null }
@@ -37,8 +38,10 @@ export function createBotPlatform(options: {
   store: SqliteStore; env: Record<string, string | undefined>; enabled: boolean; shutdown: AbortSignal
   now?: () => number; report(error: unknown): void
   syncSchema?:boolean
+  vaultSchema?:boolean
 }) {
   const { store } = options, now = options.now ?? Date.now
+  const vault = createBotSecretVault(options.env.BOT_CREDENTIAL_ENCRYPTION_KEY, Boolean(options.vaultSchema))
   const enqueue: Enqueue = async (event, input, actor, executor, key = randomUUID()) => {
     if (!(botEventNames as readonly string[]).includes(event)) throw new AppError('未知 Bot 事件', 'bot_event', 400)
     const write = async (tx: SqlExecutor) => {
@@ -97,13 +100,28 @@ export function createBotPlatform(options: {
       await assertAdmin(tx, actor, true)
       await tx.run('INSERT INTO bot_credentials(id,name,secret_hash,scopes,groups_json,created_by,created_at) VALUES(?,?,?,?,?,?,?)',
         [id,input.name,digest(token),JSON.stringify([...new Set(input.scopes)]),JSON.stringify([...new Set(input.groups)]),actor.id,now()])
+      const encrypted = vault.seal(id, token)
+      if (encrypted) await tx.run('INSERT INTO bot_credential_secrets(credential_id,encrypted_token) VALUES(?,?)', [id,encrypted])
       await enqueueSecurityAudit(tx, actor.username, 'BOT_CREDENTIAL_CREATE', `Bot ${id}; scopes=${input.scopes.join(',')}`)
     })
     return { id, token, name: input.name, scopes: input.scopes, groups: input.groups }
   }
+  const listCredentials = async () => ({ vault_enabled: vault.available, items: await store.all(`SELECT c.id,c.name,c.scopes,c.groups_json,c.created_at,c.revoked_at,
+    ${options.vaultSchema && vault.available ? "EXISTS(SELECT 1 FROM bot_credential_secrets s WHERE s.credential_id=c.id) AND c.revoked_at IS NULL" : '0'} AS secret_available
+    FROM bot_credentials c ORDER BY c.created_at DESC,c.id LIMIT 100`) })
+  const revealCredential = (id: string, actor: Actor) => store.transaction(async tx => {
+    await assertAdmin(tx, actor, true)
+    if (!options.vaultSchema || !vault.available) throw new AppError('请先配置密钥加密存储', 'bot_secret_unavailable', 503)
+    const row = await tx.get<{ encrypted_token: string }>(`SELECT s.encrypted_token FROM bot_credential_secrets s JOIN bot_credentials c ON c.id=s.credential_id WHERE c.id=? AND c.revoked_at IS NULL`, [id])
+    if (!row) throw new AppError('该凭据未保存可恢复密钥或已撤销，请重新创建', 'bot_secret_missing', 409)
+    const token = vault.open(id,row.encrypted_token)
+    await enqueueSecurityAudit(tx,actor.username,'BOT_CREDENTIAL_REVEAL',`Bot ${id}`)
+    return { id,token }
+  })
   const revoke = (id: string, actor: Actor) => store.transaction(async tx => {
     await assertAdmin(tx, actor, true)
     if (!(await tx.run('UPDATE bot_credentials SET revoked_at=? WHERE id=? AND revoked_at IS NULL', [now(),id])).changes) throw new AppError('凭据不存在或已撤销', 'not_found', 404)
+    if (options.vaultSchema) await tx.run('DELETE FROM bot_credential_secrets WHERE credential_id=?', [id])
     await tx.run("UPDATE bot_deliveries SET status='cancelled',lease_token=NULL WHERE credential_id=? AND status IN ('pending','failed','sending')", [id])
     await enqueueSecurityAudit(tx, actor.username, 'BOT_CREDENTIAL_REVOKE', `Bot ${id}`)
   })
@@ -206,7 +224,7 @@ export function createBotPlatform(options: {
     if (!bound) throw new AppError('请先在网站生成绑定码并完成绑定', 'bot_not_bound', 403)
     return bound
   }
-  return { enqueue,enqueueDirected, authenticate, createCredential, revoke, identity, reminders,
+  return { enqueue,enqueueDirected, authenticate, createCredential, listCredentials, revealCredential, revoke, identity, reminders,
     flush() { if (!flushing) flushing = dispatch().finally(() => { flushing = undefined }); return flushing },
     async retry(id: string, credential?: Credential, tx: SqlExecutor = store) {
       if (credential) await assertCredential(tx,credential,'deliveries:retry')

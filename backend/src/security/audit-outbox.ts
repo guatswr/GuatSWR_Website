@@ -1,10 +1,11 @@
 import { randomUUID } from 'node:crypto'
 import type { Row, SqlExecutor, SqliteStore } from '../database/sqlite.js'
+import { redactSecrets } from './redact-secrets.js'
 
 interface Intent extends Row { id: string; username: string; action: string; details: string; created_at: string }
 export async function enqueueSecurityAudit(tx: SqlExecutor, username: string, action: string, details: string) {
   const id = randomUUID()
-  await tx.run('INSERT INTO security_audit_outbox(id,username,action,details) VALUES(?,?,?,?)', [id, username || 'System', action, details])
+  await tx.run('INSERT INTO security_audit_outbox(id,username,action,details) VALUES(?,?,?,?)', [id, username || 'System', action, redactSecrets(details)])
   return id
 }
 export function createSecurityAuditDispatcher(main: SqliteStore, audit: SqliteStore, report: (error: unknown) => void) {

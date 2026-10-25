@@ -5,7 +5,7 @@ import net from 'node:net'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { createRequire } from 'node:module'
-import { fixture,token } from '../helpers/fixture.mjs'
+import { fixture,token,get,run } from '../helpers/fixture.mjs'
 const require=createRequire(import.meta.url)
 const {botScopes}=require('@guatswr/shared/bot')
 it('integrates member-sync BFF writes and refreshes warmed public members after Bot callbacks',async()=>{
@@ -59,4 +59,13 @@ it('integrates member-sync BFF writes and refreshes warmed public members after 
   await expect.poll(async()=> (await call('/api/content/members')).data.members.length,{timeout:8000,interval:500}).toBe(3)
   expect((await call('/api/bff/admin/member-sync/requests',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify({group_id:'123456'})})).response.status).toBe(403)
   expect(JSON.stringify([request.data,list.data,after.data])).not.toMatch(/eyJ[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\./)
+  const deliveries=await call('/api/bff/admin/bot-deliveries?page=1')
+  expect(deliveries.response.status).toBe(200)
+  expect(deliveries.data.items.length).toBeGreaterThan(0)
+  expect(JSON.stringify(deliveries.data)).not.toMatch(/"payload"|"target_id"|"recipient_user_id"|"secret_hash"/)
+  const delivery=deliveries.data.items[0]
+  await run(f.db,"UPDATE bot_deliveries SET status='failed',attempts=2 WHERE id=?",[delivery.id])
+  expect((await call(`/api/bff/admin/bot-deliveries?id=${delivery.id}`,{method:'POST',headers:{origin,'content-type':'application/json'},body:'{}'})).response.status).toBe(403)
+  expect((await call(`/api/bff/admin/bot-deliveries?id=${delivery.id}`,{method:'POST',headers,body:'{}'})).response.status).toBe(200)
+  expect(await get(f.db,'SELECT status,attempts FROM bot_deliveries WHERE id=?',[delivery.id])).toEqual({status:'pending',attempts:0})
 })

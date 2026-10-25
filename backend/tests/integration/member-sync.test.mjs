@@ -134,6 +134,7 @@ it('sends service commands separately from private profile reminders and records
   expect(received[0]).toMatchObject({kind:'command',event:'members.sync.request',target:{type:'service',bot_id:f.client.id},data:{request_id:job.id,group_id:'123456'}})
   await f.batch(job.id,rows);await f.complete(job.id,2);await f.apply(job.id);await worker.flush()
   const dm=received.find(item=>item.event==='members.profile_required')
+  expect(dm.data.admin_path).toBe('/admin/bot?section=profiles')
   expect(dm.target).toMatchObject({type:'private',qq:'99999'});expect(dm.data.members).toEqual([expect.objectContaining({qq:'22222'})])
   expect((await get(f.db,'SELECT message_status FROM bot_deliveries WHERE id=?',[dm.delivery_id])).message_status).toBe('pending')
   const receipt=()=>f.http.post(`${prefix}/v1/deliveries/${dm.delivery_id}/receipt`).set(f.bot).send({status:'sent'})

@@ -29,7 +29,7 @@ schemas.OnThisDayResponse = { type: 'object', required: ['date','month_day','tim
   broadcast_images: { type: 'array', uniqueItems: true, items: { type: 'string', format: 'uri' }, description: 'Deduplicated image URLs from this page, to accompany broadcast_text without sending a Bot token to image URLs.' },
   items: { type: 'array', items: { $ref: '#/components/schemas/OnThisDayItem' } }
 } };
-const doc = { openapi: '3.0.3', info: { title: 'GuatSWR Bot Platform', version: '1.0.0', description: 'Additive APIs. Core requires main4; member sync requires main5. BOT_PLATFORM_ENABLED=true. See BOT-API.md.' },
+const doc = { openapi: '3.0.3', info: { title: 'GuatSWR Bot Platform', version: '1.0.0', description: 'Additive APIs. Core requires main4; member sync requires main5; recoverable tokens require main6 and an independent encryption key. BOT_PLATFORM_ENABLED=true. See BOT-API.md.' },
   servers: [{ url: '/api/bot' }], paths: {}, components: { securitySchemes: {
     botToken: { type: 'http', scheme: 'bearer', description: 'Scoped gwb_ service token; never a website JWT.' },
     websiteJwt: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
@@ -93,5 +93,6 @@ add('/v1/deliveries/{id}/receipt','post','Acknowledge actual private message del
 add('/members/revision','get','Public member-data revision, without QQ or group details','query:read');
 Object.assign(doc.paths['/members/revision'].get,{operationId:'members_revision',servers:[{url:'/api'}],security:[],'x-public-extension':true});
 delete doc.paths['/members/revision'].get['x-required-scope'];
+add('/admin/credentials/{id}/reveal','post','Reveal encrypted service token for current super_admin; no-store and audited; main6 and external encryption key required','website');
 fs.writeFileSync(path.join(__dirname, '../docs/bot-openapi.yaml'), yaml.dump(doc, { lineWidth: 110, noRefs: true }));
 console.log(`Documented ${id} additive Bot API operations`);

@@ -27,8 +27,10 @@ function frozenRoutes() {
   expect(bot).toMatch(/router\.use\(createBotApi\(/)
   expect(api).toMatch(/router\.use\(createMemberSyncApi\(/)
   const sync=readFileSync(new URL('integrations/bot/member-sync-api.ts',root),'utf8')
-  for(const route of sync.matchAll(/router\.(get|post|put|delete)\(['"]([^'"]+)['"]/g))
-    routes.push({method:route[1]!.toUpperCase(),path:`/api/bot${route[2]}`})
+  for(const source of [api,sync]) {
+    for(const route of source.matchAll(/router\.(get|post|put|delete)\(['"]([^'"]+)['"]/g))
+      routes.push({method:route[1]!.toUpperCase(),path:`/api/bot${route[2]}`})
+  }
   return routes
 }
 const routes = frozenRoutes()

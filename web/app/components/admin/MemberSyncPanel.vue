@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { useQuery } from '@tanstack/vue-query'
 import { ElMessage,ElMessageBox } from 'element-plus'
-import { memberSyncSettingsResponseSchema,memberSyncSettingsSchema,memberSyncJobSchema,memberSyncSummarySchema } from '@guatswr/shared/bot'
+import { memberSyncSettingsResponseSchema,memberSyncSettingsSchema,memberSyncJobSchema,memberSyncSummarySchema,botCredentialListSchema } from '@guatswr/shared/bot'
 import AdminPanel from './Panel.vue'
 import type { AdminMember } from '@guatswr/shared'
 const props=defineProps<{members:readonly AdminMember[]}>()
 const api=useAdminApi()
+const credentials=useQuery({queryKey:['admin','bot-credentials'],retry:false,queryFn:({signal})=>api.botCredentials('GET',undefined,value=>botCredentialListSchema.parse(value).items,undefined,signal)})
+const syncCredentials=computed(()=>(credentials.data.value || []).filter(item=>item.revoked_at===null && item.scopes.includes('members:sync') && item.scopes.includes('deliveries:ack')))
 const emit=defineEmits<{applied:[]}>()
 const settings=useQuery({queryKey:['admin','member-sync-settings'],queryFn:({signal})=>api.memberSync('settings','GET',undefined,value=>memberSyncSettingsResponseSchema.parse(value),undefined,signal)})
 const jobs=useQuery({queryKey:['admin','member-sync-jobs'],refetchInterval:15000,queryFn:({signal})=>api.memberSync('requests','GET',undefined,value=>{
@@ -75,7 +77,7 @@ const jobSummary=(job:ReturnType<typeof memberSyncJobSchema.parse>)=>preview.dat
       <summary class="admin-button admin-button--quiet">配置同步与手动采集</summary>
     <form class="admin-form-grid" @submit.prevent="save">
       <label><input v-model="form.enabled" type="checkbox"> 启用定时采集</label>
-      <div class="admin-field"><label for="sync-bot-id">Bot服务凭据ID</label><input id="sync-bot-id" v-model="form.credential_id" required><small>需授予 members:sync、deliveries:ack 及受管群权限。</small></div>
+      <div class="admin-field"><label for="sync-bot-id">Bot服务凭据</label><select id="sync-bot-id" v-model="form.credential_id" :required="form.enabled"><option value="">请选择站长创建的凭据</option><option v-if="form.credential_id && !syncCredentials.some(item=>item.id===form.credential_id)" :value="form.credential_id" disabled>原凭据不可用，请重新选择</option><option v-for="credential in syncCredentials" :key="credential.id" :value="credential.id">{{ credential.name }} · {{ credential.id }}</option></select><small>需授予 members:sync、deliveries:ack 及受管群权限。<NuxtLink to="/admin/bot?section=credentials">前往 Bot API 创建凭据</NuxtLink></small><span v-if="credentials.isError.value" role="alert">凭据读取失败。<button class="admin-button" type="button" @click="credentials.refetch()">重试</button></span></div>
       <div class="admin-field"><label for="sync-groups">受管QQ群号</label><input id="sync-groups" v-model="form.groups" required><small>逗号分隔；排在前面的群优先提供展示名。</small></div>
       <div class="admin-field"><label for="sync-admins">私信接收管理员的站内ID</label><input id="sync-admins" v-model="form.admin_user_ids" required><small>需已将管理员账号与此Bot的QQ身份绑定。</small></div>
       <div class="admin-field"><label for="sync-interval">采集间隔（分钟）</label><input id="sync-interval" v-model.number="form.interval_minutes" type="number" min="30" max="10080"></div>

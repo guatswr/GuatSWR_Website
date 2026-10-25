@@ -33,6 +33,7 @@ const sections: { title: string; items: MenuItem[] }[] = [
     { path: '/admin/home-links', label: '首页链接', icon: 'external', description: '编辑公开链接、图标与展示顺序' },
   ] },
   { title: '系统', items: [
+    { path: '/admin/bot', label: 'Bot 管理', icon: 'external', description: '管理机器人凭据、群同步、成员资料与通知投递' },
     { path: '/admin/logs', label: '操作日志', icon: 'book', description: '查询与管理后台操作记录' },
     { path: '/admin/users', label: '账号与权限', icon: 'users', description: '管理管理员账号、登录与访问限制', super: true },
     { path: '/admin/backups', label: '备份管理', icon: 'calendar', description: '配置自动备份、下载与管理备份文件', super: true },

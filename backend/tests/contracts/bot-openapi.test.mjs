@@ -2,14 +2,14 @@ import fs from 'node:fs'
 import { createRequire } from 'node:module'
 import { expect,it } from 'vitest'
 const require=createRequire(import.meta.url)
-it('documents 38 Bot operations plus the public member revision and keeps shared input schemas in sync',()=>{
+it('documents 39 Bot operations plus the public member revision and keeps shared input schemas in sync',()=>{
  const doc=require('js-yaml').load(fs.readFileSync(new URL('../../docs/bot-openapi.yaml',import.meta.url),'utf8'))
  const shared=require('@guatswr/shared/bot')
  const models={CredentialInput:'botCredentialSchema',SubscriptionInput:'botSubscriptionSchema',BindInput:'botLinkSchema',SignupInput:'botSignupSchema',ReviewInput:'botReviewSchema'}
  for(const [name,key] of Object.entries(models)) expect(doc.components.schemas[name]).toEqual(shared[key].toJSONSchema({io:'input',target:'openapi-3.0',unrepresentable:'any'}))
  const operations=Object.values(doc.paths).flatMap(item=>Object.values(item))
- expect(operations).toHaveLength(39)
- expect(new Set(operations.map(o=>o.operationId)).size).toBe(39)
+ expect(operations).toHaveLength(40)
+ expect(new Set(operations.map(o=>o.operationId)).size).toBe(40)
  const today=doc.paths['/v1/on-this-day'].get
  expect(today.operationId).toBe('bot_24')
  expect(today['x-required-scope']).toBe('query:read')

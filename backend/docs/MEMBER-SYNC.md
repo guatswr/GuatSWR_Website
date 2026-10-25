@@ -6,9 +6,9 @@
 
 1. 在副本完成验证和备份后显式升级主库到 **5**，审计库仍为 2：`pnpm --filter guiair-backend db:migrate upgrade --data-dir /absolute/private/data`。启动不执行 DDL。当前代码可在旧库关闭同步时继续运行；旧发行构建不认识 main5，不能直接当作回退应用。
 2. 设置 `BOT_PLATFORM_ENABLED=true`，配好最终 `ASTRBOT_WEBHOOK_URL` 和出站 `ASTRBOT_TOKEN`。成员同步设置默认 disabled，不因升级自动发送任何采集请求。
-3. 创建 Bot 服务凭据，授予 **members:sync**、**deliveries:ack** 及允许采集的群。插件回调使用该 `gwb_…`；它不同于出站 Webhook token。
+3. 由站长在管理面板「系统 → Bot 管理 → 凭据与权限」手动创建 Bot 服务凭据，授予 **members:sync**、**deliveries:ack** 及允许采集的群，保存仅显示一次的密钥。插件回调使用该 `gwb_…`；它不同于出站 Webhook token。
 4. 私信接收管理员先登录网站，通过已有一次性绑定码接口绑定此 Bot 的 QQ 身份。接收人配置使用网站管理员的整数用户 ID，不是直接填写任意 QQ。
-5. 后台「住民管理 → QQ群成员同步 → 配置同步与手动采集」设置 Bot 凭据 ID、群号、间隔、接收人。默认间隔 360 分钟；可配 30–10080 分钟。多群列表顺序确定自动昵称的来源优先级。
+5. 后台「Bot 管理 → 群成员同步 → 配置同步与手动采集」从下拉框选择已创建且具备上述两项权限的有效 Bot 凭据，再设置群号、间隔、接收人。默认间隔 360 分钟；可配 30–10080 分钟。多群列表顺序确定自动昵称的来源优先级。
 6. 给旧成员关联 QQ，再手动请求第一次采集。首次完整快照只预览；管理员核验后应用。QQ 未关联的旧记录不按昵称自动合并；可以明确确认保留未关联档案。
 7. 插件实现并联调后再启用定时采集。调度状态持久化，重启不会重复补发所有历史周期。同群至多一个活动任务。
 
@@ -31,7 +31,7 @@
 | POST `/v1/member-sync/requests/:id/fail` | members:sync | 采集失败，不改变公开名册 |
 | POST `/v1/deliveries/:id/receipt` | deliveries:ack | 私信实际发送结果，与 HTTP 接收成功分开 |
 
-公共 `GET /api/members/revision` 只返回 `{ "revision": 123 }`，不含 QQ 或群信息。完整机器契约见 [bot-openapi.yaml](bot-openapi.yaml)：38 个 Bot 操作，加 1 个公共版本接口；原 71 个操作另保留在原 OpenAPI。
+公共 `GET /api/members/revision` 只返回 `{ "revision": 123 }`，不含 QQ 或群信息。完整机器契约见 [bot-openapi.yaml](bot-openapi.yaml)：39 个 Bot 操作，加 1 个公共版本接口；原 71 个操作另保留在原 OpenAPI。
 
 网站 BFF 使用封闭路径映射 `/api/bff/admin/member-sync/{settings|requests|job|apply|profile|profiles}`，`job/apply/profile` 的 ID 从经过验证的 `?id=` 获取。所有写入照常校验站点会话、当前权限、Origin 和 CSRF；后端 JWT 不进入浏览器。
 
@@ -126,7 +126,7 @@ Content-Type: image/png
   "data":{
     "count":1,"initial":false,
     "members":[{"id":42,"qq":"123456789","name":"群名片"}],
-    "truncated":false,"admin_path":"/admin/members?pending=1"
+    "truncated":false,"admin_path":"/admin/bot?section=profiles"
   }
 }
 ```
@@ -142,3 +142,9 @@ Content-Type: image/png
 本功能仍默认关闭，插件未在此仓库实现。测试使用隔离双库、本地模拟接收器和真实 Nuxt/浏览器，未迁移生产数据库或给真实 QQ 发消息。调用现有验包/恢复工具建立恢复点后再显式升级 main5；保持当前运行代码以关闭功能回退，不能把旧快照覆盖新写入。
 
 开发验证：先构建 shared 和后端，构建 web，运行 `test:bff`；浏览器专项使用 `pnpm --filter guiair-backend test:ui`，需要安装 Playwright Chromium，并通过 `BACKEND_BFF_OUTPUT` 指向 web 生产产物。完整记录见 [迁移证据](../../docs/backend-modernization/evidence/MEMBER-SYNC-2026-10-25.md)。
+
+## 管理端统一入口
+
+`/admin/bot` 按 `section` 查询参数分区：`credentials`（凭据与权限）、`sync`（群同步和快照）、`profiles`（QQ 关联、跟随选项、资料待办）、`deliveries`（通知记录和重试）。普通管理员只能使用成员资料区，站长可使用全部区域；API 权限边界不变。
+
+住民管理保留网站资料维护，Bot 设置入口跳到所选成员的 `profiles&member=<id>`。Bot 页可回到 `/admin/members?edit=<id>` 编辑该成员网站资料。旧通知中的 `/admin/members?pending=1` 和旧 `#member-sync` 入口由前端替换导航到 Bot 页，已排队的通知无需重写。

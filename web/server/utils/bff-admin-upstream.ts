@@ -31,6 +31,12 @@ export const ADMIN_UPSTREAM_ROUTES = {
   'member-sync.apply': {method:'POST',path:'/api/bot/admin/member-sync/requests/:id/apply',paramFormats:{id:'uuid'}},
   'member-sync.profile': {method:'PUT',path:'/api/bot/admin/members/:id/sync-profile'},
   'member-sync.profiles': {method:'GET',path:'/api/bot/admin/member-sync/profiles'},
+  'bot.credentials': { method: 'GET', path: '/api/bot/admin/credentials' },
+  'bot.createCredential': { method: 'POST', path: '/api/bot/admin/credentials', maxRequestBytes: 16 * 1024 },
+  'bot.revokeCredential': { method: 'DELETE', path: '/api/bot/admin/credentials/:id', paramFormats: { id: 'uuid' } },
+  'bot.revealCredential': { method: 'POST', path: '/api/bot/admin/credentials/:id/reveal', paramFormats: { id: 'uuid' } },
+  'bot.deliveries': { method: 'GET', path: '/api/bot/admin/deliveries', query: ['page','limit'] },
+  'bot.retryDelivery': { method: 'POST', path: '/api/bot/admin/deliveries/:id/retry', paramFormats: { id: 'uuid' } },
 
   'history.list': { method: 'GET', path: '/api/history', query: ['includeDeleted'] },
   'history.create': { method: 'POST', path: '/api/history', maxRequestBytes: 64 * 1024 },
