@@ -14,7 +14,7 @@ defineProps({
     <a
       v-for="(link, index) in links"
       :key="link.url"
-      v-reveal="index * 60"
+      v-reveal="index * 110"
       :href="link.url"
       target="_blank"
       rel="noopener noreferrer"
@@ -29,7 +29,7 @@ defineProps({
         </span>
       </div>
 
-      <div class="mt-3 flex items-start gap-3.5">
+      <div class="social-channel-main mt-3 flex items-start gap-3.5">
         <span
           class="social-channel-icon"
           :style="{
@@ -61,7 +61,7 @@ defineProps({
           {{ link.extra }}
         </span>
         <span class="social-channel-hint" aria-hidden="true">
-          前往渠道 <span class="transition-transform group-hover:translate-x-0.5">→</span>
+          前往渠道 <span>→</span>
         </span>
       </div>
     </a>
@@ -70,6 +70,8 @@ defineProps({
 
 <style scoped>
 .social-channel {
+  --channel-ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --channel-stagger: var(--reveal-delay, 0ms);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -93,8 +95,11 @@ defineProps({
 .social-channel:is(:hover, :focus-visible) {
   border-color: #0284c7;
   background-color: #f8fafc;
-  transform: translateY(-2px);
   box-shadow: 0 4px 12px -2px rgb(2 132 199 / 0.08);
+}
+.social-channel:focus-visible {
+  outline: 2px solid #0284c7;
+  outline-offset: 4px;
 }
 :global(.dark .social-channel:is(:hover, :focus-visible)) {
   border-color: #38bdf8;
@@ -148,10 +153,6 @@ defineProps({
   width: 0.875rem;
   transition: transform 200ms ease;
 }
-.social-channel:is(:hover, :focus-visible) .social-channel-arrow {
-  transform: translate(1px, -1px);
-}
-
 .social-channel-icon {
   display: flex;
   height: 2.625rem;
@@ -260,8 +261,95 @@ defineProps({
   color: #38bdf8;
 }
 
-@media (prefers-reduced-motion: reduce) {
+@media (prefers-reduced-motion: no-preference) {
+  /* Keep entrance properties first: shared reveal delays apply to opacity,
+     translate and scale, while hover feedback remains immediate. */
+  .social-channel.club-reveal {
+    transition:
+      opacity 560ms var(--channel-ease),
+      translate 720ms var(--channel-ease),
+      scale 720ms var(--channel-ease),
+      transform 320ms var(--channel-ease),
+      border-color 220ms ease,
+      box-shadow 320ms ease,
+      background-color 220ms ease;
+  }
+  .social-channel.club-reveal[data-reveal='visible'] {
+    transition-delay:
+      var(--channel-stagger), var(--channel-stagger), var(--channel-stagger),
+      0ms, 0ms, 0ms, 0ms;
+  }
+  .social-channel.club-reveal[data-reveal='pending']:not(:focus-within) {
+    translate: 0 28px;
+    scale: 0.985;
+    transition: none;
+  }
+  .social-channel-main,
+  .social-channel-footer {
+    transition:
+      opacity 450ms var(--channel-ease),
+      translate 600ms var(--channel-ease);
+    transition-delay: calc(var(--channel-stagger) + 70ms);
+  }
+  .social-channel-footer {
+    transition-delay: calc(var(--channel-stagger) + 110ms);
+  }
+  .social-channel[data-reveal='pending']:not(:focus-within) .social-channel-main,
+  .social-channel[data-reveal='pending']:not(:focus-within) .social-channel-footer {
+    opacity: 0;
+    translate: 0 8px;
+    transition: none;
+  }
+  .social-channel.club-reveal:focus-within,
+  .social-channel:focus-within .social-channel-main,
+  .social-channel:focus-within .social-channel-footer {
+    transition-delay: 0ms;
+    transition-duration: 0ms;
+  }
+  .social-channel-icon {
+    transition: transform 400ms var(--channel-ease);
+  }
+  .social-channel-arrow {
+    transition: transform 320ms var(--channel-ease);
+  }
+  .social-channel:focus-visible .social-channel-arrow {
+    transform: translate(2px, -2px);
+  }
+  .social-channel:active {
+    transform: translateY(-1px);
+  }
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .social-channel:hover {
+    transform: translateY(-4px);
+  }
+  .social-channel:hover .social-channel-icon {
+    transform: translateY(-1px) scale(1.04);
+  }
+  .social-channel:hover .social-channel-arrow {
+    transform: translate(2px, -2px);
+  }
+  .social-channel:active {
+    transform: translateY(-1px);
+  }
+}
+@media (max-width: 639px) and (prefers-reduced-motion: no-preference) {
+  .social-channel {
+    --channel-stagger: 0ms;
+  }
+  .social-channel.club-reveal {
+    transition-duration: 450ms, 560ms, 560ms, 320ms, 220ms, 320ms, 220ms;
+  }
+  .social-channel.club-reveal[data-reveal='pending']:not(:focus-within) {
+    translate: 0 16px;
+    scale: 1;
+  }
+}
+@media (prefers-reduced-motion: reduce), print {
   .social-channel,
+  .social-channel-main,
+  .social-channel-footer,
+  .social-channel-icon,
   .social-channel-no,
   .social-channel-name,
   .social-channel-arrow,
@@ -269,6 +357,8 @@ defineProps({
   .social-channel-hint {
     transition: none !important;
     transform: none !important;
+    translate: none !important;
+    scale: none !important;
   }
 }
 </style>
