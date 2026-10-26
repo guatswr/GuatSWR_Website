@@ -16,9 +16,6 @@ export const useUiStore = defineStore('ui-preferences', () => {
     root.classList.toggle('dark', resolvedTheme.value === 'dark')
     root.dataset.theme = resolvedTheme.value
     root.style.colorScheme = resolvedTheme.value
-    document.querySelector('meta[name="theme-color"]')?.setAttribute(
-      'content', resolvedTheme.value === 'dark' ? '#101923' : '#fbfbf8',
-    )
   }
   function onStorage(event: StorageEvent) { if (event.key === THEME_KEY || event.key === null) refresh() }
   function toggleTheme() {

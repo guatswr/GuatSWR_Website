@@ -12,7 +12,7 @@ import { onBeforeUnmount, onMounted, ref } from 'vue'
  */
 defineProps({
   title: { type: String, required: true },
-  maxWidth: { type: String, default: '640px' }
+  maxWidth: { type: String, default: '40rem' }
 })
 const emit = defineEmits<{ close: [] }>()
 

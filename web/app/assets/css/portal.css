@@ -1,14 +1,24 @@
 /* Shared presentation styles for the public community portal. */
 html {
   color-scheme: light;
+  background-color: var(--browser-canvas-background);
+  /* Preserve user text preferences and native page zoom. Grow layout and
+     display type independently rather than scaling every rem with the viewport. */
+  font-size: 100%;
 }
 html.dark {
   color-scheme: dark;
+  --browser-canvas-background: #101923;
 }
 :root {
+  --browser-canvas-background: #fbfbf8;
   --club-serif: ui-serif, 'Noto Serif SC', 'Songti SC', 'Source Han Serif SC',
     SimSun, serif;
   --club-gutter: 3rem;
+  --club-container-max: clamp(76rem, calc(76rem + (100vw - 90rem) * 0.4), 112rem);
+}
+html[data-page-surface='hero'] {
+  --browser-canvas-background: #0f172a;
 }
 .club-paper {
   color: #243440;
@@ -53,8 +63,10 @@ html.dark {
   color: #7dd3fc;
 }
 .club-container {
-  width: min(100% - var(--club-gutter), 76rem);
+  width: min(100% - var(--club-gutter), var(--club-container-max));
   margin-inline: auto;
+  padding-inline-start: env(safe-area-inset-left, 0px);
+  padding-inline-end: env(safe-area-inset-right, 0px);
 }
 .club-hero {
   background-color: #f2f5f4;
@@ -211,6 +223,14 @@ html.dark {
   color: #e2e8f0;
   background: #0f172a;
   border-color: #334155;
+}
+/* Carbon's editorial model keeps a bounded, centered canvas; catalog grids
+   use its extra width for columns. Reading surfaces keep their own measure.
+   CSS viewport width already accounts for OS scaling and browser page zoom. */
+@media screen and (min-width: 1536px) {
+  :root {
+    --club-gutter: clamp(3rem, 4vw, 7rem);
+  }
 }
 @media (max-width: 639px) {
   :root {

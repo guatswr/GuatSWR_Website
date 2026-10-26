@@ -15,6 +15,19 @@ async function openNavLink(page: Page, isMobile: boolean, name: string): Promise
 }
 
 test.describe('homepage', () => {
+  test('opts into edge-to-edge and keeps the browser surface dark in day mode', async ({ page }) => {
+    await page.addInitScript(() => localStorage.setItem('theme-preference', 'light'))
+    await page.goto('/')
+    await expect(page.locator('.club-banner-background')).toHaveAttribute('data-image-state', 'ready')
+    await expect(page.locator('meta[name="viewport"]')).toHaveCount(1)
+    await expect(page.locator('meta[name="viewport"]')).toHaveAttribute('content', /viewport-fit=cover/)
+    await expect(page.locator('meta[name="theme-color"]')).toHaveCount(1)
+    await expect(page.locator('meta[name="theme-color"]')).toHaveAttribute('content', '#0f172a')
+    await expect(page.locator('html')).toHaveAttribute('data-page-surface', 'hero')
+    await expect(page.locator('html')).toHaveCSS('background-color', 'rgb(15, 23, 42)')
+    await expect(page.locator('body')).toHaveCSS('background-color', 'rgb(15, 23, 42)')
+  })
+
   test('is readable and shows a real hero image with JavaScript disabled', async ({
     browser,
     request

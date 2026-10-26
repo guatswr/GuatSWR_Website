@@ -514,6 +514,7 @@ onBeforeUnmount(() => {
   --nav-spring: cubic-bezier(0.34, 1.24, 0.64, 1);
   --nav-collapse: cubic-bezier(0.32, 0.94, 0.6, 1);
   --nav-duration: 540ms;
+  padding-top: env(safe-area-inset-top, 0px);
   color: var(--nav-ink);
   background-color: #fbfbf8;
   border-bottom: 1px solid rgb(148 163 184 / 0.22);
@@ -635,7 +636,7 @@ onBeforeUnmount(() => {
 }
 .club-wordmark-subtitle {
   display: block;
-  font-size: 9px;
+  font-size: 0.5625rem;
   letter-spacing: 0.18em;
   line-height: 1;
   height: 0.75rem;
@@ -664,7 +665,7 @@ onBeforeUnmount(() => {
   display: inline-flex;
   align-items: center;
   font-family: ui-monospace, monospace;
-  font-size: 10.5px;
+  font-size: 0.65625rem;
   font-weight: 400;
   line-height: 1;
   opacity: 0.6;

@@ -284,7 +284,7 @@ onBeforeUnmount(() => {
     <EventModal
       v-if="formOpen"
       title="发布新活动"
-      max-width="720px"
+      max-width="45rem"
       @close="formOpen = false"
     >
       <EventForm
@@ -303,7 +303,7 @@ onBeforeUnmount(() => {
     <EventModal
       v-if="signupOpen && selected"
       title="活动报名"
-      max-width="640px"
+      max-width="40rem"
       @close="signupOpen = false"
     >
       <EventSignup :event="selected" :disabled="signupDisabled" />
@@ -312,7 +312,7 @@ onBeforeUnmount(() => {
     <EventModal
       v-if="previewOpen && selected"
       title="参赛名单"
-      max-width="640px"
+      max-width="40rem"
       @close="previewOpen = false"
     >
       <div

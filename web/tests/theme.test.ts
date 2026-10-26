@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest'
 import { runInNewContext } from 'node:vm'
-import { parseThemeMode, resolveTheme, THEME_BOOT_SCRIPT } from '../app/utils/theme'
+import { browserThemeColor, parseThemeMode, resolveTheme, THEME_BOOT_SCRIPT } from '../app/utils/theme'
 
 describe('archived Beijing theme schedule', () => {
   it.each([
@@ -26,7 +26,7 @@ describe('archived Beijing theme schedule', () => {
       class Clock extends Date { static override now() { return Date.parse(date) } }
       runInNewContext(THEME_BOOT_SCRIPT, {
         Date: Clock,
-        document: { documentElement: root },
+        document: { documentElement: root, querySelector: () => null },
         localStorage: { getItem: () => {
           if (mode === 'storage-failed') throw new Error('storage unavailable')
           return mode
@@ -37,5 +37,26 @@ describe('archived Beijing theme schedule', () => {
       expect(root.style.colorScheme).toBe(expected)
       expect(dark).toBe(expected === 'dark')
     }
+  })
+  it.each([
+    ['light', '/', '#0f172a'],
+    ['dark', '/', '#0f172a'],
+    ['light', '/social', '#fbfbf8'],
+    ['dark', '/social', '#101923'],
+  ] as const)('uses the page surface for browser chrome (%s, %s)', (theme, path, expected) => {
+    expect(browserThemeColor(theme, path)).toBe(expected)
+  })
+  it('keeps the homepage gesture-area color dark before hydration in day mode', () => {
+    let color = '#38bdf8'
+    const root = { classList: { toggle: () => {} }, dataset: { pageSurface: 'hero' }, style: {} }
+    runInNewContext(THEME_BOOT_SCRIPT, {
+      Date,
+      document: {
+        documentElement: root,
+        querySelector: () => ({ setAttribute: (_name: string, value: string) => { color = value } }),
+      },
+      localStorage: { getItem: () => 'light' },
+    })
+    expect(color).toBe('#0f172a')
   })
 })

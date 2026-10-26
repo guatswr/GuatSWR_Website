@@ -19,7 +19,7 @@ defineProps({
 <template>
   <section
     v-scroll-reveal="{ variant: 'hero' }"
-    class="club-banner relative isolate flex min-h-[100svh] items-center justify-center overflow-hidden bg-slate-900 pt-16"
+    class="club-banner relative isolate flex items-center justify-center overflow-hidden bg-slate-900 pt-16"
     aria-labelledby="home-title"
   >
     <ProgressiveImage
@@ -97,7 +97,7 @@ defineProps({
     </div>
     <a
       href="#interests"
-      class="club-scroll-cue absolute bottom-4 left-1/2 z-10 flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap text-[10px] tracking-[.2em] text-white/80"
+      class="club-scroll-cue absolute bottom-4 left-1/2 z-10 flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap text-[0.625rem] tracking-[.2em] text-white/80"
     >
       <span class="club-scroll-line" aria-hidden="true" />向下，遇见同好
     </a>
@@ -105,6 +105,39 @@ defineProps({
 </template>
 
 <style scoped>
+.club-banner {
+  /* Follow the visible viewport when mobile browser controls collapse, with
+     fallbacks for WebViews that do not support the newer viewport units. */
+  min-height: 100vh;
+  min-height: 100svh;
+  min-height: 100dvh;
+}
+.club-banner-background {
+  container-type: normal;
+  background: #0f172a;
+}
+/* Full-bleed artwork must stretch with the hero even when its height comes
+   from min-height or grows with content. Avoid a chain of percentage heights
+   through the progressive loader on tablet browsers. */
+.club-banner-background :deep(.pi-surface) {
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+}
+.club-banner-background :deep(img.pi-full) {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.club-banner-background :deep(.pi-placeholder) {
+  background: #0f172a;
+}
+.club-banner-background :deep(.pi-message) {
+  color: #cbd5e1;
+}
 .club-banner-shade {
   background: rgb(2 6 23 / 0.48);
 }
@@ -116,6 +149,9 @@ defineProps({
 }
 .club-banner-copy {
   text-shadow: 0 2px 8px rgb(0 0 0 / 0.65);
+}
+.club-scroll-cue {
+  bottom: max(1rem, calc(env(safe-area-inset-bottom, 0px) + 0.5rem));
 }
 .club-banner-actions {
   gap: 1.5rem;
@@ -263,8 +299,6 @@ defineProps({
 @media (max-width: 1023px) {
   .club-banner {
     flex-direction: column;
-    min-height: 100vh;
-    min-height: 100svh;
     padding-top: max(4rem, calc(env(safe-area-inset-top) + 4rem));
   }
   .club-banner-shade {
@@ -386,7 +420,19 @@ defineProps({
     );
   }
   .club-banner-title {
-    font-size: clamp(3.5rem, 6vw, 5.5rem);
+    /* Keep the rem contribution so page zoom still enlarges the heading. */
+    font-size: clamp(3.5rem, calc(2.5rem + 2.5vw), 7rem);
+  }
+  .club-banner-intro {
+    max-width: 42rem;
+  }
+  .club-banner-copy {
+    max-width: 36em;
+    font-size: 1.25rem;
+    line-height: 1.8;
+  }
+  .club-banner-note {
+    font-size: 0.8125rem;
   }
 }
 @media (prefers-reduced-motion: reduce) {

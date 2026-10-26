@@ -115,6 +115,7 @@ const quickLinks = [
 .club-footer {
   color: #e2e8f0;
   background: #0b1220;
+  padding-bottom: env(safe-area-max-inset-bottom, env(safe-area-inset-bottom, 0px));
 }
 .club-footer-heading {
   color: #7dd3fc;

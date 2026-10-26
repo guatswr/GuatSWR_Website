@@ -158,6 +158,7 @@ export default defineNuxtConfig({
   app: {
     head: {
       htmlAttrs: { lang: 'zh-CN' },
+      viewport: 'width=device-width, initial-scale=1, viewport-fit=cover',
       title: '桂航绯想天',
       meta: [{ name: 'theme-color', content: '#38bdf8' }],
       link: [{ rel: 'icon', type: 'image/png', sizes: '64x64', href: '/favicon.png' }],

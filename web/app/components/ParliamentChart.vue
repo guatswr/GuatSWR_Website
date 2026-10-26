@@ -287,7 +287,7 @@ const description = computed(() => {
 <style scoped>
 .parliament-chart-container {
   width: 100%;
-  max-width: 780px;
+  max-width: 48.75rem;
   margin: 0 auto;
 }
 

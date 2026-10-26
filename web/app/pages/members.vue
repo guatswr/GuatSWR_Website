@@ -190,7 +190,7 @@ usePublicPageSeo(() => ({
 
       <div
         v-else
-        class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
+        class="member-grid grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
         <article
           v-for="(member, index) in sortedMembers"
@@ -270,6 +270,12 @@ usePublicPageSeo(() => ({
 </template>
 
 <style scoped>
+@media screen and (min-width: 1920px) {
+  .member-grid {
+    grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
+  }
+}
+
 .member-filter-bar {
   display: flex;
   flex-wrap: wrap;

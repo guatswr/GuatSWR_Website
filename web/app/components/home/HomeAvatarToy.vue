@@ -763,7 +763,9 @@ onBeforeUnmount(() => {
 }
 @media (min-width: 1024px) {
   .club-avatar-toy {
-    --avatar-size: clamp(17rem, 26vw, 23rem);
+    /* Expand the illustration within the editorial canvas, while reserving
+       vertical room for the navigation and calls to action on short laptops. */
+    --avatar-size: clamp(13rem, min(calc(12rem + 12vw), 48svh), 28rem);
     --nine-size: clamp(2.5rem, 4vw, 3.5rem);
   }
 }

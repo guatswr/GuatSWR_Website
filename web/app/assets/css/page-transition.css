@@ -13,7 +13,7 @@
 
 /* Each root keeps its own navbar space, including when crossing home. */
 #main-content > .club-page-stack > :not(.club-home) {
-  margin-top: 4rem;
+  margin-top: calc(4rem + env(safe-area-inset-top, 0px));
 }
 
 .club-page-enter-active,

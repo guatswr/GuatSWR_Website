@@ -32,7 +32,7 @@
   overflow-x: clip;
   background-color: var(--event-page);
   color: var(--event-ink);
-  font-size: 14px;
+  font-size: 0.875rem;
 }
 
 .dark .events-stage {

@@ -170,7 +170,7 @@ defineProps({
 
 .social-channel-name {
   display: block;
-  font-size: 0.9375rem;
+  font-size: 1rem;
   font-weight: 600;
   line-height: 1.45;
   color: #0f172a;
@@ -192,7 +192,7 @@ defineProps({
   -webkit-box-orient: vertical;
   overflow: hidden;
   margin-top: 0.25rem;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   line-height: 1.6;
   color: #64748b;
 }
@@ -221,7 +221,7 @@ defineProps({
   text-overflow: ellipsis;
   white-space: nowrap;
   font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-  font-size: 0.6875rem;
+  font-size: 0.75rem;
   line-height: 1.5;
   color: #475569;
   background-color: #f8fafc;
