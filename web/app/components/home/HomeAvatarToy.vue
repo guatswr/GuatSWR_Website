@@ -112,20 +112,59 @@ const superFlakes: readonly Spark[] = [
   { angle: '150deg', turn: '-110deg', delay: '35ms' }
 ]
 
-const cry = computed(() =>
-  isFrozen.value
-    ? '冻符「Perfect Freeze」'
-    : isSuper.value
-      ? 'BAKA!!!'
-      : 'BAKA！'
-)
-const dialogueGuide = computed(() => {
-  if (isFrozen.value) return 'BAKA！见识下咱的冰冻之力吧！'
-  const remaining = 9 - (burst.value % 9)
-  if (remaining === 1) return '就差一下！'
-  if (remaining <= 4) return `再戳 ${remaining} 下，咱带你去找大酱玩！`
-  return `戳满⑨下有惊喜哦，还差${remaining}下！`
+interface CirnoDialogueStage {
+  cry: string
+  guide: string
+}
+
+const CIRNO_STAGES: readonly CirnoDialogueStage[] = [
+  {
+    cry: '「本小姐可是最强的！」',
+    guide: '居然敢戳雾之湖的冰精？小心咱放冷气把你冻住咯！（①/⑨）'
+  },
+  {
+    cry: '「一、二……接下来是⑨！」',
+    guide: '寺子屋的算术题一点都不难，笨蛋才不会算错呢！（②/⑨）'
+  },
+  {
+    cry: '「把你像青蛙一样冻起来！」',
+    guide: '先冻成冰块再丢进水里解冻……嘿嘿，绝对不会碎掉的！（③/⑨）'
+  },
+  {
+    cry: '「不许叫咱 BAKA！！」',
+    guide: '那本说明书上写的「⑨.笨蛋」绝对是印错啦！（④/⑨）'
+  },
+  {
+    cry: '「那是大太法师吗？！」',
+    guide: '只要打倒那个特大型人偶，咱就是幻想乡天下无敌啦！（⑤/⑨）'
+  },
+  {
+    cry: '「周围开始结霜了哦！」',
+    guide: '就算站在正前方，这次也休想躲开咱的冰柱弹幕！（⑥/⑨）'
+  },
+  {
+    cry: '「连同英吉利牛一起冷藏吧！」',
+    guide: '雾之湖的寒气已经聚集起来了，人类的厚衣服可不管用！（⑦/⑨）'
+  },
+  {
+    cry: '「大酱快看！冷气满溢啦！」',
+    guide: '哼哼，本小姐真正的最强冰符已经准备好咯！（⑧/⑨）'
+  },
+  {
+    cry: '冻符「Perfect Freeze」',
+    guide: 'あたいったら最強ね！见识下把一切冻住的妖精之力吧！（⑨/⑨）'
+  }
+]
+
+const currentStage = computed<CirnoDialogueStage>(() => {
+  if (isFrozen.value || isSuper.value) return CIRNO_STAGES[8]!
+  const mod = burst.value % 9
+  const index = mod === 0 ? 8 : mod - 1
+  return CIRNO_STAGES[index] ?? CIRNO_STAGES[0]!
 })
+
+const cry = computed(() => currentStage.value.cry)
+const dialogueGuide = computed(() => currentStage.value.guide)
 
 function play(forceSuper = false): void {
   if (isFrozen.value) return
