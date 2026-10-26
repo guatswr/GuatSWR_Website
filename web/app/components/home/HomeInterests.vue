@@ -54,12 +54,7 @@ defineProps({
 
 <style scoped>
 .home-interests {
-  --section-background: #edf5f5;
-  --lake-water: #dbe9eb;
-  --lake-shore: #5d8991;
-  --lake-mist: #f4f8f6;
-  --lake-veil: #eff6f480;
-  --lake-ice: #578fa5;
+  --section-background: var(--home-about-background, #f5f3ed);
   --interests-ink: #263e49;
   --interests-muted: #536a76;
   --interests-rule: #bed2da;
@@ -175,12 +170,7 @@ defineProps({
   color: var(--interest-accent);
 }
 html.dark .home-interests {
-  --section-background: #162630;
-  --lake-water: #203c46;
-  --lake-shore: #9cc3ca;
-  --lake-mist: #213940;
-  --lake-veil: #1b303980;
-  --lake-ice: #a2d9e7;
+  --section-background: var(--home-about-background, #1d272d);
   --interests-ink: #e1ebef;
   --interests-muted: #a7bdc8;
   --interests-rule: #3a5666;

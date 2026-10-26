@@ -5,6 +5,7 @@ import ClubIcon from '~/components/ClubIcon.vue'
 import ProgressiveImage from '~/components/ProgressiveImage.vue'
 import HomeSocialLinks from '~/components/HomeSocialLinks.vue'
 import HomeHero from '~/components/home/HomeHero.vue'
+import HomeSectionBackdrop from '~/components/home/HomeSectionBackdrop.vue'
 import { getThumbUrl } from '~/utils/image-url'
 import { formatArchiveDate } from '~/utils/club-date'
 import { normalizedGroupNumber } from '~/utils/site-config'
@@ -56,6 +57,7 @@ usePublicSeo({
       class="club-home-section club-home-archive py-16 sm:py-20"
       aria-labelledby="archive-title"
     >
+      <HomeSectionBackdrop variant="archive" />
       <div class="club-container">
         <div
           v-scroll-reveal
@@ -170,6 +172,7 @@ usePublicSeo({
       class="club-home-section club-home-community py-16 sm:py-20"
       aria-labelledby="community-title"
     >
+      <HomeSectionBackdrop variant="community" />
       <div class="club-container">
         <div class="grid gap-10 lg:grid-cols-[.85fr_1.15fr] lg:gap-20">
           <div v-scroll-reveal>
@@ -233,7 +236,7 @@ usePublicSeo({
   background-color: #0369a1;
 }
 
-/* Full-width color fields separate chapters, following SCTA's section rhythm. */
+/* Quiet color fields and expressive edges keep each chapter distinct. */
 .club-home {
   --home-about-background: #f5f3ed;
 }
@@ -241,8 +244,14 @@ usePublicSeo({
   --home-about-background: #1d272d;
 }
 .club-home-section {
+  position: relative;
+  isolation: isolate;
   background-color: var(--section-background);
   scroll-margin-top: 4rem;
+}
+.club-home-section > .club-container {
+  position: relative;
+  z-index: 1;
 }
 .club-home-archive {
   --section-background: #faf6ee;

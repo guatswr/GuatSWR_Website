@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ClubIcon from '~/components/ClubIcon.vue'
 import ProgressiveImage from '~/components/ProgressiveImage.vue'
+import HomeSectionBackdrop from './HomeSectionBackdrop.vue'
 import { getThumbUrl } from '~/utils/image-url'
 import { vScrollReveal } from '~/utils/scroll-motion'
 
@@ -13,6 +14,7 @@ defineProps({ mascot: { type: String, default: '' } })
     class="club-home-section club-home-about home-about"
     aria-labelledby="about-title"
   >
+    <HomeSectionBackdrop variant="about" />
     <div class="club-container home-about-layout">
       <div v-scroll-reveal class="home-about-copy">
         <p class="club-eyebrow">A LITTLE ABOUT US</p>
@@ -71,9 +73,14 @@ defineProps({ mascot: { type: String, default: '' } })
   --about-ink: #243440;
   --about-muted: #536472;
   --about-rule: #c7d1d0;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   padding-block: clamp(3rem, 5vw, 5rem) clamp(4rem, 7.5vw, 7.5rem);
 }
 .home-about-layout {
+  position: relative;
+  z-index: 1;
   display: grid;
   align-items: center;
   gap: 3rem;
