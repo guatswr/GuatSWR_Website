@@ -188,12 +188,21 @@ describe('ice field geometry', () => {
       const field = createIceField(width, height)
       expect(createIceField(width, height)).toEqual(field)
       expect(field.crystals.length).toBe(6)
+      expect(field.sheetCracks.length).toBe(8)
+      expect(field.dust.length).toBe(24)
       expect(field.panels.length).toBeLessThanOrEqual(48)
       expect(field.panels.length).toBeGreaterThanOrEqual(16)
       expect(new Set(field.panels.map((panel) => panel.id)).size).toBe(field.panels.length)
       for (const panel of field.panels) {
         expect(panel.facets.length).toBe(4)
-        expect(panel.points + panel.crack).not.toMatch(/NaN|Infinity/)
+        expect(panel.subFacets.length).toBeGreaterThanOrEqual(6)
+        expect(
+          panel.points +
+            panel.crownPoints +
+            panel.bevel +
+            panel.crack +
+            panel.hairlineCrack
+        ).not.toMatch(/NaN|Infinity/)
         expect(panel.delay + 1180).toBeLessThan(1450)
         const pairs = panel.points.split(' ').map((pair) => pair.split(',').map(Number))
         const center = pairs.reduce(
