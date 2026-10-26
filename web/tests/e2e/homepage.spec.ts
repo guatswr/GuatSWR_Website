@@ -15,6 +15,38 @@ async function openNavLink(page: Page, isMobile: boolean, name: string): Promise
 }
 
 test.describe('homepage', () => {
+  test('does not recenter the mobile hero when the gesture area changes', async ({ page, browserName }) => {
+    test.skip(browserName !== 'chromium', 'Safe-area overrides require Chromium CDP')
+    await page.setViewportSize({ width: 390, height: 720 })
+    const session = await page.context().newCDPSession(page)
+    await session.send('Emulation.setSafeAreaInsetsOverride', { insets: { bottom: 0, bottomMax: 32 } })
+    await page.goto('/')
+    await expect(page.locator('.club-banner-background')).toHaveAttribute('data-image-state', 'ready')
+    await page.evaluate(() => window.scrollTo({ top: 120, behavior: 'instant' }))
+    const positions = []
+    for (const bottom of [0, 32, 0, 32, 0]) {
+      await session.send('Emulation.setSafeAreaInsetsOverride', { insets: { bottom, bottomMax: 32 } })
+      positions.push(await page.evaluate(async () => {
+        await document.fonts.ready
+        await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+        const hero = document.querySelector('.club-banner')!
+        const intro = document.querySelector('.club-banner-intro')!
+        const image = document.querySelector('.club-banner-background img.pi-full')!
+        return {
+          height: hero.getBoundingClientRect().height,
+          intro: intro.getBoundingClientRect().top + window.scrollY,
+          scroll: window.scrollY,
+          imageGap: hero.getBoundingClientRect().bottom - image.getBoundingClientRect().bottom,
+        }
+      }))
+    }
+    for (const key of ['height', 'intro', 'scroll'] as const) {
+      const values = positions.map(position => position[key])
+      expect(Math.max(...values) - Math.min(...values)).toBeLessThan(1)
+    }
+    expect(positions.every(position => position.imageGap < 1)).toBe(true)
+  })
+
   test('opts into edge-to-edge and keeps the browser surface dark in day mode', async ({ page }) => {
     await page.addInitScript(() => localStorage.setItem('theme-preference', 'light'))
     await page.goto('/')

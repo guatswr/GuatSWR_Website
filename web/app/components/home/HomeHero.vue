@@ -106,11 +106,12 @@ defineProps({
 
 <style scoped>
 .club-banner {
-  /* Follow the visible viewport when mobile browser controls collapse, with
-     fallbacks for WebViews that do not support the newer viewport units. */
+  /* Browser controls can settle after a swipe. Keep their dynamic viewport
+     and gesture inset out of the document flow so the hero cannot recenter
+     under the finger. Rotation and actual window resizes still update svh. */
+  --hero-safe-area-bottom: env(safe-area-max-inset-bottom, 36px);
   min-height: 100vh;
   min-height: 100svh;
-  min-height: 100dvh;
 }
 .club-banner-background {
   container-type: normal;
@@ -318,7 +319,7 @@ defineProps({
     padding-top: clamp(1rem, 3svh, 2rem);
     padding-bottom: max(
       clamp(1.75rem, 4svh, 3rem),
-      calc(env(safe-area-inset-bottom) + 2rem)
+      calc(var(--hero-safe-area-bottom) + 2rem)
     );
     text-align: center;
   }
@@ -326,7 +327,7 @@ defineProps({
     position: relative;
     inset: auto;
     flex-shrink: 0;
-    margin-bottom: max(1rem, calc(env(safe-area-inset-bottom) + 0.5rem));
+    margin-bottom: max(1rem, calc(var(--hero-safe-area-bottom) + 0.5rem));
     translate: none;
   }
   .club-banner-intro {
