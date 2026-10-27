@@ -21,7 +21,7 @@
   <a href="#快速开始">快速开始</a> ·
   <a href="#本地调试指南">本地调试</a> ·
   <a href="#服务器部署教程">服务器部署</a> ·
-  <a href="#后续运维教程">后续运维</a> ·
+  <a href="#后续运维">后续运维</a> ·
   <a href="docs/releases/v2.0.0.md">v2.0.0 版本说明</a> ·
   <a href="https://github.com/guatswr/GuatSWR_Website/issues">问题反馈</a>
 </p>
@@ -47,13 +47,16 @@
   - [6. 本地调试常见报错速查](#6-本地调试常见报错速查)
 - [开发与质量门禁](#开发与质量门禁)
 - [服务器部署教程](#服务器部署教程)
-  - [1. 生产部署拓扑与运行约束](#1-生产部署拓扑与运行约束)
-  - [2. 准备宿主机目录与非 root 权限](#2-准备宿主机目录与非-root-权限)
-  - [3. 数据库准备（全新初始化 vs 历史库接管升级）](#3-数据库准备全新初始化-vs-历史库接管升级)
-  - [4. 配置生产环境变量](#4-配置生产环境变量)
-  - [5. 构建与启动服务（Docker 容器与原生 Node）](#5-构建与启动服务docker-容器与原生-node)
-  - [6. 反向代理（Nginx）配置与上线核验](#6-反向代理nginx配置与上线核验)
-- [后续运维教程](#后续运维教程)
+  - [1. 容器拓扑与网络边界](#1-容器拓扑与网络边界)
+  - [2. 环境要求与持久化目录](#2-环境要求与持久化目录)
+  - [3. 环境变量与 Compose 参数](#3-环境变量与-compose-参数)
+  - [4. 构建与镜像版本管理](#4-构建与镜像版本管理)
+  - [5. 数据库初始化与历史数据接管](#5-数据库初始化与历史数据接管)
+  - [6. 启动与分层验收](#6-启动与分层验收)
+  - [7. 生产 HTTPS 反向代理与业务验收](#7-生产-https-反向代理与业务验收)
+  - [8. Windows 与局域网访问](#8-windows-与局域网访问)
+  - [9. 日常管理、升级与故障排查](#9-日常管理升级与故障排查)
+- [后续运维教程](#后续运维)
   - [1. 日常版本升级与平滑重启流程](#1-日常版本升级与平滑重启流程)
   - [2. 数据备份、完整性验包与灾难恢复](#2-数据备份完整性验包与灾难恢复)
   - [3. 文件隔离区与存储清理维护](#3-文件隔离区与存储清理维护)
@@ -83,7 +86,7 @@
 ```mermaid
 flowchart LR
     Browser["浏览器客户端"] -->|"HTTPS / 同源 Cookie + CSRF"| Web["Nuxt 4 SSR 与 Nitro BFF (:3100)"]
-    Web -->|"内网 HTTP + Bridge Secret"| API["Express 5 业务后端 (:3000 / 宿主机 :8088)"]
+    Web -->|"内网 HTTP + Bridge Secret"| API["Express 5 业务后端 (:3000；独立后端入口可映射 :8088)"]
     API --> MainDB[("主库 guatswr_web_main.db")]
     API --> AuditDB[("审计库 guatswr_web_logs.db")]
     API --> Storage["资源存储 (public / private-upload / asset-quarantine)"]
@@ -461,268 +464,334 @@ pnpm test:e2e
 
 ## 服务器部署教程
 
-本节提供将前后端部署至 Linux 生产服务器的完整步骤。正式生产发布前，请同时对照 [BM-36 发布检查清单](docs/backend-modernization/RELEASE-CHECKLIST.md) 与 [生产产物运行手册](docs/backend-modernization/RUNTIME-RUNBOOK.md) 逐项核实。
+本节以仓库根目录的 [`docker-compose.yml`](docker-compose.yml) 为标准部署入口：前端 `web` 与后端 `backend` 分别构建、分别运行，通过 Docker 网络连接。生产示例面向 Linux 服务器；Windows Docker Desktop 的局域网使用方式见第 8 节。正式发布还应对照 [发布检查清单](docs/backend-modernization/RELEASE-CHECKLIST.md) 和 [生产运行手册](docs/backend-modernization/RUNTIME-RUNBOOK.md)。
 
-### 1. 生产部署拓扑与运行约束
+首次部署顺序为：**准备目录 → 配置环境变量 → 构建镜像 → 初始化或迁移数据库 → 启动容器 → 配置 HTTPS 并验收**。后文命令默认在仓库根目录执行；Linux 使用 Bash，标为 `powershell` 的命令用于 Windows PowerShell。
+
+### 1. 容器拓扑与网络边界
 
 ```mermaid
 flowchart TB
-    Client["公网用户浏览器"] -->|"HTTPS :443"| Proxy["Nginx / Caddy 反向代理"]
-    Proxy -->|"页面与 /api/* 转发至 127.0.0.1:3100"| Nuxt["guatswr-web 容器 / 进程 (UID 1000)"]
-    Proxy -->|"/uploads/* 转发至 127.0.0.1:8088/uploads/*"| Express["guatswr-backend 容器 (127.0.0.1:8088 -> :3000, UID 1000)"]
-    Nuxt -->|"内网 HTTP (NUXT_API_BASE)"| Express
-    Express --> DataVol[("宿主机持久化卷 ./data -> /app/data")]
-    Express --> BackupVol[("宿主机备份卷 ./backups -> /app/backups")]
+    Client["浏览器"] -->|"HTTPS :443"| Proxy["宿主机 Nginx / Caddy"]
+    Proxy -->|"页面、API、图片 → 127.0.0.1:3100"| Web["web / Nuxt SSR + Nitro BFF"]
+    subgraph DockerNet["Compose bridge 网络：guatswr_app"]
+        Web -->|"http://backend:3000"| Backend["backend / Express"]
+    end
+    Backend --> Data["backend/data → /app/data"]
+    Backend --> Backups["backend/backups → /app/backups"]
 ```
 
-部署时必须遵守以下四项架构约束：
+| 项目 | `web` | `backend` |
+| --- | --- | --- |
+| 构建文件 | [`web/Dockerfile`](web/Dockerfile) | [`backend/Dockerfile`](backend/Dockerfile) |
+| 构建上下文 | 仓库根目录 `.` | 仓库根目录 `.` |
+| 默认镜像 | `guatswr-web:local` | `guatswr-backend:local` |
+| 容器监听 | `0.0.0.0:3100` | `0.0.0.0:3000` |
+| 默认宿主机发布 | `127.0.0.1:3100 → 3100` | 无 `ports` 映射 |
+| 运行配置 | `web/.env.production` | `backend/.env` |
+| 健康探针 | `/api/health` | `/api/version`，并检查 `status=online` |
+| 持久化目录 | 无业务数据卷 | `/app/data`、`/app/backups` |
 
-1. **单 BFF 实例、单后端实例运行**：Nitro BFF 的登录会话存储（上限 10,000 条）与游客草稿归属记录（上限 5,000 条，TTL 6 小时）保存在单进程内存中；SQLite 采用单写锁序列化。请勿在未引入共享存储前将 `web` 或 `backend` 水平扩展为多实例负载均衡。
-2. **后端严禁直接暴露公网**：Express 后端容器仅绑定宿主机回环地址 `127.0.0.1:8088`（见 [`backend/docker-compose.yml`](backend/docker-compose.yml)）。公网的所有 `/api/*` 请求必须进入 Nuxt（`127.0.0.1:3100`）由 Nitro BFF 处理，切勿在 Nginx 中把 `/api/` 一刀切反向代理到后端的 `8088` 端口。
-3. **存储同卷与目录隔离**：`DATA_DIR`、`$DATA_DIR/public`、`$DATA_DIR/asset-quarantine` 与 `$DATA_DIR/asset-publications` **必须位于同一个本地文件系统/挂载卷内**，以保证文件发布与移入隔离区时的 `rename` 操作是同卷原子移动（避免跨设备 `EXDEV` 失败）。`BACKUP_ROOT` 建议挂载在独立目录，且绝不能位于 `PUBLIC_DIR` 下。
-4. **容器非 root 运行**：前后端生产镜像均以非特权用户 `node:node`（`UID=1000, GID=1000`）运行，且启动脚本不会在容器启动时自动对挂载卷执行递归 `chown`。宿主机挂载目录必须预先授予 `1000:1000` 读写权限。
+当前架构按**一个 Web 实例、一个后端实例**运行。BFF 会话与游客草稿归属保存在进程内存中，SQLite 使用单写锁；在引入共享会话、草稿存储并重新验证写入协调前，不应直接水平扩展服务。
 
-### 2. 准备宿主机目录与非 root 权限
+浏览器只访问前端同源入口。`/api/*` 由 Nuxt 数据接口或 BFF 处理，`/uploads/*` 由 Nuxt 的图片代理读取后端资源。反向代理应把这些路径一并交给 `web`，不要将 `/api/` 直接转发到 Express。
 
-以推荐的 Docker Compose 部署路径（假设代码检出在 `/srv/guatswr/repo`）为例，在 Linux 宿主机上预建后端持久化目录并设置 `UID/GID 1000` 归属与 `0700` 权限：
+两个服务共享 Compose 创建的专用 bridge 网络。`backend` 是 Docker 服务名，Nuxt 的服务端通过 `http://backend:3000` 访问它；容器间通信不依赖宿主机 `8088` 端口、`host.docker.internal` 或宿主机回环。该地址属于私有运行配置，不应放入浏览器端配置。
+
+此网络保留后端访问 Bot/Webhook 等外部服务的出站能力，未设置 `internal: true`。后端没有宿主机端口发布；同一 Docker 网络内的其他容器仍可能连接它，访客写入还需要桥接密钥和受信任代理校验。
+
+默认网络参数为子网 `172.30.88.0/24`、网关 `172.30.88.1`、Web 容器地址 `172.30.88.10`。后端仅信任 Web 的 `/32` 地址，前端默认信任 bridge 网关的 `/32` 地址。实际代理对端可能因 Docker Desktop、额外反向代理或网络模式而变化，上线前应按实际链路核对；不要将受信任代理范围扩大到所有来源。
+
+根目录 Compose 的项目名默认为 `guatswr`，容器名通常为 `guatswr-web-1`、`guatswr-backend-1`。下文使用服务名执行命令，不依赖自动生成的容器名。已有的 [`backend/docker-compose.yml`](backend/docker-compose.yml) 是**独立后端入口**，发布宿主机回环 `8088`；完整双容器部署使用根目录文件。切换前停止旧服务，避免两套后端同时写入同一组数据库。
+
+### 2. 环境要求与持久化目录
+
+#### 2.1 Docker 环境
+
+需要支持 Linux 容器和多阶段构建的 Docker Engine/Docker Desktop，以及支持 `up --wait` 和健康依赖的 Docker Compose 插件。本文使用 `docker compose` 命令。先确认 Docker 服务已启动：
 
 ```sh
-sudo mkdir -p /srv/guatswr/repo/backend/data/public
-sudo mkdir -p /srv/guatswr/repo/backend/backups
-sudo mkdir -p /srv/guatswr/verify-work
-
-# 容器内运行用户为 node (UID 1000, GID 1000)
-sudo chown -R 1000:1000 /srv/guatswr/repo/backend/data /srv/guatswr/repo/backend/backups /srv/guatswr/verify-work
-sudo chmod 700 /srv/guatswr/repo/backend/data /srv/guatswr/repo/backend/backups /srv/guatswr/verify-work
-sudo chmod 755 /srv/guatswr/repo/backend/data/public
+docker version
+docker compose version
 ```
 
-> [!WARNING]
-> 若沿用旧版遗留的宿主机数据目录（原属主可能为 `root`），请先在停写窗口做好完整备份，再仅对明确的 `data` 与 `backups` 状态目录执行 `chown -R 1000:1000`，切勿对 `/app` 代码目录或宽泛的宿主机父目录递归修改权限。旧版 Compose 中的 `./uploads` 挂载已废弃，公开资源统一位于 `data/public`。
+使用容器构建和运行时，宿主机不需要安装 Node.js、pnpm、SQLite 或 Python。构建会下载基础镜像、系统软件包和 pnpm 依赖，并执行前端安全检查；构建机需能访问对应软件源。密钥生成示例使用 OpenSSL，也可使用密码管理器生成高熵随机密钥。
 
-### 3. 数据库准备（全新初始化 vs 历史库接管升级）
+#### 2.2 Linux 目录与权限
 
-根据服务器是否已有旧版线上数据库，选择对应分支执行（**二选一**）：
-
-<details open>
-<summary>场景 A：全新服务器部署（空白数据库初始化）</summary>
-
-在完成代码构建或构建好后端生产镜像后，针对宿主机 `backend/data` 目录初始化双库并创建首位超级管理员：
+以下示例假设仓库位于 `/srv/guatswr/repo`。镜像以非 root 用户 `node` 运行，UID/GID 为 `1000:1000`。Compose 的 bind mount 设置了 `create_host_path: false`，必须提前创建源目录并授予运行用户读写权限：
 
 ```sh
 cd /srv/guatswr/repo
-pnpm install --frozen-lockfile
-pnpm --filter @guatswr/shared build
-pnpm --filter guiair-backend build
-
-# 1. 初始化 main (v3) 与 audit (v2) 数据库
-pnpm --filter guiair-backend db:migrate initialize --data-dir /srv/guatswr/repo/backend/data
-pnpm --filter guiair-backend db:check --data-dir /srv/guatswr/repo/backend/data
-
-# 2. 显式创建首位超级管理员（通过环境变量传入凭据，不在命令行参数中暴露密码）
-SUPER_ADMIN_USERNAME="your-admin-id" \
-SUPER_ADMIN_PASSWORD="your-strong-password" \
-pnpm --filter guiair-backend admin:bootstrap --main-db /srv/guatswr/repo/backend/data/guatswr_web_main.db
+sudo mkdir -p backend/data/public backend/backups /srv/guatswr/verify-work
+sudo chown -R 1000:1000 backend/data backend/backups /srv/guatswr/verify-work
+sudo chmod 700 backend/data backend/backups /srv/guatswr/verify-work
+sudo chmod 755 backend/data/public
 ```
 
-若宿主机未直接安装 Node 24，也可通过构建好的 `guatswr-backend` 容器对挂载卷执行：
+上述命令用于新目录。旧状态目录应先停写并备份，再修正准确的目标路径。容器启动不会自动对挂载卷执行递归 `chown`。
+
+| 宿主机默认目录 | 容器路径 | 内容 |
+| --- | --- | --- |
+| `backend/data` | `/app/data` | 主库、审计库、私有上传、隔离区、文件发布恢复状态 |
+| `backend/data/public` | `/app/data/public` | 通过 `/uploads/*` 提供的公开图片；它是数据卷内的子目录 |
+| `backend/backups` | `/app/backups` | 数据库、资源和全量备份归档 |
+
+`data/public`、`data/asset-quarantine`、`data/asset-publications` 应与 `data` 保持在同一个本地文件系统，以支持原子文件移动。不要另行将 `public` 子目录挂载到不同文件系统，也不要把数据库、备份或私有上传目录放进公开资源树。
+
+Windows Docker Desktop 使用工作区下的 `backend/data`、`backend/backups` 作为 bind mount 时，应先创建目录，并确认 Docker Desktop 有权访问该磁盘。Linux 的 `chown/chmod` 命令不适用于 Windows ACL；数据库与资源仍应位于本地磁盘，避免放在网络共享或同步盘中。
+
+### 3. 环境变量与 Compose 参数
+
+#### 3.1 区分两层配置
+
+| 配置层 | 默认文件 | 用途 |
+| --- | --- | --- |
+| Compose 插值 | 仓库根目录 `.env`，或命令行 `--env-file` 指定的文件 | 选择镜像标签、发布地址、网络、配置文件路径与数据卷源路径 |
+| 容器进程环境 | `backend/.env`、`web/.env.production`，通过服务的 `env_file` 注入 | JWT、BFF 桥接密钥、会话密钥、站点 Origin、业务配置 |
+
+`docker compose --env-file deploy.env ...` 指定的是 **Compose 插值文件**，不会自动替代服务的 `env_file`。若要选择其他业务配置文件，应在插值文件中设置 `BACKEND_ENV_FILE`、`WEB_ENV_FILE`。所有命令应复用同一个项目名、插值文件和 `-f` 文件列表；本机局域网的具体例子见第 8.3 节。
+
+Nuxt 生产产物 `node .output/server/index.mjs` 不会自动加载 `web/.env`。密钥必须通过 Compose 等方式注入运行进程；修改配置文件后，需要重新创建容器才能生效。
+
+#### 3.2 后端配置：`backend/.env`
+
+首次创建时复制模板；已有配置应原位检查并补齐，避免覆盖历史密钥：
 
 ```sh
-docker run --rm -u 1000:1000 \
-  -v /srv/guatswr/repo/backend/data:/app/data \
-  guatswr-backend:release \
-  node dist/src/migrations/cli.js initialize --data-dir /app/data
-
-docker run --rm -u 1000:1000 \
-  -v /srv/guatswr/repo/backend/data:/app/data \
-  -e SUPER_ADMIN_USERNAME="your-admin-id" \
-  -e SUPER_ADMIN_PASSWORD="your-strong-password" \
-  guatswr-backend:release \
-  node dist/src/admin/bootstrap-cli.js --main-db /app/data/guatswr_web_main.db
+cp backend/.env.example backend/.env
+chmod 600 backend/.env
 ```
 
-</details>
-
-<details>
-<summary>场景 B：已有线上历史数据库（停写备份 → 副本演练 → 显式接管 adopt 与升级 upgrade）</summary>
-
-对于无迁移账本的 v1 历史数据库，严禁执行 `initialize`。必须先在停写窗口完成备份，并在副本验证无误后显式接管（`adopt`）并升级到 `main 3 / audit 2`：
-
-```sh
-# 1. 停止旧版服务、定时任务与所有写入口后，将原数据库与 public 资源复制到新状态目录并修正属主
-# （假设已复制到 /srv/guatswr/repo/backend/data 并确认 UID/GID 为 1000:1000）
-
-# 2.运行 inspect 获取现有主库与审计库的结构指纹（fingerprint）
-pnpm --filter guiair-backend db:inspect --data-dir /srv/guatswr/repo/backend/data
-
-# 3. 将上一步输出的 main 与 audit fingerprint 填入下方参数，执行显式接管与增量升级
-# （对于未登记账本的 v1 历史库，adopt 会在同一事务内校验原指纹、写入 v1 账本并执行全部已声明增量升级至 main 3 / audit 2）
-pnpm --filter guiair-backend db:migrate adopt \
-  --data-dir /srv/guatswr/repo/backend/data \
-  --main-fingerprint <INSPECT_输出的_MAIN_SHA256> \
-  --audit-fingerprint <INSPECT_输出的_AUDIT_SHA256>
-
-# （若历史库已具备 v1 或 v2 迁移账本，则无需 adopt，直接执行 upgrade）
-# pnpm --filter guiair-backend db:migrate upgrade --data-dir /srv/guatswr/repo/backend/data
-
-# 4. 校验最终数据库状态（确认 main 为 version 3，audit 为 version 2）
-pnpm --filter guiair-backend db:check --data-dir /srv/guatswr/repo/backend/data
-```
-
-</details>
-
-### 4. 配置生产环境变量
-
-#### 4.1 后端生产配置文件（`backend/.env`）
-
-创建 `/srv/guatswr/repo/backend/.env` 并设置权限为 `0600`（`chmod 600 backend/.env`）：
+编辑为实际部署配置。下列两个密钥必须填写；全新部署建议各使用独立的 32 字节随机值，例如分别执行 `openssl rand -hex 32`：
 
 ```dotenv
 NODE_ENV=production
-PORT=3000
-BIND_HOST=0.0.0.0
-
-# 保持与历史库一致的 JWT_SECRET（若为存量迁移切勿随意更换，否则历史密码二步验证等关联受影响）
-JWT_SECRET=替换为至少64位十六进制随机密钥
-
-# 32~256 位可见 ASCII 密钥，必须与前端 NUXT_BFF_BRIDGE_SECRET 完全一致
-BFF_BRIDGE_SECRET=替换为至少64位十六进制随机桥接密钥
+JWT_SECRET=
+BFF_BRIDGE_SECRET=
 GUEST_DRAFT_PROOF_MODE=required
-
-# 仅填写实际调用后端的 Nitro BFF 所在 IP/CIDR（例如宿主机回环与 Docker 网关网段）
-TRUST_PROXY_CIDRS=127.0.0.1/32,::1/128,172.17.0.0/16
-
-# 正式站点域名
 SITE_URL=https://guatswr.top
 CORS_ORIGINS=https://guatswr.top
-
-# 请求体上限与暂存清理周期（默认 50mb / 48小时）
 MAX_BODY_SIZE=50mb
 STAGING_TTL_MS=172800000
-
-# 备份调度所有者：app（使用后端内置调度器）或 external（使用宿主机 crontab），二选一
 BACKUP_SCHEDULER_OWNER=app
 ```
 
-#### 4.2 前端 Nuxt 生产环境变量（`web/.env.production`）
+将站点域名改为实际 HTTPS Origin。`BFF_BRIDGE_SECRET` 必须为 32～256 个可见 ASCII 字符，并与前端 `NUXT_BFF_BRIDGE_SECRET` 一致；保留已有部署的 `JWT_SECRET`。Bot/Webhook 等可选配置按 [`backend/.env.example`](backend/.env.example) 补充，不需要启用的集成可保持关闭。
 
-> [!IMPORTANT]
-> Nuxt 生产构建产物（`node .output/server/index.mjs`）**不会自动读取 `.env` 文件**。以下配置必须通过 Docker `--env-file`、Compose `environment` 或 systemd `EnvironmentFile` 注入进程环境。
+Compose 会覆盖后端的 `NODE_ENV=production`、`PORT=3000`、`BIND_HOST=0.0.0.0`、容器内存储路径与 `TRUST_PROXY_CIDRS`。不要用修改 `backend/.env` 的 `PORT` 来调整宿主机入口。
 
-创建 `/srv/guatswr/repo/web/.env.production`（`chmod 600 web/.env.production`）：
+#### 3.3 前端配置：`web/.env.production`
+
+```sh
+cp web/.env.example web/.env.production
+chmod 600 web/.env.production
+```
+
+编辑以下配置；会话密钥与 JWT、桥接密钥应分别生成：
 
 ```dotenv
-NODE_ENV=production
-HOST=0.0.0.0
-PORT=3100
-
-# Nitro 服务端访问 Express 后端的内网地址：
-# - 若 Nuxt 运行在宿主机或使用 host 网络：http://127.0.0.1:8088
-# - 若 Nuxt 运行在独立 Docker 容器并通过 host.docker.internal 访问宿主机 8088：http://host.docker.internal:8088
-NUXT_API_BASE=http://host.docker.internal:8088
-
-# 独立的 32+ 字符高熵随机密钥
-NUXT_SESSION_PASSWORD=替换为至少64位十六进制随机密钥
-
-# 必须与 backend/.env 的 BFF_BRIDGE_SECRET 完全一致
-NUXT_BFF_BRIDGE_SECRET=替换为与后端一致的桥接密钥
-
-# 生产环境写操作允许的精确 HTTPS Origin（JSON 数组格式）
+NUXT_API_BASE=http://backend:3000
+NUXT_SESSION_PASSWORD=
+NUXT_BFF_BRIDGE_SECRET=
 NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://guatswr.top"]
-
-# 转发请求给 Nuxt 的本机反向代理（如 Nginx）对端 CIDR（JSON 数组格式）
-NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS=["127.0.0.1/32","::1/128","172.17.0.0/16"]
-
-# 生产环境严禁开启明文回环 Cookie
 NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES=false
 ```
 
-### 5. 构建与启动服务（Docker 容器与原生 Node）
+`NUXT_SESSION_PASSWORD` 至少 32 个字符；`NUXT_BFF_BRIDGE_SECRET` 填入后端同一个桥接密钥。允许写入的 Origin 使用精确的协议、域名和端口，不带路径；多个 Origin 用 JSON 数组表示。外网和局域网的非回环地址均应使用 HTTPS，生产模式会话 Cookie 保持 `Secure`。
 
-#### 方式 A：使用 Docker 与 Docker Compose 部署（推荐）
+根目录 Compose 固定覆盖 `NODE_ENV`、`HOST`、`PORT`、`NUXT_API_BASE` 和 `NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS`。其中代理信任配置以 Compose 的 `environment` 为准，在 `web/.env.production` 中设置同名变量不会覆盖它。若实际代理对端与默认网关不同，应通过额外的 Compose override 文件精确修改该列表。
 
-从**仓库根目录**构建前后端镜像，并通过 `BACKEND_SOURCE_REVISION` 将当前精确 Git Commit SHA 写入后端镜像的 OCI `org.opencontainers.image.revision` 标签：
+#### 3.4 Compose 插值参数
+
+可在根目录 `.env` 或独立的部署插值文件中配置下列参数。相对的 `env_file` 和 bind mount 路径按 Compose 文件的项目目录解析；多个 `-f` 文件合并时，以第一个 Compose 文件所在目录为基准。
+
+| 参数 | 默认值 | 说明 |
+| --- | --- | --- |
+| `BACKEND_SOURCE_REVISION` | 镜像标签 `local`；后端修订标签 `unknown` | 同时用于两个镜像的 tag；后端另写入 OCI `org.opencontainers.image.revision` |
+| `WEB_BIND_ADDRESS` | `127.0.0.1` | 宿主机发布地址；对局域网开放时设为本机实际网卡 IPv4 |
+| `WEB_PORT` | `3100` | 宿主机前端端口，容器内仍为 `3100` |
+| `DOCKER_SUBNET` | `172.30.88.0/24` | 专用 bridge 子网；需避开宿主机、VPN 与已有 Docker 网络 |
+| `DOCKER_GATEWAY` | `172.30.88.1` | 上述子网内的网关；同时用于前端默认代理信任列表 |
+| `DOCKER_WEB_IP` | `172.30.88.10` | 同一子网内的固定 Web 地址；后端信任其 `/32` |
+| `BACKEND_ENV_FILE` | `./backend/.env` | 后端业务配置文件 |
+| `WEB_ENV_FILE` | `./web/.env.production` | 前端业务配置文件 |
+| `BACKEND_DATA_DIR` | `./backend/data` | 数据 bind mount 源目录，必须存在 |
+| `BACKEND_BACKUP_DIR` | `./backend/backups` | 备份 bind mount 源目录，必须存在 |
+| `IMAGE_REGISTRY` | 空 | 仅作用于后端 Dockerfile 的基础镜像前缀；非空时需含结尾 `/`，镜像源需支持所固定的 digest |
+| `COMPOSE_PROJECT_NAME` | 文件中的项目名 `guatswr` | Docker Compose 标准项目名覆盖；相关命令需保持一致 |
+
+例如，默认 Docker 子网冲突时应同时调整三个网络参数：
+
+```dotenv
+DOCKER_SUBNET=172.30.90.0/24
+DOCKER_GATEWAY=172.30.90.1
+DOCKER_WEB_IP=172.30.90.10
+WEB_BIND_ADDRESS=127.0.0.1
+WEB_PORT=3100
+```
+
+容器内存储路径始终使用 `/app/data`、`/app/data/public`、`/app/backups`，不会随宿主机源目录变化。部署配置和密钥不应提交到 Git；根目录 `.dockerignore` 会排除环境文件、本地数据、备份及构建缓存。
+
+### 4. 构建与镜像版本管理
+
+配置文件与目录准备完成后，从仓库根目录执行：
 
 ```sh
 cd /srv/guatswr/repo
 export BACKEND_SOURCE_REVISION="$(git rev-parse HEAD)"
-
-# 1. 启动后端容器（读取 backend/docker-compose.yml，仅在宿主机发布 127.0.0.1:8088 -> 3000）
-docker compose -f backend/docker-compose.yml up -d --build
-
-# 2. 构建前端 Nuxt 生产镜像（构建阶段会自动执行安全审计、类型检查、lint、单测、构建与产物校验）
-docker build -f web/Dockerfile -t guatswr-web:${BACKEND_SOURCE_REVISION} .
-
-# 3. 启动前端 Nuxt 容器（仅绑定宿主机回环 127.0.0.1:3100，映射 host.docker.internal 以访问后端 127.0.0.1:8088）
-docker run -d \
-  --name guatswr_web \
-  --restart always \
-  --init \
-  --cap-drop ALL \
-  --security-opt no-new-privileges:true \
-  --add-host host.docker.internal:host-gateway \
-  --env-file /srv/guatswr/repo/web/.env.production \
-  -p 127.0.0.1:3100:3100 \
-  guatswr-web:${BACKEND_SOURCE_REVISION}
+docker compose config --quiet
+docker compose build
 ```
 
-> [!TIP]
-> 若使用 Docker 桥接网络通过 `host.docker.internal:8088` 访问宿主机上的后端，请确认宿主机 `backend/docker-compose.yml` 的端口映射允许来自 `docker0` 网关的流量，或将 `guatswr_web` 与 `guiair-backend` 放入同一个自定义 Docker internal network（此时 `NUXT_API_BASE` 直接设为 `http://guatswr_backend:3000`，且 `TRUST_PROXY_CIDRS` 填入该 Docker 子网 CIDR）。
+生产构建应使用明确的 Git 修订与已审核源码；`BACKEND_SOURCE_REVISION` 只是标记，不会验证工作区是否包含未提交改动。镜像标签默认只保存在本机构建机，Compose 不会自动把镜像推送到镜像仓库。
 
-#### 方式 B：宿主机 Node.js 24 原生部署（systemd）
+前后端均为多阶段镜像。后端构建共享包与编译产物，通过 `pnpm deploy --prod` 安装生产依赖；前端依次执行依赖安全检查、类型检查、lint、单元测试、生产构建和产物检查。前端契约测试只在构建阶段读取后端路由声明，最终运行镜像仅复制 Nuxt `.output`，不携带后端应用。
 
-若不使用 Docker，可在宿主机直接构建并用 `node --env-file` 启动：
+构建失败应先阅读第一个失败步骤的日志。不要通过跳过测试或复制宿主机 `node_modules` 绕过构建问题。两个 Dockerfile 都依赖根目录工作区文件，单独构建也必须使用根目录作为上下文：
 
 ```sh
-cd /srv/guatswr/repo
-pnpm install --frozen-lockfile
-pnpm build
-pnpm check:artifacts
+docker compose build backend
+docker compose build web
 ```
 
-确认 `backend/.env` 中 `BIND_HOST=127.0.0.1`、`PORT=8088`，`web/.env.production` 中 `HOST=127.0.0.1`、`PORT=3100`、`NUXT_API_BASE=http://127.0.0.1:8088`，然后分别由进程管理器（如 systemd）执行：
+若已有与本次配置标签一致的镜像，可在后续启动时使用 `--no-build`。没有显式修订时会使用 `:local`，适合本地验证；正式发布应固定并记录修订标签。
+
+### 5. 数据库初始化与历史数据接管
+
+应用启动只校验迁移状态，不会自动创建可用数据库、接管历史库或执行升级。下列命令通过一次性的后端容器运行：`--no-deps` 不启动其他服务，`--rm` 在命令结束后移除临时容器；挂载目录中的数据会保留。
+
+根据数据状态只选择一条路径：**全新空库使用 `initialize`；无迁移账本的兼容历史库使用 `inspect → adopt`；已有迁移账本使用 `upgrade`。** 当前仓库声明的最新版本为主库 `7`、审计库 `2`，实际应以所部署修订的迁移清单与 `check` 输出为准。
+
+#### 5.1 全新空库
 
 ```sh
-# 后端启动命令（工作目录：/srv/guatswr/repo/backend）
-node --env-file=/srv/guatswr/repo/backend/.env /srv/guatswr/repo/backend/dist/server.js
-
-# 前端启动命令（工作目录：/srv/guatswr/repo/web）
-node --env-file=/srv/guatswr/repo/web/.env.production /srv/guatswr/repo/web/.output/server/index.mjs
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js initialize --data-dir /app/data
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js check --data-dir /app/data
 ```
 
-### 6. 反向代理（Nginx）配置与上线核验
+接着显式创建首位超级管理员。以下 Bash 命令交互读取凭据，密码不回显，也不直接出现在命令参数中：
 
-#### 6.1 Nginx HTTPS 站点配置示例
+```bash
+read -r -p '超级管理员用户名: ' SUPER_ADMIN_USERNAME
+read -r -s -p '超级管理员密码: ' SUPER_ADMIN_PASSWORD
+printf '\n'
+export SUPER_ADMIN_USERNAME SUPER_ADMIN_PASSWORD
+docker compose run --rm --no-deps \
+  -e SUPER_ADMIN_USERNAME -e SUPER_ADMIN_PASSWORD backend \
+  node dist/src/admin/bootstrap-cli.js --main-db /app/data/guatswr_web_main.db
+unset SUPER_ADMIN_USERNAME SUPER_ADMIN_PASSWORD
+```
 
-反向代理必须将最大请求体放宽至 `52m`（匹配前端 `/api/bff/guest/upload/**` 与 `/api/bff/admin/upload` 的 51 MiB 限制），并将页面与 `/api/*` 全部交由 Nuxt（`127.0.0.1:3100`）处理，仅将公开静态图片 `/uploads/` 代理至后端（`127.0.0.1:8088/uploads/`）：
+用户名支持 1～50 个英文字母、数字、下划线或连字符；密码长度为 6～100 个字符，UTF-8 编码不超过 72 字节，实际部署应选用高强度密码。引导命令用于创建首位管理员，不会重置已有密码，也不会把已有普通账号提升为超级管理员。已有管理员的数据接管跳过此步骤。
+
+#### 5.2 无账本历史库：检查并显式接管
+
+先停止旧容器、原生后端、定时任务和其他写入口，完成停写备份，并在隔离副本上演练；详见[数据备份与灾难恢复](#2-数据备份完整性验包与灾难恢复)。SQLite WAL 模式可能有尚未合并的 `-wal` 数据，不能只复制两个 `.db` 文件作为完整恢复点，也不要擅自删除 `-wal`、`-shm`。公开资源和私有状态应按备份运行手册一并保全。
+
+仅当旧后端确实由独立 Compose 入口管理时，可用以下命令停止它：
+
+```sh
+docker compose -f backend/docker-compose.yml stop
+```
+
+确认实际数据已放入根目录 Compose 挂载的数据目录，然后获取双库指纹：
+
+```sh
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js inspect --data-dir /app/data
+```
+
+将本次 `inspect` 输出的两个 `fingerprint` 原样填入交互提示。指纹必须来自当前待接管数据库，不能复用其他环境或 README 中的示例：
+
+```bash
+read -r -p 'main fingerprint: ' MAIN_FINGERPRINT
+read -r -p 'audit fingerprint: ' AUDIT_FINGERPRINT
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js adopt --data-dir /app/data \
+  --main-fingerprint "$MAIN_FINGERPRINT" \
+  --audit-fingerprint "$AUDIT_FINGERPRINT"
+unset MAIN_FINGERPRINT AUDIT_FINGERPRINT
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js check --data-dir /app/data
+```
+
+`adopt` 仅支持迁移引擎识别的历史结构；指纹确认不能替代结构校验。主库和审计库分别提交事务，某一个失败时应检查两者状态，再按运行手册处理；不要重复 `initialize` 或手工改写迁移账本来跳过错误。
+
+#### 5.3 已有迁移账本：显式升级
+
+完成停写备份后，使用**新版本后端镜像**执行升级与校验：
+
+```sh
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js upgrade --data-dir /app/data
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js check --data-dir /app/data
+```
+
+升级数据库不等同于可逆操作。回退镜像前应核实旧代码与当前库结构的兼容性；需要恢复时，按恢复手册还原到新目录并验证，再切换挂载路径。
+
+### 6. 启动与分层验收
+
+#### 6.1 启动两个服务
+
+```sh
+docker compose up -d --no-build --wait --wait-timeout 120
+docker compose ps
+docker compose logs --tail=100 backend web
+```
+
+`web` 声明了 `depends_on: backend: condition: service_healthy`，首次创建时先等待后端健康再启动前端。两镜像探针默认每 30 秒检查一次，启动宽限期 15 秒，超时 3 秒，连续失败 3 次转为 `unhealthy`。`web` 的 `/api/health` 仅检查自身存活，不能代替后端连通性验收。
+
+Compose 的健康依赖负责启动顺序，后端后续变为 `unhealthy` 不会自动连带重启前端；`restart: unless-stopped` 针对容器退出生效，不会仅因健康状态失败而重启进程。两容器还配置了 init、移除全部 Linux capabilities、禁止提权及 30 秒停止宽限期。
+
+#### 6.2 检查前端入口与 Docker 内部链路
+
+默认发布到宿主机回环时：
+
+```sh
+curl -fsS http://127.0.0.1:3100/api/health
+curl -fsS http://127.0.0.1:3100/api/config
+docker compose exec web node -e "fetch('http://backend:3000/api/version').then(async r => { console.log(await r.text()); process.exit(r.ok ? 0 : 1) }).catch(() => process.exit(1))"
+```
+
+验收时应同时满足：两个服务均为 `healthy`；前端 `/api/config` 能读取后端数据；Web 容器通过服务名访问后端成功；`docker compose ps` 中后端只有 `3000/tcp` 的容器端口说明，没有宿主机 `HOST:PORT->3000/tcp` 映射。
+
+如果修改了 `WEB_BIND_ADDRESS` 或 `WEB_PORT`，上述宿主机探针应改用实际地址和端口。直接检查后端自身探针也可执行：
+
+```sh
+docker compose exec backend node scripts/healthcheck.cjs
+```
+
+### 7. 生产 HTTPS 反向代理与业务验收
+
+#### 7.1 Nginx 配置示例
+
+生产入口使用有效证书，并将所有请求转发到 Nuxt。下面假设 Nginx 运行在宿主机上，且 `WEB_BIND_ADDRESS=127.0.0.1`、`WEB_PORT=3100`；域名与证书路径需按部署环境修改。
 
 ```nginx
 server {
-    listen 443 ssl http2;
-    listen [::]:443 ssl http2;
+    listen 80;
+    server_name guatswr.top;
+    return 301 https://$host$request_uri;
+}
+
+server {
+    listen 443 ssl;
     server_name guatswr.top;
 
-    # SSL 证书配置（按实际证书路径填写）
     ssl_certificate     /etc/nginx/ssl/guatswr.top.pem;
     ssl_certificate_key /etc/nginx/ssl/guatswr.top.key;
 
-    # 允许 50 MiB 图片及 multipart 头部开销通过反向代理
+    # 允许 50 MiB 文件和 multipart 头部开销通过
     client_max_body_size 52m;
 
-    # 公开上传静态资源：由后端 PUBLIC_DIR 提供（内置路径穿越防护与 SVG 沙箱 CSP）
-    location /uploads/ {
-        proxy_pass http://127.0.0.1:8088/uploads/;
-        proxy_http_version 1.1;
-        proxy_set_header Host $host;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-    }
-
-    # SSR 页面、公开数据适配接口 (/api/*) 与同源 BFF (/api/bff/*) 统一交由 Nuxt 处理
     location / {
         proxy_pass http://127.0.0.1:3100;
         proxy_http_version 1.1;
-        proxy_set_header Host $host;
+        proxy_set_header Host $http_host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_read_timeout 60s;
@@ -730,26 +799,189 @@ server {
 }
 ```
 
-#### 6.2 上线后逐项核验清单
+单次备份下载可能超过普通请求的 60 秒，若使用大备份包，应按实际下载时长调高对应反向代理的读取超时。配置修改后先执行 `nginx -t`，通过后再重载服务。
 
-服务启动并接入 Nginx 后，按以下顺序完成上线验收：
+若 Nginx/Caddy 自身运行在容器中，它的 `127.0.0.1` 指向代理容器自身。此时需另外设计代理网络、通过服务名访问 `web:3100`，并调整 Web 的受信任代理列表；上述宿主机配置不能原样套用。CDN/多级代理也应逐层核对真实客户端地址与转发头。
 
-```sh
-# 1. 本机回环探针检查
-curl -fsS http://127.0.0.1:8088/api/version
-curl -fsS http://127.0.0.1:3100/api/health
-curl -fsS http://127.0.0.1:3100/api/config
+#### 7.2 完整业务验收
 
-# 2. 检查容器健康状态（应显示 healthy）
-docker ps --filter name=guatswr
+通过最终 HTTPS Origin 在浏览器逐项确认：
+
+- [ ] 首页、活动文章、活动中心、住民和群史页面正常，已有 `/uploads/*` 图片可以读取。
+- [ ] `/login` 能登录原管理员账号，`guatswr-next` Cookie 具备 `HttpOnly; Secure; SameSite=Lax`。
+- [ ] 无痕窗口能创建游客草稿、上传图片并报名；管理员审核后公开页数据及时刷新。
+- [ ] 后台可以生成、下载和验证备份；确认预定的自动备份调度所有者与首次执行结果。
+- [ ] 页面 HTML 和 `/api/*` 不被 CDN 复用缓存，携带 CSP nonce 的 HTML 和私有会话响应不进入共享缓存。
+
+技术探针成功不代表上述业务全部验收完成；公开站点的索引、robots 与 sitemap 也应按独立发布检查清单核实。
+
+### 8. Windows 与局域网访问
+
+#### 8.1 开放前端的局域网 HTTP 入口
+
+在部署插值文件中设置本机当前局域网 IPv4。例如 `192.168.1.100` 只是网络示例，必须替换为 `ipconfig` 显示的实际地址：
+
+```dotenv
+WEB_BIND_ADDRESS=192.168.1.100
+WEB_PORT=3100
 ```
 
-随后在浏览器通过正式 HTTPS 域名逐项确认：
-- [ ] 首页、活动文章、活动中心、住民、群史页面 SSR 正常渲染，已有图片 `/uploads/*` 正常加载。
-- [ ] 访问 `/login` 登录管理员账号，检查响应 Cookie `guatswr-next` 具备 `HttpOnly; Secure; SameSite=Lax`。
-- [ ] 在无痕窗口测试游客活动草稿创建、图片上传与报名，在管理员后台审核并确认公开页缓存立即刷新。
-- [ ] 在后台「站点设置 → 备份管理」触发一次手动备份，验证备份包生成与下载正常。
-- [ ] 若站点置于 Cloudflare 等 CDN 后，确保 HTML 页面与 `/api/*` 均绕过边缘缓存（Bypass Cache），不缓存带 CSP nonce 的 HTML 或私有会话响应。
+然后使用同一套 Compose 参数执行 `up -d` 重新创建 Web 容器。其他设备通过 `http://实际IP:3100` 浏览公开页面。仅设置 `HOST=0.0.0.0` 不会改变宿主机端口发布地址；应调整 `WEB_BIND_ADDRESS`。
+
+连接不通时，依次确认网卡 IP 未变化、端口已监听、Windows 防火墙允许 Docker Desktop 对当前网络配置接收入站连接，以及 Wi-Fi 未开启客户端隔离。放通规则应限定必要端口和可信局域网范围，不需要开放后端 `3000`。Windows 的网络类别可能为 `Public`，只配置 `Private` 规则不一定生效。
+
+#### 8.2 登录和提交需要 HTTPS
+
+项目拒绝把非回环 HTTP 地址配置为允许写入的 Origin；生产模式还会强制使用 Secure Cookie。局域网 HTTP 页面能够打开，并不代表管理员登录和游客写入可用。不要通过把 `http://局域网IP:3100` 加入允许列表来绕过这个限制。
+
+完整功能应使用以下任一方式提供 HTTPS：为局域网域名配置可信证书；使用自建 CA 并在访问设备中安装信任；或在临时调试环境使用含实际 IP SAN 的自签名证书并明确处理浏览器证书提示。TLS 入口的精确 Origin（包含非默认端口）必须加入 `NUXT_BFF_AUTH_ALLOWED_ORIGINS`，然后重新创建 Web 容器。
+
+#### 8.3 本机已有的双容器局域网配置
+
+<details>
+<summary>2026-10-28 核对的本机配置与管理命令</summary>
+
+本工作区已创建下列**本机文件**。它们位于被 Git 忽略的目录或环境文件中，不会随仓库克隆分发；其他机器应按前文重新准备，不能假设这些文件和镜像存在。
+
+| 本机文件 | 用途 |
+| --- | --- |
+| `.tools/lan-deployment/compose.env` | 选择本机已构建的 `compose-validation` 镜像标签，并绑定局域网 IPv4 |
+| `.tools/lan-deployment/lan-compose.yml` | 在现有 Web 容器中附加 HTTPS 代理，发布 `3443`，仍保持两个应用容器 |
+| `.tools/lan-deployment/tls/proxy.mjs` | 将 TLS 请求转发到同一 Web 容器内的 `127.0.0.1:3100` |
+| `.tools/lan-deployment/tls/server.crt`、`server.key` | 本机 TLS 证书与私钥，通过只读 bind mount 提供给 Web |
+| `web/.env.production` | 本机前端密钥与 HTTPS Origin 配置 |
+| `.tools/lan-deployment/data-original` | 接管前保全的原始数据副本；不是自动备份任务的输出目录 |
+
+本机当次配置的公开页面入口为 `http://10.39.107.86:3100`，HTTPS 入口为 `https://10.39.107.86:3443`。这是当前机器的地址，不是仓库默认地址。证书 SAN 包含该 IP，有效期至 **2026-11-26 17:26（北京时间）**，未配置自动续期。首次访问会出现自签名证书提示；长期使用应建立客户端信任并安排续期。IP 变化后还需同步修改绑定地址、TLS 发布地址、证书 SAN 和允许的 Origin。
+
+在仓库根目录使用以下 PowerShell 参数管理该部署：
+
+```powershell
+$lanCompose = @(
+  '--env-file', '.tools/lan-deployment/compose.env',
+  '-f', 'docker-compose.yml',
+  '-f', '.tools/lan-deployment/lan-compose.yml'
+)
+
+docker compose @lanCompose ps
+docker compose @lanCompose logs --tail=100 backend web
+
+# 配置检查后重建容器，复用本机已有镜像
+docker compose @lanCompose config --quiet
+docker compose @lanCompose up -d --no-build --wait --wait-timeout 120
+```
+
+`compose-validation` 是这台机器已有镜像的本地标签，不是发布版本号，也不是远程可拉取的镜像。需要部署新源码时，应先构建对应镜像，再按第 9 节的停写与迁移流程切换。
+
+这套 HTTPS 代理用于本机局域网验证，没有独立的 TLS 健康探针或进程监督；Web 容器为 `healthy` 不能证明 `3443` 可用。应单独检查 HTTPS 页面、证书和登录流程，并复核代理信任与真实客户端 IP。正式生产使用第 7 节的反向代理方案。
+
+当次检查确认双容器健康、Docker 内部 API 可达，且本机通过局域网 IP 的 HTTP/HTTPS 页面与登录请求校验正常；其他设备的实际可达性仍需在同一网络中验证。后端依然不发布宿主机端口。
+
+</details>
+
+### 9. 日常管理、升级与故障排查
+
+#### 9.1 常用管理命令
+
+以下为根目录默认部署示例；使用自定义 `--env-file` 或 override 时应给每一条命令带上同样参数：
+
+| 操作 | 命令与影响 |
+| --- | --- |
+| 查看状态 | `docker compose ps` |
+| 跟踪日志 | `docker compose logs -f --tail=100 backend web` |
+| 重启进程 | `docker compose restart web`；沿用原容器环境，不加载新 `env_file` |
+| 应用前端环境修改 | `docker compose up -d --no-build --force-recreate web` |
+| 应用源码修改 | `docker compose build` 后按升级步骤启动新镜像 |
+| 停止服务 | `docker compose stop`；保留容器和数据 |
+| 移除服务容器与项目网络 | `docker compose down`；本项目 bind mount 的宿主机数据、资源与备份目录保留 |
+
+重启或重建前端会清空其进程内会话与游客草稿归属记录，用户可能需要重新登录或创建未完成草稿。根目录 Compose 的后端停止宽限期为 30 秒，默认应用退出超时为 15 秒；如果调整 `SHUTDOWN_TIMEOUT_MS`，应同步保证 `stop_grace_period` 足够完成退出。
+
+备份工具已包含在后端镜像中，可直接执行在线全量备份，无需在宿主机另装 SQLite/Python：
+
+```sh
+docker compose exec backend bash scripts/backup_all.sh
+```
+
+在线备份标记为 `online-per-resource`，用于日常恢复，不表示双库与资源处在同一原子业务时点。维护窗口已停止所有写入后，可通过一次性后端容器执行停写备份；先将 `BACKUP_SOURCE_REVISION` 设置为实际备份来源版本，再运行：
+
+```sh
+docker compose run --rm --no-deps \
+  -e BACKUP_WRITE_FENCE=acknowledged -e BACKUP_SOURCE_REVISION backend \
+  bash scripts/backup_all.sh
+```
+
+`BACKUP_WRITE_FENCE` 是操作者对停写状态的声明，不会自动阻止其他程序写入。备份输出保留在宿主机 `backend/backups` 中。Linux 下可复用第 2 节创建的私有工作目录，在一次性容器中验包；提示中填写容器内归档绝对路径，例如 `/app/backups/full/full_实际标签.tar.gz`：
+
+```bash
+read -r -p '容器内备份归档绝对路径: ' BACKUP_ARCHIVE
+docker compose run --rm --no-deps \
+  -v /srv/guatswr/verify-work:/verify-work backend \
+  python3 scripts/backup_bundle.py verify "$BACKUP_ARCHIVE" --work-dir /verify-work
+unset BACKUP_ARCHIVE
+```
+
+验包成功后，归档旁会生成 `.verified.json` 标记，临时容器移除后标记仍保留。验包需要额外磁盘空间，工作目录应位于私有目录；校验 sidecar、验包保护与恢复流程见后续运维章节。
+
+#### 9.2 更新版本
+
+先安排维护窗口并排空写请求，停止两个服务及所有外部写入/调度入口，再完成停写备份与验包。之后拉取目标修订并构建新镜像：
+
+```sh
+docker compose stop
+# 此处完成停写全量备份与验包，操作见后续运维章节
+git pull --ff-only
+export BACKEND_SOURCE_REVISION="$(git rev-parse HEAD)"
+docker compose build
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js upgrade --data-dir /app/data
+docker compose run --rm --no-deps backend \
+  node dist/src/migrations/cli.js check --data-dir /app/data
+docker compose up -d --no-build --wait --wait-timeout 120
+```
+
+升级后重复第 6、7 节的连通性与业务验收。保存上一版本的镜像标识、配置及有效恢复点；新版本产生业务写入后，不应直接用旧备份覆盖现状。完整备份、验包、恢复目录切换和回退判据见[后续运维](#后续运维)。
+
+#### 9.3 常见故障
+
+| 现象 | 检查与处理 |
+| --- | --- |
+| Docker API/pipe 连接失败 | 确认 Docker Engine/Docker Desktop 已启动，并检查当前用户的 Docker 访问权限 |
+| `env file ... not found` | 确认两个业务配置文件存在；区分 Compose `--env-file` 与服务 `env_file`；核对多文件部署的路径基准 |
+| bind mount 源目录不存在 | 提前创建数据和备份目录；本项目禁止自动创建宿主机路径 |
+| 数据目录 `EACCES` / `permission denied` | Linux 检查 UID/GID `1000:1000` 与目录权限；Windows 检查磁盘共享和 ACL |
+| 后端启动失败或迁移校验报错 | 查看 `logs backend`，确认挂载的是目标目录、双库存在且迁移状态正确；不要在历史数据上执行 `initialize` |
+| SQLite 只读挂载检查失败 | WAL 模式的读取也可能需要访问关联文件或共享内存；按运行手册在隔离副本上检查，不要删除 WAL/SHM 强行启动 |
+| `address already in use` | 检查宿主机端口占用，修改 `WEB_PORT` 并同步反向代理地址 |
+| 绑定地址不可用 | 确认 `WEB_BIND_ADDRESS` 属于当前宿主机；DHCP/VPN 变化可能改变地址 |
+| 网络子网重叠或固定 IP 无效 | 同时调整 `DOCKER_SUBNET`、`DOCKER_GATEWAY`、`DOCKER_WEB_IP`，停止服务后重新创建项目网络 |
+| Web 健康但业务 API 失败 | 检查后端状态与 Docker DNS 连通性；根目录 Compose 应使用 `http://backend:3000` |
+| 配置修改后无效 | 使用同一组 Compose 参数执行 `up -d --force-recreate`；`restart` 不会重新注入环境文件 |
+| 登录/游客请求被拒绝 | 检查精确 HTTPS Origin、Secure Cookie、CSRF、桥接密钥一致性，以及前后端实际代理对端是否被正确授权 |
+| `3443` 失败但 Web 为健康 | 本机临时 TLS 代理没有独立探针；检查代理日志、挂载文件、端口和证书期限 |
+| 局域网其他设备无法连接 | 检查网卡 IPv4、Docker 端口发布、当前 Public/Private 防火墙策略与无线客户端隔离 |
+
+<details>
+<summary>可选：宿主机 Node.js 24 原生部署</summary>
+
+此路径需要宿主机安装仓库要求的 Node.js/pnpm，并遵守同样的目录隔离、显式迁移、单实例与 HTTPS 约束：
+
+```sh
+pnpm install --frozen-lockfile
+pnpm build
+pnpm check:artifacts
+```
+
+将后端设置为 `BIND_HOST=127.0.0.1`、`PORT=8088`，前端设置为 `HOST=127.0.0.1`、`PORT=3100`、`NUXT_API_BASE=http://127.0.0.1:8088`。存储路径使用宿主机绝对路径，代理信任列表使用实际对端地址。新库可通过后端 `db:migrate initialize` 和 `admin:bootstrap` 脚本创建；历史库按相同原则先备份、接管或升级。
+
+由 systemd 等进程管理器注入环境并运行：
+
+```sh
+node --env-file=/srv/guatswr/repo/backend/.env /srv/guatswr/repo/backend/dist/server.js
+node --env-file=/srv/guatswr/repo/web/.env.production /srv/guatswr/repo/web/.output/server/index.mjs
+```
+
+</details>
 
 <p align="right">(<a href="#readme-top">返回顶部</a>)</p>
 
@@ -760,21 +992,10 @@ docker ps --filter name=guatswr
 由于 Nitro BFF 的登录态与游客草稿归属保存在单进程内存中，日常发布新版本请按以下步骤执行：
 
 1. **排空或确认游客草稿窗口**：若条件允许，在维护窗口前暂停新游客草稿创建（`POST /api/bff/guest/events/draft`），等待在途未提交草稿完成提交（草稿最长 TTL 为 6 小时）；若直接重启 Nuxt，已提交入库的活动与图片不受影响，但未提交草稿需由游客重新创建。
-2. **优雅停止写流量并制作恢复点**：使用 `docker stop`（发送 `SIGTERM`）停止前后端容器。后端生命周期管理器会拒绝新请求（返回 `503 服务正在关闭`），并等待在途请求、SQLite 事务、安全审计投递与子进程在 `SHUTDOWN_TIMEOUT_MS`（默认 15 秒）内安全退出。
+2. **优雅停止写流量并制作恢复点**：使用 `docker compose stop`（按 Compose 的停止宽限期发送 `SIGTERM` 并等待退出）停止前后端容器。后端生命周期管理器会拒绝新请求（返回 `503 服务正在关闭`），并等待在途请求、SQLite 事务、安全审计投递与子进程在 `SHUTDOWN_TIMEOUT_MS`（默认 15 秒）内安全退出。
 3. **执行停写全量备份与验包**：在停写状态下执行带 `BACKUP_WRITE_FENCE=acknowledged` 的全量备份并运行 `verify`（命令见下节）。
-4. **拉取新代码并执行显式数据库升级**：
-   ```sh
-   cd /srv/guatswr/repo
-   git pull --ff-only
-   pnpm install --frozen-lockfile
-   pnpm --filter @guatswr/shared build
-   pnpm --filter guiair-backend build
-   
-   # 显式执行增量迁移并校验版本与 checksum
-   pnpm --filter guiair-backend db:migrate upgrade --data-dir /srv/guatswr/repo/backend/data
-   pnpm --filter guiair-backend db:check --data-dir /srv/guatswr/repo/backend/data
-   ```
-5. **重新构建并启动容器**：按「服务器部署教程 → 第 5 步」重新构建镜像并启动，执行上线核验后持续观察 30 分钟（关注 5xx 比例、P95 延迟与首次定时备份结果）。
+4. **拉取代码、构建并显式迁移**：Docker 部署按[版本更新流程](#92-更新版本)使用新后端镜像执行 `upgrade` 与 `check`，然后启动两个服务。整个过程复用同一套项目名、插值文件、override 与数据目录；原生 Node 部署则先安装依赖、构建共享包和后端，再执行对应的数据库脚本。
+5. **完成启动与业务核验**：按「服务器部署教程」第 6、7 节验证服务状态、内部链路、图片、登录与游客写入，并观察发布后的错误率、延迟及首次定时备份结果。
 
 ### 2. 数据备份、完整性验包与灾难恢复
 
@@ -888,24 +1109,26 @@ pnpm --filter guiair-backend storage:cleanup \
 
 ### 5. 应急只读回退模式
 
-若在数据库升级至 `main 3 / audit 2` 并产生新业务写入后发现异常，**严禁直接将升级前的旧数据库快照覆盖回当前目录**（否则会丢失新写入数据并破坏文件隔离区状态一致）。
+若在数据库升级并产生新业务写入后发现异常，**严禁直接将升级前的旧数据库快照覆盖回当前目录**（否则会丢失新写入数据并破坏文件隔离区状态一致）。
 
 此时应先进入应急只读模式保全现场并维持公开页面可访问：
 
 1. 停止当前常规后端进程，对现有状态目录生成一份新的备份。
-2. 使用内置的只读回退启动器 `backend/scripts/read-only-server.cjs` 启动后端：
-   ```sh
-   # Docker 方式：将启动命令替换为 node scripts/read-only-server.cjs
-   docker run -d \
-     --name guatswr_backend_readonly \
-     -u 1000:1000 \
-     --env-file /srv/guatswr/repo/backend/.env \
-     -v /srv/guatswr/repo/backend/data:/app/data \
-     -v /srv/guatswr/repo/backend/backups:/app/backups \
-     -p 127.0.0.1:8088:3000 \
-     guatswr-backend:${BACKEND_SOURCE_REVISION} \
-     node scripts/read-only-server.cjs
+2. 使用内置的只读回退启动器 `backend/scripts/read-only-server.cjs` 启动后端。Docker 部署可将以下内容保存为根目录 `compose.readonly.yml`，保持原服务名、内网、环境变量和数据挂载：
+
+   ```yaml
+   services:
+     backend:
+       command: ["node", "scripts/read-only-server.cjs"]
    ```
+
+   ```sh
+   docker compose -f docker-compose.yml -f compose.readonly.yml \
+     up -d --no-build --force-recreate backend
+   ```
+
+   自定义部署应保留原有 `--env-file` 和全部 `-f` 参数，将只读 override 追加在最后；恢复读写时移除只读 override 并重新创建后端，随后完成业务核验。
+
    该启动器会在加载应用前为每一个 SQLite 连接强制开启 `PRAGMA query_only=ON`，关闭所有后台清理与定时任务，并在最外层拦截所有非 `GET` / `HEAD` 请求（统一返回 `503 {"message":"只读回退模式"}`），确保前台文章、活动、成员与群史正常展示的同时数据库零写入。
 
 ### 6. 运维故障与残留锁文件处理

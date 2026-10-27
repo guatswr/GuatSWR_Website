@@ -1,0 +1,81 @@
+name: guatswr
+
+services:
+  backend:
+    image: guatswr-backend:${BACKEND_SOURCE_REVISION:-local}
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+      args:
+        IMAGE_REGISTRY: ${IMAGE_REGISTRY:-}
+        SOURCE_REVISION: ${BACKEND_SOURCE_REVISION:-unknown}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - ${BACKEND_ENV_FILE:-./backend/.env}
+    environment:
+      NODE_ENV: production
+      PORT: "3000"
+      BIND_HOST: 0.0.0.0
+      DATA_DIR: /app/data
+      PUBLIC_DIR: /app/data/public
+      BACKUP_ROOT: /app/backups
+      # Trust only the BFF container, including for guest bridge requests.
+      TRUST_PROXY_CIDRS: ${DOCKER_WEB_IP:-172.30.88.10}/32
+    # No host port: only web can reach the backend over the Compose network.
+    expose:
+      - "3000"
+    volumes:
+      - type: bind
+        source: ${BACKEND_DATA_DIR:-./backend/data}
+        target: /app/data
+        bind:
+          create_host_path: false
+      - type: bind
+        source: ${BACKEND_BACKUP_DIR:-./backend/backups}
+        target: /app/backups
+        bind:
+          create_host_path: false
+    networks:
+      - app
+
+  web:
+    image: guatswr-web:${BACKEND_SOURCE_REVISION:-local}
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    cap_drop: [ALL]
+    security_opt:
+      - no-new-privileges:true
+    env_file:
+      - ${WEB_ENV_FILE:-./web/.env.production}
+    environment:
+      NODE_ENV: production
+      HOST: 0.0.0.0
+      PORT: "3100"
+      NUXT_API_BASE: http://backend:3000
+      # Host Nginx/Caddy reaches this container through the bridge gateway.
+      NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS: '["${DOCKER_GATEWAY:-172.30.88.1}/32"]'
+    ports:
+      - "${WEB_BIND_ADDRESS:-127.0.0.1}:${WEB_PORT:-3100}:3100"
+    depends_on:
+      backend:
+        condition: service_healthy
+    networks:
+      app:
+        ipv4_address: ${DOCKER_WEB_IP:-172.30.88.10}
+
+networks:
+  app:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: ${DOCKER_SUBNET:-172.30.88.0/24}
+          gateway: ${DOCKER_GATEWAY:-172.30.88.1}

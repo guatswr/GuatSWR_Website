@@ -14,6 +14,8 @@ COPY web ./web
 # They are never imported, executed, or copied into the final runtime image.
 COPY backend/src/app.js ./backend/src/app.js
 COPY backend/src/routes ./backend/src/routes
+COPY backend/src/integrations/bot/api.ts backend/src/integrations/bot/member-sync-api.ts ./backend/src/integrations/bot/
+COPY backend/src/modules/activities/revision-api.ts ./backend/src/modules/activities/revision-api.ts
 COPY scripts/revamp ./scripts/revamp
 RUN pnpm check:security && pnpm --filter @guatswr/shared build \
     && pnpm --filter @guatswr/shared --filter @guatswr/web -r typecheck \

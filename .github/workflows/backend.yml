@@ -2,9 +2,9 @@ name: Backend migration gates
 on:
   push:
     branches: ['codex/backend-modernization', 'revamp/**', main]
-    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', '.gitattributes', '.github/workflows/backend.yml', 'docs/backend-modernization/**']
+    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', 'docker-compose.yml', '.gitattributes', '.github/workflows/backend.yml', 'docs/backend-modernization/**']
   pull_request:
-    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', '.gitattributes', '.github/workflows/backend.yml']
+    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', 'docker-compose.yml', '.gitattributes', '.github/workflows/backend.yml']
   workflow_dispatch:
 permissions:
   contents: read
@@ -53,6 +53,8 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+      - name: Validate frontend/backend Compose topology without production env files
+        run: docker compose config --no-env-resolution --quiet
       - uses: actions/setup-node@v4
         with:
           node-version-file: .node-version
