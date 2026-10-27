@@ -17,7 +17,6 @@ defineProps({ mascot: { type: String, default: '' } })
     <HomeSectionBackdrop variant="about" />
     <div class="club-container home-about-layout">
       <div v-scroll-reveal class="home-about-copy">
-        <p class="club-eyebrow">A LITTLE ABOUT US</p>
         <h2 id="about-title" class="club-display home-about-title">
           因东方相识，<br >让同好成为朋友。
         </h2>
@@ -26,7 +25,7 @@ defineProps({ mascot: { type: String, default: '' } })
         </p>
         <div class="home-about-body">
           <p>
-            我们是桂林航天工业学院的东方 Project 同好会。正作、非想天则、音乐、同人创作——每一种热爱，都能在这里找到回应。
+            这里是桂林航天工业学院的东方Project同好会。Stg、非想天则、音乐、同人创作——每一种热爱，都能在这里找到回应。
           </p>
           <p>
             也欢迎校外的朋友。聊一首喜欢的曲子，约一场对战，或在线下见个面。从一句“你也喜欢东方？”开始，认识彼此。
@@ -40,7 +39,7 @@ defineProps({ mascot: { type: String, default: '' } })
             认识同好 <ClubIcon name="arrow" class="h-4 w-4" />
           </NuxtLink>
         </div>
-        <p class="home-about-note">桂林航天工业学院 <span aria-hidden="true">／</span> 校内外同好都欢迎</p>
+        <p class="home-about-note">桂航绯想天 <span aria-hidden="true">／</span> Welcome to GuatSWR</p>
       </div>
 
       <figure v-scroll-reveal="{ variant: 'image', delay: 100 }" class="home-about-figure">

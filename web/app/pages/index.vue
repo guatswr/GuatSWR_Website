@@ -236,12 +236,20 @@ usePublicSeo({
   background-color: #0369a1;
 }
 
-/* Quiet color fields and expressive edges keep each chapter distinct. */
+/* Quiet color fields and shared seam stops keep chapter transitions gentle. */
 .club-home {
+  --home-interests-background: #f4f5f2;
+  --home-interests-about-seam: #f5f4ef;
   --home-about-background: #f5f3ed;
+  --home-about-archive-seam: #f7f4ed;
+  --home-archive-community-seam: #f2f4f0;
 }
 :global(.dark .club-home) {
-  --home-about-background: #1d272d;
+  --home-interests-background: #19232c;
+  --home-interests-about-seam: #1a242c;
+  --home-about-background: #1b252c;
+  --home-about-archive-seam: #1f2425;
+  --home-archive-community-seam: #1b2627;
 }
 .club-home-section {
   position: relative;
@@ -253,19 +261,26 @@ usePublicSeo({
   position: relative;
   z-index: 1;
 }
-.club-home-archive {
-  --section-background: #faf6ee;
-}
 .club-home-about {
   --section-background: var(--home-about-background);
+  --section-edge-top: var(--home-interests-about-seam);
+  --section-edge-bottom: var(--home-about-archive-seam);
+}
+.club-home-archive {
+  --section-background: #f8f5ee;
+  --section-edge-top: var(--home-about-archive-seam);
+  --section-edge-bottom: var(--home-archive-community-seam);
 }
 .club-home-community {
-  --section-background: #e6f0ef;
+  --section-background: #eef4f3;
+  --section-edge-top: var(--home-archive-community-seam);
+  --section-edge-bottom: #eef4f3;
 }
 :global(.dark .club-home-archive) {
-  --section-background: #24231f;
+  --section-background: #212321;
 }
 :global(.dark .club-home-community) {
-  --section-background: #152b2c;
+  --section-background: #17282a;
+  --section-edge-bottom: #17282a;
 }
 </style>

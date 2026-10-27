@@ -277,7 +277,7 @@ export function observeMotionScene(
   const matchMedia = environment?.matchMedia
   if (!pageDocument || typeof matchMedia !== 'function') return () => {}
   const preference = matchMedia('(prefers-reduced-motion: reduce)')
-  let inView = true
+  let inView = false
   let observer: RevealObserver | undefined
   const update = (): void => {
     element.dataset.sceneActive = String(
@@ -293,7 +293,9 @@ export function observeMotionScene(
             if (entry.target === element) inView = entry.isIntersecting
           update()
         },
-        { threshold: 0, rootMargin: '0px' }
+        // Warm the composited artwork before its first visible pixel and avoid
+        // repeatedly promoting/demoting layers at the viewport boundary.
+        { threshold: 0, rootMargin: '160px 0px' }
       )
       observer.observe(element)
     }

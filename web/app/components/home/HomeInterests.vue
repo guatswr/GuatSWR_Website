@@ -54,7 +54,8 @@ defineProps({
 
 <style scoped>
 .home-interests {
-  --section-background: var(--home-about-background, #f5f3ed);
+  --section-background: var(--home-interests-background, #f4f5f2);
+  --section-edge-bottom: var(--home-interests-about-seam, #f5f4ef);
   --interests-ink: #263e49;
   --interests-muted: #536a76;
   --interests-rule: #bed2da;
@@ -170,7 +171,8 @@ defineProps({
   color: var(--interest-accent);
 }
 html.dark .home-interests {
-  --section-background: var(--home-about-background, #1d272d);
+  --section-background: var(--home-interests-background, #19232c);
+  --section-edge-bottom: var(--home-interests-about-seam, #1a242c);
   --interests-ink: #e1ebef;
   --interests-muted: #a7bdc8;
   --interests-rule: #3a5666;

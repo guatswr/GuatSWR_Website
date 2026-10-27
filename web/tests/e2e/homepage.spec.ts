@@ -15,6 +15,64 @@ async function openNavLink(page: Page, isMobile: boolean, name: string): Promise
 }
 
 test.describe('homepage', () => {
+  test('uses one lightweight ambient animation on compact or touch devices', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const lightweight = await page.evaluate(() => matchMedia('(max-width: 767px), (hover: none) and (pointer: coarse)').matches)
+    for (const selector of ['.misty-lake', '.backdrop-about', '.backdrop-archive', '.backdrop-community']) {
+      const backdrop = page.locator(selector)
+      await backdrop.scrollIntoViewIfNeeded()
+      await expect(backdrop).toHaveAttribute('data-scene-active', 'true')
+      if (lightweight) {
+        await expect.poll(() => backdrop.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(1)
+        const properties = await backdrop.evaluate(el => [...new Set(el.getAnimations({ subtree: true })
+          .flatMap(animation => animation.effect instanceof KeyframeEffect ? animation.effect.getKeyframes() : [])
+          .flatMap(frame => Object.keys(frame).filter(key => !['offset', 'computedOffset', 'easing', 'composite'].includes(key))))])
+        expect(properties).toEqual(['transform'])
+        await expect(backdrop.locator('svg')).toHaveCSS('display', 'none')
+      }
+      else {
+        expect(await backdrop.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBeGreaterThan(1)
+        await expect(backdrop.locator('svg')).not.toHaveCSS('display', 'none')
+      }
+    }
+  })
+
+  test('warms ambient backgrounds before entry and pauses them when inactive', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const backdrop = page.locator('.backdrop-about')
+    await expect(backdrop).toHaveAttribute('data-scene-active', 'false')
+    await page.evaluate(() => {
+      const about = document.querySelector('.home-about')!
+      window.scrollTo({ top: about.getBoundingClientRect().top + window.scrollY - window.innerHeight - 80, behavior: 'instant' })
+    })
+    await expect(backdrop).toHaveAttribute('data-scene-active', 'true')
+    expect(await backdrop.evaluate(el => el.getBoundingClientRect().top)).toBeGreaterThan(await page.evaluate(() => window.innerHeight))
+    await page.locator('.home-about').scrollIntoViewIfNeeded()
+    const before = await backdrop.evaluate(el => ({
+      transform: getComputedStyle(el.querySelector('.backdrop-wash')!, '::before').transform,
+      top: el.parentElement!.getBoundingClientRect().top + window.scrollY,
+    }))
+    const after = await backdrop.evaluate(async el => {
+      for (let frame = 0; frame < 12; frame++) await new Promise<void>(resolve => requestAnimationFrame(() => resolve()))
+      return {
+        transform: getComputedStyle(el.querySelector('.backdrop-wash')!, '::before').transform,
+        top: el.parentElement!.getBoundingClientRect().top + window.scrollY,
+      }
+    })
+    expect(after.transform).not.toBe(before.transform)
+    expect(Math.abs(after.top - before.top)).toBeLessThan(1)
+    await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+    await expect(backdrop).toHaveAttribute('data-scene-active', 'false')
+    expect(await backdrop.evaluate(el => el.getAnimations({ subtree: true }).every(animation => animation.playState === 'paused'))).toBe(true)
+    await page.locator('.home-about').scrollIntoViewIfNeeded()
+    await expect(backdrop).toHaveAttribute('data-scene-active', 'true')
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await expect(backdrop).toHaveAttribute('data-scene-active', 'false')
+    await expect.poll(() => backdrop.evaluate(el => el.getAnimations({ subtree: true }).filter(animation => animation.playState === 'running').length)).toBe(0)
+  })
+
   test('does not recenter the mobile hero when the gesture area changes', async ({ page, browserName }) => {
     test.skip(browserName !== 'chromium', 'Safe-area overrides require Chromium CDP')
     await page.setViewportSize({ width: 390, height: 720 })
