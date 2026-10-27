@@ -32,12 +32,33 @@
 }
 @media (min-width: 1024px) {
   .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-background {
-    translate: 0 calc(var(--scroll-progress, 0) * 60px);
-    scale: calc(1 + var(--scroll-progress, 0) * 0.04);
+    translate: 0 calc(var(--scroll-progress, 0) * 40px);
+    scale: calc(1 + var(--scroll-progress, 0) * 0.025);
   }
   .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-content {
-    translate: 0 calc(var(--scroll-progress, 0) * -48px);
-    opacity: calc(1 - var(--scroll-progress, 0) * 0.65);
+    translate: 0 calc(var(--scroll-progress, 0) * -32px);
+    opacity: calc(1 - var(--scroll-progress, 0) * 0.6);
+    scale: calc(1 - var(--scroll-progress, 0) * 0.015);
+  }
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-scroll-cue {
+    translate: -50% calc(var(--scroll-progress, 0) * -20px);
+    opacity: calc(1 - var(--scroll-progress, 0) * 0.6);
+  }
+}
+@media (max-width: 1023px) {
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-background {
+    translate: 0 calc(var(--scroll-progress, 0) * 32px);
+    scale: calc(1 + var(--scroll-progress, 0) * 0.03);
+  }
+  /* Move the foreground as one layer; child entrance animations stay independent. */
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-content {
+    translate: 0 calc(var(--scroll-progress, 0) * -38px);
+    opacity: calc(1 - var(--scroll-progress, 0) * 0.72);
+    scale: calc(1 - var(--scroll-progress, 0) * 0.025);
+  }
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-scroll-cue {
+    translate: 0 calc(var(--scroll-progress, 0) * -28px);
+    opacity: calc(1 - var(--scroll-progress, 0) * 0.72);
   }
 }
 @media (max-width: 639px) {
@@ -50,9 +71,9 @@
     scale: 1;
   }
   .club-entrance.club-reveal[data-reveal='visible'][data-scroll-exit='true'] {
-    opacity: calc(1 - var(--scroll-exit, 0) * 0.68);
-    translate: 0 calc(var(--scroll-exit, 0) * -24px);
-    scale: calc(1 - var(--scroll-exit, 0) * 0.02);
+    opacity: calc(1 - var(--scroll-exit, 0) * 0.72);
+    translate: 0 calc(var(--scroll-exit, 0) * -32px);
+    scale: calc(1 - var(--scroll-exit, 0) * 0.025);
     transition-duration: 80ms, 80ms, 80ms, 220ms, 220ms, 220ms, 180ms;
     transition-delay: 0ms;
   }
@@ -60,6 +81,7 @@
 @media (prefers-reduced-motion: reduce), print {
   .club-scroll-reveal .club-banner-background,
   .club-scroll-reveal .club-banner-content,
+  .club-scroll-reveal .club-scroll-cue,
   .club-entrance.club-reveal[data-scroll-exit='true'] {
     opacity: 1 !important;
     translate: none !important;

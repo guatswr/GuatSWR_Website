@@ -348,9 +348,9 @@ defineProps({
     transition-duration: 450ms, 560ms, 560ms, 320ms, 220ms, 320ms, 220ms;
   }
   .social-channel.club-reveal[data-reveal='visible'][data-scroll-exit='true'] {
-    opacity: calc(1 - var(--scroll-exit, 0) * 0.68);
-    translate: 0 calc(var(--scroll-exit, 0) * -24px);
-    scale: calc(1 - var(--scroll-exit, 0) * 0.02);
+    opacity: calc(1 - var(--scroll-exit, 0) * 0.72);
+    translate: 0 calc(var(--scroll-exit, 0) * -32px);
+    scale: calc(1 - var(--scroll-exit, 0) * 0.025);
     transition-duration: 80ms, 80ms, 80ms, 320ms, 220ms, 320ms, 220ms;
     transition-delay: 0ms;
   }

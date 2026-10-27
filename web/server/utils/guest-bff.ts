@@ -210,7 +210,7 @@ export function readGuestCookieId(event: H3Event): string | undefined {
 }
 
 export function setGuestCookie(event: H3Event, runtime: BffRuntime, id: string): void {
-  const socket = parseIp(event.node?.req?.socket?.remoteAddress)
+  const socket = parseIp(event.node?.req?.socket?.remoteAddress || event.context?.clientAddress || (import.meta.dev ? '127.0.0.1' : undefined))
   const secure =
     !runtime.config.allowInsecureLoopbackCookies ||
     process.env.NODE_ENV === 'production' ||

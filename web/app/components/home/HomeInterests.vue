@@ -181,6 +181,48 @@ html.dark .interest-link { --interest-accent: #86c9e2; }
 html.dark .interest-link[data-tone='violet'] { --interest-accent: #c0afe2; }
 html.dark .interest-link[data-tone='rose'] { --interest-accent: #e0a0b2; }
 html.dark .interest-link[data-tone='amber'] { --interest-accent: #dfc18b; }
+@media (max-width: 639px) {
+  .home-interests {
+    padding-block: 3.25rem 2.75rem;
+  }
+  .interests-title {
+    margin-top: 0.75rem;
+    font-size: clamp(1.5rem, 6.2vw, 1.875rem);
+    line-height: 1.4;
+  }
+  .interests-description {
+    margin-top: 0.75rem;
+    line-height: 1.8;
+  }
+  .interests-grid {
+    gap: 0.25rem;
+    margin-top: 1.75rem;
+  }
+  .interest-link {
+    --interest-icon-size: 2.875rem;
+    --interest-icon-gap: 0.75rem;
+    padding-block: 1.125rem 0.625rem;
+  }
+  .interest-heading {
+    min-height: 3.125rem;
+  }
+  .interest-label h3 {
+    font-size: 1.125rem;
+    line-height: 1.4;
+  }
+  .interest-label p {
+    margin-top: 0.25rem;
+    line-height: 1.65;
+  }
+  .interest-body {
+    margin-top: 0.625rem;
+    line-height: 1.8;
+  }
+  .interest-cta {
+    min-height: 2.5rem;
+    padding-top: 0.625rem;
+  }
+}
 @media (min-width: 640px) {
   .interests-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));

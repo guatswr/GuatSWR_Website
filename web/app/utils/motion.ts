@@ -88,6 +88,8 @@ export interface RevealEnvironment {
 export interface MotionEnvironment extends RevealEnvironment {
   readonly innerWidth: number
   readonly innerHeight: number
+  readonly scrollY?: number
+  getNavbarCollapseScroll?(): number | undefined
   requestAnimationFrame(callback: () => void): number
   cancelAnimationFrame(handle: number): void
   addEventListener(
@@ -136,6 +138,15 @@ export function browserMotionEnvironment(
     },
     get innerHeight() {
       return source.innerHeight
+    },
+    get scrollY() {
+      return source.scrollY
+    },
+    getNavbarCollapseScroll: () => {
+      const value = source.document.querySelector<HTMLElement>('.club-navbar')?.dataset.collapseScroll
+      if (value === undefined) return undefined
+      const scroll = Number(value)
+      return Number.isFinite(scroll) ? scroll : undefined
     },
     requestAnimationFrame: (callback) => source.requestAnimationFrame(callback),
     cancelAnimationFrame: (handle) => source.cancelAnimationFrame(handle),

@@ -254,8 +254,14 @@ describe('scroll motion controller', () => {
     expect(at(-100)).toBe(1)
     expect(at(700)).toBeGreaterThan(at(740))
     expect(at(740, 48)).toBeLessThan(at(740))
-    expect(scrollProgress({ top: -500, height: 1000 }, 1000, { variant: 'hero' })).toBe(0.5)
-    expect(scrollProgress({ top: -500, height: 1000 }, 1000, { variant: 'hero' }, 390)).toBe(0)
+    expect(scrollProgress({ top: -550, height: 1000 }, 1000, { variant: 'hero' })).toBeCloseTo(0.5)
+    for (const width of [390, 820, 1280, 1440]) {
+      expect(scrollProgress({ top: 0, height: 1000 }, 1000, { variant: 'hero' }, width)).toBe(0)
+      expect(scrollProgress({ top: -300, height: 1000 }, 1000, { variant: 'hero' }, width)).toBe(0)
+      expect(scrollProgress({ top: -550, height: 1000 }, 1000, { variant: 'hero' }, width)).toBeCloseTo(0.5)
+      expect(scrollProgress({ top: -800, height: 1000 }, 1000, { variant: 'hero' }, width)).toBe(1)
+      expect(scrollProgress({ top: -1000, height: 1000 }, 1000, { variant: 'hero' }, width)).toBe(1)
+    }
     expect(scrollExitProgress({ top: 320, height: 180 }, 1000)).toBe(0)
     expect(scrollExitProgress({ top: 60, height: 180 }, 1000)).toBeGreaterThan(0)
     expect(scrollExitProgress({ top: -220, height: 180 }, 1000)).toBe(1)
@@ -264,7 +270,7 @@ describe('scroll motion controller', () => {
   it('hero frames coalesce scroll events and follow scroll in both directions', () => {
     const qa = setup()
     const controller = createScrollMotionController(qa.environment)
-    const first = element(-150)
+    const first = element(-165)
     controller.mount(first, { variant: 'hero' })
     expect(first.classes.has('club-scroll-reveal')).toBe(true)
     for (let index = 0; index < 10; index++) qa.windowHost.emit('scroll')
@@ -279,6 +285,61 @@ describe('scroll motion controller', () => {
     qa.windowHost.emit('scroll')
     qa.flush()
     expect(first.styles.get('--scroll-progress')).toBe('0.0000')
+  })
+
+  it('desktop hero waits for navbar collapse and another 30% of scrolling', () => {
+    const qa = setup()
+    let anchor: number | undefined
+    const environment = Object.assign(qa.environment, {
+      scrollY: 600,
+      getNavbarCollapseScroll: () => anchor,
+    })
+    const controller = createScrollMotionController(environment)
+    const hero = element(-600)
+    hero.rect.height = 1000
+    controller.mount(hero, { variant: 'hero' })
+    qa.flush()
+    expect(hero.styles.get('--scroll-progress')).toBe('0.0000')
+
+    anchor = 600 // Navbar finishes after a fast swipe, rather than at 36px.
+    const scrollTo = (scrollY: number) => {
+      environment.scrollY = scrollY
+      hero.rect.top = -scrollY
+      qa.windowHost.emit('scroll')
+      qa.flush()
+    }
+    scrollTo(900)
+    expect(hero.styles.get('--scroll-progress')).toBe('0.0000')
+    scrollTo(1150)
+    expect(hero.styles.get('--scroll-progress')).toBe('0.5000')
+    scrollTo(1400)
+    expect(hero.styles.get('--scroll-progress')).toBe('1.0000')
+    scrollTo(900)
+    expect(hero.styles.get('--scroll-progress')).toBe('0.0000')
+
+    anchor = undefined // Expanding the navbar disarms the previous anchor.
+    scrollTo(0)
+    expect(hero.styles.get('--scroll-progress')).toBe('0.0000')
+    anchor = 40
+    scrollTo(590)
+    expect(hero.styles.get('--scroll-progress')).toBe('0.5000')
+    controller.unmount(hero)
+  })
+
+  it('mobile hero keeps its exit independent of the navbar collapse', () => {
+    const qa = setup()
+    qa.environment.innerWidth = 390
+    const environment = Object.assign(qa.environment, {
+      scrollY: 550,
+      getNavbarCollapseScroll: () => undefined,
+    })
+    const hero = element(-550)
+    hero.rect.height = 1000
+    const controller = createScrollMotionController(environment)
+    controller.mount(hero, { variant: 'hero' })
+    qa.flush()
+    expect(hero.styles.get('--scroll-progress')).toBe('0.5000')
+    controller.unmount(hero)
   })
 
   it('keyboard focus reveals content immediately, including the hero exit state', () => {

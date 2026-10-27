@@ -77,11 +77,15 @@ export function scrollProgress(
   rect: MotionRect,
   viewportHeight: number,
   value?: ScrollRevealValue,
-  viewportWidth = 1280
+  _viewportWidth = 1280
 ): number {
   const config = resolveOptions(value)
   if (config.variant === 'hero') {
-    return viewportWidth < 1024 ? 0 : clamp(-rect.top / Math.max(rect.height, 1))
+    const progress = clamp(-rect.top / Math.max(rect.height, 1))
+    // Keep the hero intact until 30% has scrolled out, then complete
+    // its exit by 80% with the same easing as the following content sections.
+    const exit = clamp((progress - 0.3) / 0.5)
+    return exit * exit * (3 - 2 * exit)
   }
   const progress = clamp(
     (viewportHeight * 0.94 - rect.top - config.offset) / (viewportHeight * 0.4)
@@ -96,16 +100,17 @@ export function scrollExitProgress(
 ): number {
   if (viewportHeight <= 0) return 0
   const height = Math.max(rect.height, 1)
-  const startRatio = viewportWidth < 640 ? 0.18 : 0.22
+  const isCompact = viewportWidth < 640
+  const startRatio = isCompact ? 0.26 : 0.22
   const startTop = clamp(
-    viewportHeight * startRatio - Math.max(0, height - 160) * 0.35,
-    68,
-    viewportHeight * 0.24
+    viewportHeight * startRatio - Math.max(0, height - 160) * 0.32,
+    isCompact ? 92 : 68,
+    viewportHeight * (isCompact ? 0.28 : 0.24)
   )
   if (rect.top >= startTop) return 0
   const span = Math.max(
-    viewportHeight * 0.26,
-    Math.min(height * 0.85 + 96, viewportHeight * 0.48)
+    viewportHeight * (isCompact ? 0.24 : 0.26),
+    Math.min(height * 0.8 + 88, viewportHeight * 0.44)
   )
   const progress = clamp((startTop - rect.top) / Math.max(span, 1))
   return progress * progress * (3 - 2 * progress)
@@ -170,9 +175,22 @@ function createHeroMotionController(
     viewportWidth = 1280
   ): number {
     if (record.mode === 'hero') {
+      if (viewportWidth >= 1024 && environment?.getNavbarCollapseScroll) {
+        const anchor = environment.getNavbarCollapseScroll()
+        if (anchor === undefined) return 0
+        // Desktop exit starts 30% of a hero-height beyond the navbar's settled
+        // scroll position; the existing 30%-80% curve remains reversible.
+        const scrollY = environment.scrollY ?? -rect.top
+        return scrollProgress(
+          { top: anchor - scrollY, height: rect.height },
+          viewportHeight,
+          record.config,
+          viewportWidth
+        )
+      }
       return scrollProgress(rect, viewportHeight, record.config, viewportWidth)
     }
-    const liftPx = viewportWidth < 640 ? 24 : 38
+    const liftPx = viewportWidth < 640 ? 32 : 38
     const naturalRect: MotionRect = {
       top: rect.top + record.lastNumeric * liftPx,
       height: rect.height

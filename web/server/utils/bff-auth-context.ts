@@ -45,7 +45,7 @@ export interface CookieSessionState {
 function resolveSecureCookie(event: H3Event, runtime: BffRuntime): boolean {
   if (!runtime.config.allowInsecureLoopbackCookies) return true
   if (process.env.NODE_ENV === 'production') return true
-  const socket = parseIp(event.node?.req?.socket?.remoteAddress)
+  const socket = parseIp((event.node?.req?.socket?.remoteAddress || event.context?.clientAddress || (import.meta.dev ? '127.0.0.1' : undefined)))
   if (!socket || !isLoopbackIp(socket)) return true
   if (!isLoopbackHostname(event.node?.req?.headers?.host)) return true
   return false
@@ -164,7 +164,7 @@ export async function getCsrfBinding(event: H3Event, runtime: BffRuntime): Promi
 export function resolveEventClientIp(event: H3Event, runtime: BffRuntime): ClientIpResolution {
   try {
     return resolveClientIpFromHeaders({
-      remoteAddress: event.node?.req?.socket?.remoteAddress,
+      remoteAddress: (event.node?.req?.socket?.remoteAddress || event.context?.clientAddress || (import.meta.dev ? '127.0.0.1' : undefined)),
       headers: (event.node?.req?.headers ?? {}) as Record<string, string | string[] | undefined>,
     }, runtime.trust)
   }

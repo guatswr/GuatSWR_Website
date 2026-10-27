@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, onBeforeUnmount, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useSiteConfigStore } from '~/stores/site-config'
 
 const site = useSiteConfigStore(usePinia())
 const route = useRoute()
 const navRef = ref<HTMLElement | null>(null)
+const navRowRef = ref<HTMLElement | null>(null)
+const collapseScroll = ref<number>()
+const isDesktop = ref(false)
 const desktopActivityButton = ref<HTMLButtonElement | null>(null)
 const mobileActivityButton = ref<HTMLButtonElement | null>(null)
 const mobileMenuButton = ref<HTMLButtonElement | null>(null)
@@ -108,6 +111,24 @@ function handleScroll() {
   if (scrollFrame !== null) return
   scrollFrame = window.requestAnimationFrame(updateScrollState)
 }
+// The hero waits for the real height transition, then measures subsequent
+// scrolling from this position. Cancel stale completions on expansion or routing.
+watch([isCompact, isDesktop, () => route.fullPath], async ([compact, desktop], _, onCleanup) => {
+  collapseScroll.value = undefined
+  if (!compact || !desktop) return
+  let cancelled = false
+  onCleanup(() => { cancelled = true })
+  await nextTick()
+  if (cancelled) return
+  const animations = navRowRef.value?.getAnimations() ?? []
+  await Promise.allSettled(animations.map(animation => animation.finished))
+  if (!cancelled) collapseScroll.value = window.scrollY
+}, { flush: 'post' })
+
+function handleDesktopChange() {
+  isDesktop.value = desktopQuery?.matches ?? false
+  closeMenus()
+}
 watch(() => route.fullPath, () => {
   closeMenus()
   if (import.meta.client) window.requestAnimationFrame(updateScrollState)
@@ -115,7 +136,8 @@ watch(() => route.fullPath, () => {
 onMounted(() => {
   updateScrollState()
   desktopQuery = window.matchMedia('(min-width: 1024px)')
-  desktopQuery.addEventListener('change', closeMenus)
+  handleDesktopChange()
+  desktopQuery.addEventListener('change', handleDesktopChange)
   window.addEventListener('scroll', handleScroll, { passive: true })
   window.addEventListener('resize', handleScroll, { passive: true })
   document.addEventListener('pointerdown', handleOutside)
@@ -127,7 +149,7 @@ onBeforeUnmount(() => {
     window.cancelAnimationFrame(scrollFrame)
     scrollFrame = null
   }
-  desktopQuery?.removeEventListener('change', closeMenus)
+  desktopQuery?.removeEventListener('change', handleDesktopChange)
   window.removeEventListener('scroll', handleScroll)
   window.removeEventListener('resize', handleScroll)
   document.removeEventListener('pointerdown', handleOutside)
@@ -143,10 +165,11 @@ onBeforeUnmount(() => {
     class="club-navbar fixed inset-x-0 top-0 z-50"
     :data-immersive="isImmersive"
     :data-compact="isCompact"
+    :data-collapse-scroll="collapseScroll"
     :style="{ '--reading-progress': readingProgress }"
   >
     <div class="club-container">
-      <div class="club-navbar-row">
+      <div ref="navRowRef" class="club-navbar-row">
         <NuxtLink
           :prefetch="false"
           to="/"

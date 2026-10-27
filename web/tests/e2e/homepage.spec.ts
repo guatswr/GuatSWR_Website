@@ -15,6 +15,46 @@ async function openNavLink(page: Page, isMobile: boolean, name: string): Promise
 }
 
 test.describe('homepage', () => {
+  test('coordinates hero exit with the desktop navbar collapse', async ({ page, isMobile }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const hero = page.locator('.club-banner')
+    const navbar = page.getByRole('navigation', { name: '主导航' })
+    await expect(hero).toHaveClass(/club-scroll-reveal/)
+    const height = await hero.evaluate(el => el.getBoundingClientRect().height)
+    const progress = () => hero.evaluate(el => Number((el as HTMLElement).style.getPropertyValue('--scroll-progress')))
+    const scrollTo = (top: number) => page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), top)
+
+    if (isMobile) {
+      await scrollTo(height * 0.55)
+      await expect.poll(progress).toBeCloseTo(0.5, 2)
+      return
+    }
+
+    // Keep completion under test control so fast machines and slow CI both
+    // exercise scrolling while the navigation is still contracting.
+    await page.addStyleTag({ content: '.club-navbar-row { transition-duration: 10s !important; }' })
+    await scrollTo(60)
+    await expect(navbar).toHaveAttribute('data-compact', 'true')
+    await expect.poll(() => navbar.locator('.club-navbar-row').evaluate(el => el.getAnimations().length)).toBeGreaterThan(0)
+    await scrollTo(height * 0.4)
+    await expect(navbar).not.toHaveAttribute('data-collapse-scroll')
+    await expect.poll(progress).toBe(0)
+    await navbar.locator('.club-navbar-row').evaluate(el => el.getAnimations().forEach(animation => animation.finish()))
+    await expect(navbar).toHaveAttribute('data-collapse-scroll', /\d/)
+    const anchor = Number(await navbar.getAttribute('data-collapse-scroll'))
+
+    await scrollTo(anchor + height * 0.29)
+    await expect.poll(progress).toBe(0)
+    await scrollTo(anchor + height * 0.55)
+    await expect.poll(progress).toBeCloseTo(0.5, 2)
+    await scrollTo(anchor + height * 0.29)
+    await expect.poll(progress).toBe(0)
+    await scrollTo(0)
+    await expect(navbar).not.toHaveAttribute('data-collapse-scroll')
+    await expect(navbar).toHaveAttribute('data-compact', 'false')
+  })
+
   test('uses one lightweight ambient animation on compact or touch devices', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
