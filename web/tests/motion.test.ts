@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { createRevealController, observeMotionScene } from '../app/utils/motion'
 import type { MediaPreference, MotionElement, RevealEntry, RevealObserver } from '../app/utils/motion'
-import { createScrollMotionController, scrollProgress } from '../app/utils/scroll-motion'
+import { createScrollMotionController, scrollExitProgress, scrollProgress } from '../app/utils/scroll-motion'
 
 type Handler = (event: Event & { relatedTarget?: unknown }) => void
 
@@ -256,6 +256,9 @@ describe('scroll motion controller', () => {
     expect(at(740, 48)).toBeLessThan(at(740))
     expect(scrollProgress({ top: -500, height: 1000 }, 1000, { variant: 'hero' })).toBe(0.5)
     expect(scrollProgress({ top: -500, height: 1000 }, 1000, { variant: 'hero' }, 390)).toBe(0)
+    expect(scrollExitProgress({ top: 320, height: 180 }, 1000)).toBe(0)
+    expect(scrollExitProgress({ top: 60, height: 180 }, 1000)).toBeGreaterThan(0)
+    expect(scrollExitProgress({ top: -220, height: 180 }, 1000)).toBe(1)
   })
 
   it('hero frames coalesce scroll events and follow scroll in both directions', () => {
@@ -351,15 +354,14 @@ describe('scroll motion controller', () => {
     }
   })
 
-  it('content entrances reveal once without a scroll listener', () => {
+  it('content entrances reveal once and recede reversibly near the top', () => {
     const qa = setup()
     const controller = createScrollMotionController(qa.environment)
     const first = element()
     const second = element()
     controller.mount(first, 100)
     controller.mount(second, { variant: 'image', delay: 200 })
-    expect(qa.windowHost.count('scroll')).toBe(0)
-    expect(qa.frames.size).toBe(0)
+    expect(qa.windowHost.count('scroll')).toBe(1)
     expect(first.dataset.reveal).toBe('pending')
     expect(first.styles.get('--reveal-delay')).toBe('100ms')
     expect(second.dataset.revealVariant).toBe('scale')
@@ -369,9 +371,23 @@ describe('scroll motion controller', () => {
     expect(first.dataset.reveal).toBe('visible')
     expect(second.dataset.reveal).toBe('visible')
     expect(observers[0]?.targets.size).toBe(0)
+
+    first.rect.top = -40
+    qa.windowHost.emit('scroll')
+    qa.flush()
+    expect(first.dataset.scrollExit).toBe('true')
+    expect(Number(first.styles.get('--scroll-exit'))).toBeGreaterThan(0)
+
+    first.rect.top = 420
+    qa.windowHost.emit('scroll')
+    qa.flush()
+    expect(first.dataset.scrollExit).toBeUndefined()
+    expect(first.styles.get('--scroll-exit')).toBeUndefined()
+
     controller.unmount(first)
     controller.unmount(second)
     expect(first.classes.size).toBe(0)
+    expect(qa.windowHost.count('scroll')).toBe(0)
     expect(qa.preference.count('change')).toBe(0)
   })
 })

@@ -1,5 +1,6 @@
 /* Mac-page-inspired fade-up: one complete entrance, short row stagger and a
-   long, gentle ease-out. Native scrolling never waits on the animation. */
+   long, gentle ease-out. When elements scroll toward the top of the viewport,
+   they softly fade and recede upward, then restore when scrolling back. */
 .club-entrance.club-reveal {
   transition-duration: 1000ms, 1100ms, 1100ms, 220ms, 220ms, 220ms, 180ms;
 }
@@ -15,6 +16,13 @@
   opacity: 1;
   translate: none;
   scale: 1;
+}
+.club-entrance.club-reveal[data-reveal='visible'][data-scroll-exit='true'] {
+  opacity: calc(1 - var(--scroll-exit, 0) * 0.72);
+  translate: 0 calc(var(--scroll-exit, 0) * -38px);
+  scale: calc(1 - var(--scroll-exit, 0) * 0.025);
+  transition-duration: 90ms, 90ms, 90ms, 220ms, 220ms, 220ms, 180ms;
+  transition-delay: 0ms;
 }
 .club-entrance.club-reveal:focus-within {
   opacity: 1;
@@ -41,10 +49,18 @@
     translate: 0 22px;
     scale: 1;
   }
+  .club-entrance.club-reveal[data-reveal='visible'][data-scroll-exit='true'] {
+    opacity: calc(1 - var(--scroll-exit, 0) * 0.68);
+    translate: 0 calc(var(--scroll-exit, 0) * -24px);
+    scale: calc(1 - var(--scroll-exit, 0) * 0.02);
+    transition-duration: 80ms, 80ms, 80ms, 220ms, 220ms, 220ms, 180ms;
+    transition-delay: 0ms;
+  }
 }
 @media (prefers-reduced-motion: reduce), print {
   .club-scroll-reveal .club-banner-background,
-  .club-scroll-reveal .club-banner-content {
+  .club-scroll-reveal .club-banner-content,
+  .club-entrance.club-reveal[data-scroll-exit='true'] {
     opacity: 1 !important;
     translate: none !important;
     scale: none !important;

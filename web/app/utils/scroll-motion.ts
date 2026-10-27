@@ -1,10 +1,11 @@
 /**
  * Port of the archived `frontend/src/directives/scrollMotion.js`.
  *
- * Read the stable wrapper; animate its children so transforms cannot feed back
- * into the next frame's geometry. Progress is reversible, without scroll
- * control. Only the full-screen hero keeps a scroll-linked parallax; every other
- * element gets a once-only entrance so it finishes even when scrolling stops.
+ * Read the stable wrapper; animate its children or compensate for applied lift
+ * so transforms cannot feed back into the next frame's geometry. Progress is
+ * reversible, without scroll control. Entrances finish smoothly even when
+ * scrolling stops, while elements scrolling past the top of the viewport
+ * gently fade and recede upward.
  */
 import { browserMotionEnvironment, createRevealController } from './motion'
 import type {
@@ -37,11 +38,13 @@ interface ResolvedOptions {
   offset: number
 }
 
-interface HeroRecord {
+interface ScrollRecord {
   element: ScrollMotionElement
   config: ResolvedOptions
+  mode: 'hero' | 'exit'
   focused: boolean
   last?: string
+  lastNumeric: number
   focusIn: () => void
   focusOut: (event: Event & { relatedTarget?: unknown }) => void
 }
@@ -86,19 +89,43 @@ export function scrollProgress(
   return progress * progress * (3 - 2 * progress)
 }
 
+export function scrollExitProgress(
+  rect: MotionRect,
+  viewportHeight: number,
+  viewportWidth = 1280
+): number {
+  if (viewportHeight <= 0) return 0
+  const height = Math.max(rect.height, 1)
+  const startRatio = viewportWidth < 640 ? 0.18 : 0.22
+  const startTop = clamp(
+    viewportHeight * startRatio - Math.max(0, height - 160) * 0.35,
+    68,
+    viewportHeight * 0.24
+  )
+  if (rect.top >= startTop) return 0
+  const span = Math.max(
+    viewportHeight * 0.26,
+    Math.min(height * 0.85 + 96, viewportHeight * 0.48)
+  )
+  const progress = clamp((startTop - rect.top) / Math.max(span, 1))
+  return progress * progress * (3 - 2 * progress)
+}
+
 interface HeroController {
-  mount(element: ScrollMotionElement, value?: ScrollRevealValue): void
+  mount(
+    element: ScrollMotionElement,
+    value?: ScrollRevealValue,
+    mode?: 'hero' | 'exit'
+  ): void
   update(element: ScrollMotionElement, value?: ScrollRevealValue): void
   unmount(element: ScrollMotionElement): void
 }
 
-// Product-page entrances finish smoothly even when the visitor stops scrolling.
-// Only the full-screen hero retains a small, reversible scroll-linked parallax.
 function createHeroMotionController(
   environment: Partial<MotionEnvironment> | undefined
 ): HeroController {
-  const records = new Map<MotionElement, HeroRecord>()
-  const active = new Set<HeroRecord>()
+  const records = new Map<MotionElement, ScrollRecord>()
+  const active = new Set<ScrollRecord>()
   const pageDocument = environment?.document
   const createObserver = environment?.createObserver
   const requestFrame = environment?.requestAnimationFrame
@@ -123,19 +150,67 @@ function createHeroMotionController(
     frame = undefined
   }
 
-  function clear(record: HeroRecord): void {
-    record.element.classList.remove('club-scroll-reveal')
-    record.element.style.removeProperty('--scroll-progress')
-    delete record.element.dataset.scrollVariant
+  function clear(record: ScrollRecord): void {
+    if (record.mode === 'hero') {
+      record.element.classList.remove('club-scroll-reveal')
+      record.element.style.removeProperty('--scroll-progress')
+      delete record.element.dataset.scrollVariant
+    } else {
+      record.element.style.removeProperty('--scroll-exit')
+      delete record.element.dataset.scrollExit
+    }
     record.last = undefined
+    record.lastNumeric = 0
   }
 
-  function write(record: HeroRecord, progress: number): void {
+  function computeRecordProgress(
+    record: ScrollRecord,
+    rect: MotionRect,
+    viewportHeight: number,
+    viewportWidth = 1280
+  ): number {
+    if (record.mode === 'hero') {
+      return scrollProgress(rect, viewportHeight, record.config, viewportWidth)
+    }
+    const liftPx = viewportWidth < 640 ? 24 : 38
+    const naturalRect: MotionRect = {
+      top: rect.top + record.lastNumeric * liftPx,
+      height: rect.height
+    }
+    return scrollExitProgress(naturalRect, viewportHeight, viewportWidth)
+  }
+
+  function write(record: ScrollRecord, progress: number): void {
+    if (record.mode === 'exit') {
+      const value = record.focused ? 0 : progress
+      if (value > 0.0005) {
+        record.lastNumeric = value
+        const rounded = value.toFixed(4)
+        if (record.element.dataset.reveal === 'pending') {
+          record.element.dataset.reveal = 'visible'
+        }
+        record.element.style.removeProperty('--reveal-delay')
+        record.element.style.removeProperty('--reveal-mobile-delay')
+        record.element.dataset.scrollExit = 'true'
+        if (record.last === rounded) return
+        record.element.style.setProperty('--scroll-exit', rounded)
+        record.last = rounded
+      } else {
+        record.lastNumeric = 0
+        if (record.last !== undefined) {
+          delete record.element.dataset.scrollExit
+          record.element.style.removeProperty('--scroll-exit')
+          record.last = undefined
+        }
+      }
+      return
+    }
     const value = record.focused
       ? record.config.variant === 'hero'
         ? 0
         : 1
       : progress
+    record.lastNumeric = value
     const rounded = value.toFixed(4)
     if (record.last === rounded) return
     record.element.style.setProperty('--scroll-progress', rounded)
@@ -153,10 +228,10 @@ function createHeroMotionController(
       (record) =>
         [
           record,
-          scrollProgress(
+          computeRecordProgress(
+            record,
             record.element.getBoundingClientRect(),
             env.innerHeight ?? 0,
-            record.config,
             env.innerWidth
           )
         ] as const
@@ -175,9 +250,11 @@ function createHeroMotionController(
     else schedule()
   }
 
-  function activate(record: HeroRecord): void {
-    record.element.dataset.scrollVariant = record.config.variant
-    record.element.classList.add('club-scroll-reveal')
+  function activate(record: ScrollRecord): void {
+    if (record.mode === 'hero') {
+      record.element.dataset.scrollVariant = record.config.variant
+      record.element.classList.add('club-scroll-reveal')
+    }
     active.add(record)
     observer?.observe(record.element)
   }
@@ -209,10 +286,10 @@ function createHeroMotionController(
                 active.delete(record)
                 write(
                   record,
-                  scrollProgress(
+                  computeRecordProgress(
+                    record,
                     entry.boundingClientRect,
                     environment?.innerHeight ?? 0,
-                    record.config,
                     environment?.innerWidth
                   )
                 )
@@ -235,15 +312,21 @@ function createHeroMotionController(
   }
 
   return {
-    mount(element: ScrollMotionElement, value?: ScrollRevealValue): void {
+    mount(
+      element: ScrollMotionElement,
+      value?: ScrollRevealValue,
+      mode: 'hero' | 'exit' = 'hero'
+    ): void {
       if (!supported || !matchMedia || records.has(element)) return
-      const record: HeroRecord = {
+      const record: ScrollRecord = {
         element,
         config: resolveOptions(value),
+        mode,
         focused: false,
+        lastNumeric: 0,
         focusIn: () => {
           record.focused = true
-          write(record, 1)
+          write(record, mode === 'exit' ? 0 : 1)
         },
         focusOut: (event) => {
           record.focused = element.contains(event.relatedTarget)
@@ -266,7 +349,9 @@ function createHeroMotionController(
       const record = records.get(element)
       if (!record) return
       record.config = resolveOptions(value)
-      if (observer) element.dataset.scrollVariant = record.config.variant
+      if (observer && record.mode === 'hero') {
+        element.dataset.scrollVariant = record.config.variant
+      }
       schedule()
     },
     unmount(element: ScrollMotionElement): void {
@@ -298,7 +383,7 @@ export function createScrollMotionController(
       if (modes.has(element)) return
       const isHero = typeof value === 'object' && value?.variant === 'hero'
       modes.set(element, isHero)
-      if (isHero) hero.mount(element, value)
+      if (isHero) hero.mount(element, value, 'hero')
       else {
         element.classList.add('club-entrance')
         const revealValue: RevealDirectiveValue = {
@@ -313,14 +398,16 @@ export function createScrollMotionController(
               : 'up'
         }
         reveal.mount(element, revealValue)
+        hero.mount(element, value, 'exit')
       }
     },
     update(element: ScrollMotionElement, value?: ScrollRevealValue): void {
-      if (modes.get(element)) hero.update(element, value)
+      hero.update(element, value)
     },
     unmount(element: ScrollMotionElement): void {
       if (modes.get(element)) hero.unmount(element)
       else {
+        hero.unmount(element)
         reveal.unmount(element)
         element.classList.remove('club-entrance', 'club-reveal')
         delete element.dataset.reveal

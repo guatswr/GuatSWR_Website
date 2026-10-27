@@ -16,14 +16,14 @@ defineProps({ mascot: { type: String, default: '' } })
   >
     <HomeSectionBackdrop variant="about" />
     <div class="club-container home-about-layout">
-      <div v-scroll-reveal class="home-about-copy">
-        <h2 id="about-title" class="club-display home-about-title">
+      <div class="home-about-copy">
+        <h2 id="about-title" v-scroll-reveal class="club-display home-about-title">
           因东方相识，<br >让同好成为朋友。
         </h2>
-        <p class="home-about-intro">
+        <p v-scroll-reveal="60" class="home-about-intro">
           这里是桂航绯想天，<br >一群在校园里分享幻想乡的人。
         </p>
-        <div class="home-about-body">
+        <div v-scroll-reveal="120" class="home-about-body">
           <p>
             这里是桂林航天工业学院的东方Project同好会。Stg、非想天则、音乐、同人创作——每一种热爱，都能在这里找到回应。
           </p>
@@ -31,7 +31,7 @@ defineProps({ mascot: { type: String, default: '' } })
             也欢迎校外的朋友。聊一首喜欢的曲子，约一场对战，或在线下见个面。从一句“你也喜欢东方？”开始，认识彼此。
           </p>
         </div>
-        <div class="home-about-links">
+        <div v-scroll-reveal="180" class="home-about-links">
           <NuxtLink to="/history" class="club-text-link home-about-link">
             读读我们的群史 <ClubIcon name="arrow" class="h-4 w-4" />
           </NuxtLink>
@@ -39,7 +39,7 @@ defineProps({ mascot: { type: String, default: '' } })
             认识同好 <ClubIcon name="arrow" class="h-4 w-4" />
           </NuxtLink>
         </div>
-        <p class="home-about-note">桂航绯想天 <span aria-hidden="true">／</span> Welcome to GuatSWR</p>
+        <p v-scroll-reveal="220" class="home-about-note">桂航绯想天 <span aria-hidden="true">／</span> Welcome to GuatSWR</p>
       </div>
 
       <figure v-scroll-reveal="{ variant: 'image', delay: 100 }" class="home-about-figure">

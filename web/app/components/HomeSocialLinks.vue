@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { PropType } from 'vue'
 import ClubIcon from '~/components/ClubIcon.vue'
-import { vReveal } from '~/utils/motion'
+import { vScrollReveal } from '~/utils/scroll-motion'
 import type { SocialLink } from '~/utils/site-config'
 
 defineProps({
@@ -14,7 +14,7 @@ defineProps({
     <a
       v-for="(link, index) in links"
       :key="link.url"
-      v-reveal="index * 110"
+      v-scroll-reveal="{ variant: 'card', delay: index * 110 }"
       :href="link.url"
       target="_blank"
       rel="noopener noreferrer"
@@ -279,6 +279,13 @@ defineProps({
       var(--channel-stagger), var(--channel-stagger), var(--channel-stagger),
       0ms, 0ms, 0ms, 0ms;
   }
+  .social-channel.club-reveal[data-reveal='visible'][data-scroll-exit='true'] {
+    opacity: calc(1 - var(--scroll-exit, 0) * 0.72);
+    translate: 0 calc(var(--scroll-exit, 0) * -38px);
+    scale: calc(1 - var(--scroll-exit, 0) * 0.025);
+    transition-duration: 90ms, 90ms, 90ms, 320ms, 220ms, 320ms, 220ms;
+    transition-delay: 0ms;
+  }
   .social-channel.club-reveal[data-reveal='pending']:not(:focus-within) {
     translate: 0 28px;
     scale: 0.985;
@@ -339,6 +346,13 @@ defineProps({
   }
   .social-channel.club-reveal {
     transition-duration: 450ms, 560ms, 560ms, 320ms, 220ms, 320ms, 220ms;
+  }
+  .social-channel.club-reveal[data-reveal='visible'][data-scroll-exit='true'] {
+    opacity: calc(1 - var(--scroll-exit, 0) * 0.68);
+    translate: 0 calc(var(--scroll-exit, 0) * -24px);
+    scale: calc(1 - var(--scroll-exit, 0) * 0.02);
+    transition-duration: 80ms, 80ms, 80ms, 320ms, 220ms, 320ms, 220ms;
+    transition-delay: 0ms;
   }
   .social-channel.club-reveal[data-reveal='pending']:not(:focus-within) {
     translate: 0 16px;
