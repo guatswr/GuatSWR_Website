@@ -158,8 +158,7 @@ test('history retains its animations while scrolling without hiding settled card
   await expect(page.locator('.history-glow-vermilion')).toHaveCSS('animation-name', isMobile ? 'history-touch-glow' : /history-ambient-drift/)
   await expect.poll(() => page.evaluate(() => window.historyMotionProbe.ends['0'] ?? 0)).toBe(1)
   await expect(first).toHaveCSS('translate', isMobile ? 'none' : '0px -3px')
-  const astrolabe = page.locator('.history-astrolabe.is-primary')
-  const initialAngle = await astrolabe.evaluate(node => getComputedStyle(node).transform)
+  await expect(page.locator('.history-ambient svg')).toHaveCount(0)
   const progress = page.locator('.history-spine-progress')
   const initialProgress = await progress.evaluate(node => getComputedStyle(node).transform)
 
@@ -168,7 +167,6 @@ test('history retains its animations while scrolling without hiding settled card
   // A successfully dispatched gesture is insufficient: require real scrolling.
   await expect.poll(() => page.evaluate(() => scrollY)).toBeGreaterThan(300)
   await expect.poll(() => progress.evaluate(node => getComputedStyle(node).transform)).not.toBe(initialProgress)
-  await expect.poll(() => astrolabe.evaluate(node => getComputedStyle(node).transform)).not.toBe(initialAngle)
   for (let step = 0; step < 3; step++) {
     if (isMobile) await touchDrag(page, true)
     else await page.mouse.wheel(0, 600)

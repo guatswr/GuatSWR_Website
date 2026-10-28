@@ -148,7 +148,6 @@ const openLightbox = (src: string): void => {
 
 // --- Timeline scroll & reveal ---------------------------------------------
 const timeline = ref<HTMLElement | null>(null)
-const ambient = ref<HTMLElement | null>(null)
 const spineFill = ref<HTMLElement | null>(null)
 const dockProgress = ref<HTMLElement | null>(null)
 let revealObserver: IntersectionObserver | null = null
@@ -230,7 +229,6 @@ const onEntryPointerEnter = (event: PointerEvent, index: number): void => {
 const updateSpineProgress = (progress: number, updateLabel: boolean): void => {
   // Progress only touches decorative surfaces. During a touch gesture, the
   // bookmark's hidden percentage label doesn't need to trigger a Vue render.
-  ambient.value?.style.setProperty('--spine-progress', String(progress))
   if (spineFill.value) spineFill.value.style.transform = `scaleY(${progress})`
   if (dockProgress.value) dockProgress.value.style.transform = `scaleX(${progress})`
   if (updateLabel) spinePercent.value = Math.round(progress * 100)
@@ -504,57 +502,10 @@ usePublicPageSeo({
     :data-history-motion="touchMode ? 'touch' : 'pointer'"
     @pointerdown.capture="onStagePointerDown"
   >
-    <div ref="ambient" class="history-ambient" aria-hidden="true">
+    <div class="history-ambient" aria-hidden="true">
       <div class="history-glow history-glow-vermilion" />
       <div class="history-glow history-glow-sky" />
       <div class="history-glow history-glow-amber" />
-
-      <svg class="history-astrolabe is-primary" viewBox="0 0 400 400" fill="none">
-        <circle cx="200" cy="200" r="186" stroke="currentColor" stroke-width="0.75" stroke-dasharray="4 6" />
-        <circle cx="200" cy="200" r="168" stroke="currentColor" stroke-width="0.75" />
-        <polygon
-          points="200,32 319,81 368,200 319,319 200,368 81,319 32,200 81,81"
-          stroke="currentColor"
-          stroke-width="0.85"
-        />
-        <rect x="96" y="96" width="208" height="208" stroke="currentColor" stroke-width="0.7" />
-        <rect x="96" y="96" width="208" height="208" transform="rotate(45 200 200)" stroke="currentColor" stroke-width="0.7" />
-        <g stroke="currentColor" stroke-width="0.75" opacity="0.85">
-          <polygon points="200,52 212,118 200,142 188,118" />
-          <polygon points="200,52 212,118 200,142 188,118" transform="rotate(60 200 200)" />
-          <polygon points="200,52 212,118 200,142 188,118" transform="rotate(120 200 200)" />
-          <polygon points="200,52 212,118 200,142 188,118" transform="rotate(180 200 200)" />
-          <polygon points="200,52 212,118 200,142 188,118" transform="rotate(240 200 200)" />
-          <polygon points="200,52 212,118 200,142 188,118" transform="rotate(300 200 200)" />
-        </g>
-        <circle cx="200" cy="200" r="102" stroke="currentColor" stroke-width="0.75" stroke-dasharray="2 5" />
-        <circle cx="200" cy="200" r="46" stroke="currentColor" stroke-width="0.85" />
-        <line x1="200" y1="14" x2="200" y2="146" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 6" />
-        <line x1="200" y1="254" x2="200" y2="386" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 6" />
-        <line x1="14" y1="200" x2="146" y2="200" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 6" />
-        <line x1="254" y1="200" x2="386" y2="200" stroke="currentColor" stroke-width="0.5" stroke-dasharray="3 6" />
-        <text x="200" y="216" text-anchor="middle" class="history-astrolabe-nine">⑨</text>
-      </svg>
-
-      <svg class="history-astrolabe is-secondary" viewBox="0 0 320 320" fill="none">
-        <circle cx="160" cy="160" r="146" stroke="currentColor" stroke-width="0.75" stroke-dasharray="3 6" />
-        <polygon
-          points="160,22 280,91 280,229 160,298 40,229 40,91"
-          stroke="currentColor"
-          stroke-width="0.8"
-        />
-        <g stroke="currentColor" stroke-width="0.9">
-          <polygon points="160,36 171,98 160,122 149,98" transform="rotate(-68 160 160)" />
-          <polygon points="160,30 172,96 160,122 148,96" transform="rotate(-38 160 160)" />
-          <polygon points="160,40 170,100 160,122 150,100" transform="rotate(-10 160 160)" />
-          <polygon points="160,40 170,100 160,122 150,100" transform="rotate(10 160 160)" />
-          <polygon points="160,30 172,96 160,122 148,96" transform="rotate(38 160 160)" />
-          <polygon points="160,36 171,98 160,122 149,98" transform="rotate(68 160 160)" />
-        </g>
-        <rect x="92" y="92" width="136" height="136" transform="rotate(45 160 160)" stroke="currentColor" stroke-width="0.7" />
-        <circle cx="160" cy="160" r="42" stroke="currentColor" stroke-width="0.8" />
-        <text x="160" y="174" text-anchor="middle" class="history-astrolabe-nine is-small">⑨</text>
-      </svg>
 
       <span class="history-mote history-mote-1" />
       <span class="history-mote history-mote-2" />
@@ -1182,47 +1133,6 @@ usePublicPageSeo({
     linear-gradient(90deg, rgb(51 65 85 / 0.12) 1px, transparent 1px);
 }
 
-/* Celestial Astrolabe / Octagonal Spell Rings */
-.history-astrolabe {
-  position: absolute;
-  color: var(--chronicle-vermilion);
-  opacity: 0.085;
-  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-:global(html.dark .history-astrolabe) {
-  opacity: 0.11;
-}
-
-.history-astrolabe.is-primary {
-  top: 4.5rem;
-  right: -7rem;
-  width: min(34rem, 52vw);
-  height: min(34rem, 52vw);
-  transform: rotate(calc(var(--spine-progress, 0) * 140deg));
-}
-
-.history-astrolabe.is-secondary {
-  bottom: -6rem;
-  left: -6rem;
-  width: min(26rem, 44vw);
-  height: min(26rem, 44vw);
-  color: var(--chronicle-sky);
-  transform: rotate(calc(var(--spine-progress, 0) * -110deg));
-}
-
-.history-astrolabe-nine {
-  fill: currentColor;
-  font-family: var(--club-serif);
-  font-size: 46px;
-  font-weight: 700;
-  opacity: 0.9;
-}
-
-.history-astrolabe-nine.is-small {
-  font-size: 40px;
-}
-
 .history-glow {
   position: absolute;
   border-radius: 9999px;
@@ -1794,14 +1704,6 @@ usePublicPageSeo({
 }
 
 /* Page-enter & Scroll-reveal Choreography */
-.history-stage.is-entered .history-astrolabe.is-primary {
-  animation: history-astrolabe-enter 920ms cubic-bezier(0.16, 1, 0.3, 1) 120ms backwards;
-}
-
-.history-stage.is-entered .history-astrolabe.is-secondary {
-  animation: history-astrolabe-enter 980ms cubic-bezier(0.16, 1, 0.3, 1) 220ms backwards;
-}
-
 .history-stage.is-entered .history-seal-stamp {
   animation: history-seal-press 520ms cubic-bezier(0.22, 1, 0.36, 1) 150ms backwards;
 }
@@ -2060,16 +1962,6 @@ usePublicPageSeo({
   }
 }
 
-@keyframes history-astrolabe-enter {
-  0% {
-    opacity: 0;
-    scale: 0.82;
-  }
-  100% {
-    scale: 1;
-  }
-}
-
 @keyframes history-seal-press {
   0% {
     opacity: 0;
@@ -2269,7 +2161,6 @@ usePublicPageSeo({
   .history-title-copy,
   .history-total-badge,
   .history-glow,
-  .history-astrolabe,
   .history-mote,
   .history-nine-mote,
   .history-spine,
