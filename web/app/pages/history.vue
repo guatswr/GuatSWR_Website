@@ -1704,6 +1704,34 @@ usePublicPageSeo({
 }
 
 /* Page-enter & Scroll-reveal Choreography */
+/* The stable entry owns the view timeline; only its row moves, so entrance
+   transforms and active-card lift cannot change the exit's scroll geometry. */
+@supports (animation-timeline: view(block)) and (animation-range: exit-crossing 30% exit-crossing 80%) {
+  .history-entry {
+    view-timeline-name: --history-card-exit;
+    view-timeline-axis: block;
+  }
+
+  .history-stage.is-entered .history-entry-row {
+    --native-exit-lift: -38px;
+    animation: club-section-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: --history-card-exit;
+    animation-range: exit-crossing 30% exit-crossing 80%;
+  }
+
+  .history-entry-row:focus-within {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+  }
+
+  @media (max-width: 639px) {
+    .history-stage.is-entered .history-entry-row {
+      --native-exit-lift: -32px;
+    }
+  }
+}
+
 .history-stage.is-entered .history-seal-stamp {
   animation: history-seal-press 520ms cubic-bezier(0.22, 1, 0.36, 1) 150ms backwards;
 }
@@ -2156,6 +2184,7 @@ usePublicPageSeo({
 }
 
 @media (prefers-reduced-motion: reduce) {
+  .history-entry-row,
   .history-header,
   .history-seal-stamp,
   .history-title-copy,
@@ -2191,6 +2220,15 @@ usePublicPageSeo({
   .history-entry.is-unrevealed .history-counter,
   .history-entry.is-unrevealed .history-connector {
     opacity: 1 !important;
+  }
+}
+
+@media print {
+  .history-stage .history-entry-row {
+    animation: none !important;
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
   }
 }
 </style>

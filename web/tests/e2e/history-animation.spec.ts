@@ -233,6 +233,44 @@ test('history retains its animations while scrolling without hiding settled card
   await info.attach('history-animations-preserved', { body: await page.screenshot(), contentType: 'image/png' })
 })
 
+test('history card exits follow scroll and reverse without replaying entrances', async ({ page }) => {
+  await openLongHistory(page)
+  const entry = page.locator('#history-0')
+  const row = entry.locator('.history-entry-row')
+  await expect.poll(() => page.evaluate(() => window.historyMotionProbe.ends['0'] ?? 0)).toBe(1)
+  await expect(row).toHaveCSS('animation-name', 'club-section-exit')
+  const height = await entry.evaluate(node => (node as HTMLElement).offsetHeight)
+  const scrollToFraction = async (fraction: number) => {
+    await entry.evaluate((node, part) => {
+      const element = node as HTMLElement
+      const rect = element.getBoundingClientRect()
+      window.scrollTo({ top: scrollY + rect.top + element.offsetHeight * part, behavior: 'instant' })
+    }, fraction)
+  }
+  const opacity = () => row.evaluate(node => Number(getComputedStyle(node).opacity))
+  await scrollToFraction(0.25)
+  await expect.poll(opacity).toBe(1)
+  await scrollToFraction(0.55)
+  await expect.poll(opacity).toBeGreaterThan(0.4)
+  await expect.poll(opacity).toBeLessThan(0.9)
+  await scrollToFraction(0.85)
+  await expect.poll(opacity).toBeCloseTo(0.28, 2)
+  await row.locator('.history-figure').evaluate(node => (node as HTMLElement).focus({ preventScroll: true }))
+  await expect(row).toHaveCSS('opacity', '1')
+  await expect(row).toHaveCSS('translate', 'none')
+  await page.evaluate(() => (document.activeElement as HTMLElement)?.blur())
+  await scrollToFraction(0)
+  await expect.poll(opacity).toBe(1)
+  expect(await entry.evaluate(node => (node as HTMLElement).offsetHeight)).toBe(height)
+  expect(await page.evaluate(() => window.historyMotionProbe.starts['0'])).toBe(1)
+  await page.emulateMedia({ reducedMotion: 'reduce' })
+  await scrollToFraction(0.85)
+  await expect(row).toHaveCSS('animation-name', 'none')
+  await expect(row).toHaveCSS('opacity', '1')
+  await expect(row).toHaveCSS('translate', 'none')
+  await expect(row).toHaveCSS('scale', 'none')
+})
+
 test('touch pointer entry does not latch the mouse hover focus', async ({ page, isMobile }) => {
   await page.goto('/history')
   await expect(page.locator('.history-stage')).toHaveClass(/is-entered/)
