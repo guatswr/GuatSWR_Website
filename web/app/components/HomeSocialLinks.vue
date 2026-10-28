@@ -359,6 +359,21 @@ defineProps({
     scale: 1;
   }
 }
+.social-channel.club-entrance.club-reveal[data-scroll-native='true'] {
+  --native-entry-delay: var(--channel-stagger);
+  --native-opacity-duration: 560ms;
+  --native-move-duration: 720ms;
+  --native-entry-lift: 28px;
+  --native-entry-scale: 0.985;
+}
+@media (max-width: 639px) {
+  .social-channel.club-entrance.club-reveal[data-scroll-native='true'] {
+    --native-opacity-duration: 450ms;
+    --native-move-duration: 560ms;
+    --native-entry-lift: 16px;
+    --native-entry-scale: 1;
+  }
+}
 @media (prefers-reduced-motion: reduce), print {
   .social-channel,
   .social-channel-main,

@@ -342,6 +342,45 @@ describe('scroll motion controller', () => {
     controller.unmount(hero)
   })
 
+  it('reuses natural layout during scrolling and refreshes it after content resizes', () => {
+    const qa = setup()
+    let documentTop = 740
+    let measurements = 0
+    let resize: (() => void) | undefined
+    let released = false
+    const environment = Object.assign(qa.environment, {
+      scrollY: 0,
+      measureNaturalRect: () => { measurements++; return { top: documentTop - environment.scrollY, height: 300 } },
+      observeResize: (_element: MotionElement, listener: () => void) => {
+        resize = listener
+        return () => { released = true }
+      },
+    })
+    const target = element()
+    const controller = createScrollMotionController(environment)
+    controller.mount(target)
+    qa.flush()
+    expect(measurements).toBe(1)
+    for (const y of [600, 700, 750]) {
+      environment.scrollY = y
+      qa.windowHost.emit('scroll')
+      qa.flush()
+    }
+    expect(measurements).toBe(1)
+    expect(Number(target.styles.get('--scroll-exit'))).toBeGreaterThan(0)
+    observers[1]?.intersect(target, false)
+    documentTop = 1200
+    resize?.()
+    qa.flush()
+    expect(measurements).toBe(1)
+    observers[1]?.intersect(target, true)
+    qa.flush()
+    expect(measurements).toBe(2)
+    expect(target.dataset.scrollExit).toBeUndefined()
+    controller.unmount(target)
+    expect(released).toBe(true)
+  })
+
   it('keyboard focus reveals content immediately, including the hero exit state', () => {
     const qa = setup()
     const controller = createScrollMotionController(qa.environment)

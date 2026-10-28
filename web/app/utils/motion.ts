@@ -1,3 +1,5 @@
+import { browserScrollFrame, documentLayoutRect } from './scroll-frame'
+
 /**
  * Vue equivalents of the archived `frontend/src/directives/motion.js`
  * (SCTA's once-only whileInView and staggered entrances). Only the DOM surface
@@ -90,6 +92,10 @@ export interface MotionEnvironment extends RevealEnvironment {
   readonly innerHeight: number
   readonly scrollY?: number
   getNavbarCollapseScroll?(): number | undefined
+  measureNaturalRect?(element: MotionElement): MotionRect
+  observeResize?(element: MotionElement, listener: () => void): () => void
+  observePageResize?(listener: () => void): () => void
+  writeFrame?(callback: () => void): void
   requestAnimationFrame(callback: () => void): number
   cancelAnimationFrame(handle: number): void
   addEventListener(
@@ -132,15 +138,43 @@ export function browserMotionEnvironment(
   source: Window | undefined
 ): MotionEnvironment | undefined {
   if (!source) return undefined
+  const frame = browserScrollFrame(source)
+  const resizeListeners = new Map<MotionElement, Set<() => void>>()
+  let resizeObserver: ResizeObserver | undefined
+  function observeResize(element: MotionElement, listener: () => void) {
+    if (typeof ResizeObserver === 'undefined') return () => {}
+    resizeObserver ??= new ResizeObserver(entries => {
+      const listeners = new Set<() => void>()
+      for (const entry of entries) {
+        for (const callback of resizeListeners.get(entry.target as unknown as MotionElement) ?? []) listeners.add(callback)
+      }
+      for (const callback of listeners) callback()
+    })
+    const listeners = resizeListeners.get(element) ?? new Set<() => void>()
+    listeners.add(listener)
+    resizeListeners.set(element, listeners)
+    resizeObserver.observe(element as unknown as Element)
+    return () => {
+      listeners.delete(listener)
+      if (!listeners.size) {
+        resizeListeners.delete(element)
+        resizeObserver?.unobserve(element as unknown as Element)
+      }
+      if (!resizeListeners.size) {
+        resizeObserver?.disconnect()
+        resizeObserver = undefined
+      }
+    }
+  }
   return {
     get innerWidth() {
-      return source.innerWidth
+      return frame.snapshot?.width ?? source.innerWidth
     },
     get innerHeight() {
-      return source.innerHeight
+      return frame.snapshot?.height ?? source.innerHeight
     },
     get scrollY() {
-      return source.scrollY
+      return frame.snapshot?.scrollY ?? source.scrollY
     },
     getNavbarCollapseScroll: () => {
       const value = source.document.querySelector<HTMLElement>('.club-navbar')?.dataset.collapseScroll
@@ -148,8 +182,24 @@ export function browserMotionEnvironment(
       const scroll = Number(value)
       return Number.isFinite(scroll) ? scroll : undefined
     },
-    requestAnimationFrame: (callback) => source.requestAnimationFrame(callback),
-    cancelAnimationFrame: (handle) => source.cancelAnimationFrame(handle),
+    measureNaturalRect: typeof ResizeObserver === 'undefined' ? undefined : element => {
+      const rect = documentLayoutRect(element as unknown as HTMLElement)
+      return { top: rect.top - (frame.snapshot?.scrollY ?? source.scrollY), height: rect.height }
+    },
+    observeResize,
+    observePageResize: listener => {
+      const stop = observeResize(source.document.documentElement, listener)
+      source.document.addEventListener('load', listener, true)
+      source.document.fonts?.addEventListener('loadingdone', listener)
+      return () => {
+        stop()
+        source.document.removeEventListener('load', listener, true)
+        source.document.fonts?.removeEventListener('loadingdone', listener)
+      }
+    },
+    requestAnimationFrame: frame.read,
+    cancelAnimationFrame: frame.cancel,
+    writeFrame: frame.write,
     matchMedia: (query) => source.matchMedia(query),
     createObserver: (callback, options) => {
       // The global constructor is used rather than `source.IntersectionObserver`

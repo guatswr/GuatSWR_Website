@@ -8,6 +8,8 @@
  * gently fade and recede upward.
  */
 import { browserMotionEnvironment, createRevealController } from './motion'
+import { hasHeroTimeline, hasSectionTimeline, mountHeroTimeline, mountSectionTimeline, supportsScrollTimeline, unmountHeroTimeline, unmountSectionTimeline } from './hero-timeline'
+import { scrollExitRange } from './scroll-range'
 import type {
   MediaPreference,
   MotionElement,
@@ -45,6 +47,8 @@ interface ScrollRecord {
   focused: boolean
   last?: string
   lastNumeric: number
+  geometry?: { top: number; height: number }
+  stopResize?: () => void
   focusIn: () => void
   focusOut: (event: Event & { relatedTarget?: unknown }) => void
 }
@@ -99,19 +103,8 @@ export function scrollExitProgress(
   viewportWidth = 1280
 ): number {
   if (viewportHeight <= 0) return 0
-  const height = Math.max(rect.height, 1)
-  const isCompact = viewportWidth < 640
-  const startRatio = isCompact ? 0.26 : 0.22
-  const startTop = clamp(
-    viewportHeight * startRatio - Math.max(0, height - 160) * 0.32,
-    isCompact ? 92 : 68,
-    viewportHeight * (isCompact ? 0.28 : 0.24)
-  )
+  const { startTop, span } = scrollExitRange(rect.height, viewportHeight, viewportWidth)
   if (rect.top >= startTop) return 0
-  const span = Math.max(
-    viewportHeight * (isCompact ? 0.24 : 0.26),
-    Math.min(height * 0.8 + 88, viewportHeight * 0.44)
-  )
   const progress = clamp((startTop - rect.top) / Math.max(span, 1))
   return progress * progress * (3 - 2 * progress)
 }
@@ -141,6 +134,15 @@ function createHeroMotionController(
   let preference: MediaPreference | undefined
   let observer: RevealObserver | undefined
   let frame: number | undefined
+  let layoutDirty = true
+  let stopPageResize: (() => void) | undefined
+
+  function invalidateLayout() {
+    layoutDirty = true
+    // A resized section can move inactive sections below it as well.
+    for (const record of records.values()) record.geometry = undefined
+    schedule()
+  }
   const supported = Boolean(
     createObserver &&
       requestFrame &&
@@ -166,6 +168,9 @@ function createHeroMotionController(
     }
     record.last = undefined
     record.lastNumeric = 0
+    record.geometry = undefined
+    record.stopResize?.()
+    record.stopResize = undefined
   }
 
   function computeRecordProgress(
@@ -190,6 +195,7 @@ function createHeroMotionController(
       }
       return scrollProgress(rect, viewportHeight, record.config, viewportWidth)
     }
+    if (record.geometry) return scrollExitProgress(rect, viewportHeight, viewportWidth)
     const liftPx = viewportWidth < 640 ? 32 : 38
     const naturalRect: MotionRect = {
       top: rect.top + record.lastNumeric * liftPx,
@@ -241,20 +247,39 @@ function createHeroMotionController(
     // closure below (TypeScript does not preserve it for the captured parameter).
     const env = environment
     if (!env || pageDocument?.hidden || !observer) return
+    const scrollY = env.scrollY ?? 0
+    const needsMeasurement = layoutDirty
+    layoutDirty = false
     // All layout reads happen before any style writes.
     const updates = [...active].map(
-      (record) =>
-        [
+      (record) => {
+        let rect: MotionRect
+        if (env.measureNaturalRect) {
+          if (needsMeasurement || !record.geometry) {
+            const measured = env.measureNaturalRect(record.element)
+            record.geometry = { top: measured.top + scrollY, height: measured.height }
+          }
+          rect = { top: record.geometry.top - scrollY, height: record.geometry.height }
+        } else rect = record.element.getBoundingClientRect()
+        return [
           record,
           computeRecordProgress(
             record,
-            record.element.getBoundingClientRect(),
+            rect,
             env.innerHeight ?? 0,
             env.innerWidth
           )
         ] as const
+      }
     )
-    for (const [record, progress] of updates) write(record, progress)
+    const apply = () => {
+      if (!observer) return
+      for (const [record, progress] of updates) {
+        if (records.has(record.element)) write(record, progress)
+      }
+    }
+    if (env.writeFrame) env.writeFrame(apply)
+    else apply()
   }
 
   function schedule(): void {
@@ -269,6 +294,8 @@ function createHeroMotionController(
   }
 
   function activate(record: ScrollRecord): void {
+    record.stopResize ??= environment?.observeResize?.(record.element, invalidateLayout)
+    layoutDirty = true
     if (record.mode === 'hero') {
       record.element.dataset.scrollVariant = record.config.variant
       record.element.classList.add('club-scroll-reveal')
@@ -283,7 +310,9 @@ function createHeroMotionController(
     observer = undefined
     active.clear()
     unlisten?.('scroll', schedule)
-    unlisten?.('resize', schedule)
+    unlisten?.('resize', invalidateLayout)
+    stopPageResize?.()
+    stopPageResize = undefined
     pageDocument?.removeEventListener('visibilitychange', visibilityChanged)
     for (const record of records.values()) clear(record)
   }
@@ -306,7 +335,9 @@ function createHeroMotionController(
                   record,
                   computeRecordProgress(
                     record,
-                    entry.boundingClientRect,
+                    record.geometry
+                      ? { top: record.geometry.top - (environment?.scrollY ?? 0), height: record.geometry.height }
+                      : entry.boundingClientRect,
                     environment?.innerHeight ?? 0,
                     environment?.innerWidth
                   )
@@ -318,7 +349,8 @@ function createHeroMotionController(
           { threshold: 0, rootMargin: '160px 0px' }
         )
         listen('scroll', schedule, { passive: true })
-        listen('resize', schedule, { passive: true })
+        listen('resize', invalidateLayout, { passive: true })
+        stopPageResize = environment?.observePageResize?.(invalidateLayout)
         pageDocument.addEventListener('visibilitychange', visibilityChanged)
       } catch {
         stop() // Unsupported environments keep all content visible.
@@ -439,6 +471,7 @@ export function createScrollMotionController(
 }
 
 let sharedController: ScrollMotionController | undefined
+let nativeReveal: RevealController | undefined
 const browser = (): Window | undefined =>
   typeof window === 'undefined' ? undefined : window
 const controller = (): ScrollMotionController =>
@@ -451,15 +484,40 @@ export const vScrollReveal = {
     element: ScrollMotionElement,
     binding: { value?: ScrollRevealValue }
   ): void {
+    if (typeof binding.value === 'object' && binding.value?.variant === 'hero'
+      && mountHeroTimeline(element as unknown as HTMLElement)) return
+    if (typeof ResizeObserver !== 'undefined' && supportsScrollTimeline()
+      && !(typeof binding.value === 'object' && binding.value?.variant === 'hero')) {
+      element.classList.add('club-entrance')
+      nativeReveal ??= createRevealController(browserMotionEnvironment(browser()))
+      const value = binding.value
+      nativeReveal.mount(element, {
+        delay: typeof value === 'number' ? value : (value?.delay ?? value?.offset ?? 0),
+        variant: typeof value === 'object' && (value?.variant === 'image' || value?.variant === 'card') ? 'scale' : 'up',
+      })
+      mountSectionTimeline(element as unknown as HTMLElement)
+      return
+    }
     controller().mount(element, binding.value)
   },
   updated(
     element: ScrollMotionElement,
     binding: { value?: ScrollRevealValue }
   ): void {
+    if (hasHeroTimeline(element as unknown as HTMLElement) || hasSectionTimeline(element as unknown as HTMLElement)) return
     controller().update(element, binding.value)
   },
   beforeUnmount(element: ScrollMotionElement): void {
+    if (unmountHeroTimeline(element as unknown as HTMLElement)) return
+    if (unmountSectionTimeline(element as unknown as HTMLElement)) {
+      nativeReveal?.unmount(element)
+      element.classList.remove('club-entrance', 'club-reveal')
+      delete element.dataset.reveal
+      delete element.dataset.revealVariant
+      element.style.removeProperty('--reveal-delay')
+      element.style.removeProperty('--reveal-mobile-delay')
+      return
+    }
     controller().unmount(element)
   }
 }

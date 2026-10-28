@@ -15,6 +15,147 @@ async function openNavLink(page: Page, isMobile: boolean, name: string): Promise
 }
 
 test.describe('homepage', () => {
+  test('collapses the server-rendered navbar before application scripts finish loading', async ({ page, isMobile }) => {
+    const hydrationErrors: string[] = []
+    page.on('console', message => { if (/hydration.*mismatch/i.test(message.text())) hydrationErrors.push(message.text()) })
+    let releaseScripts!: () => void
+    const scriptsReady = new Promise<void>(resolve => { releaseScripts = resolve })
+    await page.route('**/_nuxt/*.js', async route => {
+      await scriptsReady
+      await route.continue()
+    })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    try {
+      await page.goto('/', { waitUntil: 'commit' })
+      const navbar = page.getByRole('navigation', { name: '主导航' })
+      await expect(navbar).toBeVisible()
+      await expect(navbar).toHaveAttribute('data-native-progress', 'false')
+      const row = navbar.locator('.club-navbar-row')
+      const expandedHeight = await row.evaluate(el => el.getBoundingClientRect().height)
+      await page.evaluate(() => window.scrollTo({ top: 80, behavior: 'instant' }))
+      await expect(page.locator('html')).toHaveAttribute('data-nav-boot-compact', '')
+      await expect.poll(() => row.evaluate(el => el.getBoundingClientRect().height), { timeout: 500 }).toBeLessThan(expandedHeight)
+      // The whole compact presentation works while Vue is still unavailable.
+      await expect(navbar).toHaveAttribute('data-compact', 'false')
+      await page.evaluate(() => window.scrollTo({ top: 24, behavior: 'instant' }))
+      await expect(page.locator('html')).toHaveAttribute('data-nav-boot-compact', '')
+      releaseScripts()
+      await expect(navbar).toHaveAttribute('data-native-progress', 'true')
+      await expect(navbar).toHaveAttribute('data-compact', 'true')
+      await expect(page.locator('html')).not.toHaveAttribute('data-nav-boot-compact')
+      if (isMobile) {
+        await page.getByRole('button', { name: '打开导航菜单' }).click()
+        await expect(navbar).toHaveAttribute('data-compact', 'false')
+        await page.getByRole('button', { name: '关闭导航菜单' }).click()
+      }
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+      await expect(navbar).toHaveAttribute('data-compact', 'false')
+      expect(hydrationErrors).toEqual([])
+    } finally { releaseScripts() }
+  })
+
+  test('starts navbar collapse without waiting for delayed intersection callbacks', async ({ page }) => {
+    await page.addInitScript(() => {
+      const NativeObserver = IntersectionObserver
+      const state = window as typeof window & { navBoundaryCallbacks: Array<() => void> }
+      state.navBoundaryCallbacks = []
+      window.IntersectionObserver = class extends NativeObserver {
+        constructor(callback: IntersectionObserverCallback, options?: IntersectionObserverInit) {
+          super((entries, observer) => {
+            if (entries.some(entry => entry.target.hasAttribute('data-nav-boundary'))) {
+              state.navBoundaryCallbacks.push(() => callback(entries, observer))
+            } else callback(entries, observer)
+          }, options)
+        }
+      }
+    })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const navbar = page.getByRole('navigation', { name: '主导航' })
+    await expect(navbar).toHaveAttribute('data-native-progress', 'true')
+    await expect.poll(() => page.evaluate(() =>
+      (window as typeof window & { navBoundaryCallbacks: Array<() => void> }).navBoundaryCallbacks.length
+    )).toBeGreaterThan(0)
+    const initialHeight = await navbar.locator('.club-navbar-row').evaluate(el => el.getBoundingClientRect().height)
+    const scrollAndRead = (top: number) => page.evaluate(async y => {
+      window.scrollTo({ top: y, behavior: 'instant' })
+      await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+      return document.querySelector<HTMLElement>('.club-navbar')!.dataset.compact
+    }, top)
+
+    expect(await scrollAndRead(80)).toBe('true')
+    // A transition may have been created at time zero in the second frame.
+    // Check its actual progress as well as the compact state above.
+    await expect.poll(() => navbar.locator('.club-navbar-row').evaluate(el => el.getBoundingClientRect().height), { timeout: 500 }).toBeLessThan(initialHeight)
+    // Deliver the old "at the top" snapshot after the page has moved down.
+    await page.evaluate(() => (window as typeof window & { navBoundaryCallbacks: Array<() => void> }).navBoundaryCallbacks.shift()?.())
+    await expect(navbar).toHaveAttribute('data-compact', 'true')
+    expect(await scrollAndRead(24)).toBe('true')
+    expect(await scrollAndRead(0)).toBe('false')
+    // Old compact snapshots must not re-collapse a header that is now at top.
+    await page.evaluate(() => {
+      const state = window as typeof window & { navBoundaryCallbacks: Array<() => void> }
+      state.navBoundaryCallbacks.splice(0).forEach(callback => callback())
+    })
+    await expect(navbar).toHaveAttribute('data-compact', 'false')
+    expect(await scrollAndRead(24)).toBe('false')
+    expect(await scrollAndRead(80)).toBe('true')
+  })
+
+  test('keeps hero layers and all four nines intact across repeated returns', async ({ page, isMobile }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const hero = page.locator('.club-banner')
+    const toy = page.locator('.club-avatar-toy')
+    await expect(hero).toHaveAttribute('data-scroll-ready', 'true')
+    await expect.poll(() => hero.evaluate(el => el.getAnimations({ subtree: true }).filter(animation =>
+      'animationName' in animation && ['club-hero-rise', 'club-hero-title-rise', 'club-art-arrive'].includes(String(animation.animationName))
+    ).length)).toBe(0)
+    const height = await hero.evaluate(el => el.getBoundingClientRect().height)
+    const expected = isMobile ? 3 : 2
+    const stored = await hero.evaluate(el => {
+      const animations = el.getAnimations({ subtree: true }).filter(animation =>
+        'animationName' in animation && /^club-hero-(?:desktop|content|cue|background)-exit$/.test(String(animation.animationName)))
+      ;(window as Window & { heroReturnAnimations?: Animation[] }).heroReturnAnimations = animations
+      return animations.length
+    })
+    expect(stored).toBe(expected)
+    for (let cycle = 0; cycle < 3; cycle++) {
+      await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), height + 800)
+      await expect(toy).toHaveAttribute('data-scene-active', 'false')
+      expect(await toy.locator('.club-nine-satellite').evaluateAll(elements => elements.every(el => getComputedStyle(el).animationPlayState === 'running'))).toBe(true)
+      await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+      await expect(toy).toHaveAttribute('data-scene-active', 'true')
+      await expect(hero).toHaveAttribute('data-scroll-ready', 'true')
+      await expect(hero.locator('.club-banner-content')).toHaveCSS('opacity', '1')
+      expect(await hero.evaluate(el => {
+        const original = (window as Window & { heroReturnAnimations?: Animation[] }).heroReturnAnimations ?? []
+        const animations = el.getAnimations({ subtree: true })
+        return original.every(animation => animations.includes(animation))
+      })).toBe(true)
+      const glyphs = await toy.locator('.club-nine-glyph').evaluateAll(elements => elements.map(el => ({
+        text: el.textContent,
+        opacity: getComputedStyle(el).opacity,
+        width: el.getBoundingClientRect().width,
+      })))
+      expect(glyphs).toHaveLength(4)
+      expect(glyphs.every(glyph => glyph.text === '⑨' && glyph.opacity === '1' && glyph.width > 10)).toBe(true)
+    }
+    const button = toy.getByRole('button', { name: '点击群头像，让小⑨喊 BAKA' })
+    await button.click()
+    await expect(toy.locator('.club-nine-cry')).toBeVisible()
+    await expect(toy.locator('.club-nine-glyph')).toHaveCount(4)
+    for (let click = 1; click < 9; click++) await button.click()
+    const freeze = page.getByTestId('cirno-freeze')
+    await expect(freeze).toHaveAttribute('data-phase', 'frozen')
+    const bounds = await freeze.boundingBox()
+    const viewport = page.viewportSize()!
+    expect(bounds?.width).toBeCloseTo(viewport.width, 0)
+    expect(bounds?.height).toBeCloseTo(viewport.height, 0)
+    await page.keyboard.press('Escape')
+    await expect(freeze).toHaveCount(0, { timeout: 15_000 })
+  })
+
   test('coordinates hero exit with the desktop navbar collapse', async ({ page, isMobile }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
@@ -22,7 +163,13 @@ test.describe('homepage', () => {
     const navbar = page.getByRole('navigation', { name: '主导航' })
     await expect(hero).toHaveClass(/club-scroll-reveal/)
     const height = await hero.evaluate(el => el.getBoundingClientRect().height)
-    const progress = () => hero.evaluate(el => Number((el as HTMLElement).style.getPropertyValue('--scroll-progress')))
+    const progress = () => hero.evaluate(el => {
+      if ((el as HTMLElement).dataset.scrollNative === 'true') {
+        const opacity = Number(getComputedStyle(el.querySelector('.club-banner-content')!).opacity)
+        return (1 - opacity) / (innerWidth >= 1024 ? 0.6 : 0.72)
+      }
+      return Number((el as HTMLElement).style.getPropertyValue('--scroll-progress'))
+    })
     const scrollTo = (top: number) => page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), top)
 
     if (isMobile) {
@@ -53,6 +200,69 @@ test.describe('homepage', () => {
     await scrollTo(0)
     await expect(navbar).not.toHaveAttribute('data-collapse-scroll')
     await expect(navbar).toHaveAttribute('data-compact', 'false')
+  })
+
+  test('keeps the hero and reading progress usable without scroll timeline support', async ({ page, isMobile }) => {
+    await page.addInitScript(() => {
+      const supports = CSS.supports.bind(CSS)
+      CSS.supports = ((property: string, value?: string) => property === 'animation-timeline'
+        ? false
+        : value === undefined ? supports(property) : supports(property, value)) as typeof CSS.supports
+    })
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const hero = page.locator('.club-banner')
+    const navbar = page.getByRole('navigation', { name: '主导航' })
+    await expect(hero).toHaveClass(/club-scroll-reveal/)
+    await expect(hero).not.toHaveAttribute('data-scroll-native')
+    const height = await hero.evaluate(el => el.getBoundingClientRect().height)
+    let anchor = 0
+    if (!isMobile) {
+      await page.evaluate(() => window.scrollTo({ top: 60, behavior: 'instant' }))
+      await expect(navbar).toHaveAttribute('data-collapse-scroll', /\d/)
+      anchor = Number(await navbar.getAttribute('data-collapse-scroll'))
+    }
+    await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), anchor + height * 0.55)
+    await expect.poll(() => hero.evaluate(el => Number((el as HTMLElement).style.getPropertyValue('--scroll-progress')))).toBeCloseTo(0.5, 2)
+    await expect(navbar).toHaveAttribute('data-native-progress', 'false')
+    await expect(navbar.locator('.club-navbar-progress')).not.toHaveCSS('transform', 'matrix(0, 0, 0, 1, 0, 0)')
+  })
+
+  test('keeps native section exits reversible and restores focused or reduced-motion content', async ({ page }) => {
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await page.goto('/')
+    const item = page.locator('.interests-grid > li').first()
+    await item.scrollIntoViewIfNeeded()
+    await expect(item).toHaveAttribute('data-scroll-native', 'true')
+    await expect(item).toHaveAttribute('data-reveal', 'visible')
+    await item.evaluate(el => el.getAnimations().forEach(animation => {
+      if ('animationName' in animation && String(animation.animationName).startsWith('club-native-enter-')) animation.finish()
+    }))
+    await expect(item).not.toHaveAttribute('data-native-enter')
+    const range = await item.evaluate(el => ({
+      start: parseFloat((el as HTMLElement).style.getPropertyValue('--section-exit-start')),
+      end: parseFloat((el as HTMLElement).style.getPropertyValue('--section-exit-end')),
+    }))
+    const scrollTo = (top: number) => page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), top)
+    const opacity = () => item.evaluate(el => Number(getComputedStyle(el).opacity))
+    await scrollTo(range.start - 2)
+    await expect.poll(opacity).toBeCloseTo(1, 2)
+    await scrollTo((range.start + range.end) / 2)
+    await expect.poll(opacity).toBeCloseTo(0.64, 2)
+    await scrollTo(range.end + 2)
+    await expect.poll(opacity).toBeCloseTo(0.28, 2)
+    await item.locator('a').focus()
+    await expect.poll(opacity).toBe(1)
+    await item.locator('a').evaluate(el => (el as HTMLElement).blur())
+    await scrollTo(range.start - 2)
+    await expect.poll(opacity).toBeCloseTo(1, 2)
+    await page.emulateMedia({ reducedMotion: 'reduce' })
+    await expect(item).not.toHaveAttribute('data-scroll-native')
+    await expect.poll(opacity).toBe(1)
+    await page.emulateMedia({ reducedMotion: 'no-preference' })
+    await expect(item).toHaveAttribute('data-scroll-native', 'true')
+    await expect(item).not.toHaveAttribute('data-native-enter')
+    await expect.poll(opacity).toBe(1)
   })
 
   test('uses one lightweight ambient animation on compact or touch devices', async ({ page }) => {

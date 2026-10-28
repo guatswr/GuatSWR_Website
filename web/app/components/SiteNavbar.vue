@@ -1,11 +1,15 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onBeforeUnmount, ref, watch } from 'vue'
 import { useSiteConfigStore } from '~/stores/site-config'
+import { browserScrollFrame } from '~/utils/scroll-frame'
+import { supportsScrollTimeline } from '~/utils/hero-timeline'
 
 const site = useSiteConfigStore(usePinia())
 const route = useRoute()
 const navRef = ref<HTMLElement | null>(null)
 const navRowRef = ref<HTMLElement | null>(null)
+const progressRef = ref<HTMLElement | null>(null)
+const nativeReadingProgress = ref(false)
 const collapseScroll = ref<number>()
 const isDesktop = ref(false)
 const desktopActivityButton = ref<HTMLButtonElement | null>(null)
@@ -16,7 +20,6 @@ const isActivitiesOpen = ref(false)
 const isMobileActivitiesOpen = ref(false)
 const isScrolled = ref(false)
 const isPastFirstScreen = ref(false)
-const readingProgress = ref(0)
 const isCompact = computed(() => isScrolled.value && !isMenuOpen.value)
 const isImmersive = computed(() => route.path === '/' && !isPastFirstScreen.value && !isMenuOpen.value)
 let desktopQuery: MediaQueryList | undefined
@@ -70,46 +73,122 @@ function handleActivityFocusOut(event: FocusEvent) {
   if (event.currentTarget instanceof HTMLElement && (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node))) isActivitiesOpen.value = false
 }
 let scrollFrame: number | null = null
+let frame: ReturnType<typeof browserScrollFrame> | undefined
+let resizeObserver: ResizeObserver | undefined
+let heroElement: HTMLElement | null = null
+let mounted = false
+let geometryDirty = true
+let firstScreenHeight = 0
+let documentHeight = 0
+let navHeight = 56
+let readingProgress = -1
+let usingScrollObservers = false
+let thresholdObserver: IntersectionObserver | undefined
+let heroObserver: IntersectionObserver | undefined
+let observedHero: HTMLElement | null = null
+let heroMargin = ''
+
+function syncCompactThreshold() {
+  const scrollY = window.scrollY
+  const next = isScrolled.value ? scrollY > 12 : scrollY > 36
+  if (isScrolled.value !== next) isScrolled.value = next
+}
+
+function handleThresholdScroll() {
+  // IO notifications can arrive well after compositor scrolling. React in the
+  // scroll task while expanded; compact-state scrolling does no geometry reads.
+  if (mounted && !isScrolled.value) syncCompactThreshold()
+}
+
+function handleThresholdScrollEnd() {
+  if (mounted) syncCompactThreshold()
+}
+
+function updateHeroObserver() {
+  if (!usingScrollObservers) return
+  const hero = route.path === '/' ? document.querySelector<HTMLElement>('.club-banner') : null
+  const threshold = navHeight + (isPastFirstScreen.value ? 12 : 0)
+  const margin = `-${threshold}px 0px 0px 0px`
+  if (hero === observedHero && margin === heroMargin) return
+  heroObserver?.disconnect()
+  observedHero = hero
+  heroMargin = margin
+  if (!hero) { isPastFirstScreen.value = false; return }
+  heroObserver = new IntersectionObserver(entries => {
+    const entry = entries[0]
+    if (!mounted || !entry || entry.target !== observedHero || route.path !== '/') return
+    const past = !entry.isIntersecting && entry.boundingClientRect.bottom <= threshold
+    if (isPastFirstScreen.value !== past) {
+      isPastFirstScreen.value = past
+      updateHeroObserver()
+    }
+  }, { threshold: 0, rootMargin: margin })
+  heroObserver.observe(hero)
+}
+
+function refreshNavGeometry(event: TransitionEvent) {
+  if (event.target !== event.currentTarget || event.propertyName !== 'height') return
+  navHeight = navRef.value?.offsetHeight ?? navHeight
+  updateHeroObserver()
+}
+
+function invalidateGeometry() {
+  if (usingScrollObservers) {
+    updateHeroObserver()
+    return
+  }
+  geometryDirty = true
+  handleScroll()
+}
 
 function updateScrollState() {
   scrollFrame = null
-  const scrollY = window.scrollY
+  if (!mounted || !frame) return
+  const snapshot = frame.snapshot
+  const scrollY = snapshot?.scrollY ?? window.scrollY
+  const viewportHeight = snapshot?.height ?? window.innerHeight
+  if (geometryDirty) {
+    geometryDirty = false
+    const nextHero = document.querySelector<HTMLElement>('.club-banner')
+    if (nextHero !== heroElement) {
+      if (heroElement) resizeObserver?.unobserve(heroElement)
+      heroElement = nextHero
+      if (heroElement) resizeObserver?.observe(heroElement)
+    }
+    firstScreenHeight = heroElement?.offsetHeight ?? viewportHeight
+    documentHeight = document.documentElement.scrollHeight
+  }
   // Hysteresis avoids rapid toggling near the top threshold: collapse into the
   // compact bar after scrolling past 36px, and restore the full header when
   // scrolling back up to the top (<= 12px).
   const nextScrolled = isScrolled.value ? scrollY > 12 : scrollY > 36
-  if (isScrolled.value !== nextScrolled) {
-    isScrolled.value = nextScrolled
-  }
 
   // On the homepage ('/'), keep the translucent frosted-glass navbar across the
   // first screen (.club-banner), and transition to opaque once scrolled past it.
+  let nextPastFirstScreen = false
   if (route.path === '/') {
-    const bannerEl = document.querySelector('.club-banner') as HTMLElement | null
-    const firstScreenHeight = bannerEl ? bannerEl.offsetHeight : window.innerHeight
-    const navHeight = navRef.value?.offsetHeight ?? 56
     const threshold = Math.max(80, firstScreenHeight - navHeight)
-    const nextPastFirstScreen = isPastFirstScreen.value
+    nextPastFirstScreen = isPastFirstScreen.value
       ? scrollY > threshold - 12
       : scrollY > threshold
-    if (isPastFirstScreen.value !== nextPastFirstScreen) {
-      isPastFirstScreen.value = nextPastFirstScreen
-    }
-  }
-  else if (isPastFirstScreen.value) {
-    isPastFirstScreen.value = false
   }
 
-  const scrollable = document.documentElement.scrollHeight - window.innerHeight
+  const scrollable = documentHeight - viewportHeight
   const nextProgress = scrollable > 0 ? Math.min(1, Math.max(0, scrollY / scrollable)) : 0
-  if (Math.abs(readingProgress.value - nextProgress) > 0.002) {
-    readingProgress.value = nextProgress
-  }
+  frame.write(() => {
+    if (!mounted) return
+    if (isScrolled.value !== nextScrolled) isScrolled.value = nextScrolled
+    if (isPastFirstScreen.value !== nextPastFirstScreen) isPastFirstScreen.value = nextPastFirstScreen
+    if (!nativeReadingProgress.value && Math.abs(readingProgress - nextProgress) > 0.002) {
+      readingProgress = nextProgress
+      progressRef.value?.style.setProperty('transform', `scaleX(${nextProgress})`)
+    }
+  })
 }
 
 function handleScroll() {
-  if (scrollFrame !== null) return
-  scrollFrame = window.requestAnimationFrame(updateScrollState)
+  if (scrollFrame !== null || !frame) return
+  scrollFrame = frame.read(updateScrollState)
 }
 // The hero waits for the real height transition, then measures subsequent
 // scrolling from this position. Cancel stale completions on expansion or routing.
@@ -131,27 +210,76 @@ function handleDesktopChange() {
 }
 watch(() => route.fullPath, () => {
   closeMenus()
-  if (import.meta.client) window.requestAnimationFrame(updateScrollState)
+  if (import.meta.client) nextTick(invalidateGeometry)
 })
 onMounted(() => {
-  updateScrollState()
+  mounted = true
+  // Preserve the early controller's hysteresis, then hand off only after Vue
+  // has applied the same compact state. No hydration-time flicker or DOM edits.
+  isScrolled.value = document.documentElement.hasAttribute('data-nav-boot-compact')
+  syncCompactThreshold()
+  void nextTick(() => { if (mounted) document.dispatchEvent(new Event('club:navbar-ready')) })
+  frame = browserScrollFrame(window)
+  nativeReadingProgress.value = supportsScrollTimeline()
+  navHeight = navRef.value?.offsetHeight ?? 56
+  const expand = document.querySelector('[data-nav-boundary="expand"]')
+  const compact = document.querySelector('[data-nav-boundary="compact"]')
+  usingScrollObservers = nativeReadingProgress.value && typeof IntersectionObserver !== 'undefined' && !!expand && !!compact
+  if (usingScrollObservers && expand && compact) {
+    thresholdObserver = new IntersectionObserver(() => {
+      if (!mounted) return
+      // Entries describe a past layout. Re-read the current offset so a stale
+      // top snapshot cannot undo an already-triggered collapse (or vice versa).
+      syncCompactThreshold()
+    })
+    thresholdObserver.observe(expand)
+    thresholdObserver.observe(compact)
+    updateHeroObserver()
+  }
+  if (typeof ResizeObserver !== 'undefined') {
+    resizeObserver = new ResizeObserver(entries => {
+      for (const entry of entries) {
+        if (entry.target === navRef.value) {
+          navHeight = entry.borderBoxSize?.[0]?.blockSize ?? entry.contentRect.height
+        } else geometryDirty = true
+      }
+      if (usingScrollObservers) updateHeroObserver()
+      else handleScroll()
+    })
+    resizeObserver.observe(document.documentElement)
+    if (!usingScrollObservers && navRef.value) resizeObserver.observe(navRef.value)
+  }
+  if (!usingScrollObservers) handleScroll()
   desktopQuery = window.matchMedia('(min-width: 1024px)')
   handleDesktopChange()
   desktopQuery.addEventListener('change', handleDesktopChange)
-  window.addEventListener('scroll', handleScroll, { passive: true })
-  window.addEventListener('resize', handleScroll, { passive: true })
+  if (usingScrollObservers) {
+    window.addEventListener('scroll', handleThresholdScroll, { passive: true })
+    window.addEventListener('scrollend', handleThresholdScrollEnd, { passive: true })
+  } else window.addEventListener('scroll', handleScroll, { passive: true })
+  window.addEventListener('resize', invalidateGeometry, { passive: true })
+  document.addEventListener('load', invalidateGeometry, true)
+  document.fonts?.addEventListener('loadingdone', invalidateGeometry)
   document.addEventListener('pointerdown', handleOutside)
   document.addEventListener('focusin', handleOutside)
   document.addEventListener('keydown', handleEscape)
 })
 onBeforeUnmount(() => {
+  mounted = false
   if (scrollFrame !== null) {
-    window.cancelAnimationFrame(scrollFrame)
+    frame?.cancel(scrollFrame)
     scrollFrame = null
   }
+  resizeObserver?.disconnect()
+  thresholdObserver?.disconnect()
+  heroObserver?.disconnect()
   desktopQuery?.removeEventListener('change', handleDesktopChange)
   window.removeEventListener('scroll', handleScroll)
-  window.removeEventListener('resize', handleScroll)
+  window.removeEventListener('scroll', handleThresholdScroll)
+  window.removeEventListener('scrollend', handleThresholdScrollEnd)
+  window.removeEventListener('resize', invalidateGeometry)
+  document.removeEventListener('load', invalidateGeometry, true)
+  document.fonts?.removeEventListener('loadingdone', invalidateGeometry)
   document.removeEventListener('pointerdown', handleOutside)
   document.removeEventListener('focusin', handleOutside)
   document.removeEventListener('keydown', handleEscape)
@@ -166,10 +294,11 @@ onBeforeUnmount(() => {
     :data-immersive="isImmersive"
     :data-compact="isCompact"
     :data-collapse-scroll="collapseScroll"
-    :style="{ '--reading-progress': readingProgress }"
+    :data-native-progress="nativeReadingProgress"
   >
+    <span ref="progressRef" class="club-navbar-progress" aria-hidden="true" />
     <div class="club-container">
-      <div ref="navRowRef" class="club-navbar-row">
+      <div ref="navRowRef" class="club-navbar-row" @transitionend="refreshNavGeometry">
         <NuxtLink
           :prefetch="false"
           to="/"
@@ -551,6 +680,18 @@ onBeforeUnmount(() => {
     border-color 480ms ease-in-out,
     box-shadow 480ms ease-in-out;
 }
+:global(.club-scroll-boundary) {
+  position: absolute;
+  top: 12px;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+:global(.club-scroll-boundary[data-nav-boundary='compact']) {
+  top: 36px;
+}
 :global(.dark .club-navbar) {
   --nav-ink: #e2e8f0;
   --nav-accent: #bae6fd;
@@ -558,11 +699,13 @@ onBeforeUnmount(() => {
   border-bottom-color: rgb(71 85 105 / 0.36);
   box-shadow: 0 2px 14px -4px rgb(2 6 23 / 0.42);
 }
-.club-navbar[data-compact='true'] {
+.club-navbar[data-compact='true'],
+:global(html[data-nav-boot-compact] .club-navbar) {
   border-bottom-color: rgb(148 163 184 / 0.3);
   box-shadow: 0 6px 20px -6px rgb(15 23 42 / 0.1);
 }
-:global(.dark .club-navbar[data-compact='true']) {
+:global(.dark .club-navbar[data-compact='true']),
+:global(html.dark[data-nav-boot-compact] .club-navbar) {
   border-bottom-color: rgb(71 85 105 / 0.48);
   box-shadow: 0 6px 24px -6px rgb(2 6 23 / 0.56);
 }
@@ -576,21 +719,31 @@ onBeforeUnmount(() => {
     0 4px 24px -4px rgb(2 6 23 / 0.22),
     inset 0 1px 0 0 rgb(255 255 255 / 0.16);
 }
-.club-navbar[data-immersive='true'][data-compact='true'] {
+.club-navbar[data-immersive='true'][data-compact='true'],
+:global(html[data-nav-boot-compact] .club-navbar[data-immersive='true']) {
   background-color: rgb(15 23 42 / 0.4);
   border-bottom-color: rgb(255 255 255 / 0.26);
 }
-.club-navbar::after {
-  content: '';
+.club-navbar-progress {
   position: absolute;
   left: 0;
   right: 0;
   bottom: -1px;
   height: 1px;
   background: var(--nav-accent);
-  transform: scaleX(var(--reading-progress, 0));
+  transform: scaleX(0);
   transform-origin: left;
   pointer-events: none;
+}
+@supports (animation-timeline: scroll(root block)) {
+  .club-navbar[data-native-progress='true'] .club-navbar-progress {
+    animation: club-reading-progress auto linear both;
+    animation-timeline: scroll(root block);
+  }
+}
+@keyframes club-reading-progress {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
 }
 .club-navbar-row {
   display: flex;
@@ -600,7 +753,8 @@ onBeforeUnmount(() => {
   gap: 0.75rem;
   transition: height var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .club-navbar-row {
+.club-navbar[data-compact='true'] .club-navbar-row,
+:global(html[data-nav-boot-compact] .club-navbar .club-navbar-row) {
   height: 3.25rem;
 }
 .club-wordmark {
@@ -630,7 +784,8 @@ onBeforeUnmount(() => {
       opacity 380ms ease-out 40ms,
       transform var(--nav-duration) var(--nav-spring);
   }
-  .club-navbar[data-compact='true'] .club-wordmark-avatar {
+  .club-navbar[data-compact='true'] .club-wordmark-avatar,
+  :global(html[data-nav-boot-compact] .club-navbar .club-wordmark-avatar) {
     width: 0;
     margin-right: 0;
     opacity: 0;
@@ -654,7 +809,8 @@ onBeforeUnmount(() => {
   line-height: 1.2;
   transition: letter-spacing var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .club-wordmark-title {
+.club-navbar[data-compact='true'] .club-wordmark-title,
+:global(html[data-nav-boot-compact] .club-navbar .club-wordmark-title) {
   letter-spacing: 0.12em;
 }
 .club-wordmark-subtitle {
@@ -673,7 +829,8 @@ onBeforeUnmount(() => {
     opacity 380ms ease-out 40ms,
     transform var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .club-wordmark-subtitle {
+.club-navbar[data-compact='true'] .club-wordmark-subtitle,
+:global(html[data-nav-boot-compact] .club-navbar .club-wordmark-subtitle) {
   height: 0;
   margin-top: 0;
   opacity: 0;
@@ -702,7 +859,8 @@ onBeforeUnmount(() => {
     opacity 380ms ease-out 40ms,
     transform var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .nav-link .nav-number {
+.club-navbar[data-compact='true'] .nav-link .nav-number,
+:global(html[data-nav-boot-compact] .club-navbar .nav-link .nav-number) {
   width: 0;
   margin-right: 0;
   opacity: 0;
@@ -748,7 +906,8 @@ onBeforeUnmount(() => {
 }
 /* Compact state: wider button spacing absorbs the collapsed 01-05 numbers so
    horizontal shift is minimal, and switches to a clean minimalist bar */
-.club-navbar[data-compact='true'] .nav-link {
+.club-navbar[data-compact='true'] .nav-link,
+:global(html[data-nav-boot-compact] .club-navbar .nav-link) {
   height: 2.125rem;
   padding: 0 1.35rem;
 }
@@ -770,7 +929,8 @@ onBeforeUnmount(() => {
     border-radius 260ms ease;
   transform-origin: left;
 }
-.club-navbar[data-compact='true'] .nav-link::after {
+.club-navbar[data-compact='true'] .nav-link::after,
+:global(html[data-nav-boot-compact] .club-navbar .nav-link::after) {
   bottom: 1px;
   left: 0.85rem;
   right: 0.85rem;
@@ -796,7 +956,8 @@ onBeforeUnmount(() => {
     transform 320ms var(--nav-spring),
     opacity 220ms ease;
 }
-.club-navbar[data-compact='true'] .nav-link-active::before {
+.club-navbar[data-compact='true'] .nav-link-active::before,
+:global(html[data-nav-boot-compact] .club-navbar .nav-link-active::before) {
   transform: rotate(45deg) scale(0);
   opacity: 0;
 }
@@ -813,7 +974,8 @@ onBeforeUnmount(() => {
     margin-left var(--nav-duration) var(--nav-spring),
     margin-right var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .nav-divider {
+.club-navbar[data-compact='true'] .nav-divider,
+:global(html[data-nav-boot-compact] .club-navbar .nav-divider) {
   height: 1rem;
   margin-left: -0.15rem;
   margin-right: 0.45rem;
@@ -828,7 +990,8 @@ onBeforeUnmount(() => {
     height var(--nav-duration) var(--nav-spring),
     width var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .nav-icon {
+.club-navbar[data-compact='true'] .nav-icon,
+:global(html[data-nav-boot-compact] .club-navbar .nav-icon) {
   height: 2.125rem;
   width: 2.25rem;
 }
@@ -874,7 +1037,8 @@ onBeforeUnmount(() => {
     margin-left var(--nav-duration) var(--nav-spring),
     border-color 250ms ease;
 }
-.club-navbar[data-compact='true'] .club-nav-join {
+.club-navbar[data-compact='true'] .club-nav-join,
+:global(html[data-nav-boot-compact] .club-navbar .club-nav-join) {
   min-height: 2.125rem;
   height: 2.125rem;
   padding: 0 0.15rem;
@@ -896,7 +1060,8 @@ onBeforeUnmount(() => {
     opacity 380ms ease-out 40ms,
     transform var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .club-nav-join-seal-wrap {
+.club-navbar[data-compact='true'] .club-nav-join-seal-wrap,
+:global(html[data-nav-boot-compact] .club-navbar .club-nav-join-seal-wrap) {
   width: 0;
   margin-right: 0;
   opacity: 0;
@@ -914,7 +1079,8 @@ onBeforeUnmount(() => {
     transform 350ms cubic-bezier(0.22, 1, 0.36, 1),
     margin-left var(--nav-duration) var(--nav-spring);
 }
-.club-navbar[data-compact='true'] .club-nav-join :deep(.club-invitation-arrow) {
+.club-navbar[data-compact='true'] .club-nav-join :deep(.club-invitation-arrow),
+:global(html[data-nav-boot-compact] .club-navbar .club-nav-join .club-invitation-arrow) {
   margin-left: 0.5rem;
 }
 .club-nav-join-mobile {

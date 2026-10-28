@@ -255,11 +255,18 @@ defineProps<{ variant: 'about' | 'archive' | 'community' }>()
 }
 
 /* Keep static SSR output and inactive scenes out of the animation pipeline. */
+.home-section-backdrop > svg {
+  animation: backdrop-art-drift 28s ease-in-out infinite alternate;
+}
+.home-section-backdrop svg * {
+  animation: none;
+}
 .home-section-backdrop[data-scene-active='true'] {
   --ambient-play-state: running;
 }
 .backdrop-wash::before,
 .backdrop-wash::after,
+.home-section-backdrop > svg,
 .home-section-backdrop svg * {
   animation-play-state: var(--ambient-play-state);
 }
@@ -268,6 +275,10 @@ defineProps<{ variant: 'about' | 'archive' | 'community' }>()
   will-change: transform;
 }
 
+@keyframes backdrop-art-drift {
+  from { translate: 0 -5px; }
+  to { translate: 0 5px; }
+}
 @keyframes backdrop-wash-drift {
   0% {
     transform: translate3d(-12px, -8px, 0);

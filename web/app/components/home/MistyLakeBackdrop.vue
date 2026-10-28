@@ -176,12 +176,21 @@ import { vMotionScene } from '~/utils/motion'
 }
 
 /* Default to paused, including before the scene observer has initialized. */
+.lake-ripples {
+  animation: lake-art-drift 22s ease-in-out infinite alternate;
+}
+/* Move the SVG canvas as one cached layer. Animating its individual paths
+   repeatedly repaints the vector tree as the hero returns above this scene. */
+.lake-ripples * {
+  animation: none;
+}
 .misty-lake[data-scene-active='true'] {
   --ambient-play-state: running;
 }
 .lake-drift::before,
 .lake-drift::after,
 .lake-light,
+.lake-ripples,
 .lake-ripples * {
   animation-play-state: var(--ambient-play-state);
 }
@@ -190,6 +199,10 @@ import { vMotionScene } from '~/utils/motion'
   will-change: transform;
 }
 
+@keyframes lake-art-drift {
+  from { translate: 0 -5px; }
+  to { translate: 0 5px; }
+}
 @keyframes lake-mist-drift {
   0% {
     transform: translate3d(-14px, -8px, 0);

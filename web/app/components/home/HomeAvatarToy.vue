@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import ClubAvatar from '~/components/ClubAvatar.vue'
+import { vMotionScene } from '~/utils/motion'
 
 defineProps({ src: { type: String, default: '' } })
 
@@ -255,7 +256,7 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="club-avatar-toy">
+  <div v-motion-scene class="club-avatar-toy">
     <button
       type="button"
       class="club-toy-trigger"
@@ -354,6 +355,9 @@ onBeforeUnmount(() => {
   --jump-distance: clamp(1rem, 3vw, 2.5rem);
   padding: 2rem;
 }
+.club-avatar-toy[data-scene-active='true'] .club-toy-halo {
+  animation-play-state: running;
+}
 .club-toy-trigger {
   position: relative;
   display: block;
@@ -375,6 +379,7 @@ onBeforeUnmount(() => {
   box-shadow: inset 0 0 22px rgb(125 211 252 / 0.16);
   pointer-events: none;
   animation: nine-halo 3.8s ease-out infinite;
+  animation-play-state: paused;
 }
 .club-toy-avatar {
   position: relative;
@@ -450,6 +455,9 @@ onBeforeUnmount(() => {
   width: var(--nine-size);
   height: var(--nine-size);
   animation: nine-bob 4.6s ease-in-out infinite;
+  /* Four tiny compositor layers stay stable across hero occlusion. Toggling
+     their play state under the hero's own timeline can lose text rasters. */
+  will-change: transform;
   animation-delay: var(--nine-idle-delay, 0ms);
 }
 .club-nine-glyph {
@@ -657,7 +665,6 @@ onBeforeUnmount(() => {
   0% {
     opacity: 0.55;
     transform: scale(0.96);
-    box-shadow: inset 0 0 22px rgb(125 211 252 / 0.16);
   }
   70% {
     opacity: 0.18;
@@ -665,7 +672,6 @@ onBeforeUnmount(() => {
   100% {
     opacity: 0;
     transform: scale(1.18);
-    box-shadow: 0 0 0 14px rgb(125 211 252 / 0);
   }
 }
 @keyframes nine-hop {

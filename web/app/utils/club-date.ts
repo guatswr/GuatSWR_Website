@@ -6,7 +6,7 @@
  * and free-form legacy text is never parsed with a browser-specific locale.
  */
 
-import { parseClubTime } from '@guatswr/shared'
+import { parseClubTime } from '@guatswr/shared/club-time'
 export { parseClubTime }
 
 export interface ClubDateFormatOptions {

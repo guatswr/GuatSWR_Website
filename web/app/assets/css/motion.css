@@ -34,8 +34,15 @@
   transition-delay: 0ms;
 }
 .club-hero-step {
-  animation: club-hero-rise 650ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: club-hero-rise 650ms cubic-bezier(0.22, 1, 0.36, 1) backwards;
   animation-delay: calc(var(--motion-order, 0) * 75ms);
+}
+.club-banner-title.club-hero-step {
+  animation-name: club-hero-title-rise;
+}
+@keyframes club-hero-title-rise {
+  from { transform: translateY(16px); }
+  to { transform: translateY(0); }
 }
 @keyframes club-hero-rise {
   from {
@@ -48,7 +55,7 @@
   }
 }
 .club-hero-art-enter {
-  animation: club-art-arrive 850ms 120ms both;
+  animation: club-art-arrive 850ms 120ms backwards;
 }
 @keyframes club-art-arrive {
   0% {

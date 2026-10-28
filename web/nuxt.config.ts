@@ -14,7 +14,31 @@ export default defineNuxtConfig({
   devtools: { enabled: false },
   modules: ['@nuxt/eslint', '@pinia/nuxt', '@nuxtjs/mdc', '@nuxtjs/seo', 'nuxt-security', 'nuxt-auth-utils'],
   css: ['~/assets/css/main.css'],
-  vite: { plugins: [tailwindcss()] },
+  vite: {
+    plugins: [tailwindcss()],
+    build: {
+      rolldownOptions: {
+        output: {
+          codeSplitting: {
+            // Avoid dragging Vue, route code or click-only effects into these
+            // groups merely because a homepage component imports them.
+            includeDependenciesRecursively: false,
+            groups: [
+              {
+                name: 'club-motion',
+                test: /[/\\]app[/\\]utils[/\\](?:motion|scroll-motion|scroll-frame|scroll-range|hero-timeline)\.ts(?:\?|$)/,
+              },
+              {
+                name: 'club-home',
+                test: (id: string) => /[/\\]components[/\\]home[/\\](?!CirnoFreeze\.vue(?:\?|$))[^/\\]+\.vue(?:\?|$)/.test(id)
+                  || /[/\\]components[/\\]HomeSocialLinks\.vue(?:\?|$)/.test(id),
+              },
+            ],
+          },
+        },
+      },
+    },
+  },
   build: { transpile: ['@guatswr/shared'] },
   sourcemap: { server: false, client: false },
   // Emit regular CSS assets: Nuxt's inline-style extraction can drop the

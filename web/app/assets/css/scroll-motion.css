@@ -30,20 +30,90 @@
   scale: 1;
   transition-delay: 0ms;
 }
+.club-scroll-reveal[data-scroll-native='true'] {
+  --hero-exit-lift: -38px;
+  --hero-exit-opacity: 0.28;
+  --hero-exit-scale: 0.975;
+  --hero-background-lift: 32px;
+  --hero-background-scale: 1.03;
+  --hero-cue-x: 0px;
+  --hero-cue-lift: -28px;
+}
 @media (min-width: 1024px) {
+  .club-scroll-reveal[data-scroll-native='true'] {
+    --hero-exit-lift: -32px;
+    --hero-exit-opacity: 0.4;
+    --hero-exit-scale: 0.985;
+    --hero-background-lift: 40px;
+    --hero-background-scale: 1.025;
+    --hero-cue-x: -50%;
+    --hero-cue-lift: -20px;
+  }
   .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-background {
-    translate: 0 calc(var(--scroll-progress, 0) * 40px);
-    scale: calc(1 + var(--scroll-progress, 0) * 0.025);
+    translate: none;
+    scale: none;
   }
   .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-content {
     translate: 0 calc(var(--scroll-progress, 0) * -32px);
     opacity: calc(1 - var(--scroll-progress, 0) * 0.6);
-    scale: calc(1 - var(--scroll-progress, 0) * 0.015);
+    scale: none;
   }
   .club-scroll-reveal[data-scroll-variant='hero'] .club-scroll-cue {
     translate: -50% calc(var(--scroll-progress, 0) * -20px);
     opacity: calc(1 - var(--scroll-progress, 0) * 0.6);
   }
+}
+@supports (animation-timeline: scroll(root block)) and (animation-range: 0px 1px) {
+  .club-scroll-reveal[data-scroll-native='true'][data-scroll-ready='true'] .club-banner-content,
+  .club-scroll-reveal[data-scroll-native='true'][data-scroll-ready='true'] .club-scroll-cue {
+    animation: club-hero-content-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: scroll(root block);
+    animation-range: var(--hero-exit-start) var(--hero-exit-end);
+  }
+  .club-scroll-reveal[data-scroll-native='true'][data-scroll-ready='true'] .club-scroll-cue {
+    animation-name: club-hero-cue-exit;
+  }
+  .club-scroll-reveal[data-scroll-native='true']:has(:focus-visible) .club-banner-content,
+  .club-scroll-reveal[data-scroll-native='true']:has(:focus-visible) .club-banner-background,
+  .club-scroll-reveal[data-scroll-native='true']:has(:focus-visible) .club-scroll-cue {
+    opacity: 1 !important;
+    translate: var(--hero-cue-x, 0px) 0 !important;
+    scale: 1 !important;
+  }
+  .club-scroll-reveal[data-scroll-native='true']:has(:focus-visible) .club-banner-content,
+  .club-scroll-reveal[data-scroll-native='true']:has(:focus-visible) .club-banner-background {
+    translate: none !important;
+  }
+}
+@media (min-width: 1024px) {
+  .club-scroll-reveal[data-scroll-native='true'][data-scroll-ready='true'] .club-banner-content {
+    animation-name: club-hero-desktop-exit;
+  }
+}
+@supports (animation-timeline: scroll(root block)) and (animation-range: 0px 1px) {
+  @media (max-width: 1023px) {
+    .club-scroll-reveal[data-scroll-native='true'][data-scroll-ready='true'] .club-banner-background {
+      animation: club-hero-background-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) both;
+      animation-timeline: scroll(root block);
+      animation-range: var(--hero-exit-start) var(--hero-exit-end);
+    }
+  }
+}
+@keyframes club-hero-desktop-exit {
+  from { opacity: 1; translate: 0 0; }
+  to { opacity: var(--hero-exit-opacity); translate: 0 var(--hero-exit-lift); }
+}
+@keyframes club-hero-content-exit {
+  from { opacity: 1; translate: 0 0; scale: 1; }
+  to { opacity: var(--hero-exit-opacity); translate: 0 var(--hero-exit-lift); scale: var(--hero-exit-scale); }
+}
+@keyframes club-hero-background-exit {
+  from { translate: 0 0; scale: 1; }
+  to { translate: 0 var(--hero-background-lift); scale: var(--hero-background-scale); }
+}
+@keyframes club-hero-cue-exit {
+  from { opacity: 1; translate: var(--hero-cue-x) 0; }
+  to { opacity: var(--hero-exit-opacity); translate: var(--hero-cue-x) var(--hero-cue-lift); }
 }
 @media (max-width: 1023px) {
   .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-background {
@@ -78,13 +148,81 @@
     transition-delay: 0ms;
   }
 }
+/* Native exits take over only in their scroll range. Separate entrance
+   keyframes preserve the original stagger and never delay a fast scroll exit. */
+.club-entrance.club-reveal[data-scroll-native='true'] {
+  --native-opacity-duration: 1000ms;
+  --native-move-duration: 1100ms;
+  --native-entry-lift: 36px;
+  --native-entry-scale: 1;
+  --native-exit-lift: -38px;
+  --native-entry-delay: var(--reveal-delay, 0ms);
+}
+.club-entrance.club-reveal[data-scroll-native='true'][data-reveal-variant='scale'] {
+  --native-entry-lift: 44px;
+  --native-entry-scale: 0.985;
+}
+@supports (animation-timeline: scroll(root block)) and (animation-range: 0px 1px) {
+  .club-entrance.club-reveal[data-scroll-native='true'][data-reveal='visible'] {
+    transition-duration: 0ms, 0ms, 0ms, 220ms, 220ms, 220ms, 180ms;
+    transition-delay: 0ms;
+    animation: club-section-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) forwards;
+    animation-timeline: scroll(root block);
+    animation-range: var(--section-exit-start) var(--section-exit-end);
+  }
+  .club-entrance.club-reveal[data-scroll-native='true'][data-reveal='visible'][data-native-enter='true'] {
+    animation-name: club-native-enter-opacity, club-native-enter-move, club-native-enter-scale, club-section-exit;
+    animation-duration: var(--native-opacity-duration), var(--native-move-duration), var(--native-move-duration), auto;
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1), cubic-bezier(0.22, 1, 0.36, 1), cubic-bezier(0.22, 1, 0.36, 1), cubic-bezier(0.333333, 0, 0.666667, 1);
+    animation-delay: var(--native-entry-delay), var(--native-entry-delay), var(--native-entry-delay), 0ms;
+    animation-fill-mode: both, both, both, forwards;
+    animation-timeline: auto, auto, auto, scroll(root block);
+    animation-range: normal, normal, normal, var(--section-exit-start) var(--section-exit-end);
+  }
+  .club-entrance.club-reveal[data-scroll-native='true']:focus-within {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: 1 !important;
+  }
+}
+@keyframes club-native-enter-opacity {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes club-native-enter-move {
+  from { translate: 0 var(--native-entry-lift); }
+  to { translate: 0 0; }
+}
+@keyframes club-native-enter-scale {
+  from { scale: var(--native-entry-scale); }
+  to { scale: 1; }
+}
+@keyframes club-section-exit {
+  from { opacity: 1; translate: 0 0; scale: 1; }
+  to { opacity: 0.28; translate: 0 var(--native-exit-lift); scale: 0.975; }
+}
+@media (max-width: 639px) {
+  .club-entrance.club-reveal[data-scroll-native='true'] {
+    --native-opacity-duration: 750ms;
+    --native-move-duration: 850ms;
+    --native-exit-lift: -32px;
+    --native-entry-delay: var(--reveal-mobile-delay, 0ms);
+  }
+  .club-entrance.club-reveal[data-scroll-native='true'],
+  .club-entrance.club-reveal[data-scroll-native='true'][data-reveal-variant='scale'] {
+    --native-entry-lift: 22px;
+    --native-entry-scale: 1;
+  }
+}
 @media (prefers-reduced-motion: reduce), print {
   .club-scroll-reveal .club-banner-background,
   .club-scroll-reveal .club-banner-content,
   .club-scroll-reveal .club-scroll-cue,
-  .club-entrance.club-reveal[data-scroll-exit='true'] {
+  .club-entrance.club-reveal[data-scroll-exit='true'],
+  .club-entrance.club-reveal[data-scroll-native='true'] {
     opacity: 1 !important;
     translate: none !important;
     scale: none !important;
+    animation: none !important;
   }
 }
