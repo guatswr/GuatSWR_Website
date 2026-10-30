@@ -43,7 +43,7 @@ test.describe('event routes', () => {
     const page = await context.newPage()
     await page.goto('/events/stg')
     await expect(page.getByRole('heading', { level: 1 })).toHaveText('活动中心')
-    await expect(page.getByRole('heading', { level: 2, name: '东方弹幕' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 2, name: 'STG', exact: true })).toBeVisible()
     const cards = page.locator('article')
     expect(await cards.count()).toBeGreaterThan(0)
     for (let index = 0; index < (await cards.count()); index++) {
@@ -57,14 +57,14 @@ test.describe('event routes', () => {
   })
 })
 
-async function openCategoryFromClient(page: Page, isMobile: boolean, label: string) {
+async function openCategoryFromClient(page: Page, isMobile: boolean, label: string, title = label) {
   await page.getByRole('button', { name: isMobile ? '打开导航菜单' : '活动' }).click()
   if (isMobile) await page.getByRole('button', { name: '活动' }).click()
   await page.getByRole('link', { name: '活动中心' }).click()
   await expect(page.getByRole('heading', { level: 1, name: '活动中心', exact: true })).toBeVisible()
   await expect(page.getByRole('heading', { level: 1, name: '桂航绯想天', exact: true })).toHaveCount(0)
   await page.getByRole('navigation', { name: '活动种类' }).getByRole('link', { name: label, exact: true }).click()
-  await expect(page.getByRole('heading', { level: 2, name: label, exact: true })).toBeVisible()
+  await expect(page.getByRole('heading', { level: 2, name: title, exact: true })).toBeVisible()
   await expect(page.locator('.events-board')).toHaveCount(1)
 }
 
@@ -292,7 +292,7 @@ test.describe('event board interactions', () => {
         ]
       })
     })
-    await openCategoryFromClient(page, isMobile, '东方弹幕')
+    await openCategoryFromClient(page, isMobile, '东方STG', 'STG')
     const card = page.locator('article').first()
     test.skip((await card.count()) === 0, 'fixture has no STG event')
     await card.getByRole('button', { name: '参赛名单' }).click()
@@ -327,7 +327,7 @@ test.describe('event board interactions', () => {
         }
       })
     )
-    await openCategoryFromClient(page, isMobile, '东方弹幕')
+    await openCategoryFromClient(page, isMobile, '东方STG', 'STG')
     await expect(page.getByRole('button', { name: '报名已结束' })).toBeDisabled()
     await expect(page.locator('.event-card-status')).toHaveText('已截止')
     await expect(page.getByTestId('event-modal')).toHaveCount(0)

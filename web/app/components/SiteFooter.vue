@@ -37,8 +37,7 @@ const quickLinks = [
             GUAT TOUHOU FANS CLUB
           </p>
           <p class="mt-5 text-sm leading-7 text-slate-400">
-            桂林航天工业学院东方 Project
-            同好会。因幻想乡相识，也在校园里成为朋友。
+            桂林航天工业学院东方Project同好会。
           </p>
           <NuxtLink :prefetch="false" to="/join" class="club-text-link mt-4">
             加入我们 <span aria-hidden="true">↗</span>
@@ -57,7 +56,7 @@ const quickLinks = [
         </nav>
 
         <div>
-          <p class="club-footer-heading">保持联系</p>
+          <p class="club-footer-heading">联系我们</p>
           <template v-if="groupNumber">
             <p class="mt-4 text-xs text-slate-400">QQ 群</p>
             <p class="mt-1 font-mono text-lg tracking-wide text-slate-100">

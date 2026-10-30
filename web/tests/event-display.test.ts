@@ -126,7 +126,7 @@ describe('event display helpers', () => {
   })
 
   it('keeps Chinese category labels separate from backend types and signup permissions', () => {
-    expect(eventCategory('STG')).toMatchObject({ label: '东方弹幕', path: '/events/stg' })
+    expect(eventCategory('STG')).toMatchObject({ label: '东方STG', path: '/events/stg' })
     expect(eventCategory('则则').label).toBe('非想天则')
     expect(eventCategory('unknown').path).toBe('/events')
     expect(eventSupportsSignup(event())).toBe(true)

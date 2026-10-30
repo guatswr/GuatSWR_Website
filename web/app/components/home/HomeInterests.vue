@@ -26,7 +26,7 @@ defineProps({
       <header v-scroll-reveal class="interests-intro">
         <p class="club-eyebrow">SOMETHING WE LOVE</p>
         <h2 id="interests-title" class="club-display interests-title">总有一种热爱，与你同频</h2>
-        <p class="interests-description">擅长什么并不重要。愿意分享喜欢的事，就是成为同好的开始。</p>
+        <p class="interests-description">擅长什么并不重要。愿意分享喜欢的事，就是成为同好的开始</p>
       </header>
 
       <ul class="interests-grid">

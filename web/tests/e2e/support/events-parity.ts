@@ -24,7 +24,7 @@ export const UPSTREAM_ORIGIN = `http://127.0.0.1:${portBase + 81}`
 export const EVENT_CATEGORIES = [
   { path: '/events/bounty', type: '悬赏令', title: '悬赏令', subtitle: '发布你的挑战与奖励，等待同好们来接单。' },
   { path: '/events/betting', type: '对赌协议', title: '对赌协议', subtitle: '这使你充满了决心！' },
-  { path: '/events/stg', type: 'STG', title: '东方弹幕', subtitle: '欢迎STGer报名参加！' },
+  { path: '/events/stg', type: 'STG', title: 'STG', subtitle: '欢迎STGer报名参加！' },
   { path: '/events/zetime', type: '则则', title: '非想天则', subtitle: '则批大本营，欢迎各位则批报名参加！' },
   { path: '/events/party', type: '线下聚会', title: '线下聚会', subtitle: '小聚、大聚、饭聚 都可以聚！' }
 ] as const

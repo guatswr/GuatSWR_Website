@@ -68,13 +68,13 @@ defineProps({
           class="club-banner-copy club-hero-step mt-5 text-sm leading-7 text-white/95 sm:text-base sm:leading-8 lg:mt-8 lg:text-lg lg:leading-9"
           style="--motion-order: 2"
         >
-          从一局非想天则，到一场线下例会<br >我们因幻想乡相识，也在校园里成为朋友
+          从一局非想天则，到一场线下活动<br >我们因幻想乡相识，也在校园里成为朋友
         </p>
         <p
           class="club-banner-note club-hero-step mt-6 text-xs leading-6 text-white/75 lg:mt-8"
           style="--motion-order: 3"
         >
-          桂林航天工业学院 · 校内外同好都欢迎
+          这里是桂林航天工业学院东方Project同好会
         </p>
         <div
           class="club-banner-actions club-hero-step mt-6 flex flex-wrap items-center gap-3 lg:mt-8"

@@ -133,7 +133,7 @@ const formatCounterWatermark = (date: string | undefined): { ym: string, monthLa
   const monthName = CHINESE_MONTH_NAMES[mNum] ?? `${monthPadded}月`
   return {
     ym: `${year} · ${monthPadded}`,
-    monthLabel: `${monthName}纪`,
+    monthLabel: `${monthName}录`,
     dayLabel: dayPadded,
   }
 }
@@ -520,7 +520,7 @@ usePublicPageSeo({
       <header class="history-header">
         <div class="history-header-main">
           <div class="history-title-group">
-            <span class="history-seal-stamp" aria-hidden="true">史纪</span>
+            <span class="history-seal-stamp" aria-hidden="true">回忆</span>
             <div class="history-title-copy">
               <h1 class="font-serif text-2xl font-semibold tracking-wide text-slate-900 sm:text-3xl dark:text-slate-100">
                 绯想天群史
@@ -553,7 +553,7 @@ usePublicPageSeo({
             @click.prevent="scrollToEntry(chapter.index)"
           >
             <span class="history-year-diamond" aria-hidden="true" />
-            <span class="history-year-label">{{ chapter.year }} 年卷</span>
+            <span class="history-year-label">{{ chapter.year }} 年</span>
             <span class="history-year-count">{{ chapter.count }}</span>
           </a>
         </nav>
@@ -616,7 +616,7 @@ usePublicPageSeo({
               >
                 <div class="history-year-banner" data-history-reveal="year">
                   <span class="history-year-banner-seal" aria-hidden="true">卷</span>
-                  <span class="history-year-banner-title">{{ yearChapterMeta(index)?.year }} 年纪</span>
+                  <span class="history-year-banner-title">{{ yearChapterMeta(index)?.year }} 年</span>
                   <span class="history-year-banner-meta">共 {{ yearChapterMeta(index)?.count }} 录</span>
                 </div>
               </div>

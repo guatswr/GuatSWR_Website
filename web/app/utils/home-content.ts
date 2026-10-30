@@ -17,6 +17,17 @@ export interface HomeInterest {
 export const HOME_INTERESTS: readonly HomeInterest[] = [
   {
     number: '01',
+    icon: 'danmaku',
+    title: '东方STG',
+    subtitle: '再来一把，就这一把',
+    description:
+      '正作通关、符卡挑战、路线交流。无论初见还是打分，都能找到一起玩的人。',
+    path: '/events/stg',
+    cta: '看看活动',
+    color: 'violet'
+  },
+  {
+    number: '02',
     icon: 'duel',
     title: '非想天则',
     subtitle: '在对局中认识彼此',
@@ -26,17 +37,7 @@ export const HOME_INTERESTS: readonly HomeInterest[] = [
     cta: '看看活动',
     color: 'sky'
   },
-  {
-    number: '02',
-    icon: 'danmaku',
-    title: '东方 STG',
-    subtitle: '再来一把，就这一把',
-    description:
-      '正作通关、符卡挑战、路线交流。无论初见还是打分，都能找到一起玩的人。',
-    path: '/events/stg',
-    cta: '看看活动',
-    color: 'violet'
-  },
+
   {
     number: '03',
     icon: 'music',

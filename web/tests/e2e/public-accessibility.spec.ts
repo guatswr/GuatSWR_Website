@@ -6,7 +6,7 @@ test('visible navigation and interest labels remain available to speech and scre
   await expect(page.getByRole('navigation', { name: '主导航' }).getByRole('link', {
     name: '桂航绯想天 GUAT TOUHOU FANS CLUB 首页', exact: true,
   })).toBeVisible()
-  await expect(page.getByRole('link', { name: /东方 STG 再来一把，就这一把/ })).toBeVisible()
+  await expect(page.getByRole('link', { name: /东方STG 再来一把，就这一把/ })).toBeVisible()
   await expect(page.getByRole('link', { name: /音乐与现场 一首歌，连接幻想乡/ })).toBeVisible()
 })
 

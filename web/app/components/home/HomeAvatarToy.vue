@@ -120,7 +120,7 @@ interface CirnoDialogueStage {
 
 const CIRNO_STAGES: readonly CirnoDialogueStage[] = [
   {
-    cry: '「本小姐可是最强的！」',
+    cry: '「咱可是最强的！」',
     guide: '居然敢戳雾之湖的冰精？小心咱放冷气把你冻住咯！（①/⑨）'
   },
   {
@@ -153,7 +153,7 @@ const CIRNO_STAGES: readonly CirnoDialogueStage[] = [
   },
   {
     cry: '冻符「Perfect Freeze」',
-    guide: 'あたいったら最強ね！见识下把一切冻住的妖精之力吧！（⑨/⑨）'
+    guide: '见识下把一切冻住的妖精之力吧！（⑨/⑨）'
   }
 ]
 

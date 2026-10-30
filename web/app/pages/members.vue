@@ -10,6 +10,7 @@
  */
 import type { MembersContentResponse } from '#shared/content'
 import type { PublicSchoolStat } from '@guatswr/shared'
+import { START_LOCATION } from 'vue-router'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import { beijingDateString } from '~/utils/beijing-time'
 import {
@@ -24,6 +25,15 @@ import {
 } from '~/utils/members'
 import { buildPublicPath, queryValue, stripControlCharacters } from '~/utils/public-query'
 import { displayImageSource, displayThumbSource } from '~/utils/public-image'
+
+definePageMeta({
+  scrollToTop(to, from) {
+    // SSR is already scrollable before hydration. Nuxt's initial forced route
+    // replacement must not reset a reader who has started scrolling meanwhile.
+    return from !== START_LOCATION || Boolean(to.hash)
+      || typeof window === 'undefined' || window.scrollY === 0
+  },
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -119,8 +129,9 @@ usePublicPageSeo(() => ({
         aria-label="住民席位分布与院校筛选"
         class="mb-10 border-b border-slate-200 pb-7 dark:border-slate-800"
       >
-        <div v-if="parliamentData.length > 0" class="mb-5">
+        <div v-if="parliamentData.length > 0" class="member-seats mb-5">
           <ParliamentChart
+            class="member-seats-surface"
             :data="parliamentData"
             title="桂航绯想天"
             :sub-title="currentDate"
@@ -135,29 +146,33 @@ usePublicPageSeo(() => ({
           class="member-filter-bar"
           @mouseleave="hoveredSchool = null"
         >
-          <NuxtLink
+          <span
             v-for="tab in filterTabs"
             :key="tab.value || 'all'"
-            :to="tabLink(tab.value)"
-            class="member-filter-tab"
-            :class="{
-              'is-selected': selectedSchool === tab.value,
-              'is-zero': tab.count === 0 && selectedSchool !== tab.value,
-            }"
-            :style="{
-              '--tab-color': tab.value ? tab.color : '#0369a1',
-              '--tab-dark-color': tab.value ? getSchoolDarkColor(tab.value) : '#38bdf8',
-            }"
-            :aria-current="selectedSchool === tab.value ? 'page' : undefined"
-            @mouseenter="hoveredSchool = tab.value"
+            class="member-filter-entry"
           >
-            <span
-              class="member-filter-swatch"
-              aria-hidden="true"
-            />
-            <span class="member-filter-label">{{ tab.label }}</span>
-            <span class="member-filter-count">{{ tab.count }}</span>
-          </NuxtLink>
+            <NuxtLink
+              :to="tabLink(tab.value)"
+              class="member-filter-tab"
+              :class="{
+                'is-selected': selectedSchool === tab.value,
+                'is-zero': tab.count === 0 && selectedSchool !== tab.value,
+              }"
+              :style="{
+                '--tab-color': tab.value ? tab.color : '#0369a1',
+                '--tab-dark-color': tab.value ? getSchoolDarkColor(tab.value) : '#38bdf8',
+              }"
+              :aria-current="selectedSchool === tab.value ? 'page' : undefined"
+              @mouseenter="hoveredSchool = tab.value"
+            >
+              <span
+                class="member-filter-swatch"
+                aria-hidden="true"
+              />
+              <span class="member-filter-label">{{ tab.label }}</span>
+              <span class="member-filter-count">{{ tab.count }}</span>
+            </NuxtLink>
+          </span>
         </nav>
       </section>
 
@@ -192,60 +207,62 @@ usePublicPageSeo(() => ({
         v-else
         class="member-grid grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4"
       >
-        <article
+        <div
           v-for="(member, index) in sortedMembers"
           :key="`${selectedSchool || 'all'}-${member.id}`"
-          class="member-dossier group"
+          class="member-dossier-entry"
           :style="{
             '--school-accent': member.school ? getSchoolColor(member.school) : '#0369a1',
             '--school-accent-dark': member.school ? getSchoolDarkColor(member.school) : '#38bdf8',
             '--card-delay': `${Math.min(index, 15) * 32}ms`,
           }"
         >
-          <div class="member-dossier-meta">
-            <span class="member-dossier-index" aria-hidden="true">
-              {{ memberInitialLetter(member.id, memberContent.sortKeys) }} · {{ formatMemberOrdinal(index) }}
-            </span>
-            <span v-if="member.school" class="member-dossier-school">
-              <span
-                class="member-dossier-school-dot"
-                aria-hidden="true"
-              />
-              {{ member.school }}
-            </span>
-          </div>
-
-          <div class="member-dossier-profile">
-            <div class="member-dossier-avatar-frame">
-              <ProgressiveImage
-                :src="displayImageSource(member.avatar) ?? ''"
-                :thumb="displayImageSource(member.avatar_thumb) ?? displayThumbSource(member.avatar) ?? undefined"
-                :alt="`${member.name}头像`"
-                wrapper-class="h-full w-full"
-                img-class="h-full w-full rounded-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
-              />
+          <article class="member-dossier group">
+            <div class="member-dossier-meta">
+              <span class="member-dossier-index" aria-hidden="true">
+                {{ memberInitialLetter(member.id, memberContent.sortKeys) }} · {{ formatMemberOrdinal(index) }}
+              </span>
+              <span v-if="member.school" class="member-dossier-school">
+                <span
+                  class="member-dossier-school-dot"
+                  aria-hidden="true"
+                />
+                {{ member.school }}
+              </span>
             </div>
 
-            <div class="min-w-0 flex-1">
-              <h2 class="member-dossier-name">
-                {{ member.name }}
-              </h2>
-              <div v-if="member.role" class="mt-1.5">
-                <span class="member-dossier-role">{{ member.role }}</span>
+            <div class="member-dossier-profile">
+              <div class="member-dossier-avatar-frame">
+                <ProgressiveImage
+                  :src="displayImageSource(member.avatar) ?? ''"
+                  :thumb="displayImageSource(member.avatar_thumb) ?? displayThumbSource(member.avatar) ?? undefined"
+                  :alt="`${member.name}头像`"
+                  wrapper-class="h-full w-full"
+                  img-class="h-full w-full rounded-full object-cover transition-transform duration-500 motion-safe:group-hover:scale-105"
+                />
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <h2 class="member-dossier-name">
+                  {{ member.name }}
+                </h2>
+                <div v-if="member.role" class="mt-1.5">
+                  <span class="member-dossier-role">{{ member.role }}</span>
+                </div>
               </div>
             </div>
-          </div>
 
-          <div v-if="getMemberTags(member.tags).length > 0" class="member-dossier-tags">
-            <span
-              v-for="tag in getMemberTags(member.tags)"
-              :key="tag"
-              class="member-dossier-tag"
-            >
-              {{ tag }}
-            </span>
-          </div>
-        </article>
+            <div v-if="getMemberTags(member.tags).length > 0" class="member-dossier-tags">
+              <span
+                v-for="tag in getMemberTags(member.tags)"
+                :key="tag"
+                class="member-dossier-tag"
+              >
+                {{ tag }}
+              </span>
+            </div>
+          </article>
+        </div>
       </div>
 
       <footer aria-label="名录收录细则" class="member-colophon">
@@ -281,6 +298,11 @@ usePublicPageSeo(() => ({
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.member-filter-entry {
+  display: inline-flex;
+  min-width: 0;
 }
 
 .member-filter-tab {
@@ -405,15 +427,20 @@ usePublicPageSeo(() => ({
   color: #7dd3fc;
 }
 
+.member-dossier-entry {
+  min-width: 0;
+  animation: dossier-enter 440ms cubic-bezier(0.22, 1, 0.36, 1) var(--card-delay, 0ms) backwards;
+}
+
 .member-dossier {
   position: relative;
   display: flex;
   flex-direction: column;
+  height: 100%;
   padding: 1.25rem 1.375rem;
   background-color: #ffffff;
   border: 1px solid #dce4e8;
   border-top: 2px solid var(--school-accent, #0369a1);
-  animation: dossier-enter 440ms cubic-bezier(0.22, 1, 0.36, 1) var(--card-delay, 0ms) backwards;
   transition:
     border-color 220ms ease,
     box-shadow 220ms ease,
@@ -425,6 +452,74 @@ usePublicPageSeo(() => ({
   border-top-color: var(--school-accent, #0369a1);
   box-shadow: 0 10px 26px -14px rgb(15 23 42 / 0.14);
   transform: translateY(-3px);
+}
+
+/* The grid item owns the timeline; its card owns the exit, while entrance and
+   hover transforms stay independent. Reuse the homepage's compositor effects. */
+@supports (animation-timeline: view(block)) and (animation-range: exit-crossing 30% exit-crossing 80%) {
+  .member-filter-entry {
+    view-timeline-name: --member-filter-exit;
+    view-timeline-axis: block;
+    /* These short controls leave the reading area at the fixed navbar edge. */
+    view-timeline-inset: 4rem 0px;
+  }
+
+  .member-filter-tab {
+    animation: member-filter-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: --member-filter-exit;
+    animation-range: exit-crossing 30% exit-crossing 80%;
+  }
+
+  .member-filter-tab:focus-visible {
+    opacity: 1 !important;
+    translate: none !important;
+  }
+
+  .member-seats {
+    view-timeline-name: --member-seats-exit;
+    view-timeline-axis: block;
+  }
+
+  .member-seats-surface {
+    animation: member-seats-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: --member-seats-exit;
+    animation-range: exit-crossing 30% exit-crossing 80%;
+  }
+
+  .member-dossier-entry {
+    view-timeline-name: --member-card-exit;
+    view-timeline-axis: block;
+  }
+
+  .member-dossier {
+    --native-exit-lift: -38px;
+    animation: club-section-exit auto cubic-bezier(0.333333, 0, 0.666667, 1) both;
+    animation-timeline: --member-card-exit;
+    animation-range: exit-crossing 30% exit-crossing 80%;
+  }
+
+  .member-dossier:focus-within,
+  .member-seats-surface:focus-within {
+    opacity: 1 !important;
+    translate: none !important;
+    scale: none !important;
+  }
+
+  @media (max-width: 639px) {
+    .member-dossier {
+      --native-exit-lift: -32px;
+    }
+  }
+}
+
+@keyframes member-seats-exit {
+  from { opacity: 1; translate: 0 0; }
+  to { opacity: 0.28; translate: 0 -24px; }
+}
+
+@keyframes member-filter-exit {
+  from { opacity: 1; translate: 0 0; }
+  to { opacity: 0.28; translate: 0 -12px; }
 }
 
 :global(.dark .member-dossier) {
@@ -652,11 +747,26 @@ usePublicPageSeo(() => ({
 @media (prefers-reduced-motion: reduce) {
   .member-filter-tab,
   .member-filter-swatch,
+  .member-dossier-entry,
   .member-dossier,
+  .member-seats-surface,
   .member-dossier-name {
     animation: none;
     transition: none;
     transform: none;
+  }
+}
+
+@media print {
+  .member-filter-tab,
+  .member-dossier-entry,
+  .member-dossier,
+  .member-seats-surface {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+    translate: none !important;
+    scale: none !important;
   }
 }
 </style>
