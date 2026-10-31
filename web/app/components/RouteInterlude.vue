@@ -3,6 +3,7 @@ import { createRouteProgressState } from '~/utils/route-progress'
 
 const state = useState('route-progress', createRouteProgressState)
 const active = computed(() => state.value.phase === 'loading' && state.value.fullPage)
+const leaving = computed(() => (state.value.phase === 'complete' || state.value.phase === 'hiding') && state.value.fullPage)
 
 const prayerChars = ['少', '女', '祈', '祷', '中'] as const
 </script>
@@ -10,7 +11,7 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
 <template>
   <div
     class="route-interlude"
-    :class="{ 'is-active': active }"
+    :class="{ 'is-active': active, 'is-leaving': leaving }"
     aria-hidden="true"
   >
     <p class="route-interlude__title club-display">
@@ -28,6 +29,8 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
 .route-interlude {
   --interlude-ink: #243440;
   --interlude-crimson: #b54942;
+  --interlude-accent: #3d7a9e;
+  --interlude-top-wash: rgb(125 211 252 / 0.16);
   --interlude-play: paused;
   position: fixed;
   inset: 0;
@@ -39,7 +42,17 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
+  will-change: opacity;
   transition: opacity 180ms ease, visibility 0s 180ms;
+}
+
+/* 顶部天青微光晕染，与顶部 RouteProgressBar 形成自然的光影衔接 */
+.route-interlude::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: radial-gradient(ellipse 68% 18% at 50% 0%, var(--interlude-top-wash) 0%, transparent 76%);
 }
 
 .route-interlude.is-active {
@@ -53,11 +66,15 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
 :global(.dark .route-interlude) {
   --interlude-ink: #e2edf5;
   --interlude-crimson: #f27482;
+  --interlude-accent: #7dd3fc;
+  --interlude-top-wash: rgb(56 189 248 / 0.12);
   background-color: #101923;
 }
 
+/* 默认静默态：仅使用 GPU 合成层属性（opacity + translate3d），无模糊滤镜与重绘开销 */
 .route-interlude__title {
   position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: baseline;
   margin: 0;
@@ -67,18 +84,35 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
   letter-spacing: 0.24em;
   padding-left: 0.24em;
   line-height: 1.2;
-  transform: translateY(4px);
-  transition: transform 240ms cubic-bezier(0.22, 1, 0.36, 1);
+  opacity: 0;
+  transform: translate3d(0, 8px, 0);
+  will-change: transform, opacity;
+  transition: none;
 }
 
+/* 入场态：错峰延迟 65ms 平滑上浮显现 */
 .route-interlude.is-active .route-interlude__title {
-  transform: translateY(0);
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  transition:
+    opacity 190ms cubic-bezier(0.22, 1, 0.36, 1) 65ms,
+    transform 240ms cubic-bezier(0.22, 1, 0.36, 1) 65ms;
+}
+
+/* 退场态：顺势向上轻盈消散 */
+.route-interlude.is-leaving .route-interlude__title {
+  opacity: 0;
+  transform: translate3d(0, -6px, 0);
+  transition:
+    opacity 150ms cubic-bezier(0.4, 0, 1, 1),
+    transform 170ms cubic-bezier(0.4, 0, 1, 1);
 }
 
 .route-interlude__char {
   display: inline-block;
-  animation: interlude-char-wave 1.5s ease-in-out infinite;
-  animation-delay: calc(var(--char-i, 0) * 100ms);
+  will-change: transform, opacity;
+  animation: interlude-char-wave 1.15s ease-in-out infinite;
+  animation-delay: calc(var(--char-i, 0) * 85ms);
   animation-play-state: var(--interlude-play);
 }
 
@@ -94,18 +128,21 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
 
 .route-interlude__dots > span {
   display: inline-block;
-  animation: interlude-dot-pulse 1.4s ease-in-out infinite;
-  animation-delay: calc(var(--dot-i, 0) * 200ms);
+  will-change: transform, opacity;
+  animation: interlude-dot-pulse 1.15s ease-in-out infinite;
+  animation-delay: calc(var(--dot-i, 0) * 180ms);
   animation-play-state: var(--interlude-play);
 }
 
 @keyframes interlude-char-wave {
   0%,
   100% {
-    transform: translateY(0);
+    opacity: 0.72;
+    transform: translate3d(0, 0, 0);
   }
-  40% {
-    transform: translateY(-5px);
+  45% {
+    opacity: 1;
+    transform: translate3d(0, -4.5px, 0);
   }
 }
 
@@ -113,9 +150,11 @@ const prayerChars = ['少', '女', '祈', '祷', '中'] as const
   0%,
   100% {
     opacity: 0.22;
+    transform: translate3d(0, 0, 0);
   }
   50% {
-    opacity: 1;
+    opacity: 0.95;
+    transform: translate3d(0, -2.5px, 0);
   }
 }
 

@@ -7,7 +7,10 @@ const state = useState('route-progress', createRouteProgressState)
   <div
     class="route-progress__bar"
     data-testid="route-progress"
-    :class="{ 'route-progress--error': state.error }"
+    :class="{
+      'route-progress--error': state.error,
+      'route-progress--interlude': state.fullPage && (state.phase === 'loading' || state.phase === 'complete'),
+    }"
     :style="{ opacity: state.phase === 'loading' || state.phase === 'complete' ? 1 : 0, transform: `scaleX(${state.progress})` }"
     aria-hidden="true"
   />
@@ -24,12 +27,20 @@ const state = useState('route-progress', createRouteProgressState)
   background: linear-gradient(90deg, #e0f2fe 0%, #7dd3fc 55%, #38bdf8 100%);
   background-size: 100% auto;
   box-shadow: 0 0 6px rgb(56 189 248 / 35%);
-  transition: transform 0.16s linear, opacity 0.25s ease;
+  transition: transform 0.16s linear, opacity 0.25s ease, box-shadow 0.2s ease;
+}
+
+.route-progress__bar.route-progress--interlude {
+  box-shadow: 0 0 10px rgb(56 189 248 / 18%);
 }
 
 html.dark .route-progress__bar {
   background: linear-gradient(90deg, #0b2a3c 0%, #1e3a8a 45%, #38bdf8 100%);
   box-shadow: 0 0 8px rgb(56 189 248 / 50%);
+}
+
+html.dark .route-progress__bar.route-progress--interlude {
+  box-shadow: 0 0 12px rgb(56 189 248 / 26%);
 }
 
 html .route-progress__bar.route-progress--error {
