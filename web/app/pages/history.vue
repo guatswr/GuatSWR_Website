@@ -20,6 +20,8 @@ import {
 import { displayImageSource, displayThumbSource } from '~/utils/public-image'
 import '~/assets/css/history-touch.css'
 
+const refreshingDocument = import.meta.client && Boolean(document.documentElement.dataset.refreshInitializing)
+
 const { data, error, status, refresh } = await useFetch<HistoryContentResponse>('/api/content/history', {
   key: 'public-history',
   default: (): HistoryContentResponse => ({ items: [] }),
@@ -45,7 +47,7 @@ const displayedTotal = ref(entries.value.length)
 let totalFrame: number | null = null
 
 const animateTotalCount = (target: number): void => {
-  if (typeof window === 'undefined') {
+  if (typeof window === 'undefined' || refreshingDocument) {
     displayedTotal.value = target
     return
   }
@@ -343,6 +345,12 @@ const initContentReveals = (): void => {
 
   for (const element of timeline.value?.querySelectorAll<HTMLElement>('[data-history-reveal]') ?? []) {
     if (element.dataset.revealState === 'visible') continue
+    // SSR has already painted these pieces. On reload, do not let a delayed
+    // observer hide them or start another entrance after the document cover.
+    if (refreshingDocument && element.getBoundingClientRect().top < window.innerHeight) {
+      element.dataset.revealState = 'visible'
+      continue
+    }
     // Include the first view. Each piece plays inside the viewport, and photos
     // wait for decoded pixels rather than spending their entrance on a poster.
     element.dataset.revealState = 'pending'

@@ -1,0 +1,84 @@
+/* A document-level layer also covers pages whose body is client-rendered.
+   The head script opts in only on reload; no JS means ordinary readable HTML. */
+html[data-refresh-initializing] *,
+html[data-refresh-initializing] *::before,
+html[data-refresh-initializing] *::after {
+  /* Keep SSR content static even if the cover times out before JS arrives.
+     Hydration restores and finishes finite entrances in one paint below. */
+  animation: none !important;
+  transition: none !important;
+}
+html[data-refresh-phase] *,
+html[data-refresh-phase] *::before,
+html[data-refresh-phase] *::after {
+  /* Hydration may initialize deferred reveals and theme colors behind the
+     cover. Settle those changes directly, rather than fading the SSR paint out. */
+  transition: none !important;
+}
+html[data-refresh-phase]::before,
+html[data-refresh-phase]::after {
+  position: fixed;
+  pointer-events: none;
+  opacity: 1;
+}
+html[data-refresh-phase]::before {
+  content: '';
+  inset: 0;
+  z-index: 90;
+  pointer-events: auto;
+  background: radial-gradient(ellipse 68% 18% at 50% 0%, rgb(125 211 252 / 0.16), transparent 76%), #fbfbf8;
+  transition: opacity 100ms ease;
+  /* The compositor can expire the cover while JS is compiling or hydrating.
+     JS still clears the attributes; early completion uses the normal fade. */
+  animation: refresh-cover-expiry var(--refresh-fade, 100ms) linear var(--refresh-timeout, 800ms) both;
+}
+html[data-refresh-phase]::after {
+  content: '少女祈祷中…';
+  z-index: 91;
+  top: 50%;
+  left: 50%;
+  translate: -50% -50%;
+  width: max-content;
+  max-width: calc(100vw - 2rem);
+  color: #243440;
+  font-family: var(--club-serif, serif);
+  font-size: clamp(2rem, 3.8vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: 0.24em;
+  line-height: 1.2;
+  animation: refresh-prayer 1150ms ease-in-out infinite,
+    refresh-cover-expiry var(--refresh-fade, 100ms) linear var(--refresh-timeout, 800ms) both;
+  transition: opacity 80ms ease, transform 100ms ease;
+}
+html.dark[data-refresh-phase]::before {
+  background: radial-gradient(ellipse 68% 18% at 50% 0%, rgb(56 189 248 / 0.12), transparent 76%), #101923;
+}
+html.dark[data-refresh-phase]::after {
+  color: #e2edf5;
+}
+html[data-refresh-phase='leaving']::before,
+html[data-refresh-phase='leaving']::after {
+  opacity: 0;
+  pointer-events: none;
+  animation: none;
+}
+html[data-refresh-phase='leaving']::after {
+  animation: none;
+  transform: translateY(-6px);
+}
+@keyframes refresh-prayer {
+  0%, 100% { transform: translateY(0); }
+  45% { transform: translateY(-4.5px); }
+}
+@keyframes refresh-cover-expiry {
+  from { opacity: 1; pointer-events: auto; }
+  to { opacity: 0; pointer-events: none; }
+}
+@media (prefers-reduced-motion: reduce), print {
+  html[data-refresh-phase]::before,
+  html[data-refresh-phase]::after {
+    display: none;
+    animation: none;
+    transition: none;
+  }
+}

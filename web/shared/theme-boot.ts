@@ -1,0 +1,3 @@
+// Resolve the stored preference before paint without loading the client app or
+// initializing ICU. Beijing's current automatic schedule is 19:00–08:00 UTC+8.
+export const THEME_BOOT_SCRIPT = `(()=>{let m='auto';try{m=localStorage.getItem('theme-preference')||'auto'}catch{}const h=new Date(Date.now()+28800000).getUTCHours();const d=m==='dark'||(m!=='light'&&(h>=19||h<8));const r=document.documentElement;r.classList.toggle('dark',d);r.dataset.theme=d?'dark':'light';r.style.colorScheme=d?'dark':'light';document.querySelector('meta[name="theme-color"]')?.setAttribute('content',r.dataset.pageSurface==='hero'?'#0f172a':d?'#101923':'#fbfbf8')})()`
