@@ -16,7 +16,7 @@ interface FakeElement extends MotionElement {
   count(type: string): number
 }
 
-function element(top = 740): FakeElement {
+function element(top = 1040): FakeElement {
   const listeners = new Map<string, Set<Handler>>()
   const classes = new Set<string>()
   const styles = new Map<string, string>()
@@ -141,6 +141,19 @@ function setup(reduced = false) {
 }
 
 describe('reveal controller', () => {
+  it('never hides content already reached before deferred hydration', () => {
+    for (const top of [999, 400, -400]) {
+      const qa = setup()
+      const target = element(top)
+      createRevealController(qa.environment).mount(target, { delay: 200, variant: 'scale' })
+      expect(target.dataset.reveal).toBe('visible')
+      expect(target.classes.has('club-reveal')).toBe(true)
+      expect(target.styles.get('--reveal-delay')).toBe('0ms')
+      expect(target.count('focusin')).toBe(0)
+      expect(observers).toHaveLength(0)
+    }
+  })
+
   it('fails open when APIs are missing or reduced motion is on', () => {
     for (const environment of [undefined, {}, setup(true).environment]) {
       const target = element()

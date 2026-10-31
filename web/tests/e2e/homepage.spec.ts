@@ -15,6 +15,43 @@ async function openNavLink(page: Page, isMobile: boolean, name: string): Promise
 }
 
 test.describe('homepage', () => {
+  for (const nativeTimeline of [true, false]) {
+    test(`keeps the second section painted during late hydration (${nativeTimeline ? 'native' : 'fallback'})`, async ({ page }) => {
+      if (!nativeTimeline) await page.addInitScript(() => {
+        const supports = CSS.supports.bind(CSS)
+        CSS.supports = ((property: string, value?: string) => property === 'animation-timeline'
+          ? false
+          : value === undefined ? supports(property) : supports(property, value)) as typeof CSS.supports
+      })
+      let releaseScripts!: () => void
+      const scriptsReady = new Promise<void>(resolve => { releaseScripts = resolve })
+      await page.route('**/_nuxt/*.js', async route => {
+        await scriptsReady
+        await route.continue()
+      })
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      try {
+        await page.goto('/', { waitUntil: 'commit' })
+        const intro = page.locator('.interests-intro')
+        await expect(intro).toBeVisible()
+        await intro.evaluate(el => window.scrollTo({ top: el.getBoundingClientRect().top + window.scrollY - window.innerHeight * 0.45, behavior: 'instant' }))
+        await expect(intro).toHaveCSS('opacity', '1')
+        await intro.evaluate(el => {
+          const states: string[] = []
+          Object.assign(window, { lateRevealStates: states })
+          new MutationObserver(() => states.push((el as HTMLElement).dataset.reveal ?? '')).observe(el, { attributes: true, attributeFilter: ['data-reveal'] })
+        })
+        releaseScripts()
+        await expect(intro).toHaveAttribute('data-reveal', 'visible')
+        expect(await page.evaluate(() => (window as typeof window & { lateRevealStates: string[] }).lateRevealStates)).not.toContain('pending')
+        await expect(intro).toHaveCSS('opacity', '1')
+        await expect(intro).not.toHaveAttribute('data-native-enter')
+        // Content still below the viewport retains its normal entrance.
+        await expect(page.locator('.home-about-title')).toHaveAttribute('data-reveal', 'pending')
+      } finally { releaseScripts() }
+    })
+  }
+
   test('collapses the server-rendered navbar before application scripts finish loading', async ({ page, isMobile }) => {
     const hydrationErrors: string[] = []
     page.on('console', message => { if (/hydration.*mismatch/i.test(message.text())) hydrationErrors.push(message.text()) })

@@ -18,6 +18,7 @@ export interface MotionRect {
 export type ElementFocusEvent = Event & { relatedTarget?: unknown }
 
 export interface MotionElement {
+  getBoundingClientRect?(): MotionRect
   dataset: Record<string, string | undefined>
   classList: {
     add(...tokens: string[]): void
@@ -80,6 +81,7 @@ export interface MotionDocument {
 }
 
 export interface RevealEnvironment {
+  readonly innerHeight?: number
   matchMedia(query: string): MediaPreference
   createObserver(
     callback: (entries: RevealEntry[]) => void,
@@ -284,6 +286,20 @@ export function createRevealController(
       try {
         preference ||= matchMedia('(prefers-reduced-motion: reduce)')
         if (preference.matches || pending.has(element)) return
+        // SSR content may already be on screen when idle hydration starts.
+        // Never hide it to replay an entrance; this also covers restored scroll
+        // positions and sections passed during a fast initial swipe.
+        const viewportHeight = environment?.innerHeight ?? 0
+        const rect = viewportHeight > 0 ? element.getBoundingClientRect?.() : undefined
+        if (rect && rect.top < viewportHeight) {
+          element.style.setProperty('--reveal-delay', '0ms')
+          element.style.setProperty('--reveal-mobile-delay', '0ms')
+          element.dataset.revealVariant =
+            typeof options !== 'number' && options.variant === 'scale' ? 'scale' : 'up'
+          element.classList.add('club-reveal')
+          element.dataset.reveal = 'visible'
+          return
+        }
         if (!observer) {
           observer = createObserver(
             (entries) => {

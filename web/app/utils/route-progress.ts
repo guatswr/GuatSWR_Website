@@ -4,11 +4,12 @@ export interface RouteProgressState {
   error: boolean
   generation: number
   path: string
+  fullPage: boolean
 }
 export interface NavigationToken { id: number, path: string }
 export const navigationPath = (path: string): string => path.replace(/\/+$/, '') || '/'
 export const createRouteProgressState = (): RouteProgressState => ({
-  phase: 'idle', progress: 0, error: false, generation: 0, path: '',
+  phase: 'idle', progress: 0, error: false, generation: 0, path: '', fullPage: false,
 })
 
 /** Estimated feedback, owned by one navigation. Stale completions cannot
@@ -22,12 +23,12 @@ export function createRouteProgress(state: RouteProgressState, reducedMotion: ()
   const cancel = (token?: NavigationToken) => {
     if (token && !owns(token)) return
     clear()
-    Object.assign(state, { phase: 'idle', progress: 0, error: false, generation: state.generation + 1, path: '' })
+    Object.assign(state, { phase: 'idle', progress: 0, error: false, generation: state.generation + 1, path: '', fullPage: false })
   }
-  const start = (path: string): NavigationToken => {
+  const start = (path: string, fullPage = true): NavigationToken => {
     clear()
     path = navigationPath(path)
-    Object.assign(state, { phase: 'loading', progress: 0.12, error: false, generation: state.generation + 1, path })
+    Object.assign(state, { phase: 'loading', progress: 0.12, error: false, generation: state.generation + 1, path, fullPage })
     tick = setInterval(() => {
       if (!reducedMotion()) state.progress += (0.92 - state.progress) * 0.08
     }, 160)

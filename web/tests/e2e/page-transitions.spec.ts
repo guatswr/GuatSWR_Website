@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import type { Page, TestInfo } from '@playwright/test'
 import { settlePublicPage } from './support/public-pages'
 
-type Frame = { time: number, path: string, y: number, rootOpacity: number, navOpacity: number, transitions: { opacity: number, classes: string, top: number, width: number }[] }
+type Frame = { time: number, path: string, y: number, rootOpacity: number, navOpacity: number, coverOpacity: number, transitions: { opacity: number, classes: string, top: number, width: number }[] }
 declare global {
   interface Window {
     navigationFrames: Frame[]
@@ -53,10 +53,12 @@ async function observe(page: Page) {
     const sample = () => {
       const root = document.querySelector('main > .club-page-stack > :first-child')
       const nav = document.querySelector('nav[aria-label="主导航"]')
+      const cover = document.querySelector('.route-interlude')
       window.navigationFrames.push({
         time: performance.now(), path: location.pathname, y: scrollY,
         rootOpacity: root ? Number(getComputedStyle(root).opacity) : -1,
         navOpacity: nav ? Number(getComputedStyle(nav).opacity) : -1,
+        coverOpacity: cover ? Number(getComputedStyle(cover).opacity) : 0,
         transitions: Array.from(document.querySelectorAll('.club-page-enter-active, .club-page-leave-active')).map(node => ({ opacity: Number(getComputedStyle(node).opacity), classes: node.className, top: node.getBoundingClientRect().top, width: node.getBoundingClientRect().width })),
       })
       if (!window.stopNavigationFrames) requestAnimationFrame(sample)
@@ -68,7 +70,38 @@ async function observe(page: Page) {
 async function settled(page: Page) {
   await expect(page.locator('.club-page-enter-active, .club-page-leave-active')).toHaveCount(0)
   await expect(page.locator('main > .club-page-stack > :first-child')).toHaveCSS('opacity', '1')
+  await expect(page.locator('.route-interlude')).toHaveCSS('opacity', '0')
   await page.evaluate(() => new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve()))))
+}
+
+for (const theme of ['light', 'dark']) {
+  test(`page changes bridge the empty frames with a ${theme} interlude`, async ({ page, isMobile }, info) => {
+    await page.addInitScript(value => localStorage.setItem('theme-preference', value), theme)
+    await ready(page, '/social')
+    const cover = page.locator('.route-interlude')
+    await expect(cover).toHaveCSS('opacity', '0')
+    let release!: () => void
+    let arrived!: () => void
+    const gate = new Promise<void>(resolve => { release = resolve })
+    const requested = new Promise<void>(resolve => { arrived = resolve })
+    await page.route('**/api/content/members*', async route => { arrived(); await gate; await route.continue() })
+    await observe(page)
+    const click = nav(page, '/members', isMobile)
+    try {
+      await requested
+      await expect(cover).toHaveCSS('opacity', '1')
+      await expect(cover).toHaveCSS('background-color', theme === 'light' ? 'rgb(251, 251, 248)' : 'rgb(16, 25, 35)')
+      await expect(cover).toContainText('少女祈祷中')
+      await page.screenshot({ path: info.outputPath(`interlude-${theme}.png`) })
+    } finally { release() }
+    await click
+    await expect(page.getByRole('heading', { name: '绯想天住民名录' })).toBeVisible()
+    await settled(page)
+    const samples = await frames(page, info)
+    const gap = samples.filter(frame => frame.transitions.length > 1 && frame.transitions.every(node => node.opacity < 0.15))
+    expect(gap.length, 'exercise the gap between the outgoing and incoming pages').toBeGreaterThan(0)
+    expect(gap.every(frame => frame.coverOpacity > 0.95), 'cover the empty frames with the themed interlude').toBe(true)
+  })
 }
 
 async function frames(page: Page, info: TestInfo, name = 'navigation-frames') {
@@ -89,6 +122,9 @@ test('public navigation fades out and in without a document reload', async ({ pa
   for (const phase of ['leave', 'enter']) {
     expect(samples.some(frame => frame.transitions.some(node => node.classes.includes(`club-page-${phase}-active`) && node.opacity > 0 && node.opacity < 1)), `actual intermediate opacity during ${phase}`).toBe(true)
   }
+  const gap = samples.filter(frame => frame.transitions.length > 1 && frame.transitions.every(node => node.opacity < 0.15))
+  expect(gap.length).toBeGreaterThan(0)
+  expect(gap.every(frame => frame.coverOpacity > 0.95), 'fast navigation must cover the fade gap too').toBe(true)
   // The recorder survives only a client navigation, not a new document.
   expect(await page.evaluate(() => document.querySelector('main > .club-page-stack > :first-child') === window.navigationRoot)).toBe(false)
 })
@@ -102,6 +138,7 @@ test('nested event navigation fades only the board and preserves the category sh
   const samples = await frames(page, info)
   expect(samples.some(frame => frame.transitions.some(node => node.opacity > 0 && node.opacity < 1))).toBe(true)
   expect(samples.every(frame => frame.rootOpacity === 1), 'category shell must not fade').toBe(true)
+  expect(samples.every(frame => frame.coverOpacity === 0), 'category changes keep the shared shell uncovered').toBe(true)
   expect(await page.evaluate(() => document.querySelector('main > .club-page-stack > :first-child') === window.navigationRoot)).toBe(true)
 })
 
@@ -137,6 +174,7 @@ test('school query changes preserve the page and scroll without a full-page fade
   await settled(page)
   const samples = await frames(page, info)
   expect(samples.every(frame => frame.rootOpacity === 1 && frame.transitions.length === 0)).toBe(true)
+  expect(samples.every(frame => frame.coverOpacity === 0)).toBe(true)
   expect(await page.evaluate(() => document.querySelector('main > .club-page-stack > :first-child') === window.navigationRoot)).toBe(true)
 })
 
@@ -236,4 +274,5 @@ test('reduced motion removes fades while first-load SSR stays visible', async ({
   await settled(page)
   const samples = await frames(page, info)
   expect(samples.flatMap(frame => frame.transitions).some(node => node.opacity > 0 && node.opacity < 1)).toBe(false)
+  expect(samples.every(frame => frame.coverOpacity === 0)).toBe(true)
 })

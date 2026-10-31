@@ -25,6 +25,7 @@ onBeforeUnmount(ui.stop)
     <span class="club-scroll-boundary" data-nav-boundary="compact" aria-hidden="true" />
     <a href="#main-content" class="skip-link">跳到主要内容</a>
     <RouteProgressBar />
+    <RouteInterlude />
     <SiteNavbar />
     <main id="main-content" tabindex="-1" class="flex-grow">
       <div class="club-page-stack">
