@@ -148,6 +148,25 @@
     transition-delay: 0ms;
   }
 }
+/* Small touch screens have little texture memory at Android's high DPR.
+   Keep the full-bleed bitmap and its shading in the normal tiled paint layer
+   instead of scaling two screen-sized textures on every return to the hero.
+   One stable foreground layer preserves the fade/lift and the animated glyphs. */
+@media (max-width: 639px) and (pointer: coarse) {
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-background {
+    animation: none !important;
+    translate: none !important;
+    scale: none !important;
+  }
+  .club-scroll-reveal[data-scroll-variant='hero'] .club-banner-content {
+    scale: none;
+    will-change: opacity, translate;
+  }
+  .club-scroll-reveal[data-scroll-native='true'][data-scroll-ready='true'] .club-banner-content {
+    /* Reuse the no-scale keyframes with the phone's own lift/opacity values. */
+    animation-name: club-hero-desktop-exit;
+  }
+}
 /* Native exits take over only in their scroll range. Separate entrance
    keyframes preserve the original stagger and never delay a fast scroll exit. */
 .club-entrance.club-reveal[data-scroll-native='true'] {

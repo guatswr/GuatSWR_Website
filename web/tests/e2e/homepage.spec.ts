@@ -139,7 +139,66 @@ test.describe('homepage', () => {
     expect(await scrollAndRead(80)).toBe('true')
   })
 
-  test('keeps hero layers and all four nines intact across repeated returns', async ({ page, isMobile }) => {
+  for (const nativeTimeline of [true, false]) {
+    test(`keeps phone returns free of full-screen scaling (${nativeTimeline ? 'native' : 'fallback'})`, async ({ page, isMobile, browserName }) => {
+      if (!nativeTimeline) await page.addInitScript(() => {
+        const supports = CSS.supports.bind(CSS)
+        CSS.supports = ((property: string, value?: string) => property === 'animation-timeline'
+          ? false
+          : value === undefined ? supports(property) : supports(property, value)) as typeof CSS.supports
+      })
+      await page.emulateMedia({ reducedMotion: 'no-preference' })
+      const session = isMobile && browserName === 'chromium' ? await page.context().newCDPSession(page) : undefined
+      await session?.send('Emulation.setCPUThrottlingRate', { rate: 4 })
+      await page.goto('/')
+      const hero = page.locator('.club-banner')
+      await expect(hero).toHaveClass(/club-scroll-reveal/)
+      const background = hero.locator('.club-banner-background')
+      await expect(background).toHaveAttribute('data-image-state', 'ready')
+      const height = await hero.evaluate(el => (el as HTMLElement).offsetHeight)
+      const source = await background.locator('img.pi-full').getAttribute('src')
+      if (isMobile) {
+        await expect(page.locator('.club-navbar')).toHaveCSS('backdrop-filter', 'none')
+        await expect(page.locator('.club-navbar')).toHaveCSS('background-color', 'rgba(15, 23, 42, 0.9)')
+        for (let cycle = 0; cycle < 3; cycle++) {
+          await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), height + 1200)
+          await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), height * 0.55)
+          await expect.poll(() => hero.locator('.club-banner-content').evaluate(el => Number(getComputedStyle(el).opacity))).toBeCloseTo(0.64, 2)
+          await expect(background).toHaveCSS('animation-name', 'none')
+          await expect(background).toHaveCSS('translate', 'none')
+          await expect(background).toHaveCSS('scale', 'none')
+          await expect(hero.locator('.club-banner-content')).toHaveCSS('scale', 'none')
+          expect(await hero.locator('.club-banner-content').evaluate(el => el.getAnimations().some(animation =>
+            (animation.effect as KeyframeEffect)?.getKeyframes().some(frame => 'scale' in frame)
+          ))).toBe(false)
+          await page.evaluate(() => window.scrollTo({ top: 0, behavior: 'instant' }))
+          await expect(hero.locator('.club-banner-content')).toHaveCSS('opacity', '1')
+          await expect(background.locator('img.pi-full')).toHaveAttribute('src', source!)
+          expect(await hero.evaluate(el => (el as HTMLElement).offsetHeight)).toBe(height)
+        }
+      } else {
+        // The phone-only policy must not change the desktop navigation tint.
+        await expect(page.locator('.club-navbar')).toHaveCSS('background-color', 'rgba(15, 23, 42, 0.28)')
+      }
+    })
+  }
+
+  test('preserves tablet hero parallax and navigation appearance', async ({ browser, baseURL }) => {
+    const context = await browser.newContext({ baseURL, viewport: { width: 820, height: 1180 }, hasTouch: true, isMobile: true, deviceScaleFactor: 2, reducedMotion: 'no-preference' })
+    try {
+      const page = await context.newPage()
+      await page.goto('/')
+      const hero = page.locator('.club-banner')
+      await expect(hero).toHaveAttribute('data-scroll-ready', 'true')
+      const height = await hero.evaluate(el => (el as HTMLElement).offsetHeight)
+      await page.evaluate(y => window.scrollTo({ top: y, behavior: 'instant' }), height * 0.55)
+      await expect.poll(() => hero.locator('.club-banner-background').evaluate(el => Number.parseFloat(getComputedStyle(el).scale))).toBeCloseTo(1.015, 3)
+      await expect.poll(() => hero.locator('.club-banner-content').evaluate(el => Number.parseFloat(getComputedStyle(el).scale))).toBeCloseTo(0.9875, 3)
+      await expect(page.locator('.club-navbar')).toHaveCSS('background-color', 'rgba(15, 23, 42, 0.4)')
+    } finally { await context.close() }
+  })
+
+  test('keeps hero layers and all four nines intact across repeated returns', async ({ page }) => {
     await page.emulateMedia({ reducedMotion: 'no-preference' })
     await page.goto('/')
     const hero = page.locator('.club-banner')
@@ -149,7 +208,7 @@ test.describe('homepage', () => {
       'animationName' in animation && ['club-hero-rise', 'club-hero-title-rise', 'club-art-arrive'].includes(String(animation.animationName))
     ).length)).toBe(0)
     const height = await hero.evaluate(el => el.getBoundingClientRect().height)
-    const expected = isMobile ? 3 : 2
+    const expected = 2
     const stored = await hero.evaluate(el => {
       const animations = el.getAnimations({ subtree: true }).filter(animation =>
         'animationName' in animation && /^club-hero-(?:desktop|content|cue|background)-exit$/.test(String(animation.animationName)))

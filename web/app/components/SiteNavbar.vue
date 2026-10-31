@@ -724,6 +724,19 @@ onBeforeUnmount(() => {
   background-color: rgb(15 23 42 / 0.4);
   border-bottom-color: rgb(255 255 255 / 0.26);
 }
+@media (max-width: 639px) and (pointer: coarse) {
+  /* Avoid filtering the scrolling hero into another offscreen render surface.
+     A nearly opaque tint keeps navigation readable without backdrop sampling. */
+  .club-navbar {
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+  .club-navbar[data-immersive='true'],
+  .club-navbar[data-immersive='true'][data-compact='true'],
+  :global(html[data-nav-boot-compact] .club-navbar[data-immersive='true']) {
+    background-color: rgb(15 23 42 / 0.9);
+  }
+}
 .club-navbar-progress {
   position: absolute;
   left: 0;
