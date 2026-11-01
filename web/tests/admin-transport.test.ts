@@ -22,6 +22,16 @@ function harness(resource: (path: string, init: RequestInit) => Promise<Response
 }
 
 describe('private browser boundary', () => {
+  it('sends resource binaries with CSRF and without JSON encoding', async () => {
+    const { api, requests } = harness(() => json({ action: 'upload', submitted: false }))
+    const file = new File([new Uint8Array([0, 255, 65])], 'tools.zip')
+    await api.resourceUpload('/folder', file, value => value)
+    const upload = requests.find(item => item.path.startsWith('/api/bff/admin/resources/upload?'))!
+    expect(upload.init.body).toBe(file)
+    expect(new Headers(upload.init.headers).get('content-type')).toBe('application/octet-stream')
+    expect(new Headers(upload.init.headers).get('x-csrf-token')).toBe('csrf-1')
+    expect(new Headers(upload.init.headers).get('authorization')).toBeNull()
+  })
   it('builds only closed paths and rejects injected resources, actions, ids and query keys', () => {
     expect(adminRequestPath({ resource: 'members', query: { includeDeleted: false } })).toBe('/api/bff/admin/members?includeDeleted=0')
     expect(adminRequestPath({ resource: 'events', id: 8, action: 'approve', method: 'POST' })).toBe('/api/bff/admin/events/8/approve')

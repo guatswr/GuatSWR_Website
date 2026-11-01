@@ -342,6 +342,7 @@ const ROUTE_TITLES: ReadonlyMap<string, string> = new Map([
   ['/members', '绯想天住民'],
   ['/history', '绯想天群史'],
   ['/social', '博丽大结界'],
+  ['/resources', '幻想乡书库'],
   ['/join', '加入我们'],
   ['/logs', '站点日志'],
   ['/login', '登录'],

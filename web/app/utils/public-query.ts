@@ -107,7 +107,7 @@ export function pickQuery(
  * of the indexed URL.
  */
 export const PUBLIC_QUERY_KEYS: readonly string[] = Object.freeze([
-  'page', 'school', 'limit', 'username', 'action', 'range', 'env', 'top',
+  'page', 'school', 'limit', 'username', 'action', 'range', 'env', 'top', 'path',
 ])
 
 /** Absolute canonical path: configured origin, clean path, no tracking query. */

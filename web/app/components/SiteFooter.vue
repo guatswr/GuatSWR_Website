@@ -15,7 +15,8 @@ const quickLinks = [
   { name: '活动回顾', path: '/activities' },
   { name: '成员', path: '/members' },
   { name: '群史', path: '/history' },
-  { name: '社群链接', path: '/social' }
+  { name: '社群链接', path: '/social' },
+  { name: '资源中心', path: '/resources' }
 ]
 
 
@@ -70,6 +71,12 @@ const quickLinks = [
             加群方式与二维码见「加入我们」页面。
           </p>
           <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
+            <a
+              href="https://status.guatswr.top/"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="club-footer-link"
+            >服务器监控 <span aria-hidden="true">↗</span></a>
             <NuxtLink :prefetch="false" to="/logs" class="club-footer-link"
               >站点日志</NuxtLink
             >

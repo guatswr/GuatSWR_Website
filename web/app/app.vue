@@ -17,6 +17,6 @@ useHead(() => ({
 <template>
   <NuxtRouteAnnouncer />
   <NuxtLayout>
-    <NuxtPage :transition="route.meta.layout === 'admin' ? false : pageTransition" />
+    <NuxtPage :transition="route.meta.layout === 'admin' || route.path === '/login' ? false : pageTransition" />
   </NuxtLayout>
 </template>

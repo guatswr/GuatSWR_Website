@@ -91,6 +91,14 @@ export default defineNuxtConfig({
       backupDownloadTimeoutMs: 900_000,
       maxConcurrentDownloads: 2,
     },
+    openlist: {
+      uploadTempDir: '',
+      baseUrl: '',
+      publicUrl: '',
+      token: '',
+      rootPath: '/',
+      timeoutMs: 8_000,
+    },
     public: {},
   },
   site: {
@@ -126,6 +134,7 @@ export default defineNuxtConfig({
     '/members': { headers: { ...publicHtmlHeaders } },
     '/history': { headers: { ...publicHtmlHeaders } },
     '/social': { headers: { ...publicHtmlHeaders } },
+    '/resources': { headers: { ...publicHtmlHeaders } },
     '/logs': { headers: { ...publicHtmlHeaders } },
     '/join': { headers: { 'Cache-Control': 'no-store' } },
     '/admin': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
@@ -152,6 +161,9 @@ export default defineNuxtConfig({
     },
     '/api/bff/admin/upload': {
       security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
+    },
+    '/api/bff/admin/resources/upload': {
+      security: { requestSizeLimiter: { maxRequestSizeInBytes: 50 * 1024 * 1024 + 1, maxUploadFileRequestInBytes: 50 * 1024 * 1024 + 1 } },
     },
     '/api/bff/admin/events/*/avatar': {
       security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },

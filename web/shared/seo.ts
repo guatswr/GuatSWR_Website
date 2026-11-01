@@ -12,6 +12,7 @@ export const PUBLIC_INDEX_PAGES = [
   { path: '/history', title: '绯想天群史' },
   { path: '/logs', title: '日志档案' },
   { path: '/social', title: '博丽大结界' },
+  { path: '/resources', title: '幻想乡书库' },
   { path: '/join', title: '加入我们' },
   { path: '/events/bounty', title: '悬赏令' },
   { path: '/events/betting', title: '对赌协议' },

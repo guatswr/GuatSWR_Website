@@ -37,6 +37,7 @@ const navLinks = [
   { name: '成员', path: '/members', title: '绯想天住民', number: '03' },
   { name: '群史', path: '/history', title: '绯想天群史', number: '04' },
   { name: '社群链接', path: '/social', title: '博丽大结界', number: '05' },
+  { name: '资源', path: '/resources', title: '幻想乡书库', number: '06' },
 ]
 const isActivityRoute = computed(() => route.path === '/activities' || route.path.startsWith('/activity/') || route.path === '/events' || route.path.startsWith('/events/'))
 function closeMenus() {

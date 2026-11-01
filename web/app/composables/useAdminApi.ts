@@ -19,6 +19,14 @@ export function useAdminApi() {
     command: <T>(name: AdminCommand, body: unknown, project: (value: unknown) => T, signal?: AbortSignal) =>
       transport.command(name, body, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     removeBan: (ip: string) => transport.removeBan(ip, lifetime.signal),
+    resourceFiles: <T>(path: string, page: number, project: (value: unknown) => T, signal?: AbortSignal) =>
+      transport.resourceFiles(path, page, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
+    resourceDetail: <T>(path: string, project: (value: unknown) => T, signal?: AbortSignal) =>
+      transport.resourceDetail(path, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
+    resourceMutation: <T>(body: Parameters<typeof transport.resourceMutation>[0], project: (value: unknown) => T) =>
+      transport.resourceMutation(body, project, lifetime.signal),
+    resourceUpload: <T>(path: string, file: File, project: (value: unknown) => T, signal?: AbortSignal) =>
+      transport.resourceUpload(path, file, project, signal ? AbortSignal.any([signal, lifetime.signal]) : lifetime.signal),
     deleteBackup: (file: string) => transport.deleteBackup(file, lifetime.signal),
     articleRevisions:<T>(method:'GET'|'POST',input:{id:number;page?:number;revision?:number;base_revision?:number},project:(value:unknown)=>T,signal?:AbortSignal)=>
       transport.articleRevisions(method,input,project,signal?AbortSignal.any([signal,lifetime.signal]):lifetime.signal),

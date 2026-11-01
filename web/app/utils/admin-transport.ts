@@ -1,6 +1,8 @@
 import { BffRequestError, isCsrfRejection } from './bff-client'
 import type { BffSessionCore } from './bff-session-core'
 import { adminBanInputSchema, backupSelectorSchema } from '@guatswr/shared/admin-workflows'
+import { resourceAdminQuerySchema, resourceAdminPathSchema, resourceMutationSchema, resourceUploadQuerySchema, RESOURCE_UPLOAD_LIMIT } from '#shared/resource-admin'
+import type { ResourceMutation } from '#shared/resource-admin'
 
 const resources = ['activities', 'members', 'history', 'events', 'logs', 'users', 'config'] as const
 export type AdminResource = typeof resources[number]
@@ -91,8 +93,8 @@ export function createAdminTransport(session: Session, fetchImpl: typeof fetch =
             let response: Response
             try {
               response = await fetchImpl(path, { method, credentials: 'same-origin', redirect: 'error', signal,
-                headers: { accept: 'application/json', ...(method === 'GET' ? {} : { ...(body instanceof FormData ? {} : { 'content-type': 'application/json' }), 'x-csrf-token': csrf }) },
-                body: method === 'GET' ? undefined : body instanceof FormData ? body : JSON.stringify(body ?? {}) })
+                headers: { accept: 'application/json', ...(method === 'GET' ? {} : { ...(body instanceof FormData ? {} : { 'content-type': body instanceof Blob ? 'application/octet-stream' : 'application/json' }), 'x-csrf-token': csrf }) },
+                body: method === 'GET' ? undefined : body instanceof FormData || body instanceof Blob ? body : JSON.stringify(body ?? {}) })
             }
             catch { throw new BffRequestError(0, signal.aborted ? 'aborted' : 'network_error', '请求未完成，请重试') }
             const payload = await boundedJson(response, response.ok ? 4 * 1024 * 1024 : 64 * 1024)
@@ -122,6 +124,21 @@ export function createAdminTransport(session: Session, fetchImpl: typeof fetch =
       }
     }
   return {
+    resourceFiles<T>(path: string, page: number, project: (value: unknown) => T, signal?: AbortSignal) {
+      const query = resourceAdminQuerySchema.parse({ path, page })
+      return execute('/api/bff/admin/resources?' + new URLSearchParams({ path: query.path, page: String(query.page) }), 'GET', undefined, project, signal)
+    },
+    resourceDetail<T>(path: string, project: (value: unknown) => T, signal?: AbortSignal) {
+      return execute('/api/bff/admin/resources/detail?' + new URLSearchParams({ path: resourceAdminPathSchema.parse(path) }), 'GET', undefined, project, signal)
+    },
+    resourceMutation<T>(body: ResourceMutation, project: (value: unknown) => T, signal?: AbortSignal) {
+      return execute('/api/bff/admin/resources', 'POST', resourceMutationSchema.parse(body), project, signal)
+    },
+    resourceUpload<T>(path: string, file: File, project: (value: unknown) => T, signal?: AbortSignal) {
+      const query = resourceUploadQuerySchema.parse({ path, name: file.name })
+      if (file.size > RESOURCE_UPLOAD_LIMIT) throw new Error('单个文件不能超过 50 MiB')
+      return execute('/api/bff/admin/resources/upload?' + new URLSearchParams(query), 'POST', file, project, signal, 185_000)
+    },
     articleRevisions<T>(method:'GET'|'POST', input:{id:number;page?:number;revision?:number;base_revision?:number},project:(value:unknown)=>T,signal?:AbortSignal) {
       const query=new URLSearchParams({id:String(input.id),...(input.revision?{revision:String(input.revision)}:{page:String(input.page||1)})})
       return execute(`/api/bff/admin/article-revisions?${query}`,method,method==='POST'?{base_revision:input.base_revision}:undefined,project,signal)

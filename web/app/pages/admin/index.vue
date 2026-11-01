@@ -6,6 +6,7 @@ const actions = computed(() => [
   { title: '审核与管理活动', description: '审核投稿，整理报名、排名与结算。', path: '/admin/events', icon: 'calendar' },
   { title: '维护住民资料', description: '新增成员，更新头像、学校和成分标签。', path: '/admin/members', icon: 'users' },
   { title: '记录社群群史', description: '把新动态整理到公开时间轴。', path: '/admin/history', icon: 'book' },
+  { title: '管理共享资源', description: '浏览目录，上传、重命名、移动和删除文件。', path: '/admin/resources', icon: 'folder' },
   { title: '更新站点设置', description: '调整网站资源、介绍和入群信息。', path: '/admin/config', icon: 'sparkles' },
   { title: '管理首页链接', description: '整理常用社群入口与公开链接。', path: '/admin/home-links', icon: 'external' },
   { title: '查看操作日志', description: '查阅近期管理操作，定位需要关注的变更。', path: '/admin/logs', icon: 'book' },

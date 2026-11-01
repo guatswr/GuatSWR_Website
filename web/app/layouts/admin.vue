@@ -16,8 +16,10 @@ watch(() => route.fullPath, async () => { mobileOpen.value = false; await nextTi
 watch(() => session.isSuperAdmin.value, isSuper => {
   if (!isSuper && session.isAuthenticated.value && route.meta.requiresSuperAdmin) void navigateTo('/admin', { replace: true })
 })
-watch(() => session.state.value.status, status => {
-  if (status === 'anonymous') void navigateTo({ path: '/login', query: { redirect: route.fullPath }, replace: true })
+watch(() => session.state.value.status, (status, previous) => {
+  // The route middleware owns the initial anonymous redirect. Redirecting here
+  // too can unmount the login form before its field mount hooks have run.
+  if (status === 'anonymous' && previous === 'authenticated') void navigateTo({ path: '/login', query: { redirect: route.fullPath }, replace: true })
 })
 interface MenuItem { path: string; label: string; icon: string; description: string; super?: boolean }
 const sections: { title: string; items: MenuItem[] }[] = [
@@ -27,6 +29,7 @@ const sections: { title: string; items: MenuItem[] }[] = [
     { path: '/admin/events', label: '活动管理', icon: 'calendar', description: '审核投稿、管理活动与参赛结果' },
     { path: '/admin/members', label: '住民管理', icon: 'users', description: '维护成员资料、学校与展示顺序' },
     { path: '/admin/history', label: '群史管理', icon: 'book', description: '记录社群里值得记住的时刻' },
+    { path: '/admin/resources', label: '资源管理', icon: 'folder', description: '浏览目录，上传和管理共享文件' },
   ] },
   { title: '站点', items: [
     { path: '/admin/config', label: '站点设置', icon: 'sparkles', description: '管理站点资源、介绍与入群信息' },
