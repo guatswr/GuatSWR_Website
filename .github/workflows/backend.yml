@@ -1,61 +1,226 @@
-name: Backend migration gates
+# Keep this filename stable: release-v2.yml waits for this exact workflow.
+name: CI
+
 on:
   push:
-    branches: ['codex/backend-modernization', 'revamp/**', main]
-    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', 'docker-compose.yml', '.gitattributes', '.github/workflows/backend.yml', 'docs/backend-modernization/**']
+    branches: [main, 'revamp/**', 'codex/**']
   pull_request:
-    paths: ['backend/**', 'packages/shared/**', 'web/**', 'scripts/**', 'patches/**', 'pnpm-lock.yaml', 'pnpm-workspace.yaml', 'package.json', '.node-version', '.npmrc', '.dockerignore', 'docker-compose.yml', '.gitattributes', '.github/workflows/backend.yml']
+    branches: [main]
+  merge_group:
   workflow_dispatch:
+  schedule:
+    - cron: '0 18 * * 0'
+
 permissions:
   contents: read
+
 concurrency:
-  group: backend-${{ github.ref }}
+  group: ci-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
+
+env:
+  CI: 'true'
+  NUXT_SESSION_PASSWORD: guatswr-ci-fixture-session-password-not-a-production-credential
+
 jobs:
-  backend:
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [ubuntu-latest, windows-latest]
-    runs-on: ${{ matrix.os }}
+  scope:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      quality: ${{ steps.select.outputs.quality }}
+      audit: ${{ steps.select.outputs.audit }}
+      backend: ${{ steps.select.outputs.backend }}
+      web: ${{ steps.select.outputs.web }}
+      integration: ${{ steps.select.outputs.integration }}
+      container: ${{ steps.select.outputs.container }}
+      web_container: ${{ steps.select.outputs.web_container }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - id: select
+        run: node scripts/ci/changes.mjs
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        with:
+          name: ci-scope
+          path: .tools/ci/scope.json
+          include-hidden-files: true
+          retention-days: 14
+
+  quality:
+    name: Static checks and unit tests
+    needs: scope
+    if: needs.scope.outputs.quality == 'true'
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version-file: .node-version
           cache: pnpm
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check:security
-      - run: node --test scripts/revamp/upstream-security.test.mjs
+        id: install
+      - run: pnpm check:patches
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm test:ci
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm test:tooling
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm check:boundaries
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       - run: pnpm typecheck
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       - run: pnpm -r lint
-      - run: pnpm --filter @guatswr/shared test
-      - run: pnpm --filter @guatswr/web test
-      - uses: actions/setup-python@v5
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm --filter @guatswr/shared test --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/shared.json"
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm --filter @guatswr/web test --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/web-unit.json"
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - name: Publish unit metrics (missing reports fail)
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/shared.json .tools/ci/web-unit.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-quality
+          path: .tools/ci/
+          include-hidden-files: true
+          retention-days: 14
+
+  backend:
+    name: Backend tests (${{ matrix.os }})
+    needs: scope
+    if: needs.scope.outputs.backend == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - run: pnpm install --frozen-lockfile
+        id: install
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
         with:
           python-version: '3.13'
+      - run: pnpm --filter @guatswr/shared build
+        id: build
       - run: python backend/scripts/backup_bundle_test.py
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       - run: python backend/scripts/inspect_data_test.py
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       - run: python backend/scripts/migration_baseline_test.py
-      - run: pnpm --filter guiair-backend test:unit
-      - run: pnpm --filter guiair-backend run test:integration --reporter=default --reporter=json --outputFile=test-results/integration.json
-      - run: pnpm --filter guiair-backend run test:contracts --reporter=default --reporter=json --outputFile=test-results/contracts.json
-      - uses: actions/upload-artifact@v4
-        if: always()
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm --filter guiair-backend run test:unit --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-unit.json"
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+      - run: pnpm --filter guiair-backend run test:integration --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-integration.json"
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+      - run: pnpm --filter guiair-backend run test:contracts --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-contracts.json"
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+      - name: Publish backend metrics
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/backend-unit.json .tools/ci/backend-integration.json .tools/ci/backend-contracts.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
         with:
-          name: backend-tests-${{ runner.os }}
-          path: backend/test-results
+          name: ci-backend-${{ runner.os }}
+          path: .tools/ci/
+          include-hidden-files: true
           retention-days: 14
+
+  web:
+    name: Browser behavior and delivery budgets
+    needs: scope
+    if: needs.scope.outputs.web == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - run: pnpm install --frozen-lockfile
+        id: install
+      - name: Build the production artifact under test
+        id: build
+        run: pnpm --filter @guatswr/shared build && pnpm --filter @guatswr/web build
+      - name: Check production sourcemaps
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: pnpm check:artifacts
+      - name: Install Chromium and CJK fonts
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes fonts-noto-cjk
+          pnpm --filter @guatswr/web exec playwright install --with-deps chromium
+        id: browser
+      - name: All desktop and mobile E2E cases
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: pnpm test:e2e --work-dir .e2e-isolated/ci
+      - name: Publish E2E first-attempt reliability
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/ci/report.mjs e2e web/.e2e-isolated/ci/summary.json
+      - name: Measure cold-route JS
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json > .tools/ci/routes.json
+      - name: Publish route budgets
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/ci/report.mjs routes .tools/ci/routes.json
+      - name: Measure mobile performance (3 samples per route)
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: pnpm --filter @guatswr/web test:performance
+      - name: Publish performance medians
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/ci/report.mjs performance web/.lighthouseci/summary.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-browser
+          path: |
+            .tools/ci/
+            web/.e2e-isolated/ci/
+            web/.lighthouseci/
+            web/playwright-report/
+          include-hidden-files: true
+          retention-days: 14
+
   container:
-    runs-on: ubuntu-latest
+    needs: scope
+    if: needs.scope.outputs.container == 'true'
+    runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - name: Validate frontend/backend Compose topology without production env files
+        env:
+          WEB_ENV_FILE: ./web/.env.example
+          BACKEND_ENV_FILE: ./backend/.env.example
         run: docker compose config --no-env-resolution --quiet
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version-file: .node-version
       - run: node backend/scripts/prepare-test-context.cjs "$RUNNER_TEMP/backend-context"
@@ -78,19 +243,21 @@ jobs:
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-concurrency.cjs
       - run: docker run --rm --network none guatswr-backend-runtime python3 scripts/backup_bundle_test.py
       - run: docker run --rm --network none --tmpfs /limited:rw,size=1m,mode=1777 -e BACKUP_TEST_LIMIT_ROOT=/limited guatswr-backend-runtime node scripts/test-backup-restore.cjs
+
   real-bff:
-    runs-on: ubuntu-latest
+    needs: scope
+    if: needs.scope.outputs.integration == 'true'
+    runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
-      - uses: actions/checkout@v4
-      - uses: pnpm/action-setup@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version-file: .node-version
           cache: pnpm
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
       - run: pnpm install --frozen-lockfile
-      - run: pnpm check:security
-      - run: node --test scripts/revamp/upstream-security.test.mjs
       - run: pnpm --filter @guatswr/shared build
       - name: Verify packed shared ESM and CommonJS consumers
         run: |
@@ -106,12 +273,73 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y sqlite3
           node backend/scripts/prepare-bff-output.cjs web/.output "$RUNNER_TEMP/backend-nuxt-output"
-      - run: pnpm --filter guiair-backend run test:bff --reporter=default --reporter=json --outputFile=test-results/bff.json
+      - run: pnpm --filter guiair-backend run test:bff --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/bff.json"
         env:
           BACKEND_BFF_OUTPUT: ${{ runner.temp }}/backend-nuxt-output
-      - uses: actions/upload-artifact@v4
-        if: always()
+      - name: Publish real BFF integration metrics
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/bff.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
         with:
-          name: backend-real-bff
-          path: backend/test-results
+          name: ci-real-bff
+          path: .tools/ci/
+          include-hidden-files: true
+          retention-days: 14
+
+  web-container:
+    name: Packaged frontend runtime
+    needs: scope
+    if: needs.scope.outputs.web_container == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - run: docker build --file web/Dockerfile --tag guatswr-web:ci .
+      - run: node scripts/revamp/container-smoke.mjs --image guatswr-web:ci
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-web-container
+          path: .tools/container-runtime-validation.json
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14
+
+  audit:
+    name: Audit dependency changes
+    needs: scope
+    if: needs.scope.outputs.audit == 'true'
+    uses: ./.github/workflows/dependency-security.yml
+
+  result:
+    name: CI result
+    needs: [scope, quality, backend, web, real-bff, container, web-container, audit]
+    if: ${{ always() }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - name: Reject failed, cancelled or unexpectedly skipped checks
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: node scripts/ci/report.mjs result
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-result
+          path: .tools/ci/
+          include-hidden-files: true
           retention-days: 14

@@ -1,4 +1,5 @@
 * text=auto
 *.sh text eol=lf
-patches/*.patch text eol=lf
+# Unified-diff context prefixes intentionally combine spaces and upstream tabs.
+patches/*.patch text eol=lf -whitespace
 backend/src/migrations/*.sql text eol=lf

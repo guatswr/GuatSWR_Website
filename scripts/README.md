@@ -28,15 +28,18 @@ BM-10已统一备份实现并移除cp降级/单库伪成功，恢复只写新目
 ## 依赖安全验收
 
 在根目录执行 `pnpm check:security`。它先验证 `patches/` 中补丁的 SHA-256、
-实际安装的对应源码和漏洞行为，再调用锁定的 pnpm 在线审计整个前端工作区（含开发依赖）。
-`backend/` 使用独立 npm 生命周期，不纳入此命令。
+实际安装的对应源码和漏洞行为，再调用锁定的 pnpm 在线审计整个工作区（含后端与开发依赖）。
+`pnpm check:patches` 只执行补丁完整性与行为校验，不联网查询公告。
 
-两项尚无已发布修复版本的依赖使用 `pnpm-workspace.yaml` 的 `patchedDependencies`；
+braces、deepmerge 与需要保留旧 API 的 minimatch 使用 `pnpm-workspace.yaml` 的 `patchedDependencies`；
 校验策略在 `scripts/revamp/security-patches.json`。仅允许确切 GHSA、包名、版本和
 受影响范围匹配且验证通过的本地修复。新增告警、未知版本、漏打补丁、源码被改、
 网络失败或异常审计结果均会使命令失败，没有全局忽略列表。
 
 原始审计仍按上游版本报告告警；命令将它们明确列为 `mitigated`，不改写原始数量。
-完整机器报告保存在 `.tools/dependency-security.json`，CI 保留 7 天。
+完整机器报告保存在 `.tools/dependency-security.json`，CI 保留 14 天。
+在线审计独立运行，并阻断依赖更新与发布；普通质量检查仍会收集完整结果。
+指标、触发范围和分支保护设置见 [CI 设计](../docs/CI.md)。
 更换或删除补丁时必须重新审查策略并运行 `pnpm test:tooling` 和 `pnpm check:security`。
-修复范围、兼容性边界与复验证据见 [依赖安全报告](../docs/revamp/logs/28-dependency-security/README.md)。
+当前修复与兼容性边界见 [2026-11 依赖安全说明](../docs/security/dependencies-2026-11.md)；
+旧版本的补丁记录保留在 [历史依赖安全报告](../docs/revamp/logs/28-dependency-security/README.md)。

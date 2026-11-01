@@ -50,3 +50,52 @@ export function bracesProbes(braces) {
   }
   return probes
 }
+
+export function deepmergeProbes(merge) {
+  const payload = () => JSON.parse('{"__proto__":{"inheritedAdmin":true}}')
+  const safe = result => {
+    assert.equal(Object.getPrototypeOf(result), Object.prototype)
+    assert.equal(result.inheritedAdmin, undefined)
+    assert.equal(Object.prototype.inheritedAdmin, undefined)
+  }
+  return [
+    ['merges nested ordinary objects and arrays', () => assert.deepEqual(merge({ a: { x: 1 }, list: [1] }, { a: { y: 2 }, list: [2] }), { a: { x: 1, y: 2 }, list: [1, 2] })],
+    ['keeps enumerable symbol keys', () => { const key = Symbol('fixture'); assert.equal(merge({}, { [key]: 1 })[key], 1) }],
+    ['retains clone=false and customMerge behavior', () => {
+      const child = { x: 1 }
+      assert.equal(merge({}, { child }, { clone: false }).child, child)
+      assert.deepEqual(merge({ list: [1] }, { list: [2] }, { customMerge: key => key === 'list' ? (_a, b) => b : undefined }), { list: [2] })
+    }],
+    ['does not poison an output when copying target keys', () => safe(merge(payload(), {}))],
+    ['does not poison an output from a null-prototype target', () => safe(merge(Object.create(null), payload()))],
+    ['does not poison an output with an own __proto__ on both sides', () => safe(merge(payload(), payload()))],
+    ['protects nested object merges', () => safe(merge({ nested: Object.create(null) }, { nested: payload() }).nested)],
+    ['preserves a dangerous-looking key as an own data property', () => {
+      const result = merge(Object.create(null), payload())
+      const descriptor = Object.getOwnPropertyDescriptor(result, '__proto__')
+      assert.deepEqual(descriptor, { value: { inheritedAdmin: true }, writable: true, enumerable: true, configurable: true })
+      safe(result)
+    }],
+  ]
+}
+
+export function minimatchProbes(api) {
+  return [
+    ['retains normal globstar/extglob matching', () => {
+      assert.equal(api.minimatch('src/a.js', '**/*.{js,ts}', { optimizationLevel: 2 }), true)
+      assert.equal(api.minimatch('src/a.txt', '**/*.{js,ts}', { optimizationLevel: 2 }), false)
+    }],
+    ['retains the makeRe API used by eslint-plugin-import-x', () => assert.equal(api.makeRe('src/**/*.js').test('src/a.js'), true)],
+    ['bounds globstar-parent amplification using the upstream brace expansion budget', () => {
+      const pattern = Array(9).fill('**/../a/b').join('/')
+      const mm = new api.Minimatch(pattern, { optimizationLevel: 2, braceExpandMax: 32 })
+      assert.ok(mm.globParts.length <= 32, `preprocessing amplified to ${mm.globParts.length} entries`)
+    }],
+    ['skips quadratic deduplication above the upstream 1000-entry cutoff', () => {
+      const mm = new api.Minimatch('**/*.js')
+      mm.partsMatch = () => { throw new Error('quadratic deduplication must not run') }
+      const patterns = Array.from({ length: 1001 }, (_, i) => [String(i)])
+      assert.equal(mm.secondPhasePreProcess(patterns), patterns)
+    }],
+  ]
+}

@@ -32,7 +32,7 @@
     "katex": "0.18.2",
     "md-editor-v3": "6.5.4",
     "mermaid": "11.16.1",
-    "nuxt": "4.6.2",
+    "nuxt": "4.6.3",
     "nuxt-auth-utils": "0.5.32",
     "nuxt-security": "2.6.0",
     "pinia": "4.1.0",

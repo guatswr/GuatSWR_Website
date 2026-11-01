@@ -14,5 +14,10 @@ export default defineConfig({
       '~': fileURLToPath(new URL('./app', import.meta.url)),
     },
   },
-  test: { include: ['tests/**/*.test.ts'] },
+  test: {
+    include: ['tests/**/*.test.ts'],
+    // Keep hosted runners and CPU-limited Docker builds from oversubscribing
+    // workers, which can starve otherwise synchronous security assertions.
+    maxWorkers: process.env.CI ? 2 : undefined,
+  },
 })

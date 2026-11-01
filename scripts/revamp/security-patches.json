@@ -1,13 +1,19 @@
 [
   {
-    "package": "node-forge",
-    "version": "1.4.0",
-    "advisory": "GHSA-86w9-cpqp-85rv",
-    "range": "<=1.4.0",
-    "patch": "patches/node-forge@1.4.0.patch",
-    "patchSha256": "bdd899a91341b1ea09eeafb852ed49366b7319675a1d0b5c6d1f3c598b1c368a",
+    "package": "deepmerge",
+    "version": "4.3.1",
+    "advisory": "GHSA-gcqx-w48m-w2h4",
+    "range": ">=4.2.0 <=4.3.1",
+    "patch": "patches/deepmerge@4.3.1.patch",
+    "patchSha256": "cc1e3f34a4b1f33474d84f82b06b1dfc381a33fdac5c4a2a7d2ca0347d007d46",
+    "entrypoints": [
+      "dist/cjs.js",
+      "dist/umd.js"
+    ],
     "files": {
-      "lib/rsa.js": "96c154db17c611f81eeb48aed2c064c80d87517df2fff24cf574fbd1ac050492"
+      "index.js": "e20ca0c1b11f683c58f818c7dde47c41f6937434af00b4569565d634b8a8b0e4",
+      "dist/cjs.js": "43d32b8254552072a849d3ae676b42c07cede84802eb6ab92ee8b4370ae7157e",
+      "dist/umd.js": "c4f288438b6b7dc110da4d07549becfb41cf362599cfad2fa1969c982eb3c0ed"
     }
   },
   {
@@ -23,6 +29,25 @@
       "lib/expand.js": "e2ae78745bfc3671d96086533f3c37e081d8e253052420f4f3c2a06319fe4ae1",
       "lib/parse.js": "6933a0994f0f1fb4327c2d4041f7766f3b5c4e3ee1422647a161e585f92ac90f",
       "lib/stringify.js": "f504ec32772779fc33d63cab212184d7ee5916db9875823d5f7388bf780f416c"
+    }
+  },
+  {
+    "package": "minimatch",
+    "version": "10.2.6",
+    "advisory": "GHSA-g3hv-75wg-m249",
+    "range": "<11.0.1",
+    "patch": "patches/minimatch@10.2.6.patch",
+    "patchSha256": "e01b2c24b76041be1e579131d9be336c15eda9f368c2188c66857fc8e6dd060e",
+    "upstreamFixedVersions": [
+      "11.0.3"
+    ],
+    "entrypoints": [
+      "dist/commonjs/index.js",
+      "dist/esm/index.js"
+    ],
+    "files": {
+      "dist/commonjs/index.js": "fe5897c2b486fa718de979085108c82a090afc672e9a2504283b817385d07e81",
+      "dist/esm/index.js": "85c3254202cfa8d47ab158de5afc5a5ad0735c759b46789160e29338410bcfbd"
     }
   }
 ]

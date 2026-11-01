@@ -23,10 +23,10 @@ jobs:
       GH_REPO: ${{ github.repository }}
       RELEASE_TAG: v2.0.0
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
-      - name: Require the tagged main commit to pass backend migration gates
+      - name: Require successful CI for the exact tagged main commit
         shell: bash
         run: |
           set -euo pipefail
@@ -41,6 +41,31 @@ jobs:
           done
           [[ -n "$run_id" ]] || { echo 'No exact-commit main validation run found'; exit 1; }
           gh run watch "$run_id" --exit-status --interval 15
+      - name: Prepare the exact tag for a fresh release audit
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/release-audit"
+          git archive "$RELEASE_TAG" | tar -x -C "$RUNNER_TEMP/release-audit"
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+        with:
+          package_json_file: ${{ runner.temp }}/release-audit/package.json
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: ${{ runner.temp }}/release-audit/.node-version
+          cache: pnpm
+          cache-dependency-path: ${{ runner.temp }}/release-audit/pnpm-lock.yaml
+      - name: Require no unresolved dependency findings in the release tag
+        working-directory: ${{ runner.temp }}/release-audit
+        run: pnpm install --frozen-lockfile && pnpm check:security
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: release-dependency-security
+          path: ${{ runner.temp }}/release-audit/.tools/dependency-security.json
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14
       - name: Publish the approved GitHub version without deployment
         shell: bash
         run: |

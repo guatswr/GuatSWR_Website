@@ -1,0 +1,43 @@
+name: Dependency security
+
+# Called by CI for dependency/configuration changes. Scheduled scans also find
+# advisories published after the last code change, without hiding test results.
+on:
+  workflow_call:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 2 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: Dependency audit
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Audit all locked dependencies and verify local mitigations
+        run: pnpm check:security
+      - name: Publish unresolved advisories by severity
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs security .tools/dependency-security.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: dependency-security-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tools/dependency-security.json
+            .tools/ci/security.metrics.json
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14

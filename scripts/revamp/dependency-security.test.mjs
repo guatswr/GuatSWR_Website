@@ -6,11 +6,16 @@ import { dirname, join, resolve, sep } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
 import { discoverInstalledPackages, evaluateAudit, verifyPatchState } from './check-dependency-security.mjs'
-import { bracesProbes, forgeProbes } from './security-patch-probes.mjs'
+import { bracesProbes, deepmergeProbes, forgeProbes, minimatchProbes } from './security-patch-probes.mjs'
 
 const require = createRequire(import.meta.url)
 for (const [label, probe] of forgeProbes(require('node-forge'))) test(`node-forge: ${label}`, probe)
 for (const [label, probe] of bracesProbes(require('braces'))) test(`braces: ${label}`, probe)
+for (const entry of ['deepmerge', 'deepmerge/dist/umd.js']) {
+  for (const [label, probe] of deepmergeProbes(require(entry))) test(`${entry}: ${label}`, probe)
+}
+const legacyMinimatch = createRequire(require.resolve('eslint-plugin-import-x'))('minimatch')
+for (const [label, probe] of minimatchProbes(legacyMinimatch)) test(`minimatch: ${label}`, probe)
 
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const policy = JSON.parse(await readFile(join(repository, 'scripts/revamp/security-patches.json'), 'utf8'))
@@ -23,19 +28,24 @@ function report(records = []) {
   return { advisories: Object.fromEntries(records.map((item, index) => [index, item])), metadata: { vulnerabilities: counts } }
 }
 
-test('audit accepts only the two exact verified backports while retaining raw counts', () => {
+test('audit accepts only the exact verified mitigations while retaining raw counts', () => {
   const result = evaluateAudit(report(policy.map(item => advisory(item))), policy, verified)
   assert.equal(result.ok, true)
-  assert.equal(result.rawCounts.high, 2)
-  assert.equal(result.mitigated.length, 2)
+  assert.equal(result.rawCounts.high, policy.length)
+  assert.equal(result.mitigated.length, policy.length)
   assert.deepEqual(result.unresolved, [])
 })
 test('a clean upstream audit is also accepted', () => assert.equal(evaluateAudit(report(), policy, verified).ok, true))
 test('an unverified patch cannot waive an advisory', () => assert.equal(evaluateAudit(report([advisory(policy[0])]), policy, []).ok, false))
 test('new advisories fail even at low severity', () => assert.equal(evaluateAudit(report([advisory(policy[0], { github_advisory_id: 'GHSA-new', severity: 'low' })]), policy, verified).ok, false))
 test('a changed affected range requires renewed review', () => assert.equal(evaluateAudit(report([advisory(policy[0], { vulnerable_versions: '<=9.0.0' })]), policy, verified).ok, false))
-test('mixed installed versions cannot be waived', () => assert.equal(evaluateAudit(report([advisory(policy[0], { findings: [{ version: '1.4.0' }, { version: '1.3.0' }] })]), policy, verified).ok, false))
+test('mixed installed versions cannot be waived', () => assert.equal(evaluateAudit(report([advisory(policy[0], { findings: [{ version: policy[0].version }, { version: '0.0.0' }] })]), policy, verified).ok, false))
 test('an advisory cannot be waived under another package name', () => assert.equal(evaluateAudit(report([advisory(policy[0], { module_name: 'another-library' })]), policy, verified).ok, false))
+
+test('a fixed upstream minimatch copy cannot waive an unpatched legacy copy', () => {
+  const item = policy.find(entry => entry.package === 'minimatch')
+  assert.equal(evaluateAudit(report([advisory(item)]), policy, [{ package: item.package, version: '11.0.3', advisory: item.advisory }]).ok, false)
+})
 test('network, incomplete and inconsistent audit reports fail closed', () => {
   for (const invalid of [null, {}, { error: 'network unavailable' }, { ...report(), advisories: [] },
     { ...report(), metadata: { vulnerabilities: { high: 2 } } }, report([advisory(policy[0], { findings: [] })])]) {
@@ -74,9 +84,12 @@ test('discovery follows pnpm landing links without treating unused cache copies 
 }))
 test('every actual installed copy passes patch hashes and exploit probes', async () => {
   const copies = await verifyPatchState(repository, policy)
-  assert.ok(copies.some(item => item.package === 'node-forge'))
-  assert.ok(copies.some(item => item.package === 'braces'))
+  for (const item of policy) assert.ok(copies.some(copy => copy.package === item.package))
   assert.ok(copies.every(item => item.probes > 0))
+})
+test('policy cannot disable behavioral probes or exempt its own vulnerable version', async () => {
+  await assert.rejects(verifyPatchState(repository, [{ ...policy[0], entrypoints: [] }]), /Invalid probe entrypoints/)
+  await assert.rejects(verifyPatchState(repository, [{ ...policy[0], upstreamFixedVersions: [policy[0].version] }]), /Invalid fixed-version exemption/)
 })
 for (const failure of ['registration', 'patch checksum', 'installed source', 'unreviewed version']) {
   test(`missing/tampered ${failure} rejects mitigation`, () => fixture(async root => {
@@ -84,7 +97,7 @@ for (const failure of ['registration', 'patch checksum', 'installed source', 'un
     await put(root, 'pnpm-workspace.yaml', failure === 'registration' ? '' : `patchedDependencies:\n  ${item.package}@${item.version}: ${item.patch}\n`)
     await put(root, item.patch, failure === 'patch checksum' ? 'tampered' : await readFile(join(repository, item.patch), 'utf8'))
     await put(root, `node_modules/${item.package}/package.json`, { name: item.package, version: failure === 'unreviewed version' ? '0.0.0' : item.version })
-    await put(root, `node_modules/${item.package}/lib/rsa.js`, 'unpatched')
+    for (const file of Object.keys(item.files)) await put(root, `node_modules/${item.package}/${file}`, 'unpatched')
     const expected = { registration: /Patch registration missing/, 'patch checksum': /checksum mismatch/,
       'installed source': /Installed patch mismatch/, 'unreviewed version': /Unreviewed/ }
     await assert.rejects(verifyPatchState(root, [item]), expected[failure])

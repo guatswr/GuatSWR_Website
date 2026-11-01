@@ -10,9 +10,9 @@
 
 <p align="center">
   <a href="https://github.com/guatswr/GuatSWR_Website/releases/tag/v2.0.0"><img src="https://img.shields.io/badge/release-v2.0.0-1677B8?style=flat-square" alt="Release v2.0.0"></a>
-  <a href="https://github.com/guatswr/GuatSWR_Website/actions/workflows/backend.yml?query=branch%3Amain"><img src="https://github.com/guatswr/GuatSWR_Website/actions/workflows/backend.yml/badge.svg?branch=main" alt="Backend Migration Gates"></a>
+  <a href="https://github.com/guatswr/GuatSWR_Website/actions/workflows/backend.yml?query=branch%3Amain"><img src="https://github.com/guatswr/GuatSWR_Website/actions/workflows/backend.yml/badge.svg?branch=main" alt="CI"></a>
   <a href=".node-version"><img src="https://img.shields.io/badge/Node.js-24.16.0-339933?style=flat-square" alt="Node.js 24.16.0"></a>
-  <a href="web/package.json"><img src="https://img.shields.io/badge/Nuxt-4.6.2-00DC82?style=flat-square" alt="Nuxt 4.6.2"></a>
+  <a href="web/package.json"><img src="https://img.shields.io/badge/Nuxt-4.6.3-00DC82?style=flat-square" alt="Nuxt 4.6.3"></a>
   <a href="backend/package.json"><img src="https://img.shields.io/badge/Express-5.3.0-444444?style=flat-square" alt="Express 5.3.0"></a>
   <a href="backend/package.json"><img src="https://img.shields.io/badge/SQLite-WAL-003B57?style=flat-square" alt="SQLite WAL"></a>
 </p>
@@ -428,6 +428,8 @@ pnpm --filter guiair-backend build
 <p align="right">(<a href="#readme-top">返回顶部</a>)</p>
 
 ## 开发与质量门禁
+
+GitHub Actions 的触发范围、指标阈值、安全审计策略与分支保护设置见 [CI 设计](docs/CI.md)。
 
 所有工作区检查命令均在**仓库根目录**运行：
 

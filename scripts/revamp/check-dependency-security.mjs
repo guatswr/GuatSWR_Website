@@ -5,12 +5,12 @@ import { createRequire } from 'node:module'
 import { basename, dirname, isAbsolute, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { promisify } from 'node:util'
-import { bracesProbes, forgeProbes } from './security-patch-probes.mjs'
+import { bracesProbes, deepmergeProbes, forgeProbes, minimatchProbes } from './security-patch-probes.mjs'
 
 const execute = promisify(execFile)
 const sha256 = data => createHash('sha256').update(data).digest('hex')
 const repository = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
-const probeFactories = { 'node-forge': forgeProbes, braces: bracesProbes }
+const probeFactories = { 'node-forge': forgeProbes, braces: bracesProbes, deepmerge: deepmergeProbes, minimatch: minimatchProbes }
 
 // Follow installed package links, nested node_modules and pnpm's reachable
 // sibling dependency directories. Unreferenced store/cache entries are not code
@@ -67,22 +67,30 @@ export async function verifyPatchState(root, policy) {
   const verified = []
   for (const item of policy) {
     if (!probeFactories[item.package]) throw new Error(`No regression probes for ${item.package}`)
+    const entrypoints = item.entrypoints ?? ['.']
+    if (!Array.isArray(entrypoints) || !entrypoints.length || entrypoints.some(entry => typeof entry !== 'string' || !entry)) throw new Error(`Invalid probe entrypoints for ${item.package}`)
+    if (item.upstreamFixedVersions && (!Array.isArray(item.upstreamFixedVersions) || item.upstreamFixedVersions.includes(item.version))) throw new Error(`Invalid fixed-version exemption for ${item.package}`)
     if (!settings.includes(`${item.package}@${item.version}: ${item.patch}`)) throw new Error(`Patch registration missing for ${item.package}`)
     const patch = await readFile(localPath(root, item.patch))
     if (sha256(patch) !== item.patchSha256) throw new Error(`Patch checksum mismatch: ${item.patch}`)
     const copies = installed.filter(copy => copy.name === item.package)
     if (!copies.length) throw new Error(`No installed copy found for ${item.package}`)
     for (const copy of copies) {
+      if (item.upstreamFixedVersions?.includes(copy.version)) continue
       if (copy.version !== item.version) throw new Error(`Unreviewed ${copy.name} version: ${copy.version}`)
       for (const [file, hash] of Object.entries(item.files)) {
         if (sha256(await readFile(localPath(copy.path, file))) !== hash) throw new Error(`Installed patch mismatch: ${copy.path}/${file}`)
       }
       const require = createRequire(join(copy.path, 'package.json'))
-      const probes = probeFactories[item.package](require(copy.path))
-      for (const [name, probe] of probes) {
-        try { probe() } catch (error) { throw new Error(`${copy.name}: ${name}: ${error.message}`, { cause: error }) }
+      let probeCount = 0
+      for (const entry of entrypoints) {
+        const probes = probeFactories[item.package](require(entry === '.' ? copy.path : localPath(copy.path, entry)))
+        for (const [name, probe] of probes) {
+          try { probe() } catch (error) { throw new Error(`${copy.name}/${entry}: ${name}: ${error.message}`, { cause: error }) }
+        }
+        probeCount += probes.length
       }
-      verified.push({ package: copy.name, version: copy.version, path: copy.path, probes: probes.length, advisory: item.advisory })
+      verified.push({ package: copy.name, version: copy.version, path: copy.path, probes: probeCount, advisory: item.advisory })
     }
   }
   return verified
@@ -129,10 +137,17 @@ async function fetchAudit() {
 }
 
 async function main() {
-  const report = { generatedAt: new Date().toISOString(), ok: false }
+  const patchesOnly = process.argv.includes('--patches-only')
+  const report = { generatedAt: new Date().toISOString(), mode: patchesOnly ? 'patches' : 'audit', ok: false }
   try {
+    if (process.argv.slice(2).some(arg => arg !== '--patches-only')) throw new Error('Unknown dependency-security option')
     const policy = JSON.parse(await readFile(join(repository, 'scripts/revamp/security-patches.json'), 'utf8'))
     report.verified = await verifyPatchState(repository, policy)
+    if (patchesOnly) {
+      report.ok = true
+      console.log(JSON.stringify({ ok: true, mode: 'patches', verifiedCopies: report.verified.length, regressionProbes: report.verified.reduce((sum, item) => sum + item.probes, 0) }, null, 2))
+      return
+    }
     report.rawAudit = await fetchAudit()
     Object.assign(report, evaluateAudit(report.rawAudit, policy, report.verified))
     if (!report.ok) throw new Error(`${report.unresolved.length} unresolved dependency advisories`)
@@ -142,7 +157,7 @@ async function main() {
     console.error(`dependency-security: ${error.message}`)
     process.exitCode = 1
   } finally {
-    const output = join(repository, '.tools/dependency-security.json')
+    const output = join(repository, patchesOnly ? '.tools/dependency-patches.json' : '.tools/dependency-security.json')
     await mkdir(dirname(output), { recursive: true })
     await writeFile(output, JSON.stringify(report, null, 2) + '\n')
   }

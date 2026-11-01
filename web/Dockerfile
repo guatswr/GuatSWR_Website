@@ -1,4 +1,5 @@
 FROM node:24.16.0-alpine AS build
+ENV CI=true
 WORKDIR /workspace
 RUN apk add --no-cache python3 make g++
 RUN npm install --global pnpm@11.25.0
@@ -17,7 +18,7 @@ COPY backend/src/routes ./backend/src/routes
 COPY backend/src/integrations/bot/api.ts backend/src/integrations/bot/member-sync-api.ts ./backend/src/integrations/bot/
 COPY backend/src/modules/activities/revision-api.ts ./backend/src/modules/activities/revision-api.ts
 COPY scripts/revamp ./scripts/revamp
-RUN pnpm check:security && pnpm --filter @guatswr/shared build \
+RUN pnpm check:patches && pnpm --filter @guatswr/shared build \
     && pnpm --filter @guatswr/shared --filter @guatswr/web -r typecheck \
     && pnpm --filter @guatswr/shared --filter @guatswr/web -r lint \
     && pnpm --filter @guatswr/shared --filter @guatswr/web -r test \
