@@ -1,7 +1,7 @@
 import { computed, toValue } from 'vue'
 import type { MaybeRefOrGetter } from 'vue'
 import { defineBreadcrumb, defineOrganization, defineWebPage, defineWebSite, useSchemaOrg } from '#schema-org/app'
-import { SEO_SITE_NAME, PUBLIC_INDEX_PAGES, seoImageUrl, seoUrl, trustedSeoOrigin } from '#shared/seo'
+import { SEO_SITE_NAME, PUBLIC_INDEX_PAGES, publicSiteIndexable, seoImageUrl, seoUrl, trustedSeoOrigin } from '#shared/seo'
 import { buildPublicSeo } from '~/utils/public-seo'
 import type { PublicSeoInput } from '~/utils/public-seo'
 
@@ -28,9 +28,7 @@ export function usePublicSeo(input: MaybeRefOrGetter<PublicSeoInput>): void {
     twitterTitle: () => seo.value.title,
     twitterDescription: () => seo.value.description,
     twitterImage: image,
-    // Indexing remains a separately approved cutover change, even if a generic
-    // site-indexable environment flag is accidentally enabled on the preview.
-    robots: 'noindex, nofollow',
+    robots: () => publicSiteIndexable(site, import.meta.dev) ? 'index, follow' : 'noindex, nofollow',
   })
   useHead(() => ({
     // buildPublicSeo already appends the name; do not append it a second time.

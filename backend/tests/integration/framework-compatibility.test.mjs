@@ -94,3 +94,12 @@ it('retains production CORS allowlist, preflight and fixed denial response', asy
   expect(denied.status).toBe(403)
   expect(denied.body).toEqual({ message: '跨域访问被拒绝' })
 })
+
+it('defaults production CORS to the canonical www site', async () => {
+  const f = await fixture({ env: { NODE_ENV: 'production' } })
+  const allowed = await f.http.get('/api/version').set('Origin', 'https://www.guatswr.top')
+  expect(allowed.status).toBe(200)
+  expect(allowed.headers['access-control-allow-origin']).toBe('https://www.guatswr.top')
+  const denied = await f.http.get('/api/version').set('Origin', 'https://untrusted.example.test')
+  expect(denied.status).toBe(403)
+})

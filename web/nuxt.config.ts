@@ -1,4 +1,5 @@
 import tailwindcss from '@tailwindcss/vite'
+import { PRODUCTION_SITE_URL } from './shared/seo'
 
 // Public HTML is rendered fresh for every GET/HEAD so each response carries a
 // new CSP nonce. `private, no-cache` (rather than `no-store`) keeps it eligible
@@ -68,11 +69,11 @@ export default defineNuxtConfig({
       sessionHeader: false,
       cookie: { httpOnly: true, sameSite: 'lax', secure: !import.meta.dev },
     },
-    // Private BFF auth defaults. Everything fails closed: no write origin is
-    // trusted and no proxy is trusted until explicitly configured.
+    // Only the canonical production origin is trusted by default. Preview
+    // deployments must explicitly configure their own origins; proxies stay closed.
     // Override with NUXT_BFF_AUTH_* env values (arrays as JSON).
     bffAuth: {
-      allowedOrigins: [] as string[],
+      allowedOrigins: [PRODUCTION_SITE_URL],
       trustedProxyCidrs: [] as string[],
       allowInsecureLoopbackCookies: false,
       sessionMaxAgeSeconds: 60 * 60 * 24,
@@ -102,17 +103,22 @@ export default defineNuxtConfig({
     public: {},
   },
   site: {
-    url: 'https://next.guatswr.top',
+    url: PRODUCTION_SITE_URL,
     name: '桂航绯想天',
     description: '桂林航天工业学院东方同好社群',
-    indexable: false,
+    // Site Config derives indexability from the environment: production is
+    // indexable, while development/staging remain closed unless overridden.
     defaultLocale: 'zh-CN',
   },
-  // Enable indexability only in the separately approved cutover change.
-  robots: { disallow: ['/'] },
+  // One owner generates /robots.txt; do not add a competing public/robots.txt.
+  robots: {
+    // Public JSON reads may be needed during crawler rendering; they receive
+    // noindex headers below, while private endpoints are blocked from crawling.
+    disallow: ['/login', '/admin', '/api/bff/', '/api/_auth/', '/__revamp/'],
+    disallowNonIndexableRoutes: false,
+  },
   sitemap: {
-    // Disabled on preview; release rehearsal enables this same XML owner.
-    enabled: false,
+    enabled: true,
     excludeAppSources: true,
     sources: ['/api/__sitemap__/urls'],
     cacheMaxAgeSeconds: 0,
@@ -137,9 +143,12 @@ export default defineNuxtConfig({
     '/resources': { headers: { ...publicHtmlHeaders } },
     '/logs': { headers: { ...publicHtmlHeaders } },
     '/join': { headers: { 'Cache-Control': 'no-store' } },
-    '/admin': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
-    '/admin/**': { ssr: false, headers: { 'Cache-Control': 'no-store' } },
-    '/api/**': { headers: { 'Cache-Control': 'no-store' } },
+    '/login': { robots: false, headers: { 'Cache-Control': 'no-store' } },
+    '/admin': { ssr: false, robots: false, headers: { 'Cache-Control': 'no-store' } },
+    '/admin/**': { ssr: false, robots: false, headers: { 'Cache-Control': 'no-store' } },
+    '/api/**': { robots: false, headers: { 'Cache-Control': 'no-store' } },
+    '/__revamp/**': { robots: false },
+    '/sitemap.xml': { headers: { 'Cache-Control': 'no-store' } },
     // nuxt-security's xssValidator runs as a Nitro middleware and, for POST,
     // consumes the request stream with `readBody(event)`. The BFF reads the
     // request body itself as a bounded raw stream, so the validator left every
@@ -168,7 +177,6 @@ export default defineNuxtConfig({
     '/api/bff/admin/events/*/avatar': {
       security: { requestSizeLimiter: { maxUploadFileRequestInBytes: 51 * 1024 * 1024 } },
     },
-    '/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
   },
   security: {
     rateLimiter: false,

@@ -125,8 +125,8 @@ test('keeps browser JSON APIs no-store and credential-independent while server r
   expect((await repeated.json()).home_bg).toBe(config.home_bg)
 })
 
-test('keeps staged noindex while serving fresh public HTML', async ({ request }) => {
+test('serves fresh indexable public HTML without a blanket crawler block', async ({ request }) => {
   const response = await request.get('/')
-  expect(response.headers()['x-robots-tag']).toContain('noindex')
-  expect(await (await request.get('/robots.txt')).text()).toMatch(/Disallow:\s*\//)
+  expect(response.headers()['x-robots-tag'] || '').not.toContain('noindex')
+  expect(await (await request.get('/robots.txt')).text()).not.toMatch(/^Disallow:\s*\/\s*$/m)
 })

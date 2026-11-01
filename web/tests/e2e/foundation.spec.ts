@@ -1,12 +1,13 @@
 import { expect, test } from '@playwright/test'
 
-test('serves readable SSR HTML with staging and security headers', async ({ request }) => {
+test('serves indexable production SSR HTML with security headers', async ({ request }) => {
   const response = await request.get('/')
   expect(response.ok()).toBeTruthy()
   const html = await response.text()
   expect(html).toContain('<h1')
   expect(html).toContain('桂航绯想天')
-  expect(response.headers()['x-robots-tag']).toContain('noindex')
+  expect(response.headers()['x-robots-tag'] || '').not.toContain('noindex')
+  expect(html).toMatch(/name="robots" content="index, follow"/)
   expect(response.headers()['content-security-policy']).toContain("'nonce-")
   expect(response.headers()['x-content-type-options']).toBe('nosniff')
   const nonce = response.headers()['content-security-policy']?.match(/'nonce-([^']+)'/)?.[1]

@@ -1,5 +1,13 @@
 import type { PublicActivity, PublicEvent } from '@guatswr/shared'
 
+export const PRODUCTION_SITE_URL = 'https://www.guatswr.top'
+
+/** Match Site Config's environment policy; development is always non-indexable. */
+export function publicSiteIndexable(site: Readonly<Record<string, unknown>>, development = false): boolean {
+  if (development) return false
+  return site.indexable === undefined ? site.env === 'production' : String(site.indexable) === 'true'
+}
+
 export const SEO_SITE_NAME = '桂航绯想天'
 export const SEO_DEFAULT_DESCRIPTION = '桂航绯想天是桂林航天工业学院东方 Project 同好会，记录活动、成员与群史，欢迎校内外同好一起加入。'
 export const SEO_DEFAULT_IMAGE = '/og-image.png'
@@ -12,7 +20,7 @@ export const PUBLIC_INDEX_PAGES = [
   { path: '/history', title: '绯想天群史' },
   { path: '/logs', title: '日志档案' },
   { path: '/social', title: '博丽大结界' },
-  { path: '/resources', title: '幻想乡书库' },
+  { path: '/resources', title: '资源下载' },
   { path: '/join', title: '加入我们' },
   { path: '/events/bounty', title: '悬赏令' },
   { path: '/events/betting', title: '对赌协议' },

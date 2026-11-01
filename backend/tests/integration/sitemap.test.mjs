@@ -23,6 +23,14 @@ it('retains the request protocol/host fallback when SITE_URL is absent', async (
   expect(response.text).toContain('<loc>http://custom.example.test/</loc>')
 })
 
+it('pins the production sitemap origin when SITE_URL is absent', async () => {
+  const f = await fixture({ env: { NODE_ENV: 'production' } })
+  const response = await f.http.get('/sitemap.xml').set('Host', 'untrusted.example.test')
+  expect(response.status).toBe(200)
+  expect(response.text).toContain('<loc>https://www.guatswr.top/</loc>')
+  expect(response.text).not.toContain('untrusted.example.test')
+})
+
 it('keeps sitemap database failures as a plain safe 500 response', async () => {
   const f = await fixture()
   await run(f.db, 'DROP TABLE activities')

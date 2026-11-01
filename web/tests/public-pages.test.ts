@@ -745,7 +745,7 @@ describe('logs helpers', () => {
 })
 
 describe('public SEO', () => {
-  it('uses the configured origin, keeps pages noindex and only real images', () => {
+  it('uses the configured origin and only real images', () => {
     const seo = buildPublicSeo({
       title: '社团活动记录',
       description: '  一场聚会，一段故事。  ',

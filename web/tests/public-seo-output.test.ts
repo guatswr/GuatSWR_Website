@@ -3,12 +3,12 @@ import type { PublicActivity } from '@guatswr/shared'
 import { createHead } from 'unhead/server'
 import { UnheadSchemaOrg, defineArticle, useSchemaOrg } from 'nuxt-schema-org/schema'
 import {
-  PUBLIC_INDEX_PAGES, activitySeoNode, eventSeoNode, knownBeijingInstant,
+  PUBLIC_INDEX_PAGES, PRODUCTION_SITE_URL, publicSiteIndexable, activitySeoNode, eventSeoNode, knownBeijingInstant,
   recentActivitiesRss, seoImageUrl, seoUrl, trustedSeoOrigin, xmlText,
 } from '../shared/seo'
 import { MAX_INDEX_ACTIVITIES, publicRecentActivities, publicSitemapEntries } from '../server/utils/public-index'
 
-const origin = 'https://next.guatswr.top'
+const origin = PRODUCTION_SITE_URL
 const context = { apiBase: 'http://127.0.0.1:8080' }
 const activity = (id = 1): PublicActivity => ({
   id, title: '茶会', tag: '例会', date: '2026-09-20', description: '一起玩', content: '',
@@ -16,6 +16,22 @@ const activity = (id = 1): PublicActivity => ({
   created_by_avatar: null, updated_by: null, updated_by_avatar: null, created_at: '2026-09-20 12:00:00',
 })
 afterEach(() => vi.restoreAllMocks())
+
+describe('production indexing policy', () => {
+  it('pins the production domain and opens only production by default', () => {
+    expect(PRODUCTION_SITE_URL).toBe('https://www.guatswr.top')
+    expect(publicSiteIndexable({ env: 'production' })).toBe(true)
+    expect(publicSiteIndexable({ env: 'staging' })).toBe(false)
+    expect(publicSiteIndexable({ env: 'development' })).toBe(false)
+    expect(publicSiteIndexable({})).toBe(false)
+  })
+  it('respects an explicit preview opt-out and always closes development', () => {
+    expect(publicSiteIndexable({ env: 'production', indexable: false })).toBe(false)
+    expect(publicSiteIndexable({ env: 'production', indexable: 'false' })).toBe(false)
+    expect(publicSiteIndexable({ env: 'production', indexable: true })).toBe(true)
+    expect(publicSiteIndexable({ env: 'production', indexable: true }, true)).toBe(false)
+  })
+})
 
 describe('trusted public metadata', () => {
   it('uses configured HTTPS origins and explicit loopback development origins', () => {

@@ -5,6 +5,7 @@ import { mkdir, writeFile } from 'node:fs/promises'
 import { dirname, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import assert from 'node:assert/strict'
+import { PUBLIC_INDEX_PAGES, PRODUCTION_SITE_URL } from '../../web/shared/seo.ts'
 
 const exec = promisify(execFile)
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
@@ -28,6 +29,7 @@ try {
     '--mount', `type=bind,source=${resolve(root, 'web/tests/fixtures')},target=/fixtures,readonly`,
     '--mount', `type=bind,source=${resolve(root, 'web/public')},target=/public,readonly`,
     '--env', 'NUXT_SESSION_PASSWORD', '--env', 'NUXT_API_BASE=http://127.0.0.1:3181',
+    '--env', 'NUXT_SITE_ENV=production', '--env', 'NUXT_SITE_INDEXABLE=true', '--env', 'NUXT_SITE_URL=' + PRODUCTION_SITE_URL,
     '--entrypoint', 'node', image, '/fixtures/container-entry.mjs',
   ], { env: { ...process.env, NUXT_SESSION_PASSWORD: randomBytes(48).toString('hex') } })
   container = result.stdout.trim()
@@ -50,7 +52,8 @@ try {
     assert.equal(response.status, 200)
     const html = await response.text()
     assert.ok(html.includes(content))
-    assert.match(response.headers.get('x-robots-tag') || '', /noindex/)
+    assert.doesNotMatch(response.headers.get('x-robots-tag') || '', /noindex/)
+    assert.match(html, /name="robots" content="index, follow"/)
     const nonce = response.headers.get('content-security-policy')?.match(/'nonce-([^']+)'/)?.[1]
     assert.ok(nonce)
     assert.ok(html.includes(`nonce="${nonce}"`))
@@ -62,16 +65,21 @@ try {
   const rss = await fetch(`${origin}/rss.xml`)
   assert.equal(rss.status, 200)
   assert.match(await rss.text(), /最近活动记录/)
-  assert.equal((await fetch(`${origin}/sitemap.xml`)).status, 404)
+  const sitemap = await fetch(`${origin}/sitemap.xml`)
+  assert.equal(sitemap.status, 200)
+  assert.ok((await sitemap.text()).includes(PRODUCTION_SITE_URL + '/activity/1'))
+  const robots = await (await fetch(`${origin}/robots.txt`)).text()
+  assert.doesNotMatch(robots, /^Disallow:\s*\/\s*$/m)
+  assert.ok(robots.includes(PRODUCTION_SITE_URL + '/sitemap.xml'))
   const urls = await (await fetch(`${origin}/api/__sitemap__/urls`)).json()
-  assert.equal(urls.length, 15)
+  assert.equal(urls.length, PUBLIC_INDEX_PAGES.length + 3)
   assert.equal((await fetch(`${origin}/_nuxt/missing.js.map`)).status, 404)
   const imageResponse = await fetch(`${origin}/uploads/fixture.webp`)
   assert.equal(imageResponse.status, 200)
   assert.match(imageResponse.headers.get('content-type') || '', /image\/webp/)
   assert.equal(Buffer.from(await imageResponse.arrayBuffer()).subarray(0, 4).toString(), 'RIFF')
   report.feed = true
-  report.previewSitemapDisabled = true
+  report.productionSitemapEnabled = true
   report.publicIndexEntries = urls.length
   report.sourceMap404 = true
   report.uploadImageProxy = true

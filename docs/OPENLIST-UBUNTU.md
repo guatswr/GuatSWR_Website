@@ -28,15 +28,15 @@
 
 | 项目 | 示例 |
 | --- | --- |
-| 网站域名 | `https://guatswr.top` |
+| 网站域名 | `https://www.guatswr.top` |
 | 网盘域名 | `https://pan.guatswr.top` |
 | Ubuntu 上的网站仓库 | `/opt/GuatSWR_Website` |
 | OpenList 配置和数据库 | `/srv/guatswr-openlist/data` |
 | 实际资源文件 | `/srv/guatswr-openlist/files` |
 | OpenList 本机存储回收站 | `/srv/guatswr-openlist/recycle` |
 | OpenList 中的挂载路径 | `/社团资源` |
-| 网站公开资源页 | `https://guatswr.top/resources` |
-| 网站资源管理页 | `https://guatswr.top/admin/resources` |
+| 网站公开资源页 | `https://www.guatswr.top/resources` |
+| 网站资源管理页 | `https://www.guatswr.top/admin/resources` |
 
 请求路径如下：
 
@@ -375,7 +375,7 @@ NUXT_OPENLIST_ROOT_PATH=/社团资源
 NUXT_OPENLIST_TIMEOUT_MS=8000
 NUXT_OPENLIST_UPLOAD_TEMP_DIR=/tmp/guatswr-resource-upload
 
-NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://guatswr.top"]
+NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://www.guatswr.top"]
 NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES=false
 ```
 
@@ -422,7 +422,7 @@ dc ps web openlist
 
 仓库管理页单个文件上限为 **50 MiB**，每次最多选择 **20 个文件**，按队列依次上传，不自动覆盖同名文件。OpenList 原生入口的限制与此独立。
 
-在主站 `guatswr.top` 的现有 HTTPS `server` 内，可为上传接口增加下面的精确匹配。不要另外创建一个同域名、重复监听的 `server`。
+在主站 `www.guatswr.top` 的现有 HTTPS `server` 内，可为上传接口增加下面的精确匹配。不要另外创建一个同域名、重复监听的 `server`。
 
 ```nginx
 location = /api/bff/admin/resources/upload {
@@ -495,7 +495,7 @@ JS
 ### 8.2 验收公开资源页
 
 ```bash
-curl -fsS 'https://guatswr.top/api/resources/list?path=%2F'   | python3 -c 'import json,sys; d=json.load(sys.stdin); print({"source": d.get("source"), "total": d.get("total"), "provider": d.get("provider")})'
+curl -fsS 'https://www.guatswr.top/api/resources/list?path=%2F'   | python3 -c 'import json,sys; d=json.load(sys.stdin); print({"source": d.get("source"), "total": d.get("total"), "provider": d.get("provider")})'
 ```
 
 预期 `source` 为 `openlist`。随后用浏览器逐项检查：
@@ -511,7 +511,7 @@ curl -fsS 'https://guatswr.top/api/resources/list?path=%2F'   | python3 -c 'impo
 
 ### 8.3 验收资源管理页
 
-用**服务器上的网站管理员账号**登录 `https://guatswr.top/admin/resources`。之前在开发电脑创建的临时管理员属于本地开发数据库，不会自动出现在 Ubuntu 生产数据库里。
+用**服务器上的网站管理员账号**登录 `https://www.guatswr.top/admin/resources`。之前在开发电脑创建的临时管理员属于本地开发数据库，不会自动出现在 Ubuntu 生产数据库里。
 
 以下只操作专门的验收目录和测试文件：
 
@@ -539,7 +539,7 @@ curl -fsS 'https://guatswr.top/api/resources/list?path=%2F'   | python3 -c 'impo
 | 移动后马上看不到目标文件 | OpenList 可能提交后台任务，等待并刷新确认 |
 | 操作返回失败或超时 | 先查看目录实际结果，再决定是否重试，避免重复操作 |
 
-这些网站限制来自当前实现，见 [资源管理契约](../web/shared/resource-admin.ts)、[上传接收](../web/server/utils/resource-upload.ts)和 [OpenList 写入适配](../web/server/utils/resource-management.ts)。
+这些网站限制来自当前实现，见 [资源管理契约](../packages/shared/src/resource-management.ts)、[上传接收](../web/server/utils/resource-upload.ts)和 [OpenList 写入适配](../web/server/utils/resource-management.ts)。
 
 ## 9. 网站直接运行 Node 时的区别
 
@@ -702,4 +702,4 @@ OpenList 日志排查可参考 [官方错误码](https://doc.oplist.org/faq/erro
 - [公开资源适配](../web/server/utils/openlist.ts)
 - [管理端文件操作](../web/server/utils/resource-management.ts)
 - [上传暂存处理](../web/server/utils/resource-upload.ts)
-- [上传限制与输入契约](../web/shared/resource-admin.ts)
+- [上传限制与输入契约](../packages/shared/src/resource-management.ts)

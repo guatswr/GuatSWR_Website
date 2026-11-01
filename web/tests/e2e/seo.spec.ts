@@ -2,7 +2,7 @@ import { expect, test } from '@playwright/test'
 import { PUBLIC_INDEX_PAGES } from '../../shared/seo'
 import { EVENT_CATEGORIES } from './support/events-parity'
 
-const origin = 'https://next.guatswr.top'
+const origin = 'https://www.guatswr.top'
 const graphs = (html: string) => [...html.matchAll(/<script\b([^>]*)type="application\/ld\+json"([^>]*)>([\s\S]*?)<\/script>/g)]
   .map(match => ({ attributes: match[1]! + match[2]!, data: JSON.parse(match[3]!) as { '@graph': Record<string, unknown>[] } }))
 
@@ -19,7 +19,8 @@ test('every actual public route has distinct SSR metadata, readable content and 
     titles.add(title)
     expect(html).toContain(`rel="canonical" href="${origin}${target.path}"`)
     expect(html).toMatch(/<main\b[\s\S]*<h1\b/)
-    expect(response.headers()['x-robots-tag']).toContain('noindex')
+    expect(response.headers()['x-robots-tag'] || '').not.toContain('noindex')
+    expect(html).toMatch(/name="robots" content="index, follow"/)
     const nonce = response.headers()['content-security-policy']?.match(/'nonce-([^']+)'/)?.[1]
     expect(nonce).toBeTruthy()
     const output = graphs(html)
@@ -44,9 +45,18 @@ test('Article and Event nodes use known timestamps without inventing private fie
   expect(events[0]).not.toHaveProperty('endDate')
 })
 
-test('preview robots and sitemap policy stays closed while the sole source contains only public URLs', async ({ request }) => {
-  expect(await (await request.get('/robots.txt')).text()).toMatch(/Disallow:\s*\//)
-  expect((await request.get('/sitemap.xml')).status()).toBe(404)
+test('production robots and sitemap expose public URLs while private routes remain excluded', async ({ request }) => {
+  const robots = await (await request.get('/robots.txt')).text()
+  expect(robots).not.toMatch(/^Disallow:\s*\/\s*$/m)
+  expect(robots).toContain('Disallow: /admin')
+  expect(robots).toContain('Disallow: /api/bff/')
+  expect(robots).toContain(origin + '/sitemap.xml')
+  const sitemap = await request.get('/sitemap.xml')
+  expect(sitemap.status()).toBe(200)
+  expect(await sitemap.text()).toContain(origin + '/activity/1')
+  for (const path of ['/login', '/admin', '/admin/resources', '/api/bff/auth/session']) {
+    expect((await request.get(path)).headers()['x-robots-tag'], path).toContain('noindex')
+  }
   const response = await request.get('/api/__sitemap__/urls?all=1&status=draft', {
     headers: { authorization: 'Bearer fixture-only', cookie: 'token=fixture-only' },
   })

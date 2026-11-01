@@ -1,0 +1,48 @@
+# Host Nginx example. Both names must be covered by the certificate.
+# Replace certificate paths and upstream port to match your server.
+server {
+    listen 80;
+    server_name guatswr.top www.guatswr.top;
+    return 308 https://www.guatswr.top$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name guatswr.top;
+
+    ssl_certificate     /etc/letsencrypt/live/www.guatswr.top/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.guatswr.top/privkey.pem;
+    return 308 https://www.guatswr.top$request_uri;
+}
+
+server {
+    listen 443 ssl;
+    server_name www.guatswr.top;
+
+    ssl_certificate     /etc/letsencrypt/live/www.guatswr.top/fullchain.pem;
+    ssl_certificate_key /etc/letsencrypt/live/www.guatswr.top/privkey.pem;
+
+    client_max_body_size 52m;
+
+    location = /api/bff/admin/resources/upload {
+        client_max_body_size 51m;
+        client_body_timeout 90s;
+        proxy_pass http://127.0.0.1:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_request_buffering off;
+        proxy_read_timeout 240s;
+        proxy_send_timeout 240s;
+    }
+
+    location / {
+        proxy_pass http://127.0.0.1:3100;
+        proxy_http_version 1.1;
+        proxy_set_header Host $http_host;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_read_timeout 60s;
+    }
+}

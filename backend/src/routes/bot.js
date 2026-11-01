@@ -14,8 +14,8 @@ module.exports = context => {
     const { createBotApi } = require(path.join(context.BACKEND_ROOT, 'dist/src/integrations/bot/api'));
     router.use(createBotApi({ platform: context.botPlatform, store: context.sql.main, publication: context.storage.publication,
       ...(context.memberSync ? {memberSync:context.memberSync} : {}),
-      images: { assetBaseUrl: () => context.env.BOT_PUBLIC_ASSET_BASE_URL || context.env.SITE_URL || 'https://guatswr.top',
-        siteUrl: () => context.env.SITE_URL || 'https://guatswr.top', resolveUploadsPath: context.storage.resolveUploadsPath },
+      images: { assetBaseUrl: () => context.env.BOT_PUBLIC_ASSET_BASE_URL || context.env.SITE_URL || 'https://www.guatswr.top',
+        siteUrl: () => context.env.SITE_URL || 'https://www.guatswr.top', resolveUploadsPath: context.storage.resolveUploadsPath },
       ...context.auth, guestGateway: context.guestGateway, report: error => context.logger.error('http.failed', { error, route: '/api/bot' }) }));
   } else router.use(['/v1', '/admin', '/link-codes', '/binding'], (_req, res) => res.status(503).json({ message: 'Bot 平台未启用或未完成数据库迁移' }));
   return router;

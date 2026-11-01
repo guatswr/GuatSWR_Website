@@ -12,13 +12,14 @@ import { useNuxt } from '@nuxt/kit'
 import { chromium } from '@playwright/test'
 import { walkFiles, findSourceMaps } from './artifacts.mjs'
 import { handlePublicFixture } from '../../web/tests/fixtures/public-data.mjs'
+import { PUBLIC_INDEX_PAGES, PRODUCTION_SITE_URL } from '../../web/shared/seo.ts'
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..')
 const web = resolve(root, 'web')
 const output = resolve(root, '.tools/seo-release-output')
 const lock = resolve(root, '.tools/build.lock')
 const reportPath = resolve(root, '.tools/seo-release-validation.json')
-const site = 'https://guatswr.top'
+const site = PRODUCTION_SITE_URL
 const port = 3400
 const base = `http://127.0.0.1:${port}`
 const report = { generatedAt: new Date().toISOString(), localOnly: true, output, cases: [], passed: false }
@@ -38,7 +39,7 @@ async function startServer(apiBase) {
     cwd: web, stdio: ['ignore', 'ignore', 'pipe'],
     env: {
       ...process.env, PORT: String(port), HOST: '127.0.0.1',
-      NUXT_API_BASE: apiBase, NUXT_SITE_URL: site, NUXT_SITE_INDEXABLE: 'true',
+      NUXT_API_BASE: apiBase, NUXT_SITE_URL: site, NUXT_SITE_ENV: 'production', NUXT_SITE_INDEXABLE: 'true',
       NUXT_SESSION_PASSWORD: randomBytes(48).toString('hex'),
     },
   })
@@ -71,24 +72,7 @@ try {
   nuxt = await loadNuxt({ cwd: web, dev: false, overrides: {
     buildDir: resolve(root, '.tools/seo-release-build'),
     nitro: { output: { dir: output } },
-    site: { url: site, indexable: true },
-    sitemap: { enabled: true, excludeAppSources: true, cacheMaxAgeSeconds: 0 },
-    routeRules: {
-      '/**': { headers: { 'X-Robots-Tag': 'index, follow' } },
-      '/sitemap.xml': { headers: { 'Cache-Control': 'no-store' } },
-      '/login': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-      '/admin': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-      '/admin/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-      '/api/**': { headers: { 'X-Robots-Tag': 'noindex, nofollow' } },
-    },
-    hooks: {
-      // Nuxt's config merge concatenates arrays. Replace the preview's root
-      // disallow only in this isolated test build, before modules consume it.
-      'modules:before': () => {
-        const options = useNuxt().options
-        options.robots = { ...options.robots, disallow: [], allow: ['/'] }
-      },
-    },
+
   } })
   await build(nuxt)
   await nuxt.close()
@@ -123,7 +107,7 @@ try {
       assert.match(response.headers.get('cache-control') || '', /no-store/)
       const xml = await parseXml(text)
       assert.equal(xml.errors, 0)
-      assert.equal(xml.urls.length, scenario === 'empty' ? 12 : 15)
+      assert.equal(xml.urls.length, PUBLIC_INDEX_PAGES.length + (scenario === 'empty' ? 0 : 3))
       assert.ok(xml.urls.every(url => new URL(url).origin === site))
       assert.ok(!xml.urls.some(url => /admin|login|__revamp|evil\.test/.test(url)))
       assert.ok(!xml.urls.includes(`${site}/activity/4`))

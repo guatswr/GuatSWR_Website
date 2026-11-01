@@ -32,11 +32,11 @@ const PORT = env.PORT || 3000;
 const NODE_ENV = env.NODE_ENV || 'development';
 const isProd = NODE_ENV === 'production';
 const MAX_BODY_SIZE = context.configuration.maxBodyBytes;
-const CORS_ORIGINS = (env.CORS_ORIGINS || 'http://localhost:5173,http://127.0.0.1:5173')
+const CORS_ORIGINS = (env.CORS_ORIGINS || (isProd ? 'https://www.guatswr.top' : 'http://localhost:5173,http://127.0.0.1:5173'))
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean);
-const SITE_URL = (env.SITE_URL || 'https://guatswr.top').replace(/\/+$/, '');
+const SITE_URL = (env.SITE_URL || 'https://www.guatswr.top').replace(/\/+$/, '');
 
 app.set('trust proxy', require('./config/proxy').createTrustProxy(env.TRUST_PROXY_CIDRS));
 app.disable('x-powered-by');
@@ -117,7 +117,7 @@ context.startStagingCleanup = () => context.every(() => cleanupStaging(STAGING_T
 app.get('/api/version', (req, res) => res.json({ version: '4.0', status: 'online' }));
 
 const { createSitemapController } = require(path.join(context.BACKEND_ROOT, 'dist/src/modules/sitemap'));
-const sitemap = createSitemapController(context.sql.main, () => env.SITE_URL, error => context.logger.error('http.failed', { error, route: '/sitemap.xml' }));
+const sitemap = createSitemapController(context.sql.main, () => env.SITE_URL || (isProd ? SITE_URL : undefined), error => context.logger.error('http.failed', { error, route: '/sitemap.xml' }));
 app.get('/sitemap.xml', (req, res, next) => sitemap(req, res).catch(next));
 
 app.use('/api/auth', authLimiter, authRoutes);

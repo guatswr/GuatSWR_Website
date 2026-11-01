@@ -572,8 +572,8 @@ NODE_ENV=production
 JWT_SECRET=
 BFF_BRIDGE_SECRET=
 GUEST_DRAFT_PROOF_MODE=required
-SITE_URL=https://guatswr.top
-CORS_ORIGINS=https://guatswr.top
+SITE_URL=https://www.guatswr.top
+CORS_ORIGINS=https://www.guatswr.top
 MAX_BODY_SIZE=50mb
 STAGING_TTL_MS=172800000
 BACKUP_SCHEDULER_OWNER=app
@@ -596,8 +596,11 @@ chmod 600 web/.env.production
 NUXT_API_BASE=http://backend:3000
 NUXT_SESSION_PASSWORD=
 NUXT_BFF_BRIDGE_SECRET=
-NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://guatswr.top"]
+NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://www.guatswr.top"]
 NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES=false
+NUXT_SITE_URL=https://www.guatswr.top
+NUXT_SITE_ENV=production
+NUXT_SITE_INDEXABLE=true
 ```
 
 `NUXT_SESSION_PASSWORD` 至少 32 个字符；`NUXT_BFF_BRIDGE_SECRET` 填入后端同一个桥接密钥。允许写入的 Origin 使用精确的协议、域名和端口，不带路径；多个 Origin 用 JSON 数组表示。外网和局域网的非回环地址均应使用 HTTPS，生产模式会话 Cookie 保持 `Secure`。
@@ -776,13 +779,13 @@ docker compose exec backend node scripts/healthcheck.cjs
 ```nginx
 server {
     listen 80;
-    server_name guatswr.top;
-    return 301 https://$host$request_uri;
+    server_name guatswr.top www.guatswr.top;
+    return 308 https://www.guatswr.top$request_uri;
 }
 
 server {
     listen 443 ssl;
-    server_name guatswr.top;
+    server_name www.guatswr.top;
 
     ssl_certificate     /etc/nginx/ssl/guatswr.top.pem;
     ssl_certificate_key /etc/nginx/ssl/guatswr.top.key;
@@ -802,6 +805,8 @@ server {
 ```
 
 单次备份下载可能超过普通请求的 60 秒，若使用大备份包，应按实际下载时长调高对应反向代理的读取超时。配置修改后先执行 `nginx -t`，通过后再重载服务。
+
+完整的 www 规范域名、裸域名 HTTPS 跳转、robots 与 sitemap 上线检查见 [生产域名与索引配置](docs/PRODUCTION-SEO.md)。
 
 若 Nginx/Caddy 自身运行在容器中，它的 `127.0.0.1` 指向代理容器自身。此时需另外设计代理网络、通过服务名访问 `web:3100`，并调整 Web 的受信任代理列表；上述宿主机配置不能原样套用。CDN/多级代理也应逐层核对真实客户端地址与转发头。
 
@@ -1149,6 +1154,7 @@ pnpm --filter guiair-backend storage:cleanup \
 
 | 文档路径 | 内容说明 |
 | --- | --- |
+| [docs/PRODUCTION-SEO.md](docs/PRODUCTION-SEO.md) | www 生产域名、robots、Sitemap、预览环境隔离与上线验收 |
 | [docs/releases/v2.0.0.md](docs/releases/v2.0.0.md) | `v2.0.0` 版本发行说明、验证结论与上线边界 |
 | [docs/backend-modernization/STATUS.md](docs/backend-modernization/STATUS.md) | 后端现代化 BM00–BM36 里程碑状态与验收记录 |
 | [docs/backend-modernization/MIGRATIONS.md](docs/backend-modernization/MIGRATIONS.md) | 双库迁移引擎、历史库接管（`adopt`）、增量升级（`upgrade`）与管理员初始化手册 |

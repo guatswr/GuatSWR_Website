@@ -3,9 +3,9 @@
  *
  * The archived site shipped one global `<head>` and patched it from the
  * activity detail page. Every migrated page now declares its own title,
- * description, canonical URL, Open Graph and Twitter fields. The deployment is
- * a preview, so every page stays `noindex, nofollow`; canonical URLs follow the
- * configured preview origin (`site.url`) rather than the request host.
+ * description, canonical URL, Open Graph and Twitter fields. Canonical URLs
+ * follow the configured site origin rather than the request Host header.
+ * The composable applies the deployment's indexing policy separately.
  */
 import { canonicalUrl } from './public-query'
 import { displayImageSource } from './public-image'
