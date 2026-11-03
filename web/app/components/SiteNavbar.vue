@@ -377,7 +377,7 @@ onBeforeUnmount(() => {
               id="desktop-activities-trigger"
               ref="desktopActivityButton"
               type="button"
-              class="nav-link"
+              class="nav-link nav-link-dropdown"
               :class="
                 isActivityRoute || isActivitiesOpen ? 'nav-link-active' : ''
               "
@@ -454,7 +454,7 @@ onBeforeUnmount(() => {
               id="desktop-other-trigger"
               ref="desktopOtherButton"
               type="button"
-              class="nav-link"
+              class="nav-link nav-link-dropdown"
               :class="
                 isOtherRoute || isOtherOpen ? 'nav-link-active' : ''
               "
@@ -1089,6 +1089,19 @@ onBeforeUnmount(() => {
   height: 0.875rem;
   margin-left: 0.375rem;
   flex-shrink: 0;
+  transition:
+    transform 300ms ease,
+    width var(--nav-duration) var(--nav-spring),
+    height var(--nav-duration) var(--nav-spring),
+    margin-left var(--nav-duration) var(--nav-spring),
+    opacity 220ms ease;
+}
+.club-navbar[data-compact='true'] .nav-chevron,
+:global(html[data-nav-boot-compact] .club-navbar .nav-chevron) {
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-left: 0.175rem;
+  opacity: 0.75;
 }
 /* Default state: exact original .nav-link and underline/diamond bar design */
 .nav-link {
@@ -1117,7 +1130,12 @@ onBeforeUnmount(() => {
 .club-navbar[data-compact='true'] .nav-link,
 :global(html[data-nav-boot-compact] .club-navbar .nav-link) {
   height: 2.125rem;
-  padding: 0 1.35rem;
+  padding: 0 1rem;
+}
+.club-navbar[data-compact='true'] .nav-link.nav-link-dropdown,
+:global(html[data-nav-boot-compact] .club-navbar .nav-link.nav-link-dropdown) {
+  padding-left: 1rem;
+  padding-right: 0.25rem;
 }
 .nav-link::after {
   content: '';
@@ -1140,11 +1158,16 @@ onBeforeUnmount(() => {
 .club-navbar[data-compact='true'] .nav-link::after,
 :global(html[data-nav-boot-compact] .club-navbar .nav-link::after) {
   bottom: 1px;
-  left: 0.85rem;
-  right: 0.85rem;
+  left: 0.65rem;
+  right: 0.65rem;
   height: 2px;
   border-radius: 999px;
   transform-origin: center;
+}
+.club-navbar[data-compact='true'] .nav-link.nav-link-dropdown::after,
+:global(html[data-nav-boot-compact] .club-navbar .nav-link.nav-link-dropdown::after) {
+  left: 0.65rem;
+  right: 0.2rem;
 }
 .nav-link:hover::after,
 .nav-link-active::after {
@@ -1185,7 +1208,7 @@ onBeforeUnmount(() => {
 .club-navbar[data-compact='true'] .nav-divider,
 :global(html[data-nav-boot-compact] .club-navbar .nav-divider) {
   height: 1rem;
-  margin-left: -0.15rem;
+  margin-left: 0.35rem;
   margin-right: 0.45rem;
 }
 .nav-icon {
