@@ -504,7 +504,6 @@ onBeforeUnmount(() => {
                     >
                       <span class="inline-flex items-center gap-1">
                         {{ link.name }}
-                        <span class="text-xs text-slate-400 dark:text-slate-500" aria-hidden="true">↗</span>
                       </span>
                       <span
                         class="text-[10px] font-normal text-slate-500 dark:text-slate-400"
@@ -797,7 +796,6 @@ onBeforeUnmount(() => {
                 >
                   <span class="inline-flex items-center gap-1">
                     {{ link.name }}
-                    <span class="text-xs text-slate-400 dark:text-slate-500" aria-hidden="true">↗</span>
                   </span>
                   <span
                     class="text-xs font-normal text-slate-500 dark:text-slate-400"

@@ -6,7 +6,7 @@ test.describe('social channels', () => {
     const context = await browser.newContext({ javaScriptEnabled: false })
     const page = await context.newPage()
     await page.goto('/social')
-    await expect(page.getByRole('heading', { level: 1 })).toHaveText('社群链接')
+    await expect(page.getByRole('heading', { level: 1 })).toHaveText('绯想天 · 外界通讯')
     await expect(page.getByRole('heading', { level: 2, name: '绯想天网络' })).toBeVisible()
     await expect(page.getByRole('heading', { level: 2, name: '友情链接' })).toBeVisible()
     // Only explicit http(s) outbound links reach the rendered page.
@@ -40,7 +40,7 @@ test.describe('social channels', () => {
     await page.getByRole('link', { name: '加入同好群' }).click()
     await expect(page.getByRole('heading', { level: 1, name: /一起，把热爱/ })).toBeVisible()
     await page.goBack()
-    await expect(page.getByRole('heading', { level: 1, name: '社群链接' })).toBeVisible()
+    await expect(page.getByRole('heading', { level: 1, name: '绯想天 · 外界通讯' })).toBeVisible()
     expect(requests.filter((path) => path === '/api/config')).toHaveLength(0)
   })
 })
