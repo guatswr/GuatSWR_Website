@@ -142,6 +142,9 @@ function loginFailure(response: UpstreamJsonResponse, input: LoginInput): BffErr
   if (response.status === 401) {
     return new BffError(401, 'invalid_credentials', message)
   }
+  if (response.status === 503) {
+    return new BffError(503, 'upstream_unavailable', '登录服务暂不可用，请稍后重试')
+  }
   return new BffError(502, 'upstream_invalid_response', '登录服务响应异常')
 }
 

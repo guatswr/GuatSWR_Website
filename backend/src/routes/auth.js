@@ -5,8 +5,12 @@ module.exports = context => {
   const { createAuthService } = require(path.join(compiled, 'auth-service'));
   const { createAuthController } = require(path.join(compiled, 'auth-controller'));
   const report = error => context.logger.error('http.failed', { error, route: '/api/auth' });
+  const secondSecrets = [context.env.TWOFA_SECRET, context.env.JWT_SECRET]
+    .flatMap(s => (s ? s.split(',') : []))
+    .map(s => s.trim())
+    .filter(Boolean);
   const service = createAuthService({ store: context.sql.main, security: context.security,
-    secret: context.env.JWT_SECRET, secondSecret: context.env.TWOFA_SECRET || context.env.JWT_SECRET, ready: context.securityReady, publication: context.storage.publication,
+    secret: context.env.JWT_SECRET, secondSecret: Array.from(new Set(secondSecrets)), ready: context.securityReady, publication: context.storage.publication,
     moveAvatar: value => context.storage.moveStagedFile(value, path.join(context.IMG_ROOT_DIR, 'user')),
     committed: context.flushSecurityAudit, report });
   const controller = createAuthController(service, report);

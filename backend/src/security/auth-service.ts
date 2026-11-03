@@ -16,7 +16,7 @@ type Profile = ReturnType<typeof profileSchema.parse>
 type Registration = ReturnType<typeof registerSchema.parse>
 const jwt = createRequire(__filename)('jsonwebtoken') as { sign(claims: Record<string, unknown>, key: string, options: { expiresIn: string }): string }
 export function createAuthService(options: {
-  store: SqliteStore; security: SecurityService; secret: string; secondSecret: string; ready?: boolean
+  store: SqliteStore; security: SecurityService; secret: string; secondSecret: string | string[]; ready?: boolean
   moveAvatar(value: string | null | undefined): Promise<string | null | undefined>
   report(error: unknown): void
   committed(): void
@@ -47,15 +47,27 @@ export function createAuthService(options: {
       }
       const user = await options.store.get<User>('SELECT * FROM users WHERE username=?', [input.username])
       if (!user || !comparePassword(input.password, user.password)) return failure()
+      let upgradedTwofaSecret: string | null = null
       if (user.twofa_enabled) {
         if (!input.twofa) throw new AppError('需要二步密码', 'second_password_required', 401)
-        const stored = codec.decrypt(user.twofa_secret)
-        if (!stored || stored !== String(input.twofa)) return failure('二步密码错误')
+        let valid = false
+        const storedSecret = user.twofa_secret
+        if (typeof storedSecret === 'string' && (storedSecret.startsWith('$2a$') || storedSecret.startsWith('$2b$'))) {
+          valid = comparePassword(String(input.twofa), storedSecret)
+        } else {
+          const stored = codec.decrypt(storedSecret)
+          valid = !!stored && stored === String(input.twofa)
+          if (valid) upgradedTwofaSecret = hashPassword(String(input.twofa))
+        }
+        if (!valid) return failure('二步密码错误')
       }
       const versions = await options.store.transaction(async tx => {
         const current = await tx.get<User>('SELECT * FROM users WHERE id=?', [user.id])
         if (!current || current.password !== user.password || current.twofa_secret !== user.twofa_secret || current.twofa_enabled !== user.twofa_enabled
           || options.security.readVersion(current.auth_version) !== options.security.readVersion(user.auth_version)) throw new AppError('登录暂时不可用', 'login_changed', 503)
+        if (upgradedTwofaSecret) {
+          await tx.run('UPDATE users SET twofa_secret=? WHERE id=?', [upgradedTwofaSecret, user.id])
+        }
         const version = await tx.get("SELECT value FROM site_config WHERE key='token_version'")
         await tx.run('DELETE FROM login_attempts WHERE ip=?', [ip])
         await enqueueSecurityAudit(tx, current.username, 'LOGIN', `登录成功 (IP: ${ip})`)
@@ -82,7 +94,7 @@ export function createAuthService(options: {
           if (!input.twofa_password) {
             if (!second?.twofa_enabled) throw new AppError('请填写二步密码', 'second_password_required', 400)
           } else {
-            sets.push('twofa_enabled=?', 'twofa_secret=?'); params.push(1, codec.encrypt(input.twofa_password))
+            sets.push('twofa_enabled=?', 'twofa_secret=?'); params.push(1, hashPassword(input.twofa_password))
             secondAction = second?.twofa_enabled ? '更新二步密码' : '设置二步密码'
           }
         }

@@ -52,6 +52,17 @@ it('A02 fixed legacy CBC remains readable and malformed ciphertext fails safely'
  expect(response.body).toEqual({message:'登录暂时不可用'})
  expect((await f.http.get('/api/version')).status).toBe(200)
 })
+
+it('A02 legacy CBC seamlessly upgrades to bcrypt hash on successful login and supports bcrypt 2FA',async()=>{
+ const f=await fixture()
+ await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret=? WHERE id=2",['BwcHBwcHBwcHBwcHBwcHBw==:tHx0e38DbY3/JeeueK45eyfKCqmMl+vDt2fwZ6xqfuk='])
+ const res1=await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'legacy-second-password'})
+ expect(res1.status).toBe(200)
+ const row=await get(f.db,'SELECT twofa_secret FROM users WHERE id=2')
+ expect(row.twofa_secret).toMatch(/^\$2[ab]\$/)
+ const res2=await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'legacy-second-password'})
+ expect(res2.status).toBe(200)
+})
 it('A03 absent legacy version stays zero while malformed stored versions fail closed',async()=>{
  const f=await fixture()
  const {createRequire}=await import('node:module')
