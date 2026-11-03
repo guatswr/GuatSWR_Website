@@ -50,7 +50,7 @@ export function createAuthService(options: {
       let upgradedTwofaSecret: string | null = null
       if (user.twofa_enabled) {
         if (!input.twofa) throw new AppError('需要二步密码', 'second_password_required', 401)
-        let valid = false
+        let valid: boolean
         const storedSecret = user.twofa_secret
         if (typeof storedSecret === 'string' && (storedSecret.startsWith('$2a$') || storedSecret.startsWith('$2b$'))) {
           valid = comparePassword(String(input.twofa), storedSecret)

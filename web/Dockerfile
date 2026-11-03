@@ -2,7 +2,7 @@ FROM node:24.16.0-alpine AS build
 ENV CI=true
 WORKDIR /workspace
 RUN apk add --no-cache python3 make g++
-RUN npm install --global pnpm@11.25.0
+RUN npm install --global pnpm@11.25.0 --registry=https://registry.npmmirror.com
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY web/package.json ./web/package.json

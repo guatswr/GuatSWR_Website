@@ -267,7 +267,7 @@ onBeforeUnmount(() => {
       @click="play()"
     >
       <span class="club-toy-halo" aria-hidden="true" />
-      <ClubAvatar :src="src" prefer-original class="club-toy-avatar" />
+      <ClubAvatar :src="src" class="club-toy-avatar" />
       <span v-if="!burst" class="club-nine-hint" aria-hidden="true"
         >戳一下</span
       >

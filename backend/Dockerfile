@@ -4,7 +4,7 @@ WORKDIR /workspace
 RUN apt-get update -o Acquire::Retries=3 \
     && apt-get install -y --no-install-recommends python3 make g++ ca-certificates \
     && rm -rf /var/lib/apt/lists/*
-RUN npm install --global pnpm@11.25.0 --no-audit --no-fund
+RUN npm install --global pnpm@11.25.0 --registry=https://registry.npmmirror.com --no-audit --no-fund
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml .npmrc ./
 COPY packages/shared/package.json ./packages/shared/package.json
 COPY backend/package.json ./backend/package.json
