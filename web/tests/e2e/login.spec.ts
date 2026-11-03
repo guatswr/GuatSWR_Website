@@ -27,8 +27,12 @@ test.describe('login and client session boundary', () => {
     await page.goto('/login')
     await page.getByLabel('Username').fill(username)
     await page.getByLabel('Password').fill(password)
-    if (twofa) await page.getByLabel('二步密码 (可选)').fill(twofa)
     await page.getByRole('button', { name: '登录系统' }).click()
+    if (twofa) {
+      await expect(page.getByRole('heading', { name: '二步验证' })).toBeVisible()
+      await page.getByPlaceholder('请输入二步密码').fill(twofa)
+      await page.getByRole('button', { name: '验证并登录' }).click()
+    }
   }
 
   async function confirmEntry(page: Page) {
@@ -51,10 +55,11 @@ test.describe('login and client session boundary', () => {
 
   test('asks for the second password, then completes login after confirmation', async ({ page }) => {
     await login(page, 'second', 'secondpass')
-    await expect(page.locator('[role="alert"]').filter({ hasText: '需要二步密码' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '二步验证' })).toBeVisible()
+    await expect(page.getByPlaceholder('请输入二步密码')).toBeVisible()
 
-    await page.getByLabel('二步密码 (可选)').fill('123456')
-    await page.getByRole('button', { name: '登录系统' }).click()
+    await page.getByPlaceholder('请输入二步密码').fill('123456')
+    await page.getByRole('button', { name: '验证并登录' }).click()
     await expect(page.getByText('数据无价，谨慎操作。')).toBeVisible()
     await confirmEntry(page)
   })

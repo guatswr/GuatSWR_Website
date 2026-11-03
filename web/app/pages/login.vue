@@ -3,10 +3,11 @@ import { useForm } from '@tanstack/vue-form'
 import {
   createLoginFormValues,
   loginPasswordField,
-  loginTwofaField,
   loginUsernameField,
   normalizeLoginFormValue,
 } from '@guatswr/shared'
+import LoginConfirmDialog from '~/components/login/ConfirmDialog.vue'
+import LoginTwoFaDialog from '~/components/login/TwoFaDialog.vue'
 import { bffErrorMessage, safeLocalReturnPath } from '~/utils/bff-client'
 import { pickLoginBackground } from '~/utils/login-background'
 import { focusFirstInvalidField, validationErrorText } from '~/utils/login-form'
@@ -19,25 +20,40 @@ useSeoMeta({ title: '登录', robots: 'noindex, nofollow' })
 
 const route = useRoute()
 const session = useBffSession()
-onMounted(() => {
-  const nuxtApp = useNuxtApp()
-  nuxtApp.$routeProgress?.cancel()
-  try { clearLegacyAuthStorage(localStorage, document) } catch { /* Storage can be disabled. */ }
-})
 
 const formElement = ref<HTMLFormElement | null>(null)
-const confirmDialog = ref<{ show: () => void } | null>(null)
+const confirmDialog = ref<InstanceType<typeof LoginConfirmDialog> | null>(null)
+const twoFaDialog = ref<InstanceType<typeof LoginTwoFaDialog> | null>(null)
+const pendingCredentials = ref<{ username: string, password: string } | null>(null)
+
 const currentBg = ref('')
 const errorMsg = ref('')
 const verifyMsg = ref('')
 const verifying = ref(false)
+
+const savedUserCookie = useCookie<string | null>('guatswr_saved_username', {
+  maxAge: 30 * 24 * 60 * 60,
+  path: '/',
+  sameSite: 'lax',
+})
+const rememberUser = ref(true)
+
+function persistUsername(username: string) {
+  if (rememberUser.value && username) {
+    savedUserCookie.value = username
+    try { localStorage.setItem('guatswr_saved_username', username) } catch { /* Storage can be disabled. */ }
+  }
+  else {
+    savedUserCookie.value = null
+    try { localStorage.removeItem('guatswr_saved_username') } catch { /* Storage can be disabled. */ }
+  }
+}
 
 // Same-origin only; unsafe targets fall back to the archived /admin default.
 const returnPath = safeLocalReturnPath(route.query.redirect)
 
 const usernameValidators = { onBlur: loginUsernameField, onSubmit: loginUsernameField }
 const passwordValidators = { onBlur: loginPasswordField, onSubmit: loginPasswordField }
-const twofaValidators = { onBlur: loginTwofaField, onSubmit: loginTwofaField }
 
 const form = useForm({
   defaultValues: createLoginFormValues(),
@@ -45,11 +61,21 @@ const form = useForm({
     errorMsg.value = ''
     try {
       await session.login(normalizeLoginFormValue(value))
+      persistUsername(value.username)
       // Navigate only after the user confirms, matching the archived alert.
       confirmDialog.value?.show()
     }
     catch (error) {
-      errorMsg.value = bffErrorMessage(error, '服务器连接失败，请检查网络或后端状态')
+      const msg = bffErrorMessage(error, '服务器连接失败，请检查网络或后端状态')
+      if (msg === '需要二步密码') {
+        pendingCredentials.value = {
+          username: value.username,
+          password: value.password,
+        }
+        twoFaDialog.value?.open(value.username.trim())
+        return
+      }
+      errorMsg.value = msg
     }
   },
 })
@@ -62,14 +88,36 @@ async function submit() {
   finally {
     // Validation failures never reach onSubmit; on success there is no
     // aria-invalid control, so this cannot steal focus from the modal.
-    //
-    // The `aria-invalid` attributes are rendered from the field state TanStack
-    // Form just updated, and Vue applies that patch asynchronously: querying
-    // the DOM before the flush finds no invalid control and focus stays where
-    // the click left it. Wait for the render, then move focus.
     await nextTick()
     focusFirstInvalidField(formElement.value)
   }
+}
+
+async function handleTwoFaSubmit(twofa: string) {
+  if (!pendingCredentials.value) return
+  twoFaDialog.value?.setLoading(true)
+  twoFaDialog.value?.setError('')
+  try {
+    await session.login({
+      username: pendingCredentials.value.username.trim(),
+      password: pendingCredentials.value.password,
+      twofa,
+    })
+    persistUsername(pendingCredentials.value.username.trim())
+    twoFaDialog.value?.close()
+    pendingCredentials.value = null
+    confirmDialog.value?.show()
+  }
+  catch (error) {
+    twoFaDialog.value?.setError(bffErrorMessage(error, '二步密码验证失败'))
+  }
+  finally {
+    twoFaDialog.value?.setLoading(false)
+  }
+}
+
+function handleTwoFaCancel() {
+  pendingCredentials.value = null
 }
 
 async function confirmEntry() {
@@ -77,7 +125,23 @@ async function confirmEntry() {
 }
 
 onMounted(async () => {
+  const nuxtApp = useNuxtApp()
+  nuxtApp.$routeProgress?.cancel()
   currentBg.value = pickLoginBackground()
+
+  let existingUser = savedUserCookie.value
+  if (!existingUser) {
+    try {
+      const legacyUser = localStorage.getItem('user') || localStorage.getItem('guatswr_saved_username')
+      if (legacyUser) existingUser = legacyUser
+    }
+    catch { /* Storage can be disabled. */ }
+  }
+  try { clearLegacyAuthStorage(localStorage, document) } catch { /* Storage can be disabled. */ }
+
+  if (existingUser) {
+    form.setFieldValue('username', existingUser)
+  }
 
   verifying.value = true
   try {
@@ -163,30 +227,17 @@ onMounted(async () => {
           </template>
         </form.Field>
 
-        <form.Field name="twofa" :validators="twofaValidators">
-          <template #default="{ field }">
-            <div>
-              <label for="login-twofa" class="block text-gray-300 text-sm font-bold mb-2">二步密码 (可选)</label>
-              <input
-                id="login-twofa"
-                name="twofa"
-                type="password"
-                autocomplete="off"
-                maxlength="50"
-                :value="field.state.value"
-                :aria-invalid="field.state.meta.isValid ? undefined : 'true'"
-                :aria-describedby="field.state.meta.isValid ? undefined : 'login-twofa-error'"
-                class="w-full px-4 py-3 rounded-lg bg-gray-800/50 border border-gray-600 text-white focus:outline-none focus:border-red-500 focus:ring-1 focus:ring-red-500 transition placeholder-gray-500"
-                placeholder="已启用二步密码时必填"
-                @blur="field.handleBlur"
-                @input="field.handleChange(($event.target as HTMLInputElement).value)"
-              >
-              <p v-if="!field.state.meta.isValid" id="login-twofa-error" role="alert" class="mt-2 text-red-300 text-xs">
-                {{ validationErrorText(field.state.meta.errors) }}
-              </p>
-            </div>
-          </template>
-        </form.Field>
+        <div class="flex items-center justify-between text-sm py-1">
+          <label for="remember-user" class="inline-flex items-center gap-2 cursor-pointer select-none text-gray-300 hover:text-white">
+            <input
+              id="remember-user"
+              v-model="rememberUser"
+              type="checkbox"
+              class="w-4 h-4 rounded bg-gray-800 border-gray-600 text-red-600 focus:ring-red-500 focus:ring-offset-gray-900 cursor-pointer"
+            >
+            <span class="text-xs">记住账号</span>
+          </label>
+        </div>
 
         <div
           v-if="errorMsg"
@@ -204,21 +255,12 @@ onMounted(async () => {
           {{ verifyMsg }}
         </div>
 
-        <!--
-          Enabled while the form is invalid, like the archived
-          `:disabled="loading || verifying"`: the per-field errors and the focus
-          of the first invalid field replace native validation bubbles, so a
-          submit must be attemptable with invalid input. Gating on TanStack's
-          `canSubmit` disabled the button as soon as a field was blurred with
-          invalid input, which made that path unreachable. Duplicate submits are
-          still prevented by `isSubmitting` (and the button's own label).
-        -->
         <form.Subscribe v-slot="{ isSubmitting }">
           <button
             type="submit"
             :disabled="isSubmitting || verifying"
             :aria-busy="isSubmitting"
-            class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center shadow-lg shadow-red-900/50"
+            class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed flex justify-center items-center shadow-lg shadow-red-900/50 cursor-pointer"
           >
             <span v-if="isSubmitting" class="animate-spin mr-2" aria-hidden="true">☯</span>
             {{ isSubmitting ? '正在穿越隙间...' : '登录系统' }}
@@ -232,6 +274,7 @@ onMounted(async () => {
     </div>
 
     <LoginConfirmDialog ref="confirmDialog" @confirm="confirmEntry" />
+    <LoginTwoFaDialog ref="twoFaDialog" @submit="handleTwoFaSubmit" @cancel="handleTwoFaCancel" />
   </div>
 </template>
 

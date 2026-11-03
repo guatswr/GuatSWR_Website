@@ -9,8 +9,12 @@ async function credentials(page: Page, path: string, username = 'admin', twofa?:
   await page.goto(`/login?redirect=${encodeURIComponent(path)}`)
   await page.getByLabel('Username').fill(username)
   await page.getByLabel('Password', { exact: true }).fill(username === 'admin' ? 'adminpass' : 'secondpass')
-  if (twofa) await page.getByLabel('二步密码 (可选)').fill(twofa)
   await page.getByRole('button', { name: '登录系统', exact: true }).click()
+  if (twofa) {
+    await expect(page.getByRole('heading', { name: '二步验证' })).toBeVisible()
+    await page.getByPlaceholder('请输入二步密码').fill(twofa)
+    await page.getByRole('button', { name: '验证并登录', exact: true }).click()
+  }
 }
 async function entry(page: Page, path: string) {
   await page.getByRole('button', { name: '进入管理端', exact: true }).click()
@@ -48,9 +52,9 @@ test('avatar-only saves retain sessions while enabling and disabling 2FA require
     await expect(page).toHaveURL(/\/login\?redirect=/)
     expect((await other.request.get('/api/bff/auth/session')).status()).toBe(401)
     await credentials(page, '/admin/profile')
-    await expect(page.getByRole('alert').filter({ hasText: '需要二步密码' })).toBeVisible()
-    await page.getByLabel('二步密码 (可选)').fill('fixture-new-second')
-    await page.getByRole('button', { name: '登录系统', exact: true }).click(); await entry(page, '/admin/profile')
+    await expect(page.getByRole('heading', { name: '二步验证' })).toBeVisible()
+    await page.getByPlaceholder('请输入二步密码').fill('fixture-new-second')
+    await page.getByRole('button', { name: '验证并登录', exact: true }).click(); await entry(page, '/admin/profile')
     await expect(page.getByLabel('启用二步验证（2FA）', { exact: true })).toBeChecked()
     await page.getByLabel('启用二步验证（2FA）', { exact: true }).uncheck()
     await page.getByRole('button', { name: '保存修改', exact: true }).click()

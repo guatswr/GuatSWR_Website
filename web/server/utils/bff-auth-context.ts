@@ -62,6 +62,7 @@ function sessionCookieConfig(event: H3Event, runtime: BffRuntime, generateId?: (
       httpOnly: true,
       sameSite: 'lax' as const,
       path: '/',
+      maxAge: runtime.config.sessionMaxAgeSeconds,
       secure: resolveSecureCookie(event, runtime),
     },
   }

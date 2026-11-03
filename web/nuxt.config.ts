@@ -67,7 +67,7 @@ export default defineNuxtConfig({
       maxAge: 60 * 60 * 24,
       // Cookie-only transport: never accept a sealed session through a header.
       sessionHeader: false,
-      cookie: { httpOnly: true, sameSite: 'lax', secure: !import.meta.dev },
+      cookie: { httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24, secure: !import.meta.dev },
     },
     // Only the canonical production origin is trusted by default. Preview
     // deployments must explicitly configure their own origins; proxies stay closed.
