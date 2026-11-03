@@ -1804,7 +1804,7 @@ paths:
           in: query
           schema:
             type: string
-            enum: [browser, os, device]
+            enum: [browser, os, device, referrer, country, city, language, screen, title]
           description: ''
   /api/upload/visitor/avatar:
     post:

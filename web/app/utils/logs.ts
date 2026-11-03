@@ -347,7 +347,195 @@ const ROUTE_TITLES: ReadonlyMap<string, string> = new Map([
   ['/logs', '站点日志'],
   ['/login', '登录'],
   ['/events', '异变进行时'],
+  ['/events/bounty', '博丽神社赏金令'],
+  ['/events/betting', '博丽大竞技场 · 胜负盘'],
+  ['/events/stg', '幻想乡弹幕格斗祭'],
+  ['/events/zetime', '择日会 · 幻想聚首'],
 ])
+
+export interface EnvironmentTabOption {
+  readonly key: string
+  readonly label: string
+  readonly dimensionName: string
+}
+
+export const ENVIRONMENT_TABS: readonly EnvironmentTabOption[] = Object.freeze([
+  { key: 'browser', label: '浏览器', dimensionName: 'Browser' },
+  { key: 'os', label: '操作系统', dimensionName: 'OS' },
+  { key: 'device', label: '设备形态', dimensionName: 'Device' },
+  { key: 'referrer', label: '来源渠道', dimensionName: 'Referrer' },
+  { key: 'country', label: '国家/地区', dimensionName: 'Country' },
+  { key: 'city', label: '城市分布', dimensionName: 'City' },
+])
+
+export interface CountryInfo {
+  readonly name: string
+  readonly flag: string
+}
+
+const COUNTRY_MAP: Readonly<Record<string, CountryInfo>> = Object.freeze({
+  CN: { name: '中国大陆', flag: '🇨🇳' },
+  HK: { name: '中国香港', flag: '🇭🇰' },
+  MO: { name: '中国澳门', flag: '🇲🇴' },
+  TW: { name: '中国台湾', flag: '🇹🇼' },
+  US: { name: '美国', flag: '🇺🇸' },
+  JP: { name: '日本', flag: '🇯🇵' },
+  SG: { name: '新加坡', flag: '🇸🇬' },
+  DE: { name: '德国', flag: '🇩🇪' },
+  GB: { name: '英国', flag: '🇬🇧' },
+  FR: { name: '法国', flag: '🇫🇷' },
+  KR: { name: '韩国', flag: '🇰🇷' },
+  RU: { name: '俄罗斯', flag: '🇷🇺' },
+  CA: { name: '加拿大', flag: '🇨🇦' },
+  AU: { name: '澳大利亚', flag: '🇦🇺' },
+  MY: { name: '马来西亚', flag: '🇲🇾' },
+  NL: { name: '荷兰', flag: '🇳🇱' },
+  TH: { name: '泰国', flag: '🇹🇭' },
+  VN: { name: '越南', flag: '🇻🇳' },
+  PH: { name: '菲律宾', flag: '🇵🇭' },
+  IN: { name: '印度', flag: '🇮🇳' },
+  BR: { name: '巴西', flag: '🇧🇷' },
+})
+
+export function formatCountry(code: string | null | undefined): CountryInfo {
+  const clean = String(code || '').trim().toUpperCase()
+  if (!clean || clean === 'UNKNOWN') return { name: '未知地区', flag: '🌐' }
+  const mapped = Object.hasOwn(COUNTRY_MAP, clean) ? COUNTRY_MAP[clean] : undefined
+  if (mapped) return mapped
+  if (/^[A-Z]{2}$/.test(clean)) {
+    const flag = String.fromCodePoint(...clean.split('').map(c => 127397 + c.charCodeAt(0)))
+    return { name: clean, flag }
+  }
+  return { name: clean, flag: '🌐' }
+}
+
+const CITY_MAP: Readonly<Record<string, string>> = Object.freeze({
+  Nanning: '南宁',
+  Guilin: '桂林',
+  Jincheng: '晋城',
+  Beijing: '北京',
+  Shanghai: '上海',
+  Guangzhou: '广州',
+  Shenzhen: '深圳',
+  Chengdu: '成都',
+  Hangzhou: '杭州',
+  Wuhan: '武汉',
+  "Xi'an": '西安',
+  Xian: '西安',
+  Chongqing: '重庆',
+  Nanjing: '南京',
+  Changsha: '长沙',
+  Tianjin: '天津',
+  Suzhou: '苏州',
+  Fuzhou: '福州',
+  Xiamen: '厦门',
+  Hefei: '合肥',
+  Kunming: '昆明',
+  Tokyo: '东京',
+  Osaka: '大阪',
+  Kyoto: '京都',
+  'Los Angeles': '洛杉矶',
+  'San Jose': '圣何塞',
+  'New York': '纽约',
+  'San Francisco': '旧金山',
+  London: '伦敦',
+  Singapore: '新加坡',
+  'Hong Kong': '香港',
+  Taipei: '台北',
+})
+
+export function formatCity(city: string | null | undefined): string {
+  const clean = String(city || '').trim()
+  if (!clean || clean.toLowerCase() === 'unknown') return '未知城市'
+  const mapped = Object.hasOwn(CITY_MAP, clean) ? CITY_MAP[clean] : undefined
+  return mapped || clean
+}
+
+const REFERRER_MAP: Readonly<Record<string, { label: string; icon: string }>> = Object.freeze({
+  '': { label: '直接访问 / 书签收藏', icon: 'direct' },
+  direct: { label: '直接访问 / 书签收藏', icon: 'direct' },
+  'google.com': { label: 'Google 搜索', icon: 'search' },
+  'cn.bing.com': { label: '微软必应 (Bing)', icon: 'search' },
+  'bing.com': { label: '微软必应 (Bing)', icon: 'search' },
+  'baidu.com': { label: '百度搜索 (Baidu)', icon: 'search' },
+  'tieba.baidu.com': { label: '百度贴吧', icon: 'social' },
+  'icp.gov.moe': { label: '萌国ICP备案', icon: 'badge' },
+  'github.com': { label: 'GitHub 仓库', icon: 'social' },
+  'bilibili.com': { label: '哔哩哔哩 (Bilibili)', icon: 'video' },
+  't.co': { label: 'X (Twitter)', icon: 'social' },
+  'x.com': { label: 'X (Twitter)', icon: 'social' },
+})
+
+export function formatReferrer(referrer: string | null | undefined): { label: string; icon: string } {
+  const clean = String(referrer || '').trim().toLowerCase()
+  if (!clean || clean === 'direct' || clean === 'none') {
+    return { label: '直接访问 / 书签收藏', icon: 'direct' }
+  }
+  for (const [key, val] of Object.entries(REFERRER_MAP)) {
+    if (key && (clean === key || clean.endsWith('.' + key))) return val
+  }
+  return { label: clean, icon: 'link' }
+}
+
+const DEVICE_MAP: Readonly<Record<string, string>> = Object.freeze({
+  mobile: '移动端 (Mobile)',
+  laptop: '笔记本 (Laptop)',
+  desktop: '台式机 (Desktop)',
+  tablet: '平板电脑 (Tablet)',
+})
+
+const BROWSER_MAP: Readonly<Record<string, string>> = Object.freeze({
+  chrome: 'Google Chrome',
+  'chromium-webview': 'Android WebView / 微信内置',
+  'edge-chromium': 'Microsoft Edge',
+  edge: 'Microsoft Edge',
+  ios: 'Mobile Safari / iOS WebKit',
+  firefox: 'Mozilla Firefox',
+  safari: 'Apple Safari',
+  opera: 'Opera',
+  brave: 'Brave',
+})
+
+const OS_MAP: Readonly<Record<string, string>> = Object.freeze({
+  'android os': 'Android',
+  android: 'Android',
+  'windows 10': 'Windows 10 / 11',
+  'windows 11': 'Windows 11',
+  windows: 'Windows',
+  ios: 'iOS',
+  linux: 'Linux',
+  'mac os': 'macOS',
+  macos: 'macOS',
+  'chrome os': 'ChromeOS',
+})
+
+export function formatDimensionName(value: string | null | undefined, dimension: string): string {
+  const raw = String(value || '').trim()
+  if (!raw) return dimension === 'referrer' ? '直接访问 / 书签收藏' : '未知'
+  const key = raw.toLowerCase()
+  if (dimension === 'device') {
+    const device = Object.hasOwn(DEVICE_MAP, key) ? DEVICE_MAP[key] : undefined
+    return device || raw
+  }
+  if (dimension === 'browser') {
+    const browser = Object.hasOwn(BROWSER_MAP, key) ? BROWSER_MAP[key] : undefined
+    return browser || raw
+  }
+  if (dimension === 'os') {
+    const os = Object.hasOwn(OS_MAP, key) ? OS_MAP[key] : undefined
+    return os || raw
+  }
+  if (dimension === 'country') {
+    return formatCountry(raw).name
+  }
+  if (dimension === 'city') {
+    return formatCity(raw)
+  }
+  if (dimension === 'referrer') {
+    return formatReferrer(raw).label
+  }
+  return raw
+}
 
 /** Archived `getPageTitle`. */
 export function pageTitle(path: string | null | undefined): string {

@@ -16,6 +16,7 @@ import type { PublicLogsPage, PublicLogStat, PublicUmamiStats } from '@guatswr/s
 import { LOGS_PAGE_SIZE, LOGS_PAGE_SIZES } from '#shared/content'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import {
+  ENVIRONMENT_TABS,
   LOG_ACTIONS,
   LOG_CHART,
   LOG_RANGE_OPTIONS,
@@ -29,6 +30,8 @@ import {
   environmentIconUrl,
   formatAction,
   formatChartDate,
+  formatCountry,
+  formatDimensionName,
   formatLogTime,
   formatNumber,
   logRangeWindow,
@@ -43,8 +46,8 @@ import ClubIcon from '~/components/ClubIcon.vue'
 const route = useRoute()
 const router = useRouter()
 
-const ENVIRONMENT_TYPES = ['browser', 'os', 'device'] as const
-const TOP_LIMITS = [5, 8, 10] as const
+const ENVIRONMENT_TYPES = ['browser', 'os', 'device', 'referrer', 'country', 'city'] as const
+const TOP_LIMITS = [5, 8, 10, 15] as const
 
 const requestedPage = computed(() => parsePageParam(route.query.page))
 const page = computed(() => requestedPage.value ?? 1)
@@ -166,7 +169,18 @@ const chartData = computed(() => buildLogChart({
   pageviews: umami.value.series.pageviews,
   visitors: umami.value.series.visitors,
 }))
-const chartMax = computed(() => chartMaximum(chartData.value))
+const chartMetricFilter = ref<'all' | 'pv' | 'uv'>('all')
+
+const chartMax = computed(() => {
+  if (chartMetricFilter.value === 'pv') {
+    return Math.max(...chartData.value.map(item => item.pageviews), 1)
+  }
+  if (chartMetricFilter.value === 'uv') {
+    return Math.max(...chartData.value.map(item => item.visitors), 1)
+  }
+  return chartMaximum(chartData.value)
+})
+
 const pageviewPoints = computed(() => buildPoints(chartData.value.map(item => item.pageviews), chartMax.value))
 const visitorPoints = computed(() => buildPoints(chartData.value.map(item => item.visitors), chartMax.value))
 const pageviewPath = computed(() => buildSmoothPath(pageviewPoints.value))
@@ -195,10 +209,32 @@ const maxPageCount = computed(() => {
   return Math.max(...counts, 1)
 })
 
+const totalTopPagesCount = computed(() => {
+  return umami.value.top.pages.reduce((sum, item) => sum + Number(item.y || 0), 0)
+})
+
+const pagePercent = (count: number | string | undefined | null): string => {
+  const num = Number(count || 0)
+  if (!totalTopPagesCount.value || num <= 0) return '0%'
+  const pct = (num / totalTopPagesCount.value) * 100
+  return pct >= 10 ? `${Math.round(pct)}%` : `${pct.toFixed(1)}%`
+}
+
 const maxEnvCount = computed(() => {
   const counts = umami.value.top.environments.map(e => Number(e.y || 0))
   return Math.max(...counts, 1)
 })
+
+const totalEnvCount = computed(() => {
+  return umami.value.top.environments.reduce((sum, item) => sum + Number(item.y || 0), 0)
+})
+
+const envPercent = (count: number | string | undefined | null): string => {
+  const num = Number(count || 0)
+  if (!totalEnvCount.value || num <= 0) return '0%'
+  const pct = (num / totalEnvCount.value) * 100
+  return pct >= 10 ? `${Math.round(pct)}%` : `${pct.toFixed(1)}%`
+}
 
 const hoveredIndex = ref<number | null>(null)
 const hoverInfo = computed(() => {
@@ -305,8 +341,12 @@ usePublicPageSeo(() => ({
               <dd class="font-mono">{{ cards.length }} 位</dd>
             </div>
             <div v-if="hasStatistics && summary.visitors" class="logs-header-index-row">
-              <dt>近期访客</dt>
+              <dt>近期访客 (UV)</dt>
               <dd class="font-mono">{{ formatNumber(summary.visitors) }} 位</dd>
+            </div>
+            <div v-if="hasStatistics && summary.visits" class="logs-header-index-row">
+              <dt>访问会话 (Visits)</dt>
+              <dd class="font-mono">{{ formatNumber(summary.visits) }} 次</dd>
             </div>
             <div class="logs-header-index-row">
               <dt>记录时区</dt>
@@ -364,8 +404,8 @@ usePublicPageSeo(() => ({
         </div>
 
         <div v-else-if="hasStatistics" class="p-5 sm:p-6 space-y-6">
-          <!-- 4 Stat Metric Cards -->
-          <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+          <!-- 5 Stat Metric Cards -->
+          <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
             <div class="logs-metric-item">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>页面浏览</span>
@@ -389,13 +429,27 @@ usePublicPageSeo(() => ({
 
             <div class="logs-metric-item">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
+                <span>访问会话</span>
+                <svg class="w-4 h-4 text-purple-600/80 dark:text-purple-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8" />
+                  <path d="M21 3v5h-5" />
+                  <path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16" />
+                  <path d="M8 16H3v5" />
+                </svg>
+              </div>
+              <div class="logs-metric-value">{{ formatNumber(summary.visits) }}</div>
+              <div class="logs-metric-sub">Sessions</div>
+            </div>
+
+            <div class="logs-metric-item">
+              <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>跳出率</span>
                 <svg class="w-4 h-4 text-amber-600/80 dark:text-amber-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <path d="M22 12h-4l-3 9L9 3l-3 9H2" />
                 </svg>
               </div>
               <div class="logs-metric-value">{{ bounceRate(summary) }}</div>
-              <div class="logs-metric-sub">Bounces</div>
+              <div class="logs-metric-sub">Bounce Rate</div>
             </div>
 
             <div class="logs-metric-item">
@@ -403,11 +457,11 @@ usePublicPageSeo(() => ({
                 <span>平均停留</span>
                 <svg class="w-4 h-4 text-indigo-600/80 dark:text-indigo-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                   <circle cx="12" cy="12" r="10" />
-                  <polyline points="12 6 12 12 16 14" />
+                  <polyline points="12 6 12 16 14" />
                 </svg>
               </div>
               <div class="logs-metric-value">{{ averageDuration(summary) }}</div>
-              <div class="logs-metric-sub">Avg. Time</div>
+              <div class="logs-metric-sub">Avg. Duration</div>
             </div>
           </div>
 
@@ -415,19 +469,40 @@ usePublicPageSeo(() => ({
           <div class="logs-chart-card">
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
               <div>
-                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">访客/浏览量趋势</h3>
+                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">流量脉动与访客走势</h3>
                 <div class="text-[11px] text-slate-400 mt-0.5">
                   {{ LOG_RANGE_OPTIONS.find(option => option.key === activeRange)?.label || '趋势' }} 走势曲线 · 粒度自适应
                 </div>
               </div>
-              <div class="flex items-center gap-4 text-xs font-medium">
-                <div class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400">
-                  <span class="w-2.5 h-2.5 rounded-full bg-sky-500 ring-2 ring-sky-200 dark:ring-sky-900" />
-                  <span>页面浏览 (PV)</span>
-                </div>
-                <div class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                  <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 ring-2 ring-emerald-200 dark:ring-emerald-900" />
-                  <span>独立访客 (UV)</span>
+              <div class="flex flex-wrap items-center gap-3">
+                <!-- Toggle series buttons -->
+                <div class="inline-flex p-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium border border-slate-200/60 dark:border-slate-700">
+                  <button
+                    type="button"
+                    class="px-2.5 py-1 rounded transition-colors"
+                    :class="chartMetricFilter === 'all' ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
+                    @click="chartMetricFilter = 'all'"
+                  >
+                    全部走势
+                  </button>
+                  <button
+                    type="button"
+                    class="px-2.5 py-1 rounded transition-colors flex items-center gap-1.5"
+                    :class="chartMetricFilter === 'pv' ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
+                    @click="chartMetricFilter = 'pv'"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-sky-500" />
+                    仅 PV
+                  </button>
+                  <button
+                    type="button"
+                    class="px-2.5 py-1 rounded transition-colors flex items-center gap-1.5"
+                    :class="chartMetricFilter === 'uv' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
+                    @click="chartMetricFilter = 'uv'"
+                  >
+                    <span class="w-2 h-2 rounded-full bg-emerald-500" />
+                    仅 UV
+                  </button>
                 </div>
               </div>
             </div>
@@ -484,39 +559,43 @@ usePublicPageSeo(() => ({
                   />
 
                   <!-- Area fills -->
-                  <path v-if="pageviewAreaPath" :d="pageviewAreaPath" fill="url(#pv-grad)" class="pointer-events-none" />
-                  <path v-if="visitorAreaPath" :d="visitorAreaPath" fill="url(#vt-grad)" class="pointer-events-none" />
+                  <path v-if="chartMetricFilter !== 'uv' && pageviewAreaPath" :d="pageviewAreaPath" fill="url(#pv-grad)" class="pointer-events-none" />
+                  <path v-if="chartMetricFilter !== 'pv' && visitorAreaPath" :d="visitorAreaPath" fill="url(#vt-grad)" class="pointer-events-none" />
 
                   <!-- Curves -->
-                  <path :d="pageviewPath" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                  <path :d="visitorPath" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path v-if="chartMetricFilter !== 'uv'" :d="pageviewPath" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+                  <path v-if="chartMetricFilter !== 'pv'" :d="visitorPath" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
 
                   <!-- Points -->
                   <g>
-                    <circle
-                      v-for="(point, index) in pageviewPoints"
-                      :key="`pv-${index}`"
-                      :cx="point.x"
-                      :cy="point.y"
-                      :r="hoveredIndex === index ? 4.5 : 2.5"
-                      fill="#0284C7"
-                      class="cursor-pointer transition-all duration-150"
-                      :stroke="hoveredIndex === index ? '#ffffff' : 'none'"
-                      :stroke-width="hoveredIndex === index ? 1.5 : 0"
-                      @mouseenter="setHoveredIndex(index)"
-                    />
-                    <circle
-                      v-for="(point, index) in visitorPoints"
-                      :key="`vt-${index}`"
-                      :cx="point.x"
-                      :cy="point.y"
-                      :r="hoveredIndex === index ? 4.5 : 2.5"
-                      fill="#10B981"
-                      class="cursor-pointer transition-all duration-150"
-                      :stroke="hoveredIndex === index ? '#ffffff' : 'none'"
-                      :stroke-width="hoveredIndex === index ? 1.5 : 0"
-                      @mouseenter="setHoveredIndex(index)"
-                    />
+                    <template v-if="chartMetricFilter !== 'uv'">
+                      <circle
+                        v-for="(point, index) in pageviewPoints"
+                        :key="`pv-${index}`"
+                        :cx="point.x"
+                        :cy="point.y"
+                        :r="hoveredIndex === index ? 4.5 : 2.5"
+                        fill="#0284C7"
+                        class="cursor-pointer transition-all duration-150"
+                        :stroke="hoveredIndex === index ? '#ffffff' : 'none'"
+                        :stroke-width="hoveredIndex === index ? 1.5 : 0"
+                        @mouseenter="setHoveredIndex(index)"
+                      />
+                    </template>
+                    <template v-if="chartMetricFilter !== 'pv'">
+                      <circle
+                        v-for="(point, index) in visitorPoints"
+                        :key="`vt-${index}`"
+                        :cx="point.x"
+                        :cy="point.y"
+                        :r="hoveredIndex === index ? 4.5 : 2.5"
+                        fill="#10B981"
+                        class="cursor-pointer transition-all duration-150"
+                        :stroke="hoveredIndex === index ? '#ffffff' : 'none'"
+                        :stroke-width="hoveredIndex === index ? 1.5 : 0"
+                        @mouseenter="setHoveredIndex(index)"
+                      />
+                    </template>
                   </g>
                 </svg>
 
@@ -555,14 +634,14 @@ usePublicPageSeo(() => ({
             </div>
           </div>
 
-          <!-- Top Pages & Top Environments -->
+          <!-- Top Content & Audience Insights Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Top Pages -->
+            <!-- Top Content -->
             <div class="logs-subcard">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
                   <ClubIcon name="book" class="w-4 h-4 text-sky-600/80 dark:text-sky-400/80" />
-                  <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">热门页面</h3>
+                  <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">热门访问内容</h3>
                 </div>
                 <div class="flex items-center gap-2 text-xs text-slate-400">
                   <span class="font-mono text-[11px]">TOP</span>
@@ -583,13 +662,13 @@ usePublicPageSeo(() => ({
                   class="relative flex items-center justify-between gap-3 p-2.5 rounded border border-slate-100 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 overflow-hidden group transition-all"
                 >
                   <div
-                    class="absolute inset-y-0 left-0 bg-sky-50/70 dark:bg-sky-950/30 transition-all duration-500 pointer-events-none"
+                    class="absolute inset-y-0 left-0 bg-sky-50/80 dark:bg-sky-950/40 transition-all duration-500 pointer-events-none"
                     :style="{ width: `${Math.round((Number(entry.y || 0) / maxPageCount) * 100)}%` }"
                   />
                   <div class="relative z-10 min-w-0 flex items-center gap-2.5">
                     <span
                       class="w-5 h-5 rounded flex items-center justify-center text-[10px] font-mono font-bold shrink-0"
-                      :class="index === 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300' : index === 1 ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300' : index === 2 ? 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'"
+                      :class="index === 0 ? 'bg-amber-100 text-amber-800 dark:bg-amber-950/60 dark:text-amber-300 border border-amber-200 dark:border-amber-800/60' : index === 1 ? 'bg-slate-200 text-slate-700 dark:bg-slate-700 dark:text-slate-300 border border-slate-300 dark:border-slate-600' : index === 2 ? 'bg-orange-100 text-orange-800 dark:bg-orange-950/60 dark:text-orange-300 border border-orange-200 dark:border-orange-800/60' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400 border border-slate-200 dark:border-slate-700'"
                     >
                       {{ index + 1 }}
                     </span>
@@ -601,44 +680,49 @@ usePublicPageSeo(() => ({
                         rel="noopener"
                       >
                         <span class="truncate">{{ pageTitle(topEntryPath(entry)) }}</span>
-                        <ClubIcon name="external" class="w-3 h-3 text-sky-500 shrink-0" />
+                        <ClubIcon name="external" class="w-3 h-3 text-sky-500 shrink-0 opacity-60 group-hover:opacity-100 transition-opacity" />
                       </a>
-                      <div class="text-[10px] text-slate-400 font-mono truncate">{{ topEntryPath(entry) || '/' }}</div>
+                      <div class="text-[11px] text-slate-400 font-mono truncate">{{ topEntryPath(entry) || '/' }}</div>
                     </div>
                   </div>
-                  <div class="relative z-10 text-sm font-mono font-bold text-slate-800 dark:text-slate-200 shrink-0">
-                    {{ formatNumber(entry.y || 0) }}
+                  <div class="relative z-10 text-right shrink-0">
+                    <div class="text-sm font-mono font-bold text-slate-800 dark:text-slate-200">
+                      {{ formatNumber(entry.y || 0) }}
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-mono">
+                      {{ pagePercent(entry.y) }}
+                    </div>
                   </div>
                 </div>
-                <div v-if="umami.top.pages.length === 0" class="text-xs text-slate-400 py-4 text-center">暂无数据</div>
+                <div v-if="umami.top.pages.length === 0" class="text-xs text-slate-400 py-6 text-center">暂无页面访问数据</div>
               </div>
             </div>
 
-            <!-- Top Environments -->
+            <!-- Audience & Dimensions -->
             <div class="logs-subcard">
-              <div class="flex items-center justify-between mb-4">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
                   <svg class="w-4 h-4 text-emerald-600/80 dark:text-emerald-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                     <rect x="2" y="3" width="20" height="14" rx="2" />
                     <line x1="8" y1="21" x2="16" y2="21" />
                     <line x1="12" y1="17" x2="12" y2="21" />
                   </svg>
-                  <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">环境分布</h3>
+                  <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">多维访客画像</h3>
                 </div>
-                <div class="flex items-center gap-2 text-xs text-slate-400">
-                  <span class="font-mono text-[11px]">DIMENSION</span>
-                  <select
-                    :value="environmentType"
-                    class="logs-select-sm"
-                    aria-label="环境维度"
-                    @change="router.push(linkFor({ env: ($event.target as HTMLSelectElement).value }))"
+                <!-- 6 Dimension Tabs -->
+                <div class="flex items-center gap-1 p-0.5 rounded bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700 overflow-x-auto max-w-full">
+                  <NuxtLink
+                    v-for="tab in ENVIRONMENT_TABS"
+                    :key="tab.key"
+                    :to="linkFor({ env: tab.key })"
+                    class="logs-dim-tab shrink-0"
+                    :class="{ 'is-active': environmentType === tab.key }"
                   >
-                    <option value="browser">浏览器 (Browser)</option>
-                    <option value="os">操作系统 (OS)</option>
-                    <option value="device">设备类型 (Device)</option>
-                  </select>
+                    {{ tab.label }}
+                  </NuxtLink>
                 </div>
               </div>
+
               <div class="space-y-2.5">
                 <div
                   v-for="(entry, index) in umami.top.environments"
@@ -646,13 +730,30 @@ usePublicPageSeo(() => ({
                   class="relative flex items-center justify-between gap-3 p-2.5 rounded border border-slate-100 dark:border-slate-800/80 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 overflow-hidden group transition-all"
                 >
                   <div
-                    class="absolute inset-y-0 left-0 bg-emerald-50/70 dark:bg-emerald-950/30 transition-all duration-500 pointer-events-none"
+                    class="absolute inset-y-0 left-0 bg-emerald-50/80 dark:bg-emerald-950/40 transition-all duration-500 pointer-events-none"
                     :style="{ width: `${Math.round((Number(entry.y || 0) / maxEnvCount) * 100)}%` }"
                   />
                   <div class="relative z-10 min-w-0 flex items-center gap-2.5">
-                    <span class="inline-flex w-7 h-7 rounded bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 items-center justify-center shrink-0">
+                    <!-- Icon / Flag Slot -->
+                    <span class="inline-flex w-7 h-7 rounded bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 items-center justify-center shrink-0 text-sm">
+                      <!-- Country Flag -->
+                      <span v-if="environmentType === 'country'" class="text-base leading-none select-none">
+                        {{ formatCountry(String(entry.x || '')).flag }}
+                      </span>
+                      <!-- City icon -->
+                      <svg v-else-if="environmentType === 'city'" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
+                        <circle cx="12" cy="10" r="3" />
+                      </svg>
+                      <!-- Referrer icon -->
+                      <svg v-else-if="environmentType === 'referrer'" class="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="2" y1="12" x2="22" y2="12" />
+                        <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                      </svg>
+                      <!-- Standard Env Icon (Browser / OS / Device) -->
                       <img
-                        v-if="envIcon(String(entry.x || ''))"
+                        v-else-if="envIcon(String(entry.x || ''))"
                         :src="envIcon(String(entry.x || '')) ?? ''"
                         class="w-4 h-4 object-contain"
                         alt=""
@@ -661,16 +762,29 @@ usePublicPageSeo(() => ({
                       >
                       <span v-else class="text-slate-400 text-xs font-mono" aria-hidden="true">[-]</span>
                     </span>
+
+                    <!-- Label & Details -->
                     <div class="min-w-0">
-                      <div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">{{ entry.x || '未知环境' }}</div>
-                      <div class="text-[10px] text-slate-400 truncate">{{ environmentType.toUpperCase() }}</div>
+                      <div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
+                        {{ formatDimensionName(String(entry.x || ''), environmentType) }}
+                      </div>
+                      <div class="text-[10px] text-slate-400 font-mono truncate">
+                        {{ String(entry.x || '').trim() || 'DIRECT / NONE' }}
+                      </div>
                     </div>
                   </div>
-                  <div class="relative z-10 text-sm font-mono font-bold text-slate-800 dark:text-slate-200 shrink-0">
-                    {{ formatNumber(entry.y || 0) }}
+
+                  <!-- Count & Ratio -->
+                  <div class="relative z-10 text-right shrink-0">
+                    <div class="text-sm font-mono font-bold text-slate-800 dark:text-slate-200">
+                      {{ formatNumber(entry.y || 0) }}
+                    </div>
+                    <div class="text-[10px] text-slate-400 font-mono">
+                      {{ envPercent(entry.y) }}
+                    </div>
                   </div>
                 </div>
-                <div v-if="umami.top.environments.length === 0" class="text-xs text-slate-400 py-4 text-center">暂无数据</div>
+                <div v-if="umami.top.environments.length === 0" class="text-xs text-slate-400 py-6 text-center">暂无此维度数据</div>
               </div>
             </div>
           </div>
@@ -1151,6 +1265,34 @@ usePublicPageSeo(() => ({
 .dark .logs-panel-header {
   border-color: #243241;
   background-color: #101a24;
+}
+
+/* Dimension tabs */
+.logs-dim-tab {
+  padding: 0.2rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #64748b;
+  border-radius: 2px;
+  transition: all 120ms ease;
+  white-space: nowrap;
+}
+.logs-dim-tab:hover {
+  color: #0f172a;
+}
+.logs-dim-tab.is-active {
+  background-color: #059669;
+  color: #ffffff;
+}
+:global(.dark .logs-dim-tab) {
+  color: #94a3b8;
+}
+:global(.dark .logs-dim-tab:hover) {
+  color: #f1f5f9;
+}
+:global(.dark .logs-dim-tab.is-active) {
+  background-color: #10b981;
+  color: #ffffff;
 }
 
 /* Range tabs */
