@@ -182,7 +182,7 @@ export default defineNuxtConfig({
     rateLimiter: false,
     headers: {
       contentSecurityPolicy: {
-        'img-src': ["'self'", 'data:'],
+        'img-src': ["'self'", 'data:', 'blob:'],
         'connect-src': ["'self'", ...(import.meta.dev ? ['ws:'] : [])],
         'form-action': ["'self'"],
         'frame-ancestors': ["'none'"],

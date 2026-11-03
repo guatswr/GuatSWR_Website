@@ -20,6 +20,8 @@ useSeoMeta({ title: '登录', robots: 'noindex, nofollow' })
 const route = useRoute()
 const session = useBffSession()
 onMounted(() => {
+  const nuxtApp = useNuxtApp()
+  nuxtApp.$routeProgress?.cancel()
   try { clearLegacyAuthStorage(localStorage, document) } catch { /* Storage can be disabled. */ }
 })
 

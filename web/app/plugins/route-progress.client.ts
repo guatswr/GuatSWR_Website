@@ -11,7 +11,7 @@ export default defineNuxtPlugin((nuxtApp) => {
     if (nuxtApp.isHydrating || navigationPath(to.path) === navigationPath(from.path)) return
     // A new layout's first page has no enter animation. Clear the public bar
     // on either admin boundary, including logout back to the login page.
-    if (to.meta.layout === 'admin' || from.meta.layout === 'admin') { controller.cancel(); return }
+    if (to.meta.layout === 'admin' || from.meta.layout === 'admin' || to.path === '/login' || from.path === '/login') { controller.cancel(); return }
     // A nested category change keeps its parent shell; only a new top-level
     // page needs the interlude that covers the leave/enter gap.
     tokens.set(to, controller.start(to.path, to.matched[0] !== from.matched[0]))
