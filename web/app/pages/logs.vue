@@ -239,15 +239,54 @@ const envPercent = (count: number | string | undefined | null): string => {
 const hoveredIndex = ref<number | null>(null)
 const hoverInfo = computed(() => {
   if (hoveredIndex.value === null) return null
-  const datum = chartData.value[hoveredIndex.value]
-  const point = pageviewPoints.value[hoveredIndex.value] ?? visitorPoints.value[hoveredIndex.value]
-  if (!datum || !point) return null
+  const idx = hoveredIndex.value
+  const datum = chartData.value[idx]
+  if (!datum) return null
+
+  const pvPt = pageviewPoints.value[idx]
+  const uvPt = visitorPoints.value[idx]
+
+  let activePt = pvPt ?? uvPt
+  if (chartMetricFilter.value === 'uv' && uvPt) {
+    activePt = uvPt
+  } else if (chartMetricFilter.value === 'all' && pvPt && uvPt) {
+    activePt = pvPt.y < uvPt.y ? pvPt : uvPt
+  }
+
+  if (!activePt) return null
+
   return {
-    x: point.x,
-    y: point.y,
+    x: activePt.x,
+    y: activePt.y,
+    pvY: pvPt?.y,
+    uvY: uvPt?.y,
     date: formatChartDate(datum.date),
     pageviews: datum.pageviews,
     visitors: datum.visitors,
+  }
+})
+
+const tooltipStyle = computed(() => {
+  if (!hoverInfo.value) return {}
+  const pctX = (hoverInfo.value.x / LOG_CHART.width) * 100
+  const pctY = (hoverInfo.value.y / LOG_CHART.height) * 100
+
+  let translateX = '-50%'
+  if (pctX < 18) {
+    translateX = '0%'
+  } else if (pctX > 82) {
+    translateX = '-100%'
+  }
+
+  let translateY = '-120%'
+  if (pctY < 32) {
+    translateY = '20%'
+  }
+
+  return {
+    left: `${pctX}%`,
+    top: `${pctY}%`,
+    transform: `translate(${translateX}, ${translateY})`,
   }
 })
 
@@ -264,11 +303,40 @@ const onChartMove = (event: MouseEvent): void => {
   if (!svg || chartData.value.length === 0) return
   const rect = svg.getBoundingClientRect()
   if (rect.width === 0) return
-  const x = (event.clientX - rect.left) / rect.width * LOG_CHART.width
+  const x = ((event.clientX - rect.left) / rect.width) * LOG_CHART.width
   const step = chartData.value.length > 1
     ? (LOG_CHART.width - LOG_CHART.padding * 2) / (chartData.value.length - 1)
     : 0
   setHoveredIndex(step ? Math.round((x - LOG_CHART.padding) / step) : 0)
+}
+
+const onTouchMove = (event: TouchEvent): void => {
+  const touch = event.touches[0]
+  if (!touch) return
+  const svg = event.currentTarget as SVGSVGElement | null
+  if (!svg || chartData.value.length === 0) return
+  const rect = svg.getBoundingClientRect()
+  if (rect.width === 0) return
+  const x = ((touch.clientX - rect.left) / rect.width) * LOG_CHART.width
+  const step = chartData.value.length > 1
+    ? (LOG_CHART.width - LOG_CHART.padding * 2) / (chartData.value.length - 1)
+    : 0
+  setHoveredIndex(step ? Math.round((x - LOG_CHART.padding) / step) : 0)
+}
+
+const stepHover = (delta: number): void => {
+  if (chartData.value.length === 0) return
+  if (hoveredIndex.value === null) {
+    setHoveredIndex(delta > 0 ? 0 : chartData.value.length - 1)
+  } else {
+    setHoveredIndex(hoveredIndex.value + delta)
+  }
+}
+
+const onChartFocus = (): void => {
+  if (hoveredIndex.value === null && chartData.value.length > 0) {
+    setHoveredIndex(0)
+  }
 }
 
 // --- Controls -------------------------------------------------------------
@@ -511,14 +579,27 @@ usePublicPageSeo(() => ({
               暂无趋势数据
             </div>
             <div v-else class="w-full overflow-x-auto">
-              <div class="relative pb-6 min-w-[500px]">
+              <div class="relative pb-2 min-w-[500px]">
                 <svg
                   :viewBox="`0 0 ${LOG_CHART.width} ${LOG_CHART.height}`"
-                  class="w-full h-44 sm:h-52 overflow-visible"
-                  role="img"
-                  :aria-label="`${activeRange} 访客与浏览量趋势`"
+                  class="w-full h-44 sm:h-52 overflow-visible select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 rounded"
+                  role="region"
+                  tabindex="0"
+                  :aria-label="`${LOG_RANGE_OPTIONS.find(o => o.key === activeRange)?.label || activeRange} 访客与浏览量走势图表，可通过左右方向键浏览各节点数据`"
                   @mousemove="onChartMove"
                   @mouseleave="setHoveredIndex(null)"
+                  @touchstart.passive="onTouchMove"
+                  @touchmove.passive="onTouchMove"
+                  @touchend="setHoveredIndex(null)"
+                  @keydown.left.prevent="stepHover(-1)"
+                  @keydown.down.prevent="stepHover(-1)"
+                  @keydown.right.prevent="stepHover(1)"
+                  @keydown.up.prevent="stepHover(1)"
+                  @keydown.home.prevent="setHoveredIndex(0)"
+                  @keydown.end.prevent="setHoveredIndex(chartData.length - 1)"
+                  @keydown.esc="setHoveredIndex(null)"
+                  @focus="onChartFocus"
+                  @blur="setHoveredIndex(null)"
                 >
                   <defs>
                     <linearGradient id="pv-grad" x1="0" y1="0" x2="0" y2="1">
@@ -545,18 +626,26 @@ usePublicPageSeo(() => ({
                     />
                   </g>
 
-                  <!-- Hover crosshair line -->
-                  <line
-                    v-if="hoverInfo"
-                    :x1="hoverInfo.x"
-                    :y1="LOG_CHART.padding"
-                    :x2="hoverInfo.x"
-                    :y2="LOG_CHART.height - LOG_CHART.padding"
-                    stroke="#94A3B8"
-                    stroke-width="1.5"
-                    stroke-dasharray="3 3"
-                    class="dark:stroke-slate-600 transition-all pointer-events-none"
-                  />
+                  <!-- Hover crosshair line and baseline anchor -->
+                  <template v-if="hoverInfo">
+                    <line
+                      :x1="hoverInfo.x"
+                      :y1="LOG_CHART.padding"
+                      :x2="hoverInfo.x"
+                      :y2="LOG_CHART.height - LOG_CHART.padding"
+                      stroke="#94A3B8"
+                      stroke-width="1.5"
+                      stroke-dasharray="3 3"
+                      class="dark:stroke-slate-600 transition-all pointer-events-none"
+                    />
+                    <circle
+                      :cx="hoverInfo.x"
+                      :cy="LOG_CHART.height - LOG_CHART.padding"
+                      r="2.5"
+                      fill="#94A3B8"
+                      class="dark:fill-slate-500 pointer-events-none"
+                    />
+                  </template>
 
                   <!-- Area fills -->
                   <path v-if="chartMetricFilter !== 'uv' && pageviewAreaPath" :d="pageviewAreaPath" fill="url(#pv-grad)" class="pointer-events-none" />
@@ -565,6 +654,28 @@ usePublicPageSeo(() => ({
                   <!-- Curves -->
                   <path v-if="chartMetricFilter !== 'uv'" :d="pageviewPath" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                   <path v-if="chartMetricFilter !== 'pv'" :d="visitorPath" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
+
+                  <!-- Active point subtle glow halos -->
+                  <template v-if="hoverInfo">
+                    <circle
+                      v-if="chartMetricFilter !== 'uv' && hoverInfo.pvY !== undefined"
+                      :cx="hoverInfo.x"
+                      :cy="hoverInfo.pvY"
+                      r="7"
+                      fill="#0284C7"
+                      fill-opacity="0.25"
+                      class="pointer-events-none"
+                    />
+                    <circle
+                      v-if="chartMetricFilter !== 'pv' && hoverInfo.uvY !== undefined"
+                      :cx="hoverInfo.x"
+                      :cy="hoverInfo.uvY"
+                      r="7"
+                      fill="#10B981"
+                      fill-opacity="0.25"
+                      class="pointer-events-none"
+                    />
+                  </template>
 
                   <!-- Points -->
                   <g>
@@ -599,15 +710,18 @@ usePublicPageSeo(() => ({
                   </g>
                 </svg>
 
+                <!-- Dynamic X-axis temporal labels -->
+                <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 dark:text-slate-500 pt-2 px-1 border-t border-slate-100 dark:border-slate-800/80">
+                  <span>{{ chartData[0] ? formatChartDate(chartData[0].date) : '' }}</span>
+                  <span v-if="chartData.length > 2">{{ formatChartDate(chartData[Math.floor(chartData.length / 2)]?.date) }}</span>
+                  <span>{{ chartData[chartData.length - 1] ? formatChartDate(chartData[chartData.length - 1]?.date) : '' }}</span>
+                </div>
+
                 <!-- Tooltip -->
                 <div
                   v-if="hoverInfo"
                   class="absolute z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-700 rounded shadow-md px-3.5 py-2.5 text-xs text-slate-700 dark:text-slate-200 pointer-events-none transition-transform"
-                  :style="{
-                    left: `${(hoverInfo.x / LOG_CHART.width) * 100}%`,
-                    top: `${(hoverInfo.y / LOG_CHART.height) * 100}%`,
-                    transform: 'translate(-50%, -125%)',
-                  }"
+                  :style="tooltipStyle"
                 >
                   <div class="font-bold text-slate-800 dark:text-slate-100 pb-1.5 mb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-serif">
                     <span>{{ hoverInfo.date }}</span>

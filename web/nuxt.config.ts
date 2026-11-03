@@ -100,7 +100,10 @@ export default defineNuxtConfig({
       rootPath: '/',
       timeoutMs: 8_000,
     },
-    public: {},
+    public: {
+      umamiScriptUrl: process.env.NUXT_PUBLIC_UMAMI_SCRIPT_URL || 'https://stats.guatswr.top/script.js',
+      umamiWebsiteId: process.env.NUXT_PUBLIC_UMAMI_WEBSITE_ID || '2b03bf5d-751a-4a7c-be54-d545fe250209',
+    },
   },
   site: {
     url: PRODUCTION_SITE_URL,
@@ -183,7 +186,7 @@ export default defineNuxtConfig({
     headers: {
       contentSecurityPolicy: {
         'img-src': ["'self'", 'data:', 'blob:'],
-        'connect-src': ["'self'", ...(import.meta.dev ? ['ws:'] : [])],
+        'connect-src': ["'self'", 'https://stats.guatswr.top', ...(import.meta.dev ? ['ws:'] : [])],
         'form-action': ["'self'"],
         'frame-ancestors': ["'none'"],
         'upgrade-insecure-requests': false,

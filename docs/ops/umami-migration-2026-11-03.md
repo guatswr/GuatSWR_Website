@@ -43,6 +43,7 @@ Umami 已完整迁移到 sshtenc 并与生产站接通。生产站 `/logs` 页�
 关键决策：
 
 - **镜像锁定 3.0.3，不用 `postgresql-latest`**。源库有 14 条已应用的 prisma 迁移，对应 3.0.3；直接上最新的 3.4.1 会触发不可回滚的 schema 自动迁移。为拿到完全一致的版本，从 jd 用 `docker save/load` 搬运镜像，加载后镜像 ID `28f263fe06f7` 与源站完全相同。
+  > **后续变更**：迁移稳定后已按需求升级到 3.4.1，详见文末「附录：升级到 3.4.1」。
 - **`HASH_SALT` 保持原值**。这个盐参与已存密码哈希，改动会导致 admin 登录失效。
 - **宿主机端口用 13036 而非 3036**。sshtenc 的 sshd 本身就监听 3036，首次启动直接冲突（`address already in use`）。绑定 `127.0.0.1:13036`，不对外暴露。
 - **接入 `guatswr_app` 网络并固定 IP `172.30.88.20`**。后端此前无 `extra_hosts`、无法用 `host.docker.internal` 访问宿主回环，走共享 compose 网络是最稳的路径。
@@ -206,4 +207,30 @@ UMAMI_WEBSITE_ID=2b03bf5d-751a-4a7c-be54-d545fe250209
 | backend env 备份 | `sshtenc:/root/backend.env.bak.20261103-213601` |
 | CF DNS 记录 ID | `d9af3279c9a8e42db159abec073eb233`（`stats.guatswr.top` → `43.142.74.19`） |
 | 迁移用 SQL 存档 | `jd:/root/umami-migration/umami.sql`（693K，可作回滚源） |
-| 镜像 tar 存档 | `jd:/root/umami-migration/umami-image.tar`（275M） |
+| 升级前 SQL 存档 | `sshtenc:/root/umami-pre-3.4.1.sql`（693K，SHA `23ef260f…`，3.0.3 回滚源） |
+
+---
+
+## 附录：升级到 3.4.1（2026-11-03 稍晚）
+
+迁移验收通过后按要求做了版本升级。
+
+**动作**：`pg_dump` 全量存档 → `docker pull postgresql-latest`（确认版本号 3.4.1）→ compose 里 `image` 去掉 `umami:3.0.3` 本地 tag 改为 registry tag → `docker compose up -d --force-recreate umami`。
+
+**结果**：
+
+- prisma 迁移从 14 条推进到 **26 条**（新增 api key、annotation、报告、漏斗、目标、收入、会话回放等表），容器日志 `All migrations have been successfully applied.`
+- admin 登录仍 200（`HASH_SALT` 未变，旧密码哈希继续有效）
+- 业务表行数不变：`website_event` 2196、`website` 1
+- `/api/logs/umami`、`/logs`、`stats.guatswr.top` 全部 200，容器日志 0 error
+
+**同时清理了迁移期遗留**：
+
+- 删除 sshtenc 上 1.36GB 悬空镜像（早期试探性拉取的 3.4.1，非在用版本）
+- 删除 jd 上 263MB 镜像 tar 与空日志，保留 693K 的 `umami.sql`
+- 删除 sshtenc 上临时传输文件；`authorized_keys` 已回到原 2 行
+
+**孤儿行纠错记录**：清理性能探针时，我先按「无事件的 session」批量删，误删了一条；排查后确认它是 jd 上我自己的探针残留（事件已删、只剩空壳），而 sshtenc 的 256 条才是原始真实值。已把 jd 侧那条也清掉，现在两侧均为 2196 事件 / 256 会话，最新事件停在 2026-11-01。**教训：孤儿 session 不能无脑删，要先用 `created_at` 对时刻、并和源库行数交叉比对。**
+
+**升级后新增能力（已实测）**：3.4.1 有独立的 `performance/*` 端点，可返回 LCP/INP/CLS/FCP/TTFB 的 p50/p75/p95，并能按 path/title/device/browser 分组。但追踪脚本里**默认关闭**，必须加 `data-performance="true"` 才会采集。验证方法见技能 `umami-analytics-ops` 的 `references/data-dimensions.md`。
+
