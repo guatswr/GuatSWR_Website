@@ -17,6 +17,11 @@ export interface CompressImageOptions {
   maxHeight?: number
 }
 
+type CompressorConstructor = new (file: File | Blob, options?: Record<string, unknown>) => unknown
+interface CompressorNestedModule {
+  default?: CompressorConstructor | { default?: CompressorConstructor }
+}
+
 export async function compressUploadImage(
   file: File,
   options: CompressImageOptions = {}
@@ -25,8 +30,10 @@ export async function compressUploadImage(
   if (file.type === 'image/gif' || file.type === 'image/svg+xml') return file
   if (file.size && file.size < COMPRESS_MIN_BYTES) return file
   try {
-    const mod = await import('compressorjs')
-    const Compressor = (mod as any).default?.default || (mod as any).default || mod
+    const rawMod = await import('compressorjs')
+    const mod = rawMod as unknown as CompressorNestedModule | CompressorConstructor
+    const defaultExport = (mod as CompressorNestedModule).default
+    const Compressor = (typeof defaultExport === 'object' && defaultExport && 'default' in defaultExport ? defaultExport.default : defaultExport) as CompressorConstructor || (mod as CompressorConstructor)
     return await new Promise<File>((resolve) => {
       try {
         void new Compressor(file, {
