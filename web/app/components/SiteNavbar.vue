@@ -14,10 +14,14 @@ const collapseScroll = ref<number>()
 const isDesktop = ref(false)
 const desktopActivityButton = ref<HTMLButtonElement | null>(null)
 const mobileActivityButton = ref<HTMLButtonElement | null>(null)
+const desktopOtherButton = ref<HTMLButtonElement | null>(null)
+const mobileOtherButton = ref<HTMLButtonElement | null>(null)
 const mobileMenuButton = ref<HTMLButtonElement | null>(null)
 const isMenuOpen = ref(false)
 const isActivitiesOpen = ref(false)
 const isMobileActivitiesOpen = ref(false)
+const isOtherOpen = ref(false)
+const isMobileOtherOpen = ref(false)
 const isScrolled = ref(false)
 const isPastFirstScreen = ref(false)
 const isCompact = computed(() => isScrolled.value && !isMenuOpen.value)
@@ -33,22 +37,39 @@ const activityLinks = [
   { name: '活动中心', path: '/events', desc: '联机、挑战与线下相聚', tag: '异变进行时' },
   { name: '往期活动回顾', path: '/activities', desc: '照片、记录与共同的回忆', tag: '记忆碎片' },
 ]
+const otherLinks = [
+  { name: '社群链接', path: '/social', desc: 'QQ群、频道与外部据点', tag: '博丽大结界' },
+  { name: '站点日志', path: '/logs', desc: '访问统计、性能与审计日志', tag: '日志档案' },
+  { name: '服务器监控', href: 'https://status.guatswr.top/', desc: '节点状态与服务可用性', tag: '河童重工', external: true },
+]
 const navLinks = [
   { name: '成员', path: '/members', title: '绯想天住民', number: '03' },
   { name: '群史', path: '/history', title: '绯想天群史', number: '04' },
-  { name: '社群链接', path: '/social', title: '博丽大结界', number: '05' },
-  { name: '资源', path: '/resources', title: '幻想乡书库', number: '06' },
+  { name: '资源', path: '/resources', title: '幻想乡书库', number: '05' },
 ]
 const isActivityRoute = computed(() => route.path === '/activities' || route.path.startsWith('/activity/') || route.path === '/events' || route.path.startsWith('/events/'))
+const isOtherRoute = computed(() => route.path === '/social' || route.path.startsWith('/social/') || route.path === '/logs' || route.path.startsWith('/logs/'))
 function closeMenus() {
   isMenuOpen.value = false
   isActivitiesOpen.value = false
   isMobileActivitiesOpen.value = false
+  isOtherOpen.value = false
+  isMobileOtherOpen.value = false
 }
 function toggleMenu() {
   const nextOpen = !isMenuOpen.value
   closeMenus()
   isMenuOpen.value = nextOpen
+}
+function toggleActivities() {
+  const next = !isActivitiesOpen.value
+  isOtherOpen.value = false
+  isActivitiesOpen.value = next
+}
+function toggleOther() {
+  const next = !isOtherOpen.value
+  isActivitiesOpen.value = false
+  isOtherOpen.value = next
 }
 function handleEscape(event: KeyboardEvent) {
   if (event.key !== 'Escape') return
@@ -56,9 +77,17 @@ function handleEscape(event: KeyboardEvent) {
     isActivitiesOpen.value = false
     desktopActivityButton.value?.focus()
   }
+  else if (isOtherOpen.value) {
+    isOtherOpen.value = false
+    desktopOtherButton.value?.focus()
+  }
   else if (isMobileActivitiesOpen.value && isMenuOpen.value) {
     isMobileActivitiesOpen.value = false
     mobileActivityButton.value?.focus()
+  }
+  else if (isMobileOtherOpen.value && isMenuOpen.value) {
+    isMobileOtherOpen.value = false
+    mobileOtherButton.value?.focus()
   }
   else if (isMenuOpen.value) {
     closeMenus()
@@ -72,6 +101,9 @@ function handleOutside(event: Event) {
 }
 function handleActivityFocusOut(event: FocusEvent) {
   if (event.currentTarget instanceof HTMLElement && (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node))) isActivitiesOpen.value = false
+}
+function handleOtherFocusOut(event: FocusEvent) {
+  if (event.currentTarget instanceof HTMLElement && (!event.relatedTarget || !event.currentTarget.contains(event.relatedTarget as Node))) isOtherOpen.value = false
 }
 let scrollFrame: number | null = null
 let frame: ReturnType<typeof browserScrollFrame> | undefined
@@ -347,7 +379,7 @@ onBeforeUnmount(() => {
               "
               :aria-expanded="isActivitiesOpen"
               aria-controls="desktop-activities-panel"
-              @click="isActivitiesOpen = !isActivitiesOpen"
+              @click="toggleActivities"
             >
               <span class="nav-number" aria-hidden="true">02</span
               ><span class="nav-label">活动</span>
@@ -413,6 +445,99 @@ onBeforeUnmount(() => {
             ><span class="nav-number" aria-hidden="true">{{ link.number }}</span
             ><span class="nav-label">{{ link.name }}</span></NuxtLink
           >
+          <div class="relative flex items-center" @focusout="handleOtherFocusOut">
+            <button
+              id="desktop-other-trigger"
+              ref="desktopOtherButton"
+              type="button"
+              class="nav-link"
+              :class="
+                isOtherRoute || isOtherOpen ? 'nav-link-active' : ''
+              "
+              :aria-expanded="isOtherOpen"
+              aria-controls="desktop-other-panel"
+              @click="toggleOther"
+            >
+              <span class="nav-number" aria-hidden="true">06</span
+              ><span class="nav-label">其它</span>
+              <svg
+                class="nav-chevron transition-transform duration-300"
+                :class="isOtherOpen ? 'rotate-180' : ''"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="1.8"
+                aria-hidden="true"
+              >
+                <path
+                  d="m6 9 6 6 6-6"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                />
+              </svg>
+            </button>
+            <Transition name="club-menu">
+              <div
+                v-show="isOtherOpen"
+                id="desktop-other-panel"
+                :inert="!isOtherOpen"
+                role="group"
+                aria-labelledby="desktop-other-trigger"
+                class="club-nav-panel absolute right-0 top-full mt-2 w-72 border p-2 shadow-lg"
+              >
+                <template v-for="link in otherLinks" :key="link.name">
+                  <a
+                    v-if="link.external"
+                    :href="link.href"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    :aria-label="link.name"
+                    class="block border-l-2 border-transparent px-4 py-3 text-slate-700 transition-colors hover:border-sky-500 hover:bg-sky-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                    @click="closeMenus"
+                  >
+                    <span
+                      class="flex items-center justify-between gap-2 text-sm font-semibold"
+                    >
+                      <span class="inline-flex items-center gap-1">
+                        {{ link.name }}
+                        <span class="text-xs text-slate-400 dark:text-slate-500" aria-hidden="true">↗</span>
+                      </span>
+                      <span
+                        class="text-[10px] font-normal text-slate-500 dark:text-slate-400"
+                        >{{ link.tag }}</span
+                      >
+                    </span>
+                    <span
+                      class="mt-1 block text-xs leading-5 text-slate-500 dark:text-slate-400"
+                      >{{ link.desc }}</span
+                    >
+                  </a>
+                  <NuxtLink
+                    v-else
+                    :prefetch="false"
+                    :to="link.path"
+                    :aria-label="link.name"
+                    class="block border-l-2 border-transparent px-4 py-3 text-slate-700 transition-colors hover:border-sky-500 hover:bg-sky-50 dark:text-slate-200 dark:hover:bg-slate-800"
+                    active-class="bg-sky-50 text-sky-700 dark:bg-slate-800 dark:text-sky-300"
+                    @click="closeMenus"
+                  >
+                    <span
+                      class="flex items-center justify-between gap-2 text-sm font-semibold"
+                      >{{ link.name
+                      }}<span
+                        class="text-[10px] font-normal text-slate-500 dark:text-slate-400"
+                        >{{ link.tag }}</span
+                      ></span
+                    >
+                    <span
+                      class="mt-1 block text-xs leading-5 text-slate-500 dark:text-slate-400"
+                      >{{ link.desc }}</span
+                    >
+                  </NuxtLink>
+                </template>
+              </div>
+            </Transition>
+          </div>
           <div
             class="nav-divider"
             aria-hidden="true"
@@ -618,16 +743,83 @@ onBeforeUnmount(() => {
             ><span class="nav-number" aria-hidden="true">{{ link.number }}</span
             >{{ link.name }}</NuxtLink
           >
-          <div
-            class="mt-3 grid grid-cols-2 gap-2 border-t border-slate-100 pt-3 dark:border-slate-800"
+          <button
+            id="mobile-other-trigger"
+            ref="mobileOtherButton"
+            type="button"
+            class="mobile-nav-link w-full justify-between"
+            :class="isOtherRoute ? 'nav-link-active' : ''"
+            :aria-expanded="isMobileOtherOpen"
+            aria-controls="mobile-other-panel"
+            @click="isMobileOtherOpen = !isMobileOtherOpen"
           >
-            <NuxtLink
-              :prefetch="false"
-              to="/logs"
-              class="mobile-nav-link justify-center text-sm"
-              @click="closeMenus"
-              >站点日志</NuxtLink
+            <span class="flex items-center gap-3"
+              ><span class="nav-number" aria-hidden="true">06</span>其它</span
             >
+            <svg
+              class="h-4 w-4 transition-transform duration-200"
+              :class="isMobileOtherOpen ? 'rotate-180' : ''"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.8"
+              aria-hidden="true"
+            >
+              <path
+                d="m6 9 6 6 6-6"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+              />
+            </svg>
+          </button>
+          <Transition name="club-menu">
+            <div
+              v-show="isMobileOtherOpen"
+              id="mobile-other-panel"
+              :inert="!isMobileOtherOpen"
+              role="group"
+              aria-labelledby="mobile-other-trigger"
+              class="ml-4 space-y-1 border-l border-sky-100 pl-3 dark:border-slate-800"
+            >
+              <template v-for="link in otherLinks" :key="link.name">
+                <a
+                  v-if="link.external"
+                  :href="link.href"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  :aria-label="link.name"
+                  class="mobile-nav-link flex-wrap gap-x-2 text-sm"
+                  @click="closeMenus"
+                >
+                  <span class="inline-flex items-center gap-1">
+                    {{ link.name }}
+                    <span class="text-xs text-slate-400 dark:text-slate-500" aria-hidden="true">↗</span>
+                  </span>
+                  <span
+                    class="text-xs font-normal text-slate-500 dark:text-slate-400"
+                    >{{ link.tag }}</span
+                  >
+                </a>
+                <NuxtLink
+                  v-else
+                  :prefetch="false"
+                  :to="link.path"
+                  :aria-label="link.name"
+                  class="mobile-nav-link flex-wrap gap-x-2 text-sm"
+                  active-class="nav-link-active"
+                  @click="closeMenus"
+                  >{{ link.name
+                  }}<span
+                    class="text-xs font-normal text-slate-500 dark:text-slate-400"
+                    >{{ link.tag }}</span
+                  ></NuxtLink
+                >
+              </template>
+            </div>
+          </Transition>
+          <div
+            class="mt-3 border-t border-slate-100 pt-3 dark:border-slate-800"
+          >
             <NuxtLink
               :prefetch="false"
               to="/login"

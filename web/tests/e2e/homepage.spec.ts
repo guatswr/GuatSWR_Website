@@ -3,13 +3,20 @@ import type { Page } from '@playwright/test'
 import { configFixture, settleImages, upstreamActivitiesPage } from './support/public-parity'
 
 async function openNavLink(page: Page, isMobile: boolean, name: string): Promise<void> {
-  if (isMobile) await page.getByRole('button', { name: '打开导航菜单' }).click()
+  const nav = page.getByRole('navigation', { name: '主导航' })
+  if (isMobile) {
+    await page.getByRole('button', { name: '打开导航菜单' }).click()
+    if (['社群链接', '站点日志', '服务器监控'].includes(name)) {
+      await nav.getByRole('button', { name: '其它' }).click()
+    }
+  } else if (['社群链接', '站点日志', '服务器监控'].includes(name)) {
+    await nav.getByRole('button', { name: '其它' }).click()
+  }
   // The same destination is legitimately rendered by the primary navigation, the
   // footer and the wordmark (whose accessible name merely *contains* "首页").
   // Scope to the primary navigation and match the name exactly, so the helper
   // selects the one link it means instead of three.
-  await page
-    .getByRole('navigation', { name: '主导航' })
+  await nav
     .getByRole('link', { name, exact: true })
     .click()
 }
