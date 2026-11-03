@@ -4,6 +4,7 @@ import type { Ref } from 'vue'
 import { acquireScopedState, bindPublicConfig } from '../app/utils/public-config-sync'
 import {
   normalizedGroupNumber,
+  parseFriendLinks,
   parseHomeLinks,
   safeHttpUrl
 } from '../app/utils/site-config'
@@ -21,6 +22,7 @@ const config = (overrides: Record<string, unknown> = {}) => ({
   qq_join_url: '',
   join_question: '你是怎么入坑东方的？',
   home_links: '',
+  friend_links: '',
   ...overrides
 })
 
@@ -204,6 +206,20 @@ describe('archived social link filtering', () => {
     expect(normalizedGroupNumber('1234567890123')).toBe('')
     expect(normalizedGroupNumber('12345abc')).toBe('')
     expect(normalizedGroupNumber(123456)).toBe('')
+  })
+
+  it('returns an empty friend link list when unset or invalid and projects valid friend links', () => {
+    expect(parseFriendLinks('')).toEqual([])
+    expect(parseFriendLinks('{bad')).toEqual([])
+    const friends = parseFriendLinks(
+      JSON.stringify([
+        { title: '友社官网', url: 'https://friend.example.org/', subtitle: '兄弟社团', iconText: '友' },
+        { title: 'Bad', url: 'javascript:alert(1)' }
+      ])
+    )
+    expect(friends).toEqual([
+      { title: '友社官网', url: 'https://friend.example.org/', subtitle: '兄弟社团', iconText: '友' }
+    ])
   })
 })
 

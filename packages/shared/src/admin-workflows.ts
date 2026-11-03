@@ -55,3 +55,12 @@ export const adminHomeLinkSchema = z.object({
 })
 export type AdminHomeLink = z.infer<typeof adminHomeLinkSchema>
 export const adminHomeLinksSchema = z.array(adminHomeLinkSchema).max(50)
+
+export const adminFriendLinkSchema = z.object({
+  title: z.string().trim().min(1).max(200), subtitle: z.string().max(200).default(''), extra: z.string().max(500).default(''),
+  url: z.url().refine(value => /^https?:\/\//i.test(value), '请输入 http:// 或 https:// 链接'),
+  iconText: z.string().max(30).default(''), iconUrl: z.string().max(500).default(''),
+  iconBg: z.string().max(100).default('#000000'), iconColor: z.string().max(100).default('#ffffff'),
+})
+export type AdminFriendLink = z.infer<typeof adminFriendLinkSchema>
+export const adminFriendLinksSchema = z.array(adminFriendLinkSchema).max(50)

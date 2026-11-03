@@ -46,7 +46,7 @@ describe('admin request schemas mirror the frozen backend', () => {
   })
 
   it('restricts configuration writes to the admin-editable keys', () => {
-    expect(ADMIN_CONFIG_KEYS).toHaveLength(10)
+    expect(ADMIN_CONFIG_KEYS).toHaveLength(11)
     expect(adminConfigWriteSchema.parse({ key: 'qq_join_url', value: '  https://qm.qq.com/x  ' }).value)
       .toBe('https://qm.qq.com/x')
     expect(adminConfigWriteSchema.safeParse({ key: 'token_version', value: '1' }).success).toBe(false)

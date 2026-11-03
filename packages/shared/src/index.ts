@@ -13,6 +13,7 @@ export const publicConfigSchema = z.object({
   qq_join_url: z.string().default(defaultPublicConfig.qq_join_url),
   join_question: z.string().default(defaultPublicConfig.join_question),
   home_links: z.string().default(defaultPublicConfig.home_links),
+  friend_links: z.string().default(defaultPublicConfig.friend_links),
 })
 
 export type PublicSiteConfig = z.infer<typeof publicConfigSchema>

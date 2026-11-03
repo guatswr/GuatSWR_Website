@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useSiteConfigStore } from '../stores/site-config'
+import { parseFriendLinks } from '../utils/site-config'
 
 const site = useSiteConfigStore(usePinia())
 const year = new Date().getFullYear()
@@ -9,6 +10,7 @@ const groupNumber = computed(() =>
     ? site.config.qq_group_number
     : ''
 )
+const friendLinks = computed(() => parseFriendLinks(site.config.friend_links))
 const quickLinks = [
   { name: '首页', path: '/' },
   { name: '活动', path: '/events' },
@@ -18,8 +20,6 @@ const quickLinks = [
   { name: '社群链接', path: '/social' },
   { name: '资源中心', path: '/resources' }
 ]
-
-
 </script>
 
 <template>
@@ -76,7 +76,7 @@ const quickLinks = [
               target="_blank"
               rel="noopener noreferrer"
               class="club-footer-link"
-            >服务器监控 <span aria-hidden="true">↗</span></a>
+            >服务器监控</a>
             <NuxtLink :prefetch="false" to="/logs" class="club-footer-link"
               >站点日志</NuxtLink
             >
@@ -85,6 +85,26 @@ const quickLinks = [
             >
           </div>
         </div>
+      </div>
+
+      <div
+        v-if="friendLinks.length > 0"
+        class="border-t border-white/10 py-6"
+      >
+        <p class="club-footer-heading">友情链接</p>
+        <ul class="mt-3 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm">
+          <li v-for="(link, index) in friendLinks" :key="`${index}-${link.url}`">
+            <a
+              :href="link.url"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="club-footer-link inline-flex items-center gap-1.5"
+            >
+              <span>{{ link.title || link.url }}</span>
+              <span class="sr-only">（在新标签页打开）</span>
+            </a>
+          </li>
+        </ul>
       </div>
 
       <div

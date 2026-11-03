@@ -10,4 +10,5 @@ export const defaultPublicConfig = {
   qq_join_url: '',
   join_question: '你是怎么入坑东方的？',
   home_links: '',
+  friend_links: '',
 } as const

@@ -4,7 +4,7 @@ import { defaultPublicConfig } from '@guatswr/shared/config'
 import type { PublicSiteConfig } from '@guatswr/shared'
 import { useSiteConfigStore } from '~/stores/site-config'
 import { acquireScopedState, bindPublicConfig } from '~/utils/public-config-sync'
-import { parseHomeLinks } from '~/utils/site-config'
+import { parseFriendLinks, parseHomeLinks } from '~/utils/site-config'
 import type { SocialLink } from '~/utils/site-config'
 
 /**
@@ -19,6 +19,7 @@ export const PUBLIC_CONFIG_ERROR = '暂时无法加载社团信息，请稍后�
 export interface PublicConfigState {
   config: ComputedRef<PublicSiteConfig>
   socialLinks: ComputedRef<SocialLink[]>
+  friendLinks: ComputedRef<SocialLink[]>
   pending: Ref<boolean>
   error: ComputedRef<string>
   /** Resolves once the shared request has settled; await it before deriving SEO. */
@@ -53,6 +54,7 @@ function createPublicConfigState(): PublicConfigState {
   return {
     config,
     socialLinks: computed(() => parseHomeLinks(config.value.home_links)),
+    friendLinks: computed(() => parseFriendLinks(config.value.friend_links)),
     pending: request.pending,
     error: computed(() => (request.error.value ? PUBLIC_CONFIG_ERROR : '')),
     ready: request.then(() => undefined),

@@ -59,6 +59,7 @@ export const ADMIN_CONFIG_KEYS = [
   'qq_join_url',
   'join_question',
   'home_links',
+  'friend_links',
 ] as const
 
 export const adminConfigKeySchema = z.enum(ADMIN_CONFIG_KEYS)
@@ -268,6 +269,7 @@ export const adminConfigSchema = z.object({
   qq_join_url: stringOrEmpty,
   join_question: stringOrEmpty,
   home_links: stringOrEmpty,
+  friend_links: stringOrEmpty,
 })
 
 export type AdminConfig = z.infer<typeof adminConfigSchema>

@@ -53,6 +53,7 @@ const PUBLIC_CONFIG_KEYS = new Set([
   'qq_join_url',
   'join_question',
   'home_links',
+  'friend_links',
 ])
 
 const JWT_PATTERN = /\beyJ[A-Za-z0-9_-]{4,}\.[A-Za-z0-9_-]{4,}(?:\.[A-Za-z0-9_-]+)?/g

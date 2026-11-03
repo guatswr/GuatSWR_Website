@@ -148,7 +148,7 @@ test('home boundary keeps the departing geometry in both directions', async ({ p
   expect(original).not.toBeNull()
   await observe(page)
   await nav(page, '/social', isMobile)
-  await expect(page.getByRole('heading', { name: '绯想天 · 外界通讯' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '社群链接' })).toBeVisible()
   await settled(page)
   const samples = await frames(page, info)
   const leaving = samples.flatMap(frame => frame.transitions).filter(node => node.classes.includes('club-page-leave-active'))
@@ -189,7 +189,7 @@ test('slow destination data keeps the outgoing content visible until ready', asy
   const click = nav(page, '/members', isMobile)
   try {
     await requested
-    await expect(page.getByRole('heading', { name: '绯想天 · 外界通讯' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: '社群链接' })).toBeVisible()
     await expect(page.locator('main > .club-page-stack > :first-child')).toHaveCSS('opacity', '1')
     await expect(page.locator('.club-page-leave-active')).toHaveCount(0)
   }
@@ -262,7 +262,7 @@ test('reduced motion removes fades while first-load SSR stays visible', async ({
   try {
     const staticPage = await context.newPage()
     await staticPage.goto('/social')
-    await expect(staticPage.getByRole('heading', { name: '绯想天 · 外界通讯' })).toBeVisible()
+    await expect(staticPage.getByRole('heading', { name: '社群链接' })).toBeVisible()
     await expect(staticPage.locator('main > .club-page-stack > :first-child')).toHaveCSS('opacity', '1')
   }
   finally { await context.close() }

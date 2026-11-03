@@ -65,17 +65,7 @@ const readText = (
   return typeof value === 'string' ? value : undefined
 }
 
-export function parseHomeLinks(value: unknown): SocialLink[] {
-  let raw: unknown = DEFAULT_SOCIAL_LINKS
-  if (value) {
-    try {
-      const parsed: unknown = typeof value === 'string' ? JSON.parse(value) : value
-      if (Array.isArray(parsed)) raw = parsed
-    } catch {
-      // Keep the existing public accounts available when older config is invalid.
-    }
-  }
-  const items: unknown[] = Array.isArray(raw) ? raw : []
+function sanitizeLinkList(items: readonly unknown[]): SocialLink[] {
   const links: SocialLink[] = []
   for (const item of items) {
     if (!isRecord(item)) continue
@@ -90,6 +80,30 @@ export function parseHomeLinks(value: unknown): SocialLink[] {
     links.push(link)
   }
   return links
+}
+
+export function parseHomeLinks(value: unknown): SocialLink[] {
+  let raw: unknown = DEFAULT_SOCIAL_LINKS
+  if (value) {
+    try {
+      const parsed: unknown = typeof value === 'string' ? JSON.parse(value) : value
+      if (Array.isArray(parsed)) raw = parsed
+    } catch {
+      // Keep the existing public accounts available when older config is invalid.
+    }
+  }
+  const items: unknown[] = Array.isArray(raw) ? raw : []
+  return sanitizeLinkList(items)
+}
+
+export function parseFriendLinks(value: unknown): SocialLink[] {
+  if (!value) return []
+  try {
+    const parsed: unknown = typeof value === 'string' ? JSON.parse(value) : value
+    return Array.isArray(parsed) ? sanitizeLinkList(parsed) : []
+  } catch {
+    return []
+  }
 }
 
 /** The archived pages only accept a plain 5–12 digit QQ group number. */

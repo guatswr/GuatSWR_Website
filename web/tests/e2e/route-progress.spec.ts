@@ -75,7 +75,7 @@ test('cached fast navigation shows one bar throughout the visible page transitio
   await expect(page.locator('#join-title')).toBeVisible()
   await expect(bar(page)).toHaveCSS('opacity', '0')
   await page.goBack()
-  await expect(page.getByRole('heading', { name: '绯想天 · 外界通讯' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: '社群链接' })).toBeVisible()
   await expect(bar(page)).toHaveCSS('opacity', '0')
   await observe(page)
   await join()

@@ -1,15 +1,21 @@
 <script setup lang="ts">
 import { computed, onUnmounted, ref } from 'vue'
-import HomeSocialLinks from '~/components/HomeSocialLinks.vue'
-import ClubIcon from '~/components/ClubIcon.vue'
 import { normalizedGroupNumber } from '~/utils/site-config'
+import type { SocialLink } from '~/utils/site-config'
 
-const { config, socialLinks: links, pending: loading, error: errorMessage, retry, ready } = usePublicConfig()
+const {
+  config,
+  socialLinks: links,
+  friendLinks,
+  pending: loading,
+  error: errorMessage,
+  retry,
+  ready
+} = usePublicConfig()
 
 await ready
 
 const groupNumber = computed(() => normalizedGroupNumber(config.value.qq_group_number))
-const linkCount = computed(() => links.value.length)
 
 const copying = ref(false)
 const copied = ref(false)
@@ -26,10 +32,29 @@ const copyGroupNumber = async (): Promise<void> => {
       copied.value = false
     }, 2500)
   } catch {
-    // If clipboard access is rejected, the user can still read the group number.
+    copied.value = false
   } finally {
     copying.value = false
   }
+}
+
+const failedIcons = ref<Record<string, boolean>>({})
+
+const iconKey = (prefix: string, index: number, link: SocialLink): string =>
+  `${prefix}-${index}-${link.iconUrl || ''}`
+
+const showImageIcon = (prefix: string, index: number, link: SocialLink): boolean =>
+  Boolean(link.iconUrl) && !failedIcons.value[iconKey(prefix, index, link)]
+
+const markIconFailed = (prefix: string, index: number, link: SocialLink): void => {
+  failedIcons.value[iconKey(prefix, index, link)] = true
+}
+
+const iconInitial = (link: SocialLink, fallback: string): string => {
+  const custom = link.iconText?.trim()
+  if (custom) return custom.slice(0, 2)
+  const title = link.title?.trim()
+  return title ? title.slice(0, 1) : fallback
 }
 
 onUnmounted(() => {
@@ -37,422 +62,588 @@ onUnmounted(() => {
 })
 
 usePublicSeo({
-  title: '博丽大结界',
+  title: '社群链接',
   path: '/social',
-  description: '桂航绯想天社群与创作平台入口，在你习惯的地方保持联系、分享东方 Project 创作。'
+  description: '桂航绯想天社群平台入口与友情链接汇总。'
 })
 </script>
 
 <template>
   <div class="club-paper min-h-screen">
-    <div class="club-container py-12 sm:py-20">
-      <header class="border-b border-slate-200 pb-10 dark:border-slate-800">
-        <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
-          <div class="min-w-0">
-            <p class="club-eyebrow">博丽大结界 · ELSEWHERE, TOGETHER</p>
-            <h1 class="club-page-title mt-4">绯想天 · 外界通讯</h1>
-            <p class="mt-4 max-w-xl text-sm leading-8 text-slate-500 dark:text-slate-400">
-              分享同人创作，约一场 STG / 绯想天则对战，或在语音频道里打声招呼。穿过结界，在你习惯的地方，随时找到我们。
-            </p>
+    <div class="club-container social-page">
+      <header class="social-header">
+        <div class="social-header-main">
+          <h1>社群链接</h1>
+          <p class="social-lead">
+            汇总桂航绯想天官方平台、交流群组与友好社团站点链接。
+          </p>
+        </div>
+
+        <div class="social-header-meta">
+          <div v-if="groupNumber" class="social-group-chip">
+            <span class="social-group-label">QQ 交流群</span>
+            <span class="social-group-code">{{ groupNumber }}</span>
+            <button
+              type="button"
+              class="social-copy-btn"
+              :aria-label="copied ? '群号已复制' : '复制群号'"
+              @click="copyGroupNumber"
+            >
+              <i :class="copied ? 'ti ti-check' : 'ti ti-copy'" aria-hidden="true" />
+              <span>{{ copied ? '已复制' : '复制' }}</span>
+            </button>
           </div>
 
-          <dl class="social-index" aria-label="结界概况">
-            <div class="social-index-row">
-              <dt>收录渠道</dt>
-              <dd class="inline-flex items-center gap-1.5">
-                <span class="social-status-dot" aria-hidden="true"/>
-                <span>{{ linkCount }} 处</span>
-              </dd>
-            </div>
-            <div v-if="groupNumber" class="social-index-row">
-              <dt>同好交流群</dt>
-              <dd class="flex items-center gap-2">
-                <span class="font-mono">{{ groupNumber }}</span>
-                <button
-                  type="button"
-                  class="social-copy-trigger"
-                  :title="copied ? '群号已复制' : '复制群号'"
-                  @click="copyGroupNumber"
-                >
-                  <ClubIcon :name="copied ? 'check' : 'copy'" class="h-3 w-3" />
-                  <span class="sr-only">{{ copied ? '群号已复制' : '复制群号' }}</span>
-                </button>
-              </dd>
-            </div>
-            <p v-if="copied" class="social-index-copied" role="status">
-              群号已复制到剪贴板
-            </p>
-          </dl>
+          <NuxtLink to="/join" class="social-join-btn">
+            <span>加入同好群</span>
+            <i class="ti ti-arrow-right" aria-hidden="true" />
+          </NuxtLink>
         </div>
       </header>
 
-      <section class="social-layout" aria-labelledby="channels-title">
-        <aside class="social-aside">
-          <p class="club-eyebrow text-xs">COMMUNITY DIRECTORY</p>
-          <h2 id="channels-title" class="social-aside-title">
-            保持联系
-          </h2>
-          <p class="social-aside-body">
-            关注社团最新动态，探索更多同好阵地。以下链接均为社团官方或长期活跃的交流渠道，将在新标签页中打开。
-          </p>
+      <p v-if="loading" class="social-status" role="status">
+        正在加载链接数据…
+      </p>
 
-          <div class="social-aside-guidelines">
-            <h3 class="social-guidelines-heading">
-              同好公约
-            </h3>
-            <ul class="social-guidelines-list">
-              <li>
-                <span class="social-guideline-bullet" aria-hidden="true">•</span>
-                <span><strong>纯粹东方</strong>：交流原作游戏、音乐与二创创作</span>
-              </li>
-              <li>
-                <span class="social-guideline-bullet" aria-hidden="true">•</span>
-                <span><strong>友善包容</strong>：欢迎所有新手，尊重多元审美与讨论</span>
-              </li>
-              <li>
-                <span class="social-guideline-bullet" aria-hidden="true">•</span>
-                <span><strong>互助同行</strong>：共建真诚干净的东方同好阵地</span>
-              </li>
-            </ul>
-          </div>
+      <div v-else-if="errorMessage" class="social-status social-status-error" role="status">
+        <p>{{ errorMessage }}</p>
+        <button type="button" class="social-retry-btn" @click="retry">
+          <i class="ti ti-refresh" aria-hidden="true" />
+          <span>重新加载</span>
+        </button>
+      </div>
 
-          <div class="social-aside-action">
-            <NuxtLink to="/join" class="club-text-link">
-              加入同好群 <span aria-hidden="true">→</span>
-            </NuxtLink>
-            <p class="mt-1 text-xs text-slate-400 dark:text-slate-500">
-              查看群号、加群验证问答与二维码
+      <div v-else class="social-sections">
+        <section class="social-section" aria-labelledby="network-heading">
+          <div class="social-section-head">
+            <div class="social-section-title-row">
+              <h2 id="network-heading">绯想天网络</h2>
+              <span class="social-count">{{ links.length }} 项</span>
+            </div>
+            <p class="social-section-desc">
+              社团官方账号、直播频道与日常交流阵地，点击卡片可在新标签页打开。
             </p>
           </div>
-        </aside>
 
-        <div class="social-channels min-w-0">
-          <p v-if="loading" class="py-10 text-sm text-slate-500" role="status">
-            正在建立外界链接…
-          </p>
-          <div
-            v-else-if="errorMessage"
-            class="py-10 text-sm text-red-600 dark:text-red-400"
-            role="status"
-          >
-            <p>{{ errorMessage }}</p>
-            <button type="button" class="club-text-link mt-3" @click="retry">
-              重新加载
-            </button>
-          </div>
-          <template v-else>
-            <div class="social-channel-list">
-              <HomeSocialLinks :links="links" />
-            </div>
-
-            <div class="social-join-banner">
-              <div class="min-w-0">
-                <p class="club-eyebrow">YOUR NEXT CHAPTER · 同好集结</p>
-                <p class="social-join-title mt-2">
-                  想穿过结界，亲自来看看？
-                </p>
-                <p class="mt-3 text-sm leading-7 text-slate-500 dark:text-slate-400">
-                  无需任何入坑门槛，带上你的热爱就好。加群打声招呼、参与线下例会、或是共同创作，桂航绯想天欢迎每一位同好。
-                </p>
-              </div>
-
-              <div class="social-join-actions">
-                <NuxtLink to="/join" class="club-button club-button-primary shrink-0">
-                  加入桂航绯想天 <ClubIcon name="arrow" class="h-4 w-4" />
-                </NuxtLink>
-                <button
-                  v-if="groupNumber"
-                  type="button"
-                  class="social-join-copy-btn shrink-0"
-                  @click="copyGroupNumber"
+          <ul v-if="links.length" class="social-grid" role="list">
+            <li v-for="(link, index) in links" :key="`net-${index}-${link.url}`">
+              <a
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-card"
+              >
+                <div
+                  class="social-card-icon"
+                  :style="{
+                    backgroundColor: showImageIcon('net', index, link)
+                      ? 'transparent'
+                      : link.iconBg || 'var(--surface-1)',
+                    color: link.iconColor || 'var(--text-primary)'
+                  }"
+                  aria-hidden="true"
                 >
-                  <ClubIcon :name="copied ? 'check' : 'copy'" class="h-3.5 w-3.5" />
-                  <span>{{ copied ? '已复制群号' : `复制群号 ${groupNumber}` }}</span>
-                </button>
-              </div>
+                  <img
+                    v-if="showImageIcon('net', index, link)"
+                    :src="link.iconUrl"
+                    alt=""
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                    class="social-card-img"
+                    @error="markIconFailed('net', index, link)"
+                  >
+                  <span v-else class="social-card-initial">
+                    {{ iconInitial(link, '社') }}
+                  </span>
+                </div>
+
+                <div class="social-card-body">
+                  <div class="social-card-top">
+                    <h3>{{ link.title || '未命名链接' }}</h3>
+                    <i class="ti ti-external-link social-card-ext" aria-hidden="true" />
+                  </div>
+                  <p v-if="link.subtitle" class="social-card-sub">
+                    {{ link.subtitle }}
+                  </p>
+                  <p v-if="link.extra" class="social-card-extra">
+                    {{ link.extra }}
+                  </p>
+                </div>
+
+                <span class="sr-only">（在新标签页打开）</span>
+              </a>
+            </li>
+          </ul>
+          <div v-else class="social-empty">
+            暂未配置社团网络链接。
+          </div>
+        </section>
+
+        <section class="social-section" aria-labelledby="friends-heading">
+          <div class="social-section-head">
+            <div class="social-section-title-row">
+              <h2 id="friends-heading">友情链接</h2>
+              <span class="social-count">{{ friendLinks.length }} 项</span>
             </div>
-          </template>
-        </div>
-      </section>
+            <p class="social-section-desc">
+              友好高校东方社团与关联站点，已收录的友链也会自适应展示在全站页脚。
+            </p>
+          </div>
+
+          <ul v-if="friendLinks.length" class="social-grid" role="list">
+            <li v-for="(link, index) in friendLinks" :key="`friend-${index}-${link.url}`">
+              <a
+                :href="link.url"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="social-card"
+              >
+                <div
+                  class="social-card-icon"
+                  :style="{
+                    backgroundColor: showImageIcon('friend', index, link)
+                      ? 'transparent'
+                      : link.iconBg || 'var(--surface-1)',
+                    color: link.iconColor || 'var(--text-primary)'
+                  }"
+                  aria-hidden="true"
+                >
+                  <img
+                    v-if="showImageIcon('friend', index, link)"
+                    :src="link.iconUrl"
+                    alt=""
+                    width="40"
+                    height="40"
+                    loading="lazy"
+                    decoding="async"
+                    class="social-card-img"
+                    @error="markIconFailed('friend', index, link)"
+                  >
+                  <span v-else class="social-card-initial">
+                    {{ iconInitial(link, '友') }}
+                  </span>
+                </div>
+
+                <div class="social-card-body">
+                  <div class="social-card-top">
+                    <h3>{{ link.title || '未命名友链' }}</h3>
+                    <i class="ti ti-external-link social-card-ext" aria-hidden="true" />
+                  </div>
+                  <p v-if="link.subtitle" class="social-card-sub">
+                    {{ link.subtitle }}
+                  </p>
+                  <p v-if="link.extra" class="social-card-extra">
+                    {{ link.extra }}
+                  </p>
+                </div>
+
+                <span class="sr-only">（在新标签页打开）</span>
+              </a>
+            </li>
+          </ul>
+          <div v-else class="social-empty">
+            暂未收录友情链接。
+          </div>
+        </section>
+      </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.social-index {
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  margin: 0;
-  padding: 1rem 1.25rem;
-  border: 1px solid #dce4e8;
-  border-top: 2px solid #0284c7;
-  border-radius: 2px;
-  background-color: #ffffff;
-  font-size: 0.75rem;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.04);
-}
-:global(.dark .social-index) {
-  border-color: #293847;
-  border-top-color: #38bdf8;
-  background-color: rgb(20 32 43 / 0.7);
-  box-shadow: none;
-}
-
-.social-index-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-.social-index-row dt {
-  color: #64748b;
-  letter-spacing: 0.02em;
-}
-.social-index-row dd {
-  margin: 0;
-  font-weight: 600;
-  color: #0f172a;
-}
-:global(.dark .social-index-row dt) {
-  color: #94a3b8;
-}
-:global(.dark .social-index-row dd) {
-  color: #f1f5f9;
-}
-
-.social-status-dot {
-  display: inline-block;
-  height: 0.5rem;
-  width: 0.5rem;
-  border-radius: 9999px;
-  background-color: #10b981;
-}
-
-.social-copy-trigger {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  height: 1.375rem;
-  width: 1.375rem;
-  padding: 0;
-  border: 1px solid #e2e8f0;
-  border-radius: 2px;
-  background-color: #f8fafc;
-  color: #64748b;
-  cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease,
-    color 150ms ease;
-}
-:global(.dark .social-copy-trigger) {
-  border-color: #293847;
-  background-color: #1a2836;
-  color: #94a3b8;
-}
-.social-copy-trigger:hover {
-  border-color: #0284c7;
-  background-color: #e0f2fe;
-  color: #0284c7;
-}
-:global(.dark .social-copy-trigger:hover) {
-  border-color: #38bdf8;
-  background-color: rgb(2 132 199 / 0.2);
-  color: #38bdf8;
-}
-
-.social-index-copied {
-  margin: 0;
-  padding-top: 0.25rem;
-  font-size: 0.6875rem;
-  font-weight: 500;
-  color: #059669;
-}
-:global(.dark .social-index-copied) {
-  color: #34d399;
-}
-
-.social-layout {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr);
-  gap: 3rem;
-  padding-block: 3rem;
-}
-@media (min-width: 1024px) {
-  .social-layout {
-    grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
-    gap: 4.5rem;
-  }
-}
-
-.social-aside {
-  min-width: 0;
-}
-@media (min-width: 1024px) {
-  .social-aside {
-    position: sticky;
-    top: 6rem;
-    align-self: start;
-  }
-}
-
-.social-aside-title {
-  margin-top: 0.75rem;
-  font-family: var(--club-serif);
-  font-size: clamp(1.4rem, 2.2vw, 1.75rem);
-  font-weight: 600;
-  line-height: 1.4;
-  letter-spacing: -0.02em;
-  color: #0f172a;
-}
-:global(.dark .social-aside-title) {
-  color: #f1f5f9;
-}
-
-.social-aside-body {
-  margin-top: 0.875rem;
-  font-size: 0.875rem;
-  line-height: 1.9;
-  color: #475569;
-}
-:global(.dark .social-aside-body) {
-  color: #94a3b8;
-}
-
-.social-aside-guidelines {
-  margin-top: 1.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e2e8f0;
-}
-:global(.dark .social-aside-guidelines) {
-  border-top-color: #293847;
-}
-
-.social-guidelines-heading {
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: #94a3b8;
-}
-:global(.dark .social-guidelines-heading) {
-  color: #64748b;
-}
-
-.social-guidelines-list {
-  margin: 0.75rem 0 0 0;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: 0.625rem;
-  font-size: 0.75rem;
+.social-page {
+  --surface-0: transparent;
+  --surface-1: #f1f5f9;
+  --surface-2: #ffffff;
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #64748b;
+  --text-accent: #0369a1;
+  --text-danger: #dc2626;
+  --border: #cbd5e1;
+  --border-strong: #64748b;
+  --border-accent: #0284c7;
+  --radius: 8px;
+  --font-sans: 'Anthropic Sans', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  --pad-sm: 0.5rem;
+  --pad-md: 1rem;
+  --pad-lg: 1.5rem;
+  --pad-xl: 2.5rem;
+  --gap-xs: 0.375rem;
+  --gap-sm: 0.625rem;
+  --gap-md: 1rem;
+  --gap-lg: 1.5rem;
+  --gap-xl: 2.5rem;
+  display: block;
+  width: 100%;
+  padding-top: 3rem;
+  padding-bottom: 4rem;
+  background: var(--surface-0);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  font-size: 16px;
+  font-weight: 400;
   line-height: 1.7;
-  color: #475569;
 }
-:global(.dark .social-guidelines-list) {
-  color: #94a3b8;
+
+:global(.dark) .social-page {
+  --surface-1: #1e293b;
+  --surface-2: #14202b;
+  --text-primary: #f1f5f9;
+  --text-secondary: #cbd5e1;
+  --text-muted: #94a3b8;
+  --text-accent: #7dd3fc;
+  --text-danger: #f87171;
+  --border: #334155;
+  --border-strong: #64748b;
+  --border-accent: #38bdf8;
 }
-.social-guidelines-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.5rem;
-}
-.social-guideline-bullet {
-  color: #0284c7;
-  font-weight: 700;
+
+.social-page h1 {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 500;
   line-height: 1.4;
-}
-:global(.dark .social-guideline-bullet) {
-  color: #38bdf8;
+  color: var(--text-primary);
 }
 
-.social-aside-action {
-  margin-top: 1.75rem;
-  padding-top: 1.5rem;
-  border-top: 1px solid #e2e8f0;
-}
-:global(.dark .social-aside-action) {
-  border-top-color: #293847;
-}
-
-.social-channel-list {
-  min-width: 0;
+.social-page h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
 }
 
-.social-join-banner {
+.social-page h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text-primary);
+}
+
+.social-header {
   display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-  margin-top: 3rem;
-  padding: 1.75rem;
-  border: 1px solid #dce4e8;
-  border-radius: 2px;
-  background-color: #ffffff;
-  box-shadow: 0 1px 3px rgb(0 0 0 / 0.04);
-}
-:global(.dark .social-join-banner) {
-  border-color: #293847;
-  background-color: rgb(20 32 43 / 0.7);
-  box-shadow: none;
-}
-@media (min-width: 640px) {
-  .social-join-banner {
-    padding: 2rem;
-  }
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--gap-lg);
+  padding: 1rem 0 1.5rem;
+  border-bottom: 0.5px solid var(--border);
 }
 
-.social-join-title {
-  font-family: var(--club-serif);
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
-  font-weight: 600;
-  line-height: 1.45;
-  letter-spacing: -0.02em;
-  color: #0f172a;
-}
-:global(.dark .social-join-title) {
-  color: #f1f5f9;
+.social-header-main {
+  min-width: 0;
+  max-width: 42rem;
 }
 
-.social-join-actions {
+.social-lead {
+  margin: 0.5rem 0 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.social-header-meta {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.875rem;
-  padding-top: 0.5rem;
+  gap: var(--gap-sm);
 }
 
-.social-join-copy-btn {
+.social-group-chip {
   display: inline-flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1rem;
-  border: 1px solid #dce4e8;
-  border-radius: 2px;
-  background-color: #f8fafc;
-  color: #334155;
-  font-size: 0.8125rem;
+  gap: var(--gap-sm);
+  min-height: 36px;
+  padding: 0.25rem 0.5rem 0.25rem 0.75rem;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.social-group-label {
+  color: var(--text-muted);
+}
+
+.social-group-code {
+  font-family: var(--font-mono);
+  font-size: 13px;
   font-weight: 500;
+  color: var(--text-primary);
+}
+
+.social-copy-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  min-height: 26px;
+  padding: 0.125rem 0.5rem;
+  background: var(--surface-1);
+  border: 0.5px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 400;
   cursor: pointer;
-  transition:
-    border-color 150ms ease,
-    background-color 150ms ease,
-    color 150ms ease;
+  transition: border-color 150ms ease, color 150ms ease;
 }
-:global(.dark .social-join-copy-btn) {
-  border-color: #293847;
-  background-color: #1a2836;
-  color: #cbd5e1;
+
+.social-copy-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-primary);
 }
-.social-join-copy-btn:hover {
-  border-color: #0284c7;
-  background-color: #e0f2fe;
-  color: #0284c7;
+
+.social-join-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 36px;
+  padding: 0.375rem 0.875rem;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: border-color 150ms ease, color 150ms ease;
 }
-:global(.dark .social-join-copy-btn:hover) {
-  border-color: #38bdf8;
-  background-color: rgb(2 132 199 / 0.2);
-  color: #38bdf8;
+
+.social-join-btn:hover {
+  border-color: var(--border-strong);
+  color: var(--text-accent);
+}
+
+.social-status {
+  margin: var(--pad-lg) 0 0;
+  padding: 1rem 1.25rem;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.social-status-error {
+  color: var(--text-danger);
+}
+
+.social-retry-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  min-height: 36px;
+  margin-top: 0.75rem;
+  padding: 0.375rem 0.875rem;
+  background: var(--surface-1);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+}
+
+.social-retry-btn:hover {
+  border-color: var(--border-strong);
+}
+
+.social-sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-xl);
+  margin-top: var(--pad-xl);
+}
+
+.social-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-md);
+}
+
+.social-section-head {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.social-section-title-row {
+  display: flex;
+  align-items: center;
+  gap: var(--gap-sm);
+}
+
+.social-count {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.125rem 0.5rem;
+  background: var(--surface-1);
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.4;
+}
+
+.social-section-desc {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.7;
+  color: var(--text-secondary);
+}
+
+.social-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: var(--gap-md);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+@media (min-width: 1280px) {
+  .social-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+.social-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+  height: 100%;
+  padding: 1rem 1.25rem;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: border-color 150ms ease;
+}
+
+.social-card:hover {
+  border-color: var(--border-strong);
+}
+
+.social-card-icon {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  overflow: hidden;
+  border: 0.5px solid var(--border);
+  border-radius: var(--radius);
+}
+
+.social-card-img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.social-card-initial {
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1;
+}
+
+.social-card-body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: 0.25rem;
+  min-width: 0;
+}
+
+.social-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.social-card-top h3 {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.social-card-ext {
+  flex-shrink: 0;
+  color: var(--text-muted);
+  font-size: 14px;
+  transition: color 150ms ease;
+}
+
+.social-card:hover .social-card-ext {
+  color: var(--text-primary);
+}
+
+.social-card-sub {
+  margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.social-card-extra {
+  margin: 0.125rem 0 0;
+  color: var(--text-muted);
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.social-empty {
+  padding: 1rem 1.25rem;
+  background: var(--surface-2);
+  border: 0.5px solid var(--border);
+  border-radius: 12px;
+  color: var(--text-muted);
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.ti {
+  display: inline-block;
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.ti-arrow-right::before {
+  content: '\2192';
+}
+
+.ti-external-link::before {
+  content: '\2197';
+}
+
+.ti-copy::before {
+  content: '\2398';
+}
+
+.ti-check::before {
+  content: '\2713';
+}
+
+.ti-refresh::before {
+  content: '\21BB';
 }
 </style>

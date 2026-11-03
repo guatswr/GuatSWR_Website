@@ -42,13 +42,17 @@ const otherLinks = [
   { name: '站点日志', path: '/logs', desc: '访问统计、性能与审计日志', tag: '日志档案' },
   { name: '服务器监控', href: 'https://status.guatswr.top/', desc: '节点状态与服务可用性', tag: '河童重工', external: true },
 ]
+const desktopOtherLinks = [
+  ...otherLinks,
+  { name: '管理入口', path: '/login', desc: '后台内容与站点配置管理', tag: '管理后台' },
+]
 const navLinks = [
   { name: '成员', path: '/members', title: '绯想天住民', number: '03' },
   { name: '群史', path: '/history', title: '绯想天群史', number: '04' },
   { name: '资源', path: '/resources', title: '幻想乡书库', number: '05' },
 ]
 const isActivityRoute = computed(() => route.path === '/activities' || route.path.startsWith('/activity/') || route.path === '/events' || route.path.startsWith('/events/'))
-const isOtherRoute = computed(() => route.path === '/social' || route.path.startsWith('/social/') || route.path === '/logs' || route.path.startsWith('/logs/'))
+const isOtherRoute = computed(() => route.path === '/social' || route.path.startsWith('/social/') || route.path === '/logs' || route.path.startsWith('/logs/') || route.path === '/login')
 function closeMenus() {
   isMenuOpen.value = false
   isActivitiesOpen.value = false
@@ -485,7 +489,7 @@ onBeforeUnmount(() => {
                 aria-labelledby="desktop-other-trigger"
                 class="club-nav-panel absolute right-0 top-full mt-2 w-72 border p-2 shadow-lg"
               >
-                <template v-for="link in otherLinks" :key="link.name">
+                <template v-for="link in desktopOtherLinks" :key="link.name">
                   <a
                     v-if="link.external"
                     :href="link.href"
