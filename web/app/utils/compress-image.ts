@@ -34,7 +34,7 @@ export async function compressUploadImage(
           maxWidth: COMPRESS_MAX_DIMENSION,
           maxHeight: COMPRESS_MAX_DIMENSION,
           ...options,
-          success(result) {
+          success(result: File | Blob) {
             resolve(new File([result], file.name, { type: result.type || file.type }))
           },
           error(error: Error) {
