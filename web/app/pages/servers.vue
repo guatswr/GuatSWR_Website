@@ -12,7 +12,6 @@ import { computed, onBeforeUnmount, onMounted, ref, shallowRef, watch } from 'vu
 import { START_LOCATION } from 'vue-router'
 import ClubIcon from '~/components/ClubIcon.vue'
 import { formatBeijingDateTime } from '~/utils/beijing-time'
-import { vReveal } from '~/utils/motion'
 
 definePageMeta({
   key: route => route.path,
@@ -671,12 +670,16 @@ usePublicSeo({
       <!-- ==================================================== -->
       <div
         v-else-if="selectedNode"
+        :key="`detail-${selectedNode.id}`"
         class="space-y-3.5"
         role="region"
         :aria-label="`${selectedNode.name} 节点详情面板`"
       >
         <!-- 1. Top Node Identity Bar -->
-        <section class="server-detail-panel px-4 py-3.5 sm:px-5">
+        <section
+          class="server-detail-panel server-detail-enter px-4 py-3.5 sm:px-5"
+          style="--detail-delay: 0ms"
+        >
           <div class="flex min-w-0 items-center gap-3">
             <button
               type="button"
@@ -758,7 +761,10 @@ usePublicSeo({
         <!-- 2. Hardware Info & System Info 2-Column Grid -->
         <div class="grid grid-cols-1 gap-3.5 lg:grid-cols-2">
           <!-- Left: 硬件信息 -->
-          <section class="server-detail-panel p-4">
+          <section
+            class="server-detail-panel server-detail-enter p-4"
+            style="--detail-delay: 55ms"
+          >
             <h3 class="mb-1 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
               <span class="text-emerald-600 dark:text-emerald-400" aria-hidden="true">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -836,7 +842,10 @@ usePublicSeo({
           </section>
 
           <!-- Right: 系统信息 -->
-          <section class="server-detail-panel p-4">
+          <section
+            class="server-detail-panel server-detail-enter p-4"
+            style="--detail-delay: 105ms"
+          >
             <h3 class="mb-1 flex items-center gap-2 text-sm font-semibold text-slate-900 dark:text-slate-100">
               <span class="text-emerald-600 dark:text-emerald-400" aria-hidden="true">
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
@@ -927,7 +936,11 @@ usePublicSeo({
         </div>
 
         <!-- 3. Segmented Controls & Telemetry Charts -->
-        <section class="space-y-3" aria-label="节点遥测趋势图表">
+        <section
+          class="server-detail-enter space-y-3"
+          style="--detail-delay: 155ms"
+          aria-label="节点遥测趋势图表"
+        >
           <div class="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
             <!-- Left: Chart Type (负载 / 延迟) -->
             <div class="server-segmented-group" role="group" aria-label="图表类型">
@@ -1014,7 +1027,7 @@ usePublicSeo({
             class="grid grid-cols-1 gap-3.5 md:grid-cols-2"
           >
             <!-- Chart 1: CPU -->
-            <div class="server-detail-panel p-4">
+            <div class="server-detail-panel server-detail-enter p-4" style="--detail-delay: 190ms">
               <div class="mb-2 flex items-center justify-between gap-2">
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">CPU</h4>
                 <span class="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
@@ -1103,7 +1116,7 @@ usePublicSeo({
             </div>
 
             <!-- Chart 2: 内存 -->
-            <div class="server-detail-panel p-4">
+            <div class="server-detail-panel server-detail-enter p-4" style="--detail-delay: 240ms">
               <div class="mb-2 flex items-center justify-between gap-2">
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">内存</h4>
                 <span class="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
@@ -1187,7 +1200,7 @@ usePublicSeo({
             </div>
 
             <!-- Chart 3: 硬盘 -->
-            <div class="server-detail-panel p-4">
+            <div class="server-detail-panel server-detail-enter p-4" style="--detail-delay: 290ms">
               <div class="mb-2 flex items-center justify-between gap-2">
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">硬盘</h4>
                 <span class="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
@@ -1271,7 +1284,7 @@ usePublicSeo({
             </div>
 
             <!-- Chart 4: 网络 -->
-            <div class="server-detail-panel p-4">
+            <div class="server-detail-panel server-detail-enter p-4" style="--detail-delay: 340ms">
               <div class="mb-2 flex items-center justify-between gap-2">
                 <h4 class="text-sm font-semibold text-slate-900 dark:text-slate-100">网络</h4>
                 <span class="font-mono text-xs tabular-nums text-slate-500 dark:text-slate-400">
@@ -1468,7 +1481,6 @@ usePublicSeo({
       <template v-else>
         <!-- Top 4 Overview Strip (Matches Komari Glass Overview Bar) -->
         <section
-          v-reveal
           class="servers-overview-strip"
           aria-label="服务器总览"
         >
@@ -1568,13 +1580,13 @@ usePublicSeo({
             class="grid grid-cols-1 items-start gap-4 md:grid-cols-2 lg:grid-cols-3"
           >
             <article
-              v-for="node in nodes"
+              v-for="(node, index) in nodes"
               :key="node.id"
-              v-reveal
               role="button"
               tabindex="0"
               class="server-node-card is-interactive"
               :class="{ 'is-offline': !node.online }"
+              :style="{ '--card-delay': `${Math.min(index, 11) * 90}ms` }"
               :aria-label="`查看 ${node.name} 节点详细硬件与负载面板`"
               @click="selectNode(node.id)"
               @keydown.enter.prevent="selectNode(node.id)"
@@ -2003,6 +2015,7 @@ usePublicSeo({
   background-color: #ffffff;
   box-shadow: 0 1px 3px rgb(15 23 42 / 0.04);
   overflow: hidden;
+  animation: server-overview-enter 500ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 @media (min-width: 640px) {
   .servers-overview-strip {
@@ -2160,18 +2173,23 @@ usePublicSeo({
   background-color: #ffffff;
   box-shadow: 0 1px 3px rgb(15 23 42 / 0.04);
   overflow: hidden;
+  will-change: transform, opacity;
+  animation: server-card-enter 580ms cubic-bezier(0.22, 1, 0.36, 1) var(--card-delay, 0ms) both;
   transition:
-    border-color 180ms ease,
-    box-shadow 180ms ease,
-    transform 180ms ease;
+    border-color 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    box-shadow 200ms cubic-bezier(0.22, 1, 0.36, 1),
+    transform 200ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .server-node-card.is-interactive {
   cursor: pointer;
 }
 .server-node-card.is-interactive:hover {
   border-color: #94b8cb;
-  box-shadow: 0 8px 22px rgb(15 23 42 / 0.08);
-  transform: translateY(-2px);
+  box-shadow: 0 10px 26px rgb(15 23 42 / 0.09);
+  transform: translateY(-3px);
+}
+.server-node-card.is-interactive:active {
+  transform: translateY(-1px) scale(0.994);
 }
 .server-node-card.is-interactive:focus-visible {
   outline: 2px solid #10b981;
@@ -2348,7 +2366,9 @@ usePublicSeo({
 .server-bar-fill {
   height: 100%;
   border-radius: 9999px;
-  transition: width 300ms ease-out;
+  transform-origin: left center;
+  animation: server-bar-sweep 680ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--card-delay, 0ms) + 160ms) both;
+  transition: width 320ms cubic-bezier(0.22, 1, 0.36, 1);
 }
 .server-bar-fill-success {
   background-color: #10b981;
@@ -2475,6 +2495,8 @@ usePublicSeo({
   height: 100%;
   min-height: 4px;
   border-radius: 1.5px;
+  transform-origin: bottom center;
+  animation: server-signal-pop 480ms cubic-bezier(0.22, 1, 0.36, 1) calc(var(--card-delay, 0ms) + 220ms) both;
 }
 
 .server-signal-empty {
@@ -2503,6 +2525,76 @@ usePublicSeo({
 /* ========================================== */
 /* Node Detail Panel Styles                   */
 /* ========================================== */
+.server-detail-enter {
+  animation: server-detail-enter 480ms cubic-bezier(0.22, 1, 0.36, 1) var(--detail-delay, 0ms) both;
+}
+
+@keyframes server-overview-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 14px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes server-card-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 22px, 0) scale(0.975);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@keyframes server-bar-sweep {
+  0% {
+    transform: scaleX(0);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@keyframes server-signal-pop {
+  0% {
+    transform: scaleY(0.2);
+    opacity: 0;
+  }
+  100% {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+@keyframes server-detail-enter {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 16px, 0) scale(0.99);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .servers-overview-strip,
+  .server-node-card,
+  .server-bar-fill,
+  .server-ping-bar,
+  .server-detail-enter {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
 .server-detail-panel {
   border: 1px solid #dce4e8;
   border-radius: 10px;
