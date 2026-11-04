@@ -16,6 +16,7 @@ describe('compiled strict environment foundation', () => {
     expect(result.guestDraftProofMode).toBe('required')
     expect(result.banMinutes).toBe(5)
     expect(result.globalRateLimit).toBe(600)
+    expect(result.sharedProxyRateLimit).toBe(6000)
     expect(result.paths.data).toBe(path.join(root, 'data'))
     expect(result.paths.public).toBe(path.join(root, 'data/public'))
   })
@@ -25,11 +26,16 @@ describe('compiled strict environment foundation', () => {
     expect(result.maxBodyBytes).toBe(16384)
     expect(result.paths.data).toBe(root)
   })
+  it.each([0, 12, 1000000])('accepts a bounded shared proxy quota of %s', limit => {
+    expect(parseEnvironment({ ...input, SHARED_PROXY_RATE_LIMIT: String(limit) }, root).sharedProxyRateLimit).toBe(limit)
+  })
   it.each([
     ['NODE_ENV', 'unknown'], ['JWT_SECRET', '  '], ['PORT', '-1'], ['PORT', '65536'],
     ['PORT', '1.5'], ['DATA_DIR', 'relative'], ['PUBLIC_DIR', 'relative'],
     ['BACKUP_ROOT', 'relative'], ['MAX_BODY_SIZE', '51mb'], ['MAX_BODY_SIZE', '0'], ['GUEST_DRAFT_PROOF_MODE', 'unknown'],
     ['MAX_BODY_SIZE', '1e6'], ['SHUTDOWN_TIMEOUT_MS', '99'], ['BFF_BRIDGE_SECRET', 'secret-value'],
+    ['SHARED_PROXY_RATE_LIMIT', '-1'], ['SHARED_PROXY_RATE_LIMIT', '1.5'],
+    ['SHARED_PROXY_RATE_LIMIT', 'NaN'], ['SHARED_PROXY_RATE_LIMIT', '1000001'],
   ])('rejects invalid %s without exposing values', (key, value) => {
     try {
       parseEnvironment({ ...input, [key]: value }, root)

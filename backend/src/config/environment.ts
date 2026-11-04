@@ -19,6 +19,7 @@ export interface RuntimeEnvironment {
   readonly shutdownTimeoutMs: number
   readonly banMinutes: number
   readonly globalRateLimit: number
+  readonly sharedProxyRateLimit: number
   readonly paths: RuntimePaths
 }
 const invalid = (key: string): never => { throw new AppError(`Invalid configuration: ${key}`, 'invalid_configuration') }
@@ -60,6 +61,7 @@ export function parseEnvironment(input: EnvironmentInput, backendRoot: string): 
   if (!Number.isSafeInteger(globalRateLimit) || globalRateLimit < 0) return invalid('GLOBAL_RATE_LIMIT')
   return {
     nodeEnv, jwtSecret, bridgeSecret, guestDraftProofMode, paths, maxBodyBytes, banMinutes, globalRateLimit,
+    sharedProxyRateLimit: integer(input, 'SHARED_PROXY_RATE_LIMIT', 6000, 0, 1_000_000),
     port: integer(input, 'PORT', 3000, 0, 65535),
     bindHost: input.BIND_HOST || '127.0.0.1',
     shutdownTimeoutMs: integer(input, 'SHUTDOWN_TIMEOUT_MS', 15000, 100, 120000),
