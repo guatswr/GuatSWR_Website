@@ -1,4 +1,6 @@
-export interface SiteVerificationMetaTag {
+import type { ResolvableMeta } from '@unhead/vue'
+
+export type SiteVerificationMetaTag = ResolvableMeta & {
   name: string
   content: string
 }
