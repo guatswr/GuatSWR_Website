@@ -1,1 +1,1 @@
-export default defineEventHandler(() => ({ status: 'ok', service: 'guatswr-web' }))
+export { readinessHandler as default } from '../utils/health-handler'

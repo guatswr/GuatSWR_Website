@@ -585,6 +585,7 @@ export const handlePublicFixture = (request, response) => {
   }
   if (request.method !== 'GET') return false
   if (url.pathname === '/health') return json(response, 200, { status: 'ok' })
+  if (url.pathname === '/api/health/ready') return json(response, 200, { status: 'ready', service: 'guatswr-backend', checks: { mainDatabase: 'ok', auditDatabase: 'ok' } })
   if (url.pathname === '/api/config') {
     const credentials = Boolean(request.headers.authorization || request.headers.cookie)
     return json(response, 200, publicConfigFixture(credentials))

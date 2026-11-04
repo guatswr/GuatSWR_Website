@@ -1,4 +1,4 @@
-// Read-only liveness; never provisions a database or runs maintenance.
-fetch(`http://127.0.0.1:${process.env.PORT || 3000}/api/version`, { signal: AbortSignal.timeout(1500) })
-  .then(async response => { if (!response.ok || (await response.json()).status !== 'online') process.exitCode = 1; })
+// Docker reports business readiness, not just a constant version response.
+fetch(`http://127.0.0.1:${process.env.PORT || 3000}/api/health/ready`, { signal: AbortSignal.timeout(2000), redirect: 'error' })
+  .then(async response => { const body = await response.json(); if (!response.ok || body.status !== 'ready' || body.service !== 'guatswr-backend') process.exitCode = 1; })
   .catch(() => { process.exitCode = 1; });

@@ -1,0 +1,11 @@
+[Unit]
+Description=Check opted-in website services every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitInactiveSec=60s
+AccuracySec=5s
+Unit=guatswr-health-watchdog.service
+
+[Install]
+WantedBy=timers.target

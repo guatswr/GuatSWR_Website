@@ -1,0 +1,21 @@
+[Unit]
+Description=Bounded recovery of unresponsive GuatSWR services
+After=docker.service
+Requires=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/GuatSWR_Website/scripts/health_watchdog.py --project guatswr --state /var/lib/guatswr-health-watchdog/state.json --apply
+TimeoutStartSec=180
+StateDirectory=guatswr-health-watchdog
+StateDirectoryMode=0700
+UMask=0077
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+PrivateDevices=true
+NoNewPrivileges=true
+RestrictAddressFamilies=AF_UNIX
+Environment=DOCKER_CONFIG=/var/lib/guatswr-health-watchdog/docker
+Environment=PATH=/usr/bin:/bin
+

@@ -29,8 +29,9 @@ FROM node:24.16.0-alpine AS runtime
 ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100
 WORKDIR /app
 COPY --from=build --chown=node:node /workspace/web/.output ./.output
+COPY --chown=node:node web/scripts/healthcheck.mjs ./scripts/healthcheck.mjs
 USER node
 EXPOSE 3100
 HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \
-  CMD node -e "fetch('http://127.0.0.1:3100/api/health').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+  CMD ["node", "scripts/healthcheck.mjs"]
 CMD ["node", ".output/server/index.mjs"]

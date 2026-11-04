@@ -84,6 +84,8 @@ export function createAuthUpstreamFixture() {
     tokenVersion: Number(admin.state.config.token_version),
     meStatus: null,
     hugeMe: false,
+    healthReady: true,
+    publicConfigStatus: null,
     users: new Map([
       ['admin', {
         id: 1,
@@ -138,6 +140,8 @@ export function createAuthUpstreamFixture() {
         if (typeof body.lockLogin === 'boolean') state.lockLogin = body.lockLogin
         if (typeof body.loginDelayMs === 'number') state.loginDelayMs = Math.max(0, Math.min(body.loginDelayMs, 5000))
         if (typeof body.hugeMe === 'boolean') state.hugeMe = body.hugeMe
+        if (typeof body.healthReady === 'boolean') state.healthReady = body.healthReady
+        if ('publicConfigStatus' in body) state.publicConfigStatus = body.publicConfigStatus
         if ('meStatus' in body) state.meStatus = body.meStatus
         if (typeof body.role === 'string') {
           for (const user of state.users.values()) user.role = body.role
@@ -155,6 +159,13 @@ export function createAuthUpstreamFixture() {
       catch {
         return send(response, 400, { message: 'invalid control body' })
       }
+    }
+
+    if (request.method === 'GET' && url.pathname === '/api/health/ready') {
+      return send(response, state.healthReady ? 200 : 503, { status: state.healthReady ? 'ready' : 'not_ready', service: 'guatswr-backend', checks: { mainDatabase: state.healthReady ? 'ok' : 'failed', auditDatabase: 'ok' } })
+    }
+    if (request.method === 'GET' && url.pathname === '/api/config' && state.publicConfigStatus) {
+      return send(response, state.publicConfigStatus, { message: 'synthetic public read outage' })
     }
 
     if (request.method === 'POST' && url.pathname === '/api/auth/login') {

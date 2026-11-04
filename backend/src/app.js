@@ -56,6 +56,23 @@ app.use((req, res, next) => context.logger.request(requestId => {
   res.once('close', context.logger.bind(complete));
   next();
 }));
+// Health is independent of visitor bans/quotas. Ready performs real reads; live
+// remains responsive during a dependency outage so recovery cannot loop.
+const health = require(path.join(context.BACKEND_ROOT, 'dist/src/health')).createBackendHealth({
+  main: context.sql.main, audit: context.sql.audit, isClosing: context.isClosing,
+});
+app.get('/api/health/live', (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  const result = health.live();
+  res.status(result.status === 'ok' ? 200 : 503).json(result);
+});
+app.get('/api/health/ready', async (req, res) => {
+  res.setHeader('Cache-Control', 'no-store');
+  res.setHeader('X-Content-Type-Options', 'nosniff');
+  const result = await health.ready();
+  res.status(result.status === 'ready' ? 200 : 503).json(result);
+});
 app.use((req, res, next) => {
   if (context.isClosing()) return res.status(503).json({ message: '服务正在关闭' });
   next();

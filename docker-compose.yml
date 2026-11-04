@@ -10,6 +10,8 @@ services:
         IMAGE_REGISTRY: ${IMAGE_REGISTRY:-}
         SOURCE_REVISION: ${BACKEND_SOURCE_REVISION:-unknown}
     restart: unless-stopped
+    labels:
+      io.guatswr.health-recovery.enabled: "true"
     init: true
     stop_grace_period: 30s
     cap_drop: [ALL]
@@ -49,6 +51,8 @@ services:
       context: .
       dockerfile: web/Dockerfile
     restart: unless-stopped
+    labels:
+      io.guatswr.health-recovery.enabled: "true"
     init: true
     stop_grace_period: 30s
     cap_drop: [ALL]
