@@ -300,7 +300,7 @@ defineProps({
 @media (max-width: 1023px) {
   .club-banner {
     flex-direction: column;
-    padding-top: max(4rem, calc(env(safe-area-inset-top) + 4rem));
+    padding-top: calc(4rem + var(--club-safe-area-top));
   }
   .club-banner-shade {
     background: linear-gradient(

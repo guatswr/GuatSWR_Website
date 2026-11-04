@@ -2,6 +2,7 @@
 import { useUiStore } from '~/stores/ui'
 import { THEME_BOOT_SCRIPT } from '~/utils/theme'
 import { NAVBAR_BOOT_SCRIPT } from '~/utils/navbar-boot'
+import { VIEWPORT_BOOT_SCRIPT } from '~/utils/viewport-boot'
 
 // Footer text and links remain server-rendered; defer their client setup off the first paint.
 const SiteFooter = defineLazyHydrationComponent('idle', () => import('~/components/SiteFooter.vue'))
@@ -12,6 +13,7 @@ const ui = useUiStore(usePinia())
 const { ready } = usePublicConfig()
 await ready
 useHead({ script: [
+  { key: 'viewport-boot', innerHTML: VIEWPORT_BOOT_SCRIPT, tagPriority: 'critical' },
   { key: 'theme-boot', innerHTML: THEME_BOOT_SCRIPT, tagPriority: 'critical' },
   { key: 'navbar-boot', innerHTML: NAVBAR_BOOT_SCRIPT, tagPriority: 'critical' },
 ] })

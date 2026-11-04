@@ -861,7 +861,7 @@ onBeforeUnmount(() => {
   --nav-spring: cubic-bezier(0.34, 1.24, 0.64, 1);
   --nav-collapse: cubic-bezier(0.32, 0.94, 0.6, 1);
   --nav-duration: 540ms;
-  padding-top: env(safe-area-inset-top, 0px);
+  padding-top: var(--club-safe-area-top);
   color: var(--nav-ink);
   background-color: #fbfbf8;
   border-bottom: 1px solid rgb(148 163 184 / 0.22);

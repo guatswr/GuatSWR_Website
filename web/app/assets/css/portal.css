@@ -11,11 +11,21 @@ html.dark {
   --browser-canvas-background: #101923;
 }
 :root {
+  --club-device-safe-area-top: env(safe-area-inset-top, 0px);
+  --club-safe-area-top: var(--club-device-safe-area-top);
   --browser-canvas-background: #fbfbf8;
   --club-serif: ui-serif, 'Noto Serif SC', 'Songti SC', 'Source Han Serif SC',
     SimSun, serif;
   --club-gutter: 3rem;
   --club-container-max: clamp(76rem, calc(76rem + (100vw - 90rem) * 0.4), 112rem);
+}
+/* Android QQ has already reserved the native bars above a normal WebView.
+   Use one effective inset for the fixed navbar and its matching page offset.
+   Fullscreen and installed apps still need the physical cutout protection. */
+@media (display-mode: browser) {
+  html[data-qq-webview] {
+    --club-safe-area-top: 0px;
+  }
 }
 html[data-page-surface='hero'] {
   --browser-canvas-background: #0f172a;
