@@ -21,7 +21,7 @@ export function createLogsController(service: LogsService, umami: ReturnType<typ
       if (!Number.isFinite(startAt)) startAt = endAt - 7 * 86400000
       const unit = typeof req.query.unit === 'string' && req.query.unit.length <= 64 && req.query.unit ? req.query.unit : 'day'
       const limit = Math.min(100, Math.max(1, Math.trunc(Number(req.query.limit) || 10)))
-      const rawType = String(req.query.envType || 'browser').toLowerCase(), envType = ['browser', 'os', 'device', 'referrer', 'country', 'city', 'language', 'screen', 'title'].includes(rawType) ? rawType : 'browser'
+      const rawType = String(req.query.envType || 'browser').toLowerCase(), envType = ['browser', 'os', 'device', 'referrer', 'country', 'region', 'city', 'language', 'screen', 'title'].includes(rawType) ? rawType : 'browser'
       try { return res.json(await track(() => umami.summary({ startAt, endAt, unit, limit, envType }))) }
       catch (error) { reportFailure(error); return res.status(502).json({ message: '无法获取统计数据' }) }
     }

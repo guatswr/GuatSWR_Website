@@ -17,13 +17,30 @@ it('same range with distinct environment types must not reuse another dimension 
  onTestFinished(()=>new Promise(r=>{server.closeAllConnections();server.close(r)}))
  const f=await fixture({env:{UMAMI_BASE_URL:`http://127.0.0.1:${server.address().port}`,UMAMI_USERNAME:'synthetic',UMAMI_PASSWORD:'synthetic-password',UMAMI_WEBSITE_ID:'synthetic-id'}})
  f.context.externalServices=true
- for(const type of ['browser','os','device']){
+ for(const type of ['browser','os','device','region']){
   const response=await f.http.get(`/api/logs/umami?startAt=1&endAt=1000&envType=${type}`)
   expect(response.status).toBe(200)
   expect.soft(response.body.meta.envType).toBe(type)
   expect.soft(response.body.top.environments).toEqual([{x:type,y:1}])
  }
  expect(received.filter(x=>x.includes('type=os'))).toHaveLength(1)
+ expect(received.some(x=>x.includes('type=region')&&x.includes('limit=10000'))).toBe(true)
+})
+
+it('calculates province coverage before truncating the visible ranking',async()=>{
+ const server=http.createServer((req,res)=>{
+  const url=new URL(req.url,'http://fixture');res.setHeader('content-type','application/json')
+  if(url.pathname.includes('login'))return res.end(JSON.stringify({token:'fixture-token'}))
+  if(url.pathname.endsWith('/stats'))return res.end(JSON.stringify({visitors:10}))
+  if(url.pathname.endsWith('/metrics')&&url.searchParams.get('type')==='region')return res.end(JSON.stringify([{x:'CN-GX',y:4},{x:'CN-GD',y:2}]))
+  res.end('{}')
+ })
+ await new Promise(resolve=>server.listen(0,'127.0.0.1',resolve))
+ onTestFinished(()=>new Promise(resolve=>{server.closeAllConnections();server.close(resolve)}))
+ const client=createUmamiClient({baseUrl:`http://127.0.0.1:${server.address().port}`,username:'fixture',password:'fixture',websiteId:'fixture',shutdown:new AbortController().signal})
+ const result=await client.summary({...query(),envType:'region',limit:1})
+ expect(result.location).toEqual({total:10,located:6,unknown:4})
+ expect(result.top.environments).toEqual([{x:'CN-GX',y:4}])
 })
 
 import { createRequire } from 'node:module'

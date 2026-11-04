@@ -382,6 +382,11 @@ export const publicUmamiSummarySchema = z.object({
 })
 
 export const publicUmamiStatsSchema = z.object({
+  location: z.object({
+    total: z.number().int().nonnegative(),
+    located: z.number().int().nonnegative(),
+    unknown: z.number().int().nonnegative(),
+  }).refine(value => value.located + value.unknown === value.total).optional(),
   meta: publicUmamiMetaSchema,
   summary: publicUmamiSummarySchema,
   series: z.object({

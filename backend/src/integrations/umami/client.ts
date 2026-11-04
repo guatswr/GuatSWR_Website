@@ -113,10 +113,24 @@ export function createUmamiClient(options: { baseUrl: string; username: string; 
     const { unit, limit, envType } = input
     const [stats, pageviews, pages, environments] = await Promise.all([
       get(`${prefix}/stats`, { startAt, endAt }, signal), get(`${prefix}/pageviews`, { startAt, endAt, unit }, signal),
-      get(`${prefix}/metrics`, { startAt, endAt, type: 'path', limit }, signal), get(`${prefix}/metrics`, { startAt, endAt, type: envType, limit }, signal)
+      get(`${prefix}/metrics`, { startAt, endAt, type: 'path', limit }, signal), get(`${prefix}/metrics`, { startAt, endAt, type: envType, limit: envType === 'region' ? 10000 : limit }, signal)
     ])
     const series = record(pageviews)
-    return { meta: { startAt, endAt, unit, limit, envType }, summary: stats || {}, series: { pageviews: series.pageviews || [], visitors: series.sessions || [] }, top: { pages: pages || [], environments: environments || [] } }
+    let location: { total: number; located: number; unknown: number } | undefined
+    if (envType === 'region' && Array.isArray(environments) && environments.length < 10000 && stats) {
+      const value = record(stats).visitors
+      const total = Number(typeof value === 'object' && value !== null ? record(value).value : value)
+      let located = 0
+      for (const point of environments) {
+        const row = record(point), count = Number(row.y)
+        if (typeof row.x !== 'string' || !row.x || !Number.isSafeInteger(count) || count < 0) fail('UMAMI_BAD_JSON')
+        located += count
+      }
+      // Separate upstream queries can straddle a new visit. Omit inconsistent
+      // coverage rather than inventing a negative unknown count or a percentage.
+      if (Number.isSafeInteger(total) && total >= located && total >= 0) location = { total, located, unknown: total - located }
+    }
+    return { meta: { startAt, endAt, unit, limit, envType }, summary: stats || {}, series: { pageviews: series.pageviews || [], visitors: series.sessions || [] }, top: { pages: pages || [], environments: envType === 'region' && Array.isArray(environments) ? environments.slice(0, limit) : environments || [] }, ...(location ? { location } : {}) }
   }
   return {
     configured,

@@ -46,7 +46,7 @@ import ClubIcon from '~/components/ClubIcon.vue'
 const route = useRoute()
 const router = useRouter()
 
-const ENVIRONMENT_TYPES = ['browser', 'os', 'device', 'referrer', 'country', 'city'] as const
+const ENVIRONMENT_TYPES = ['browser', 'os', 'device', 'referrer', 'country', 'region', 'city'] as const
 const TOP_LIMITS = [5, 8, 10, 15] as const
 
 const requestedPage = computed(() => parsePageParam(route.query.page))
@@ -226,6 +226,7 @@ const maxEnvCount = computed(() => {
 })
 
 const totalEnvCount = computed(() => {
+  if (environmentType.value === 'region' && umami.value.location) return umami.value.location.total
   return umami.value.top.environments.reduce((sum, item) => sum + Number(item.y || 0), 0)
 })
 
@@ -823,7 +824,7 @@ usePublicPageSeo(() => ({
                   </svg>
                   <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">多维访客画像</h3>
                 </div>
-                <!-- 6 Dimension Tabs -->
+                <!-- Visitor dimensions -->
                 <div class="flex items-center gap-1 p-0.5 rounded bg-slate-100 dark:bg-slate-800/80 border border-slate-200/60 dark:border-slate-700 overflow-x-auto max-w-full">
                   <NuxtLink
                     v-for="tab in ENVIRONMENT_TABS"
@@ -837,6 +838,13 @@ usePublicPageSeo(() => ({
                 </div>
               </div>
 
+              <p v-if="environmentType === 'region'" class="mb-4 text-xs leading-6 text-slate-500 dark:text-slate-400">
+                <template v-if="umami.location">
+                  共 {{ formatNumber(umami.location.total) }} 位访客，已识别省级地区 {{ formatNumber(umami.location.located) }} 位，未知 {{ formatNumber(umami.location.unknown) }} 位。占比以全部访客为分母。
+                </template>
+                <template v-else>占比为当前榜单内占比；省份识别覆盖率暂不可用。</template>
+                地区表示网络出口归属；历史缺失数据保留未知。
+              </p>
               <div class="space-y-2.5">
                 <div
                   v-for="(entry, index) in umami.top.environments"
@@ -855,7 +863,7 @@ usePublicPageSeo(() => ({
                         {{ formatCountry(String(entry.x || '')).flag }}
                       </span>
                       <!-- City icon -->
-                      <svg v-else-if="environmentType === 'city'" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <svg v-else-if="environmentType === 'city' || environmentType === 'region'" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                         <circle cx="12" cy="10" r="3" />
                       </svg>

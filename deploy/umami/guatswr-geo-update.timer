@@ -1,0 +1,11 @@
+[Unit]
+Description=Weekly Umami geography database refresh
+
+[Timer]
+OnCalendar=Tue *-*-* 04:40:00 Asia/Shanghai
+RandomizedDelaySec=15min
+Persistent=true
+Unit=guatswr-geo-update.service
+
+[Install]
+WantedBy=timers.target

@@ -365,6 +365,7 @@ export const ENVIRONMENT_TABS: readonly EnvironmentTabOption[] = Object.freeze([
   { key: 'device', label: '设备形态', dimensionName: 'Device' },
   { key: 'referrer', label: '来源渠道', dimensionName: 'Referrer' },
   { key: 'country', label: '国家/地区', dimensionName: 'Country' },
+  { key: 'region', label: '省份分布', dimensionName: 'Region' },
   { key: 'city', label: '城市分布', dimensionName: 'City' },
 ])
 
@@ -407,6 +408,32 @@ export function formatCountry(code: string | null | undefined): CountryInfo {
     return { name: clean, flag }
   }
   return { name: clean, flag: '🌐' }
+}
+
+const CHINA_REGIONS = [
+  ['11', 'BJ', '北京市'], ['12', 'TJ', '天津市'], ['13', 'HE', '河北省'],
+  ['14', 'SX', '山西省'], ['15', 'NM', '内蒙古自治区'], ['21', 'LN', '辽宁省'],
+  ['22', 'JL', '吉林省'], ['23', 'HL', '黑龙江省'], ['31', 'SH', '上海市'],
+  ['32', 'JS', '江苏省'], ['33', 'ZJ', '浙江省'], ['34', 'AH', '安徽省'],
+  ['35', 'FJ', '福建省'], ['36', 'JX', '江西省'], ['37', 'SD', '山东省'],
+  ['41', 'HA', '河南省'], ['42', 'HB', '湖北省'], ['43', 'HN', '湖南省'],
+  ['44', 'GD', '广东省'], ['45', 'GX', '广西壮族自治区'], ['46', 'HI', '海南省'],
+  ['50', 'CQ', '重庆市'], ['51', 'SC', '四川省'], ['52', 'GZ', '贵州省'],
+  ['53', 'YN', '云南省'], ['54', 'XZ', '西藏自治区'], ['61', 'SN', '陕西省'],
+  ['62', 'GS', '甘肃省'], ['63', 'QH', '青海省'], ['64', 'NX', '宁夏回族自治区'],
+  ['65', 'XJ', '新疆维吾尔自治区'], ['71', 'TW', '台湾'],
+  ['81', 'HK', '香港'], ['82', 'MO', '澳门'],
+] as const
+const REGION_NAMES = new Map<string, string>(CHINA_REGIONS.flatMap(([code, alias, name]) => [[`CN-${code}`, name], [`CN-${alias}`, name]]))
+
+export function formatRegion(value: string | null | undefined): string {
+  const code = String(value || '').trim().toUpperCase()
+  if (!code || !/^[A-Z]{2}-[A-Z0-9]{1,3}$/.test(code)) return '省级地区未知'
+  const name = REGION_NAMES.get(code)
+  if (name) return name
+  const country = code.slice(0, 2)
+  if (country === 'CN') return '省级地区未知'
+  return `${formatCountry(country).name} · ${code.slice(3)}`
 }
 
 const CITY_MAP: Readonly<Record<string, string>> = Object.freeze({
@@ -511,6 +538,7 @@ const OS_MAP: Readonly<Record<string, string>> = Object.freeze({
 
 export function formatDimensionName(value: string | null | undefined, dimension: string): string {
   const raw = String(value || '').trim()
+  if (dimension === 'region') return formatRegion(raw)
   if (!raw) return dimension === 'referrer' ? '直接访问 / 书签收藏' : '未知'
   const key = raw.toLowerCase()
   if (dimension === 'device') {

@@ -574,6 +574,7 @@ export const readUmamiStats = async (
   const top = asContentRecord(source.top)
   const meta = asContentRecord(source.meta)
   const parsed = publicUmamiStatsSchema.safeParse({
+    ...(query.envType === 'region' && source.location !== undefined ? { location: source.location } : {}),
     meta: {
       startAt: meta.startAt,
       endAt: meta.endAt,

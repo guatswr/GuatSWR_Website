@@ -1,0 +1,10 @@
+[Unit]
+Description=Validate and update Umami GeoLite2 City database
+After=docker.service network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /opt/GuatSWR_Website/scripts/umami_geo_update.py --directory /opt/umami/geo --activate
+TimeoutStartSec=900
+UMask=0022

@@ -85,3 +85,12 @@ codex.md
 backend/dist/
 packages/shared/.build-cjs-*/
 **/*.tsbuildinfo
+
+
+# GeoIP Databases & Umami Runtime Data
+*.mmdb
+*.mmdb.*
+deploy/umami/geo/*.mmdb*
+deploy/umami/geo/*.json
+deploy/umami/geo/*.lock
+deploy/umami/data/

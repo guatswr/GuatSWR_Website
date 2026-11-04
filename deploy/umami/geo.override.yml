@@ -1,0 +1,10 @@
+# Merge with /opt/umami/docker-compose.yml; no PostgreSQL changes.
+services:
+  umami:
+    image: ghcr.nju.edu.cn/umami-software/umami@sha256:e69d1a7932e9dab0fc523edc7be1f3a53f3c261f57856fc2167ae74a8fc022e8
+    environment:
+      CLIENT_IP_HEADER: x-real-ip
+      SKIP_LOCATION_HEADERS: "1"
+      GEOLITE_DB_PATH: /geo/GeoLite2-City.mmdb
+    volumes:
+      - /opt/umami/geo:/geo:ro

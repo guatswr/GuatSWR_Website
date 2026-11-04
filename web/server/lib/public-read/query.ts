@@ -9,7 +9,7 @@ const MAX_TIMESTAMP_DIGITS = 15
 const MAX_FILTER_LENGTH = 50
 const MAX_TYPE_LENGTH = 32
 const UMAMI_UNITS = new Set(['hour', 'day', 'month', 'year'])
-const UMAMI_ENV_TYPES = new Set(['browser', 'os', 'device', 'referrer', 'country', 'city', 'language', 'screen', 'title'])
+const UMAMI_ENV_TYPES = new Set(['browser', 'os', 'device', 'referrer', 'country', 'region', 'city', 'language', 'screen', 'title'])
 
 export interface PublicPageQuery {
   page: number

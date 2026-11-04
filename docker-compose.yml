@@ -72,6 +72,65 @@ services:
       app:
         ipv4_address: ${DOCKER_WEB_IP:-172.30.88.10}
 
+  umami:
+    image: ${UMAMI_IMAGE:-ghcr.nju.edu.cn/umami-software/umami@sha256:e69d1a7932e9dab0fc523edc7be1f3a53f3c261f57856fc2167ae74a8fc022e8}
+    container_name: ${UMAMI_CONTAINER_NAME:-umami}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    ports:
+      - "${UMAMI_BIND_ADDRESS:-127.0.0.1}:${UMAMI_PORT:-13036}:3000"
+    environment:
+      DATABASE_URL: postgresql://${UMAMI_DB_USER:-umami}:${UMAMI_DB_PASSWORD:-umami}@umami-db:5432/${UMAMI_DB_NAME:-umami}
+      DATABASE_TYPE: postgresql
+      HASH_SALT: ${UMAMI_HASH_SALT:-}
+      CLIENT_IP_HEADER: ${UMAMI_CLIENT_IP_HEADER:-x-real-ip}
+      SKIP_LOCATION_HEADERS: "${UMAMI_SKIP_LOCATION_HEADERS:-1}"
+      GEOLITE_DB_PATH: ${UMAMI_GEOLITE_DB_PATH:-/geo/GeoLite2-City.mmdb}
+      NODE_ENV: production
+      NEXT_TELEMETRY_DISABLED: "1"
+    volumes:
+      - ${UMAMI_GEO_DIR:-./deploy/umami/geo}:/geo:ro
+    depends_on:
+      umami-db:
+        condition: service_healthy
+    networks:
+      app:
+        ipv4_address: ${DOCKER_UMAMI_IP:-172.30.88.20}
+        aliases:
+          - umami
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  umami-db:
+    image: ${UMAMI_DB_IMAGE:-postgres:15-alpine}
+    container_name: ${UMAMI_DB_CONTAINER_NAME:-umami-db}
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${UMAMI_DB_NAME:-umami}
+      POSTGRES_USER: ${UMAMI_DB_USER:-umami}
+      POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-umami}
+    volumes:
+      - ${UMAMI_DB_DATA_DIR:-./deploy/umami/data/db}:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${UMAMI_DB_USER:-umami} -d ${UMAMI_DB_NAME:-umami}"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+    networks:
+      app:
+        aliases:
+          - db
+          - umami-db
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
 networks:
   app:
     driver: bridge
