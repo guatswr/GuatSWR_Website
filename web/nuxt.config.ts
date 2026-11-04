@@ -103,6 +103,20 @@ export default defineNuxtConfig({
     public: {
       umamiScriptUrl: process.env.NUXT_PUBLIC_UMAMI_SCRIPT_URL || 'https://stats.guatswr.top/script.js',
       umamiWebsiteId: process.env.NUXT_PUBLIC_UMAMI_WEBSITE_ID || '2b03bf5d-751a-4a7c-be54-d545fe250209',
+      siteVerification: {
+        baidu: process.env.NUXT_PUBLIC_SITE_VERIFICATION_BAIDU || '',
+        google: process.env.NUXT_PUBLIC_SITE_VERIFICATION_GOOGLE || '',
+        bing: process.env.NUXT_PUBLIC_SITE_VERIFICATION_BING || '',
+        sogou: process.env.NUXT_PUBLIC_SITE_VERIFICATION_SOGOU || '',
+        so: process.env.NUXT_PUBLIC_SITE_VERIFICATION_SO || '',
+        custom: process.env.NUXT_PUBLIC_SITE_VERIFICATION_CUSTOM || '',
+      },
+      siteVerificationBaidu: process.env.NUXT_PUBLIC_SITE_VERIFICATION_BAIDU || '',
+      siteVerificationGoogle: process.env.NUXT_PUBLIC_SITE_VERIFICATION_GOOGLE || '',
+      siteVerificationBing: process.env.NUXT_PUBLIC_SITE_VERIFICATION_BING || '',
+      siteVerificationSogou: process.env.NUXT_PUBLIC_SITE_VERIFICATION_SOGOU || '',
+      siteVerificationSo: process.env.NUXT_PUBLIC_SITE_VERIFICATION_SO || '',
+      siteVerificationCustom: process.env.NUXT_PUBLIC_SITE_VERIFICATION_CUSTOM || '',
     },
   },
   site: {

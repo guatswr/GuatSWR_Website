@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useUiStore } from '~/stores/ui'
 import { browserThemeColor } from '~/utils/theme'
+import { resolveSiteVerificationMeta } from '~/utils/site-verification'
 
 const route = useRoute()
 const ui = useUiStore(usePinia())
@@ -18,11 +19,19 @@ const shouldInjectUmami = computed(() => {
   return Boolean(isPublicPage.value && url && id)
 })
 
+const verificationMeta = computed(() => {
+  if (!isPublicPage.value) return []
+  return resolveSiteVerificationMeta(config.public as Record<string, unknown>)
+})
+
 // Keep browser-owned surfaces in sync with the route as well as the theme.
 // The homepage artwork is dark even when the rest of the site is in day mode.
 useHead(() => ({
   htmlAttrs: { 'data-page-surface': route.path === '/' ? 'hero' : 'page' },
-  meta: [{ name: 'theme-color', content: browserThemeColor(ui.resolvedTheme, route.path) }],
+  meta: [
+    { name: 'theme-color', content: browserThemeColor(ui.resolvedTheme, route.path) },
+    ...verificationMeta.value,
+  ],
   script: shouldInjectUmami.value
     ? [
         {
