@@ -71,12 +71,9 @@ const quickLinks = [
             加群方式与二维码见「加入我们」页面。
           </p>
           <div class="mt-4 flex flex-wrap gap-x-5 gap-y-2 text-xs">
-            <a
-              href="https://status.guatswr.top/"
-              target="_blank"
-              rel="noopener noreferrer"
-              class="club-footer-link"
-            >服务器监控</a>
+            <NuxtLink :prefetch="false" to="/servers" class="club-footer-link"
+              >服务器监控</NuxtLink
+            >
             <NuxtLink :prefetch="false" to="/logs" class="club-footer-link"
               >站点日志</NuxtLink
             >

@@ -19,6 +19,7 @@ export const PUBLIC_INDEX_PAGES = [
   { path: '/members', title: '绯想天住民名录' },
   { path: '/history', title: '绯想天群史' },
   { path: '/logs', title: '日志档案' },
+  { path: '/servers', title: '服务器监控' },
   { path: '/social', title: '博丽大结界' },
   { path: '/resources', title: '资源下载' },
   { path: '/join', title: '加入我们' },

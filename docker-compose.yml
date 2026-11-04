@@ -82,6 +82,7 @@ services:
       PORT: "3100"
       BFF_STATE_DIR: /app/state
       NUXT_API_BASE: http://backend:3000
+      NUXT_KOMARI_BASE_URL: ${NUXT_KOMARI_BASE_URL:-http://komari:25774}
       # Host Nginx/Caddy reaches this container through the bridge gateway.
       NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS: '["${DOCKER_GATEWAY:-172.30.88.1}/32"]'
     volumes:
@@ -148,6 +149,27 @@ services:
         aliases:
           - db
           - umami-db
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  komari:
+    image: ${KOMARI_IMAGE:-ghcr.1ms.run/komari-monitor/komari:latest}
+    container_name: ${KOMARI_CONTAINER_NAME:-komari}
+    restart: unless-stopped
+    init: true
+    stop_grace_period: 30s
+    ports:
+      - "${KOMARI_BIND_ADDRESS:-127.0.0.1}:${KOMARI_PORT:-25774}:25774"
+    volumes:
+      - ${KOMARI_DATA_DIR:-./deploy/komari/data}:/app/data
+    networks:
+      app:
+        ipv4_address: ${DOCKER_KOMARI_IP:-172.30.88.30}
+        aliases:
+          - komari
     logging:
       driver: json-file
       options:

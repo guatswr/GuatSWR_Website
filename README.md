@@ -83,6 +83,7 @@
 | `/members` · `/history` | 住民名册（成员档案、院校分布）与群史时间轴 |
 | `/social` · `/join` | 关联社群导航与入群迎新指引 |
 | `/logs` | 经服务端投影与脱敏处理的公开站点操作日志 |
+| `/servers` | 河童重工节点状态中心：通过内网联通 Komari 面板展示节点遥测、流量与计费资产（服务端严格剔除节点 IP） |
 | `/login` · `/admin` | 管理员登录（支持二步验证密码）与后台：文章、活动审核、成员、群史、站点配置、账号权限与备份管理 |
 
 公开页面由 Nuxt SSR 实时渲染（每次请求生成独立 CSP nonce，服务端数据层采用 SWR 缓存），支持深浅色主题切换、移动端适配与 `prefers-reduced-motion` 减弱动态效果。所有管理员操作与游客写操作均通过同源 Nitro BFF（`/api/bff/**`）完成鉴权、CSRF 校验、Origin 校验与请求体限流，后端签发的 JWT 密文仅保存在 BFF 服务端。
@@ -785,6 +786,13 @@ NUXT_OPENLIST_TIMEOUT_MS=8000
 # NUXT_PUBLIC_UMAMI_SCRIPT_URL=https://stats.guatswr.top/script.js
 # Umami 站点 ID（从 Umami 后台获取的 UUID 标识）
 # NUXT_PUBLIC_UMAMI_WEBSITE_ID=2b03bf5d-751a-4a7c-be54-d545fe250209
+
+# ==========================================
+# 7. Komari 服务器监控内网联通（可选）
+# ==========================================
+# Komari JSON-RPC2 内网服务地址（Docker 编排下默认自动注入为 http://komari:25774）
+# NUXT_KOMARI_BASE_URL=http://komari:25774
+# NUXT_KOMARI_TIMEOUT_MS=5000
 ```
 
 ##### 关键参数说明表
@@ -858,6 +866,15 @@ UMAMI_BIND_ADDRESS=127.0.0.1
 UMAMI_DB_DATA_DIR=/opt/umami/umami-db-data
 # IP 归属地 GeoIP 数据库目录
 UMAMI_GEO_DIR=/opt/umami/geo
+
+# ==========================================
+# 5. Komari 服务器监控面板（统一技术栈，内网联通 web）
+# ==========================================
+# Komari 持久化数据目录（挂载至容器内 /app/data）
+KOMARI_DATA_DIR=/opt/komari/data
+# 宿主机 Agent 上报与反代监听地址/端口
+KOMARI_BIND_ADDRESS=127.0.0.1
+KOMARI_PORT=25774
 ```
 
 ##### 关键参数说明表

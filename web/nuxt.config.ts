@@ -100,6 +100,10 @@ export default defineNuxtConfig({
       rootPath: '/',
       timeoutMs: 8_000,
     },
+    komari: {
+      baseUrl: '',
+      timeoutMs: 5_000,
+    },
     public: {
       umamiScriptUrl: process.env.NUXT_PUBLIC_UMAMI_SCRIPT_URL || 'https://stats.guatswr.top/script.js',
       umamiWebsiteId: process.env.NUXT_PUBLIC_UMAMI_WEBSITE_ID || '2b03bf5d-751a-4a7c-be54-d545fe250209',
@@ -159,6 +163,7 @@ export default defineNuxtConfig({
     '/social': { headers: { ...publicHtmlHeaders } },
     '/resources': { headers: { ...publicHtmlHeaders } },
     '/logs': { headers: { ...publicHtmlHeaders } },
+    '/servers': { headers: { ...publicHtmlHeaders } },
     '/join': { headers: { 'Cache-Control': 'no-store' } },
     '/login': { robots: false, headers: { 'Cache-Control': 'no-store' } },
     '/admin': { ssr: false, robots: false, headers: { 'Cache-Control': 'no-store' } },

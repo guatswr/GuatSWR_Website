@@ -33,16 +33,25 @@ const themeLabel = computed(() => {
   const current = `${themeMode.value === 'auto' ? '自动 · ' : ''}${isDark.value ? '夜间' : '日间'}`
   return `当前${current}模式，切换为${isDark.value ? '日间' : '夜间'}模式`
 })
+interface NavSubLink {
+  name: string
+  path?: string
+  href?: string
+  desc: string
+  tag: string
+  external?: boolean
+}
+
 const activityLinks = [
   { name: '活动中心', path: '/events', desc: '联机、挑战与线下相聚', tag: '异变进行时' },
   { name: '往期活动回顾', path: '/activities', desc: '照片、记录与共同的回忆', tag: '记忆碎片' },
 ]
-const otherLinks = [
+const otherLinks: NavSubLink[] = [
   { name: '社群链接', path: '/social', desc: 'QQ群、频道与外部据点', tag: '博丽大结界' },
   { name: '站点日志', path: '/logs', desc: '访问统计、性能与审计日志', tag: '日志档案' },
-  { name: '服务器监控', href: 'https://status.guatswr.top/', desc: '节点状态与服务可用性', tag: '河童重工', external: true },
+  { name: '服务器监控', path: '/servers', desc: '节点状态与服务可用性', tag: '河童重工' },
 ]
-const desktopOtherLinks = [
+const desktopOtherLinks: NavSubLink[] = [
   ...otherLinks,
   { name: '管理入口', path: '/login', desc: '后台内容与站点配置管理', tag: '管理后台' },
 ]
@@ -52,7 +61,7 @@ const navLinks = [
   { name: '资源', path: '/resources', title: '幻想乡书库', number: '05' },
 ]
 const isActivityRoute = computed(() => route.path === '/activities' || route.path.startsWith('/activity/') || route.path === '/events' || route.path.startsWith('/events/'))
-const isOtherRoute = computed(() => route.path === '/social' || route.path.startsWith('/social/') || route.path === '/logs' || route.path.startsWith('/logs/') || route.path === '/login')
+const isOtherRoute = computed(() => route.path === '/social' || route.path.startsWith('/social/') || route.path === '/logs' || route.path.startsWith('/logs/') || route.path === '/servers' || route.path.startsWith('/servers/') || route.path === '/login')
 function closeMenus() {
   isMenuOpen.value = false
   isActivitiesOpen.value = false

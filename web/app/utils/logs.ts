@@ -316,6 +316,7 @@ const ROUTE_TITLES: ReadonlyMap<string, string> = new Map([
   ['/resources', '幻想乡书库'],
   ['/join', '加入我们'],
   ['/logs', '站点日志'],
+  ['/servers', '服务器监控'],
   ['/login', '登录'],
   ['/events', '异变进行时'],
   ['/events/bounty', '博丽神社赏金令'],
