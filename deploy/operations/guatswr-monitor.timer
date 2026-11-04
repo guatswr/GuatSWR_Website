@@ -1,0 +1,7 @@
+[Unit]
+Description=External GuatSWR business probes timer
+[Timer]
+OnBootSec=60s
+OnUnitActiveSec=60s
+[Install]
+WantedBy=timers.target

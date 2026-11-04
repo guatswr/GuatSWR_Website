@@ -1,0 +1,7 @@
+[Unit]
+Description=Prune expired encrypted website backups
+[Service]
+Type=oneshot
+User=guatswr-backup
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/guatswr-backup/ops_backup_receiver.py --root /srv/guatswr-backups --days 30 --minimum 7 --apply

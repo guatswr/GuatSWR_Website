@@ -251,7 +251,8 @@ export function guestDraftStore(runtime: BffRuntime, origin: string): GuestDraft
   const existing = registry.get(identity)
   if (existing) return existing
   const created = createGuestDraftStore(
-    createHmac('sha256', runtime.csrfKey).update(GUEST_DRAFT_PURPOSE).digest()
+    createHmac('sha256', runtime.csrfKey).update(GUEST_DRAFT_PURPOSE).digest(),
+    { namespace: identity }
   )
   registry.set(identity, created)
   while (registry.size > MAX_STORE_IDENTITIES) {

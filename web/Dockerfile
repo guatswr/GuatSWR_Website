@@ -30,6 +30,7 @@ ENV NODE_ENV=production HOST=0.0.0.0 PORT=3100
 WORKDIR /app
 COPY --from=build --chown=node:node /workspace/web/.output ./.output
 COPY --chown=node:node web/scripts/healthcheck.mjs ./scripts/healthcheck.mjs
+RUN mkdir -p /app/state && chown node:node /app/state && chmod 700 /app/state
 USER node
 EXPOSE 3100
 HEALTHCHECK --interval=30s --timeout=3s --start-period=15s --retries=3 \

@@ -1,3 +1,4 @@
+import { durableRecords } from './durable-records'
 import { createHmac, randomBytes } from 'node:crypto'
 
 /**
@@ -12,8 +13,8 @@ import { createHmac, randomBytes } from 'node:crypto'
  * response cache retains first-response cookies for a lost Set-Cookie retry;
  * these capabilities remain in server memory and never enter logs or JSON.
  *
- * Single-process default: a durable multi-instance store remains a
- * deployment-plan item (no Redis or installation here).
+ * Single-process store; BFF_STATE_DIR enables encrypted restart persistence.
+ * Concurrent instances are not supported.
  */
 
 export const GUEST_DRAFT_COOKIE = 'bff_guest_drafts'
@@ -64,6 +65,7 @@ export interface GuestDraftStoreOptions {
   maxDrafts?: number
   maxReceipts?: number
   maxInflight?: number
+  namespace?: string
   reuseMs?: number
 }
 
@@ -143,7 +145,7 @@ export function createGuestDraftStore(
   const maxReceipts = boundedOption(options.maxReceipts, GUEST_MAX_RECEIPTS_PER_RECORD, 1, 64)
   const maxInflight = boundedOption(options.maxInflight, GUEST_MAX_INFLIGHT, 1, 10_000)
   const reuseMs = boundedOption(options.reuseMs, GUEST_DRAFT_REUSE_MS, 0, 60 * 60 * 1000)
-  const records = new Map<string, GuestDraftRecord>()
+  const records = durableRecords<GuestDraftRecord>(options.namespace ?? 'guest-drafts', key)
   const inFlight = new Map<string, Promise<IssuedDraft>>()
   // A first response may be lost before Set-Cookie arrives. Retain the issued
   // response briefly for the same CSRF intent and address, with a hard bound.

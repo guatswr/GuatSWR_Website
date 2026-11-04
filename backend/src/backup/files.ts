@@ -1,3 +1,4 @@
+import { directoryLock } from '../utils/directory-lock.js'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import type { BigIntStats } from 'node:fs'
@@ -60,7 +61,8 @@ export function createBackupFiles(root: string, publicDir: string, report: (erro
       const target = await resolveBackupPath(rawType, rawName)
       if (!target) return null
       const lock = path.join(directories[target.type], '.backup-retention.lock')
-      try { await fs.mkdir(lock, { mode: 0o700 }) } catch (cause) {
+      let release: () => Promise<void>
+      try { release = await directoryLock(lock) } catch (cause) {
         if ((cause as NodeJS.ErrnoException).code === 'EEXIST') throw new BackupError('BACKUP_BUSY')
         throw cause
       }
@@ -82,7 +84,7 @@ export function createBackupFiles(root: string, publicDir: string, report: (erro
           }
         }
         return target
-      } finally { await fs.rmdir(lock).catch(report) }
+      } finally { await release().catch(report) }
     }
   }
 }

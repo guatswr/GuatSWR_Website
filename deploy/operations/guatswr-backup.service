@@ -1,0 +1,7 @@
+[Unit]
+Description=Encrypted GuatSWR offsite backup
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/GuatSWR_Website/scripts/ops_backup.py --config /etc/guatswr-backup.json --apply
+TimeoutStartSec=3600

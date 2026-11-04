@@ -1,0 +1,7 @@
+[Unit]
+Description=External GuatSWR business probes
+[Service]
+Type=oneshot
+UMask=0077
+ExecStart=/usr/bin/python3 /opt/guatswr-backup/ops_monitor.py --config /etc/guatswr-monitor.json --state /var/lib/guatswr-monitor/state.json
+TimeoutStartSec=3600

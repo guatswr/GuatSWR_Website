@@ -1,0 +1,6 @@
+{
+  "work_dir": "/var/lib/guatswr-backup",
+  "gpg_recipient": "REPLACE_WITH_VERIFIED_PUBLIC_KEY_FINGERPRINT",
+  "ssh_alias": "guatswr-backup-ali",
+  "destination": "guatswr-backup-ali:/srv/guatswr-backups/"
+}

@@ -1,0 +1,9 @@
+{
+  "probes": [
+    { "name": "homepage", "url": "https://www.guatswr.top/" },
+    { "name": "readiness", "url": "https://www.guatswr.top/api/health/ready", "service": "guatswr-web" }
+  ],
+  "disks": ["/"],
+  "backups": [{ "name": "website-offsite", "root": "/srv/guatswr-backups", "pattern": "guatswr-*.tar.gpg", "max_age_hours": 30 }],
+  "webhook": ""
+}

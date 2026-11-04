@@ -448,11 +448,45 @@ def restore(archive_file, target, checksum, allow_legacy):
     return target
 
 
+def directory_lock(directory):
+    """Owner names are shared with the API's Linux crash-recoverable lock."""
+    def identity(pid):
+        boot = Path('/proc/sys/kernel/random/boot_id').read_text().strip()
+        stat = Path(f'/proc/{pid}/stat').read_text()
+        return boot + '-' + stat[stat.rfind(')') + 2:].split(' ')[19]
+    own = f'owner-{os.getpid()}-{identity(os.getpid())}' if os.name == 'posix' and Path('/proc').is_dir() else None
+    try:
+        directory.mkdir(mode=0o700)
+    except FileExistsError:
+        if not own or directory.is_symlink():
+            raise
+        names = list(directory.iterdir())
+        match = re.fullmatch(r'owner-(\d+)-(.+)', names[0].name) if len(names) == 1 else None
+        if not match:
+            raise
+        try:
+            stale = identity(int(match[1])) != match[2]
+        except FileNotFoundError:
+            stale = True
+        if not stale:
+            raise
+        names[0].unlink()
+        directory.rmdir()
+        directory.mkdir(mode=0o700)
+    if own:
+        (directory / own).write_text('')
+    def release():
+        if own:
+            (directory / own).unlink()
+        directory.rmdir()
+    return release
+
+
 def verify_backup(archive_file, work_root, checksum=None, allow_legacy=False):
     if archive_file.is_symlink() or not archive_file.is_file() or not work_root.is_absolute() or not work_root.is_dir():
         raise ValueError('existing archive and explicit verification work directory required')
     lock = archive_file.parent / '.backup-retention.lock'
-    lock.mkdir(mode=0o700)
+    release = directory_lock(lock)
     try:
         original = file_identity(archive_file)
         with tempfile.TemporaryDirectory(prefix='.guatswr-verify-', dir=work_root) as work:
@@ -473,7 +507,7 @@ def verify_backup(archive_file, work_root, checksum=None, allow_legacy=False):
                 filename.unlink(missing_ok=True)
         return output
     finally:
-        lock.rmdir()
+        release()
 
 
 def main():

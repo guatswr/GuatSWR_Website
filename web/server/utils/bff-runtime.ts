@@ -46,7 +46,7 @@ export interface BffRuntimeInputs {
 }
 
 export interface BffRuntimeFactoryDeps {
-  createStore?: (options: { maxEntries: number }) => BffSessionStore
+  createStore?: (options: { maxEntries: number; secret?: string }) => BffSessionStore
   createLimiter?: (options: { limit: number, windowMs: number }) => FixedWindowRateLimiter
   createUpstream?: (options: UpstreamClientOptions) => UpstreamClient
   createAuth?: (deps: Parameters<typeof createBffAuthService>[0]) => BffAuthService
@@ -134,6 +134,7 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
 
   let store: BffSessionStore | undefined
   let storeLimit = -1
+  let storeSecret = ''
   let limiter: FixedWindowRateLimiter | undefined
   let limiterKey = ''
   let auth: BffAuthService | undefined
@@ -169,9 +170,10 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
         throw new BffConfigError('apiBase must be an HTTP(S) origin without credentials or a path')
       }
 
-      if (!store || storeLimit !== config.memorySessionLimit) {
-        store = createStore({ maxEntries: config.memorySessionLimit })
+      if (!store || storeLimit !== config.memorySessionLimit || storeSecret !== secret) {
+        store = createStore({ maxEntries: config.memorySessionLimit, secret })
         storeLimit = config.memorySessionLimit
+        storeSecret = secret
       }
       const currentStore = store
 

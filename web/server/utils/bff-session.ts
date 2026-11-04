@@ -1,3 +1,4 @@
+import { durableRecords } from './durable-records'
 import {
   createCipheriv,
   createDecipheriv,
@@ -204,20 +205,20 @@ export function createSessionRecord(input: CreateSessionRecordInput): BffSession
 }
 
 export interface MemorySessionStoreOptions {
+  secret?: string
   maxEntries?: number
 }
 
 /**
- * Process-local default storage. Restarting the server, or running more than
- * one instance, drops sessions and requires re-login; a shared driver is a
- * deployment-plan item, not part of this batch.
+ * Bounded single-process storage. A configured BFF_STATE_DIR and secret enable
+ * encrypted restart persistence; concurrent instances remain unsupported.
  */
 export function createMemorySessionStore(options: MemorySessionStoreOptions = {}): BffSessionStore {
   // A non-finite or sub-one capacity must never disable the bound.
   const maxEntries = typeof options.maxEntries === 'number' && Number.isFinite(options.maxEntries) && options.maxEntries >= 1
     ? Math.floor(options.maxEntries)
     : 10_000
-  const records = new Map<string, BffSessionRecord>()
+  const records = options.secret ? durableRecords<BffSessionRecord>('sessions', Buffer.from(options.secret)) : new Map<string, BffSessionRecord>()
 
   const sweep = (now: number) => {
     for (const [key, record] of records) {
