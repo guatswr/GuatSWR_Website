@@ -2,6 +2,7 @@
 defineProps({ name: { type: String, default: 'sparkles' } })
 const paths: Record<string, string> = {
   arrow: 'M5 12h14m-6-6 6 6-6 6',
+  chart: 'M4 3v17h17M8 16v-5m5 5V7m5 9V4',
   external: 'M7 17 17 7M7 7h10v10',
   sparkles: 'm12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3Z',
   game: 'M7 7h10a4 4 0 0 1 3.9 3.1l1 5a3 3 0 0 1-5 2.8L15 16H9l-1.9 1.9a3 3 0 0 1-5-2.8l1-5A4 4 0 0 1 7 7ZM7 10v4m-2-2h4m6-1h.01M18 13h.01',

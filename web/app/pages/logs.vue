@@ -13,6 +13,7 @@
  * the page says so and never presents invented zeroes as measured data.
  */
 import type { PublicLogsPage, PublicLogStat, PublicUmamiStats } from '@guatswr/shared'
+import { START_LOCATION } from 'vue-router'
 import { LOGS_PAGE_SIZE, LOGS_PAGE_SIZES } from '#shared/content'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import {
@@ -38,6 +39,15 @@ import TrafficChart from '~/components/logs/TrafficChart.vue'
 import { buildPublicPath, parsePageParam, parsePageSizeParam, parseTextParam, queryValue } from '~/utils/public-query'
 import { displayImageSource } from '~/utils/public-image'
 import ClubIcon from '~/components/ClubIcon.vue'
+import { vReveal } from '~/utils/motion'
+
+definePageMeta({
+  key: route => route.path,
+  scrollToTop(to, from) {
+    if (from === START_LOCATION) return Boolean(to.hash) || typeof window === 'undefined' || window.scrollY === 0
+    return to.path !== from.path
+  },
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -117,10 +127,9 @@ const { data: stats } = await useFetch<PublicLogStat[]>('/api/logs/stats', {
  * clock that has moved on.
  */
 const rangeWindows = useState<Record<string, UmamiWindow>>('public-logs-umami-windows', () => ({}))
-const initialRange = activeRange.value
-if (!rangeWindows.value[initialRange]) {
-  rangeWindows.value[initialRange] = logRangeWindow(initialRange, Date.now())
-}
+watch(activeRange, range => {
+  if (!rangeWindows.value[range]) rangeWindows.value[range] = logRangeWindow(range, Date.now())
+}, { immediate: true, flush: 'sync' })
 
 const umamiRequest = computed(() => {
   const range = activeRange.value
@@ -134,7 +143,7 @@ const umamiRequest = computed(() => {
   }
 })
 
-const { data: umami, error: umamiError, status: umamiStatus } = await useFetch<PublicUmamiStats>('/api/logs/umami', {
+const { data: incomingUmami, error: umamiError, status: umamiStatus, refresh: retryStatistics } = await useFetch<PublicUmamiStats>('/api/logs/umami', {
   key: () => `public-logs-umami-${activeRange.value}-${environmentType.value}-${topLimit.value}-${chartInterval.value}`,
   query: umamiRequest,
   default: (): PublicUmamiStats => ({
@@ -144,6 +153,26 @@ const { data: umami, error: umamiError, status: umamiStatus } = await useFetch<P
     top: { pages: [], environments: [] },
   }),
 })
+
+// Query navigation retains mounted content while the new keyed request resolves.
+// Overview data is independent of audience/top-list filters; preserving its
+// reference also preserves a pinned chart readout and avoids replaying reveals.
+const overviewKey = computed(() => JSON.stringify([umamiRequest.value.startAt, umamiRequest.value.endAt, umamiRequest.value.unit, chartInterval.value]))
+const acceptedOverviewKey = ref('')
+const statisticsSnapshot = shallowRef<PublicUmamiStats | null>(null)
+const overviewSnapshot = shallowRef<PublicUmamiStats | null>(null)
+watch([incomingUmami, umamiStatus], ([value, status]) => {
+  if (status !== 'success' || !value.meta.endAt || value.meta.envType !== environmentType.value) return
+  statisticsSnapshot.value = value
+  if (!overviewSnapshot.value || acceptedOverviewKey.value !== overviewKey.value) {
+    overviewSnapshot.value = value
+    acceptedOverviewKey.value = overviewKey.value
+  }
+}, { immediate: true, flush: 'sync' })
+const umami = computed(() => statisticsSnapshot.value ?? incomingUmami.value)
+const overview = computed(() => overviewSnapshot.value ?? umami.value)
+const displayedEnvironment = computed(() => umami.value.meta.envType || environmentType.value)
+const overviewUpdating = computed(() => umamiStatus.value === 'pending' && acceptedOverviewKey.value !== overviewKey.value)
 
 if (import.meta.server) {
   if (requestedPage.value === null) {
@@ -158,24 +187,25 @@ const loading = computed(() => logsStatus.value === 'pending')
 const failedLogs = computed(() => Boolean(logsError.value))
 const cards = computed(() => stats.value)
 
-const statisticsUnavailable = computed(() => Boolean(umamiError.value))
+const statisticsUnavailable = computed(() => Boolean(umamiError.value) && !statisticsSnapshot.value)
 const statisticsLoading = computed(() => umamiStatus.value === 'pending' && !umamiError.value)
-const summary = computed(() => umami.value.summary)
-const hasStatistics = computed(() => !statisticsUnavailable.value)
+const initialStatisticsLoading = computed(() => statisticsLoading.value && !statisticsSnapshot.value)
+const summary = computed(() => overview.value.summary)
+const hasStatistics = computed(() => Boolean(statisticsSnapshot.value))
 
 // --- Chart ----------------------------------------------------------------
 const chartUnit = computed<LogChartUnit>(() => {
-  const unit = umami.value.meta.unit
+  const unit = overview.value.meta.unit
   return ['hour', 'day', 'month', 'year'].includes(unit) ? unit as LogChartUnit : logRangeWindow(activeRange.value, 0).unit
 })
 const chartData = computed(() => buildLogChart({
   rangeKey: activeRange.value,
-  startAt: Number(umami.value.meta.startAt) || rangeWindows.value[activeRange.value]?.startAt || 0,
-  endAt: Number(umami.value.meta.endAt) || rangeWindows.value[activeRange.value]?.endAt || Date.now(),
+  startAt: Number(overview.value.meta.startAt) || rangeWindows.value[activeRange.value]?.startAt || 0,
+  endAt: Number(overview.value.meta.endAt) || rangeWindows.value[activeRange.value]?.endAt || Date.now(),
   unit: chartUnit.value,
-  timezone: umami.value.meta.timezone ?? 'UTC',
-  pageviews: umami.value.series.pageviews,
-  visitors: umami.value.series.visitors,
+  timezone: overview.value.meta.timezone ?? 'UTC',
+  pageviews: overview.value.series.pageviews,
+  visitors: overview.value.series.visitors,
 }))
 const maxPageCount = computed(() => {
   const counts = umami.value.top.pages.map(p => Number(p.y || 0))
@@ -199,7 +229,7 @@ const maxEnvCount = computed(() => {
 })
 
 const totalEnvCount = computed(() => {
-  if (environmentType.value === 'region' && umami.value.location) return umami.value.location.total
+  if (displayedEnvironment.value === 'region' && umami.value.location) return umami.value.location.total
   return umami.value.top.environments.reduce((sum, item) => sum + Number(item.y || 0), 0)
 })
 
@@ -214,9 +244,10 @@ const envPercent = (count: number | string | undefined | null): string => {
 const usernameInput = ref(username.value)
 const actionInput = ref(action.value)
 const showRules = ref(false)
+watch([username, action], ([name, value]) => { usernameInput.value = name; actionInput.value = value })
 
 const linkFor = (overrides: Record<string, string | number | null | undefined>): string =>
-  buildPublicPath('/logs', { ...filterQuery.value, ...umamiQuery.value, ...overrides })
+  buildPublicPath('/logs', { ...filterQuery.value, ...umamiQuery.value, ...(page.value > 1 ? { page: page.value } : {}), ...overrides })
 
 const applyFilters = async (): Promise<void> => {
   await router.push(linkFor({
@@ -227,7 +258,7 @@ const applyFilters = async (): Promise<void> => {
 }
 
 const changePageSize = async (size: number): Promise<void> => {
-  await router.push(linkFor({ limit: size === LOGS_PAGE_SIZE ? undefined : size }))
+  await router.push(linkFor({ limit: size === LOGS_PAGE_SIZE ? undefined : size, page: undefined }))
 }
 
 const pageSummary = computed(() => ({
@@ -235,7 +266,7 @@ const pageSummary = computed(() => ({
   to: Math.min(page.value * pageSize.value, total.value),
 }))
 
-const envIcon = (value: string): string | null => environmentIconUrl(value, environmentType.value)
+const envIcon = (value: string): string | null => environmentIconUrl(value, displayedEnvironment.value)
 
 // A getter, so the canonical URL follows client-side filter/range changes.
 usePublicPageSeo(() => ({
@@ -245,7 +276,8 @@ usePublicPageSeo(() => ({
   query: {
     ...filterQuery.value,
     ...(page.value > 1 ? { page: page.value } : {}),
-    ...(activeRange.value !== LOG_RANGE_OPTIONS[0]?.key ? { range: activeRange.value } : {}),
+    ...(activeRange.value !== '7d' ? { range: activeRange.value } : {}),
+    ...(chartInterval.value !== 'auto' ? { interval: chartInterval.value } : {}),
     ...(environmentType.value !== 'browser' ? { env: environmentType.value } : {}),
     ...(topLimit.value !== 5 ? { top: topLimit.value } : {}),
   },
@@ -253,58 +285,33 @@ usePublicPageSeo(() => ({
 </script>
 
 <template>
-  <div class="club-paper min-h-screen font-sans pb-20 text-slate-900 dark:text-slate-100">
-    <!-- Editorial Page Header -->
-    <header class="border-b border-slate-200/80 dark:border-slate-800 pt-10 sm:pt-14 pb-10 mb-8 sm:mb-12">
-      <div class="club-container">
-        <div class="flex flex-wrap items-end justify-between gap-x-8 gap-y-6">
-          <div class="min-w-0 max-w-2xl">
-            <div class="flex items-center gap-2 mb-3">
-              <span class="w-1.5 h-1.5 rounded-full bg-sky-600 dark:bg-sky-400" aria-hidden="true" />
-              <p class="club-eyebrow">CHRONICLE OF GENSOKYO · AUDIT &amp; OBSERVATORY</p>
-            </div>
-            <h1 class="club-page-title">日志档案</h1>
-            <p class="mt-4 text-sm leading-8 text-slate-500 dark:text-slate-400">
-              这里记录了桂航绯想天的每一次变迁。所有的内容都是由同好们一点一滴积累而成，见证着这个小小同好会的成长。
-            </p>
-          </div>
-
-          <!-- Editorial Index Box -->
-          <dl class="logs-header-index" aria-label="档案概况">
-            <div class="logs-header-index-row">
-              <dt>历史操作</dt>
-              <dd class="font-mono">{{ total }} 条</dd>
-            </div>
-            <div v-if="cards.length > 0" class="logs-header-index-row">
-              <dt>核心贡献</dt>
-              <dd class="font-mono">{{ cards.length }} 位</dd>
-            </div>
-            <div v-if="hasStatistics && summary.visitors" class="logs-header-index-row">
-              <dt>近期访客 (UV)</dt>
-              <dd class="font-mono">{{ formatNumber(summary.visitors) }} 位</dd>
-            </div>
-            <div v-if="hasStatistics && summary.visits" class="logs-header-index-row">
-              <dt>访问会话 (Visits)</dt>
-              <dd class="font-mono">{{ formatNumber(summary.visits) }} 次</dd>
-            </div>
-            <div class="logs-header-index-row">
-              <dt>记录时区</dt>
-              <dd class="font-mono text-slate-500 dark:text-slate-400">CST (UTC+8)</dd>
-            </div>
-          </dl>
+  <div class="logs-stage club-paper min-h-screen font-sans pb-20 text-slate-900 dark:text-slate-100">
+    <header class="logs-page-header">
+      <div class="club-container logs-header-layout club-hero-step">
+        <div>
+          <h1 class="club-page-title">日志档案</h1>
+          <p class="logs-header-description">查看访问趋势、访客分布与站点内容的变更记录。</p>
         </div>
+        <nav class="logs-section-nav" aria-label="日志页快捷导航">
+          <a href="#site-statistics" class="is-primary"><ClubIcon name="chart" />站点统计<ClubIcon name="arrow" /></a>
+          <a href="#operation-logs">操作日志<span>{{ total }} 条</span></a>
+        </nav>
       </div>
     </header>
 
     <div class="club-container space-y-10 sm:space-y-12">
       <!-- Section 1: Site Analytics (Umami) -->
-      <section class="logs-panel">
-        <div class="logs-panel-header">
+      <section id="site-statistics" v-reveal class="logs-panel logs-statistics-panel" aria-labelledby="site-statistics-title" :aria-busy="statisticsLoading || undefined">
+        <div class="logs-panel-header club-hero-step" style="--motion-order: 1">
           <div class="flex items-center gap-3">
             <span class="logs-section-marker font-mono" aria-hidden="true">01</span>
             <div>
-              <h2 class="club-section-heading">站点统计</h2>
-              <p class="text-xs text-slate-500 dark:text-slate-400 mt-0.5">全站访问脉动与流量画像</p>
+              <h2 id="site-statistics-title" class="club-section-heading">站点统计</h2>
+              <p class="logs-statistics-status" role="status" aria-live="polite">
+                <span v-if="statisticsLoading" class="logs-updating">正在更新统计，保留上次结果…</span>
+                <template v-else-if="umamiError && hasStatistics">更新失败，暂显示上次结果。<button type="button" @click="retryStatistics()">重试</button></template>
+                <span v-else>全站访问趋势与访客分布</span>
+              </p>
             </div>
           </div>
           <div class="logs-range-group">
@@ -321,7 +328,7 @@ usePublicPageSeo(() => ({
           </div>
         </div>
 
-        <div v-if="statisticsLoading" class="py-16 text-center text-slate-400">
+        <div v-if="initialStatisticsLoading" class="py-16 text-center text-slate-400">
           <svg class="w-6 h-6 animate-spin mx-auto mb-2.5 text-sky-600/80 dark:text-sky-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
             <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" fill="none" />
             <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
@@ -342,10 +349,10 @@ usePublicPageSeo(() => ({
           <p class="text-xs font-medium">统计数据暂不可用</p>
         </div>
 
-        <div v-else-if="hasStatistics" class="p-5 sm:p-6 space-y-6">
+        <div v-else-if="hasStatistics" class="logs-statistics-content p-5 sm:p-6 space-y-6">
           <!-- 5 Stat Metric Cards -->
           <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4">
-            <div class="logs-metric-item">
+            <div class="logs-metric-item club-hero-step" style="--motion-order: 1">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>页面浏览</span>
                 <svg class="w-4 h-4 text-sky-600/80 dark:text-sky-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -357,7 +364,7 @@ usePublicPageSeo(() => ({
               <div class="logs-metric-sub">Pageviews</div>
             </div>
 
-            <div class="logs-metric-item">
+            <div class="logs-metric-item club-hero-step" style="--motion-order: 2">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>独立访客</span>
                 <ClubIcon name="users" class="w-4 h-4 text-emerald-600/80 dark:text-emerald-400/80" />
@@ -366,7 +373,7 @@ usePublicPageSeo(() => ({
               <div class="logs-metric-sub">Visitors</div>
             </div>
 
-            <div class="logs-metric-item">
+            <div class="logs-metric-item club-hero-step" style="--motion-order: 3">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>访问会话</span>
                 <svg class="w-4 h-4 text-purple-600/80 dark:text-purple-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -380,7 +387,7 @@ usePublicPageSeo(() => ({
               <div class="logs-metric-sub">Sessions</div>
             </div>
 
-            <div class="logs-metric-item">
+            <div class="logs-metric-item club-hero-step" style="--motion-order: 4">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>跳出率</span>
                 <svg class="w-4 h-4 text-amber-600/80 dark:text-amber-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -391,7 +398,7 @@ usePublicPageSeo(() => ({
               <div class="logs-metric-sub">Bounce Rate</div>
             </div>
 
-            <div class="logs-metric-item">
+            <div class="logs-metric-item club-hero-step" style="--motion-order: 5">
               <div class="flex items-center justify-between text-xs text-slate-500 dark:text-slate-400">
                 <span>平均停留</span>
                 <svg class="w-4 h-4 text-indigo-600/80 dark:text-indigo-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -405,20 +412,21 @@ usePublicPageSeo(() => ({
           </div>
 
           <TrafficChart
+            v-reveal="{ variant: 'scale' }"
             :data="chartData"
             :unit="chartUnit"
             :interval="chartInterval"
             :range="activeRange"
-            :timezone="umami.meta.timezone ?? 'UTC'"
+            :timezone="overview.meta.timezone ?? 'UTC'"
             :reference-time="rangeWindows[activeRange]?.endAt ?? Number(umami.meta.endAt)"
-            :loading="statisticsLoading"
+            :loading="overviewUpdating"
             @interval="router.push(linkFor({ interval: $event }))"
           />
 
           <!-- Top Content & Audience Insights Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <!-- Top Content -->
-            <div class="logs-subcard">
+            <div v-reveal class="logs-subcard">
               <div class="flex items-center justify-between mb-4">
                 <div class="flex items-center gap-2">
                   <ClubIcon name="book" class="w-4 h-4 text-sky-600/80 dark:text-sky-400/80" />
@@ -480,7 +488,7 @@ usePublicPageSeo(() => ({
             </div>
 
             <!-- Audience & Dimensions -->
-            <div class="logs-subcard">
+            <div v-reveal="{ delay: 70 }" class="logs-subcard logs-audience-panel" aria-label="访客画像" data-preserve-chart-readout>
               <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
                 <div class="flex items-center gap-2">
                   <svg class="w-4 h-4 text-emerald-600/80 dark:text-emerald-400/80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -498,20 +506,25 @@ usePublicPageSeo(() => ({
                     :to="linkFor({ env: tab.key })"
                     class="logs-dim-tab shrink-0"
                     :class="{ 'is-active': environmentType === tab.key }"
+                    :aria-current="environmentType === tab.key ? 'true' : undefined"
                   >
                     {{ tab.label }}
                   </NuxtLink>
                 </div>
               </div>
 
-              <p v-if="environmentType === 'region'" class="mb-4 text-xs leading-6 text-slate-500 dark:text-slate-400">
+              <p v-if="displayedEnvironment === 'region'" class="mb-4 text-xs leading-6 text-slate-500 dark:text-slate-400">
                 <template v-if="umami.location">
                   共 {{ formatNumber(umami.location.total) }} 位访客，已识别省级地区 {{ formatNumber(umami.location.located) }} 位，未知 {{ formatNumber(umami.location.unknown) }} 位。占比以全部访客为分母。
                 </template>
                 <template v-else>占比为当前榜单内占比；省份识别覆盖率暂不可用。</template>
                 地区表示网络出口归属；历史缺失数据保留未知。
               </p>
-              <div class="space-y-2.5">
+              <p class="logs-dimension-status" role="status" aria-live="polite">
+                <template v-if="statisticsLoading">正在获取{{ ENVIRONMENT_TABS.find(tab => tab.key === environmentType)?.label }}，当前显示{{ ENVIRONMENT_TABS.find(tab => tab.key === displayedEnvironment)?.label }}。</template>
+                <template v-else-if="umamiError">更新失败，保留上次的画像数据。</template>
+              </p>
+              <div class="logs-dimension-list space-y-2.5">
                 <div
                   v-for="(entry, index) in umami.top.environments"
                   :key="`env-${index}`"
@@ -525,16 +538,16 @@ usePublicPageSeo(() => ({
                     <!-- Icon / Flag Slot -->
                     <span class="inline-flex w-7 h-7 rounded bg-white dark:bg-slate-800 border border-slate-200/60 dark:border-slate-700 items-center justify-center shrink-0 text-sm">
                       <!-- Country Flag -->
-                      <span v-if="environmentType === 'country'" class="text-base leading-none select-none">
+                      <span v-if="displayedEnvironment === 'country'" class="text-base leading-none select-none">
                         {{ formatCountry(String(entry.x || '')).flag }}
                       </span>
                       <!-- City icon -->
-                      <svg v-else-if="environmentType === 'city' || environmentType === 'region'" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <svg v-else-if="displayedEnvironment === 'city' || displayedEnvironment === 'region'" class="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z" />
                         <circle cx="12" cy="10" r="3" />
                       </svg>
                       <!-- Referrer icon -->
-                      <svg v-else-if="environmentType === 'referrer'" class="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                      <svg v-else-if="displayedEnvironment === 'referrer'" class="w-3.5 h-3.5 text-sky-600 dark:text-sky-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                         <circle cx="12" cy="12" r="10" />
                         <line x1="2" y1="12" x2="22" y2="12" />
                         <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
@@ -553,8 +566,8 @@ usePublicPageSeo(() => ({
 
                     <!-- Label & Details -->
                     <div class="min-w-0">
-                      <div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate">
-                        {{ formatDimensionName(String(entry.x || ''), environmentType) }}
+                      <div class="text-sm font-medium text-slate-800 dark:text-slate-200 truncate" data-testid="audience-value">
+                        {{ formatDimensionName(String(entry.x || ''), displayedEnvironment) }}
                       </div>
                       <div class="text-[10px] text-slate-400 font-mono truncate">
                         {{ String(entry.x || '').trim() || 'DIRECT / NONE' }}
@@ -580,7 +593,7 @@ usePublicPageSeo(() => ({
       </section>
 
       <!-- Section 2: Contributor Leaderboard -->
-      <section v-if="cards.length > 0">
+      <section v-if="cards.length > 0" v-reveal aria-label="贡献榜">
         <div class="flex items-center justify-between mb-6 flex-wrap gap-4">
           <div class="flex items-center gap-3">
             <span class="logs-section-marker font-mono" aria-hidden="true">02</span>
@@ -726,7 +739,7 @@ usePublicPageSeo(() => ({
       </section>
 
       <!-- Section 3: Audit Log Table -->
-      <section class="logs-panel">
+      <section id="operation-logs" v-reveal class="logs-panel" aria-label="操作日志">
         <!-- Filter Form -->
         <form
           class="p-5 sm:p-6 border-b border-slate-100 dark:border-slate-800 bg-slate-50/60 dark:bg-slate-800/40 flex flex-col md:flex-row md:items-center justify-between gap-4"
@@ -737,6 +750,7 @@ usePublicPageSeo(() => ({
           <input type="hidden" name="range" :value="activeRange">
           <input type="hidden" name="env" :value="environmentType">
           <input type="hidden" name="top" :value="topLimit">
+          <input v-if="chartInterval !== 'auto'" type="hidden" name="interval" :value="chartInterval">
           <input type="hidden" name="limit" :value="pageSize">
 
           <div class="flex items-center gap-3">
@@ -971,51 +985,6 @@ usePublicPageSeo(() => ({
 }
 :global(.dark .club-section-heading),
 .dark .club-section-heading {
-  color: #f1f5f9;
-}
-
-/* Header index summary box */
-.logs-header-index {
-  display: flex;
-  flex-direction: column;
-  gap: 0.45rem;
-  margin: 0;
-  padding: 0.875rem 1.125rem;
-  border: 1px solid #dce4e8;
-  border-top: 2px solid #0284c7;
-  background-color: #ffffff;
-  font-size: 0.75rem;
-  min-width: 14rem;
-  border-radius: 2px;
-}
-:global(.dark .logs-header-index),
-.dark .logs-header-index {
-  border-color: #293847;
-  border-top-color: #38bdf8;
-  background-color: #14202b;
-}
-
-.logs-header-index-row {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 1.5rem;
-}
-.logs-header-index-row dt {
-  color: #64748b;
-  letter-spacing: 0.04em;
-}
-.logs-header-index-row dd {
-  margin: 0;
-  font-weight: 600;
-  color: #0f172a;
-}
-:global(.dark .logs-header-index-row dt),
-.dark .logs-header-index-row dt {
-  color: #94a3b8;
-}
-:global(.dark .logs-header-index-row dd),
-.dark .logs-header-index-row dd {
   color: #f1f5f9;
 }
 
@@ -1387,4 +1356,31 @@ span.bg-red-50.text-red-600 { color: #b91c1c; }
   outline: 2px solid #0284c7;
   outline-offset: -2px;
 }
+
+/* Compact header keeps the statistics heading visible on the first screen. */
+.logs-page-header { padding-block: 2rem 1.5rem; margin-bottom: 1.5rem; border-bottom: 1px solid #dce4e8; }
+.logs-header-layout { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 1.25rem; }
+.logs-header-description { margin-top: .65rem; font-size: .875rem; line-height: 1.8; color: #64748b; }
+.logs-section-nav { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; }
+.logs-section-nav a { display: inline-flex; align-items: center; justify-content: center; gap: .6rem; min-height: 2.75rem; padding: .65rem 1rem; border: 1px solid #dce4e8; border-radius: 5px; color: #475569; font-size: .8125rem; transition: background-color 180ms, border-color 180ms, translate 180ms; }
+.logs-section-nav a svg { width: 1rem; height: 1rem; }
+.logs-section-nav a span { color: #64748b; font-size: .6875rem; }
+.logs-section-nav .is-primary { color: #fff; background: #0369a1; border-color: #0369a1; font-weight: 600; }
+.logs-section-nav a:hover { translate: 0 -2px; border-color: #0284c7; }
+.logs-section-nav .is-primary:hover { background: #075985; }
+#site-statistics, #operation-logs { scroll-margin-top: calc(5.5rem + var(--club-safe-area-top, 0px)); }
+.logs-statistics-status { min-height: 1.4rem; margin-top: .25rem; color: #64748b; font-size: .75rem; line-height: 1.8; }
+.logs-statistics-status button { margin-left: .5rem; text-decoration: underline; color: #0369a1; }
+.logs-updating::before { content: ''; display: inline-block; width: .5rem; height: .5rem; margin-right: .4rem; border-radius: 50%; background: #0284c7; animation: logs-update-pulse 1.2s ease-in-out infinite; }
+.logs-dimension-status { min-height: 1.5rem; margin-bottom: .5rem; font-size: .6875rem; line-height: 1.7; color: #64748b; }
+.logs-dimension-list { min-height: 20rem; }
+.logs-statistics-panel { border-top: 2px solid #0284c7; }
+@keyframes logs-update-pulse { 50% { opacity: .4; } }
+:global(.dark .logs-page-header) { border-color: #293847; }
+:global(.dark .logs-header-description), :global(.dark .logs-statistics-status), :global(.dark .logs-dimension-status) { color: #94a3b8; }
+:global(.dark .logs-section-nav a) { border-color: #334155; color: #cbd5e1; }
+:global(.dark .logs-section-nav .is-primary) { background: #075985; color: #f0f9ff; border-color: #0369a1; }
+:global(.dark .logs-statistics-status button) { color: #7dd3fc; }
+@media (max-width: 639px) { .logs-page-header { padding-block: 1.5rem 1.25rem; } .logs-section-nav { width: 100%; } .logs-section-nav a { flex: 1; } }
+@media (prefers-reduced-motion: reduce) { .logs-updating::before { animation: none; } .logs-section-nav a { transition: none; translate: none; } }
 </style>

@@ -88,11 +88,15 @@ onBeforeUnmount(() => { version++; controller?.abort() })
         <ClubIcon name="folder" /><span>{{ name }}</span>
       </button>
     </div>
-    <ul v-if="loaded || expanded" v-show="expanded && (canExpand || failed)" class="resources-tree-children">
+    <Transition name="resources-branch">
+      <div v-if="loaded || expanded" v-show="expanded && (canExpand || failed)" class="resources-tree-branch">
+        <ul class="resources-tree-children">
       <ResourceDirectoryTree v-for="folder in folders" :key="folder.path" :path="folder.path" :name="folder.name" :current-path="currentPath" :directory="directory" @navigate="emit('navigate', $event)" />
       <li v-if="pending || (!loaded && !failed)" class="resources-tree-status" role="status">加载中…</li>
       <li v-else-if="failed" class="resources-tree-status"><button type="button" @click="load(loaded ? page + 1 : 1)">加载失败，重试</button></li>
       <li v-else-if="hasMore" class="resources-tree-status"><button type="button" @click="load(page + 1)">加载更多目录</button></li>
-    </ul>
+        </ul>
+      </div>
+    </Transition>
   </li>
 </template>

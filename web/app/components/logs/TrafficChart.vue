@@ -92,7 +92,10 @@ const navigate = (event: KeyboardEvent) => {
   const next = event.key === 'Home' ? 0 : event.key === 'End' ? props.data.length - 1 : current + (['ArrowLeft', 'ArrowDown'].includes(event.key) ? -1 : 1)
   select(next)
 }
-const outside = (event: PointerEvent) => { if (event.target instanceof Node && !root.value?.contains(event.target)) reset() }
+const outside = (event: PointerEvent) => {
+  if (event.target instanceof Element && event.target.closest('[data-preserve-chart-readout]')) return
+  if (event.target instanceof Node && !root.value?.contains(event.target)) reset()
+}
 watch(() => [props.data, metric.value], reset)
 onMounted(() => document.addEventListener('pointerdown', outside, { passive: true }))
 onBeforeUnmount(() => { document.removeEventListener('pointerdown', outside); if (frame !== undefined) cancelAnimationFrame(frame) })

@@ -2,6 +2,7 @@
 import type { ResourceDetailResponse, ResourceDirectoryResponse, ResourceFileKind, ResourceItem, ResourceSearchResponse } from '#shared/resources'
 import { formatResourceSize, normalizeResourcePath, parentResourcePath, resourceBreadcrumbs } from '#shared/resources'
 import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { START_LOCATION } from 'vue-router'
 import ClubIcon from '~/components/ClubIcon.vue'
 import ResourceFileIcon from '~/components/ResourceFileIcon.vue'
 import ResourceDirectoryTree from '~/components/ResourceDirectoryTree.vue'
@@ -11,6 +12,15 @@ import { queryValue } from '~/utils/public-query'
 import { mergeResourcePages, resourceMatches, resourceWebUrl, sortResources } from '~/utils/resource-browser'
 import type { ResourceSort } from '~/utils/resource-browser'
 import '~/assets/css/resources.css'
+import { vReveal } from '~/utils/motion'
+
+definePageMeta({
+  key: route => route.path,
+  scrollToTop(to, from) {
+    if (from === START_LOCATION) return Boolean(to.hash) || typeof window === 'undefined' || window.scrollY === 0
+    return to.path !== from.path
+  },
+})
 
 const route = useRoute()
 const router = useRouter()
@@ -75,6 +85,7 @@ function invalidateSearch() {
 }
 watch([searchQuery, searchScope], invalidateSearch, { flush: 'sync' })
 watch(currentPath, () => {
+  if (drawer.value?.open) closeDrawer()
   searchQuery.value = ''
   searchScope.value = 'directory'
   invalidateSearch()
@@ -198,6 +209,8 @@ const detailPending = ref(false)
 const detailError = ref(false)
 let detailController: AbortController | undefined
 let detailVersion = 0
+let drawerClearTimer: ReturnType<typeof setTimeout> | undefined
+let disposed = false
 const displayItem = computed(() => activeDetail.value?.item || activeItem.value)
 const downloadUrl = computed(() => absoluteUrl(activeDetail.value?.raw_url || ''))
 const isDemoDetail = computed(() => activeDetail.value?.source === 'mock')
@@ -210,6 +223,7 @@ const aria2Command = computed(() => {
 })
 async function openItem(item: ResourceItem) {
   if (item.is_dir) { navigateToPath(item.path); return }
+  clearTimeout(drawerClearTimer)
   const version = ++detailVersion
   detailController?.abort()
   detailController = new AbortController()
@@ -233,8 +247,22 @@ function closeDrawer() {
   detailVersion++
   detailController?.abort()
   drawer.value?.close()
-  activeItem.value = null
-  activeDetail.value = null
+}
+function onDrawerClosed() {
+  if (disposed || drawer.value?.open) return
+  clearTimeout(drawerClearTimer)
+  const clear = () => {
+    if (drawer.value?.open) return
+    activeItem.value = null
+    activeDetail.value = null
+    detailPending.value = false
+    detailError.value = false
+  }
+  // Keep content during the native dialog's discrete exit transition.
+  const animate = typeof CSS !== 'undefined' && CSS.supports('transition-behavior', 'allow-discrete')
+    && !window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  if (animate) drawerClearTimer = setTimeout(clear, 230)
+  else clear()
 }
 onMounted(() => {
   try {
@@ -244,6 +272,7 @@ onMounted(() => {
 })
 watch(viewMode, value => { try { localStorage.setItem('guatswr-resource-view', value) } catch { /* Optional preference. */ } })
 onBeforeUnmount(() => {
+  disposed = true
   searchVersion++
   moreVersion++
   detailVersion++
@@ -251,6 +280,7 @@ onBeforeUnmount(() => {
   moreController?.abort()
   detailController?.abort()
   clearTimeout(toastTimer)
+  clearTimeout(drawerClearTimer)
   drawer.value?.close()
 })
 </script>
@@ -258,7 +288,7 @@ onBeforeUnmount(() => {
 <template>
   <div class="resources-stage">
     <div class="resources-container">
-      <header class="resources-header">
+      <header class="resources-header club-hero-step">
         <h1>资源下载</h1>
         <div class="resources-header-actions">
           <button type="button" class="resources-action-btn resources-tree-toggle" :aria-expanded="mobileTreeOpen" aria-controls="resource-directory-panel" @click="mobileTreeOpen = !mobileTreeOpen"><ClubIcon name="folder" />目录</button>
@@ -269,7 +299,7 @@ onBeforeUnmount(() => {
       <div class="resources-workspace">
         <aside id="resource-directory-panel" class="resources-sidebar" :class="{ 'is-open': mobileTreeOpen }" aria-label="目录导航">
           <h2 class="resources-tree-heading">目录</h2>
-          <nav aria-label="资源目录树">
+          <nav v-reveal aria-label="资源目录树">
             <ul class="resources-tree">
               <ResourceDirectoryTree path="/" name="全部资源" :current-path="currentPath" :directory="dirError ? undefined : dirData" @navigate="navigateToPath" />
             </ul>
@@ -277,7 +307,7 @@ onBeforeUnmount(() => {
         </aside>
 
         <div class="resources-main">
-          <section class="resources-file-panel" aria-label="资源文件浏览器">
+          <section v-reveal="{ variant: 'scale' }" class="resources-file-panel" aria-label="资源文件浏览器" :aria-busy="busy || undefined">
             <div class="resources-pathbar">
               <nav class="resources-breadcrumbs" aria-label="当前目录路径">
                 <button v-if="currentPath !== '/'" type="button" class="resources-icon-btn" aria-label="返回上级目录" @click="navigateToPath(parentResourcePath(currentPath))">↰</button>
@@ -291,7 +321,7 @@ onBeforeUnmount(() => {
               </nav>
               <div class="resources-path-actions">
                 <button type="button" class="resources-action-btn" aria-label="复制目录链接" title="复制目录链接" @click="copyText(absoluteUrl(route.fullPath), '目录链接')"><ClubIcon name="copy" /><span>复制目录链接</span></button>
-                <button type="button" class="resources-icon-btn" :disabled="busy" aria-label="刷新文件列表" title="刷新文件列表" @click="refreshDirectory"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M5.5 7a7 7 0 0 1 12-2L20 8M4 16l2.5 3a7 7 0 0 0 12-2" /></svg></button>
+                <button type="button" class="resources-icon-btn" :disabled="busy" aria-label="刷新文件列表" title="刷新文件列表" @click="refreshDirectory"><svg class="resources-refresh-icon" :class="{ 'is-refreshing': busy }" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M20 7v5h-5M4 17v-5h5M5.5 7a7 7 0 0 1 12-2L20 8M4 16l2.5 3a7 7 0 0 0 12-2" /></svg></button>
               </div>
             </div>
 
@@ -334,23 +364,23 @@ onBeforeUnmount(() => {
                 <th scope="col" class="resources-date-col" :aria-sort="sortBy === 'modified' ? sortOrder === 'asc' ? 'ascending' : 'descending' : 'none'"><button type="button" @click="changeSort('modified')">修改日期 <span v-if="sortBy === 'modified'" aria-hidden="true">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></button></th>
                 <th scope="col" class="resources-actions-col"><span class="sr-only">操作</span></th>
               </tr></thead>
-              <tbody><tr v-for="item in filteredItems" :key="item.path">
+              <TransitionGroup name="resources-item" tag="tbody"><tr v-for="(item, index) in filteredItems" :key="item.path" class="resources-entry" :style="{ '--resource-order': Math.min(index, 7) }">
                 <td><button type="button" class="resources-item-main" @click="openItem(item)"><span class="resources-item-icon" :data-kind="item.kind"><ResourceFileIcon :name="item.name" :is-dir="item.is_dir" :kind="item.kind" /></span><span class="resources-item-text"><span class="resources-item-title"><span class="resources-item-name">{{ item.name }}</span><span v-if="item.version" class="resources-version-pill">{{ item.version }}</span></span><span v-if="item.summary && !isGlobalSearch" class="resources-item-summary">{{ item.summary }}</span></span></button>
                   <button v-if="isGlobalSearch" type="button" class="resources-location" :aria-label="'打开所在目录 ' + parentResourcePath(item.path)" @click="navigateToPath(parentResourcePath(item.path))">所在目录：{{ parentResourcePath(item.path) }} ↗</button>
                 </td>
                 <td class="resources-size-col">{{ item.is_dir ? '—' : formatResourceSize(item.size) }}</td>
                 <td class="resources-date-col"><time :datetime="item.modified || undefined">{{ fileDate(item.modified) }}</time></td>
                 <td class="resources-actions-col"><button type="button" class="resources-row-action" :aria-label="(item.is_dir ? '进入 ' : '查看详情 ') + item.name" @click="openItem(item)"><span>{{ item.is_dir ? '进入' : '详情' }}</span><span aria-hidden="true">↗</span></button></td>
-              </tr></tbody>
+              </tr></TransitionGroup>
             </table>
 
-            <div v-else class="resources-grid" role="list" aria-label="目录文件网格">
-              <article v-for="item in filteredItems" :key="item.path" role="listitem" class="resources-card">
+            <TransitionGroup v-else name="resources-item" tag="div" class="resources-grid" role="list" aria-label="目录文件网格">
+              <article v-for="(item, index) in filteredItems" :key="item.path" role="listitem" class="resources-card resources-entry" :style="{ '--resource-order': Math.min(index, 7) }">
                 <button type="button" class="resources-card-main" @click="openItem(item)"><span class="resources-card-top"><span class="resources-item-icon" :data-kind="item.kind"><ResourceFileIcon :name="item.name" :is-dir="item.is_dir" :kind="item.kind" /></span><span class="resources-file-kind">{{ kindLabels[item.kind] }}</span></span><span class="resources-item-name">{{ item.name }}</span><span class="resources-item-summary">{{ item.summary || (item.is_dir ? '打开文件夹继续浏览' : '查看详情与下载') }}</span></button>
                 <button v-if="isGlobalSearch" type="button" class="resources-location" @click="navigateToPath(parentResourcePath(item.path))">所在目录：{{ parentResourcePath(item.path) }} ↗</button>
                 <div class="resources-card-meta"><span>{{ item.is_dir ? '文件夹' : formatResourceSize(item.size) }}</span><span>{{ item.version || fileDate(item.modified) }}</span></div>
               </article>
-            </div>
+            </TransitionGroup>
 
             <footer v-if="!busy && !globalSearchIdle && !hasError" class="resources-list-footer">
               <span>{{ activeFolderCount }} 个文件夹 · {{ filteredItems.length - activeFolderCount }} 个文件<span v-if="loadedCount < totalCount"> · 已载入 {{ loadedCount }} / {{ totalCount }} 项</span></span>
@@ -361,17 +391,17 @@ onBeforeUnmount(() => {
           </section>
 
           <div v-if="dirData.source === 'mock'" class="resources-demo-note"><span class="resources-status-dot is-mock" /><p>演示模式：示例文件仅供预览，不提供下载。</p></div>
-          <section v-if="dirData.readme && !isGlobalSearch && !dirError" class="resources-readme" aria-label="目录说明">
+          <section v-if="dirData.readme && !isGlobalSearch && !dirError" v-reveal class="resources-readme" aria-label="目录说明">
             <header><ClubIcon name="book" /><h2>目录说明</h2><span>README.md</span></header>
             <div class="resources-readme-body"><SafeMarkdown v-if="dirData.readmeBody" :nodes="dirData.readmeBody" inherit-typography /><p v-else class="resources-plain-readme">{{ dirData.readme }}</p></div>
           </section>
         </div>
       </div>
-      <div v-if="toast && !activeItem" class="resources-toast" role="status"><ClubIcon name="check" />{{ toast }}</div>
+      <Transition name="resources-notice"><div v-if="toast && !activeItem" class="resources-toast" role="status"><ClubIcon name="check" />{{ toast }}</div></Transition>
 
-      <dialog ref="drawer" class="resources-drawer" aria-labelledby="resource-detail-title" @cancel.prevent="closeDrawer" @close="activeItem = null" @click="event => { if (event.target === drawer) closeDrawer() }">
+      <dialog ref="drawer" class="resources-drawer" aria-labelledby="resource-detail-title" @cancel.prevent="closeDrawer" @close="onDrawerClosed" @click="event => { if (event.target === drawer) closeDrawer() }">
         <template v-if="displayItem">
-          <div v-if="toast" class="resources-toast" role="status"><ClubIcon name="check" />{{ toast }}</div>
+          <Transition name="resources-notice"><div v-if="toast" class="resources-toast" role="status"><ClubIcon name="check" />{{ toast }}</div></Transition>
           <header class="resources-drawer-header"><p class="resources-detail-heading">文件详情</p><button type="button" autofocus class="resources-icon-btn" aria-label="关闭文件详情" @click="closeDrawer">×</button></header>
           <div class="resources-drawer-body">
             <span class="resources-item-icon resources-detail-icon" :data-kind="displayItem.kind"><ResourceFileIcon :name="displayItem.name" :is-dir="displayItem.is_dir" :kind="displayItem.kind" /></span>
