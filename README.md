@@ -49,7 +49,13 @@
 - [服务器部署教程](#服务器部署教程)
   - [1. 容器拓扑与网络边界](#1-容器拓扑与网络边界)
   - [2. 环境要求与持久化目录](#2-环境要求与持久化目录)
-  - [3. 环境变量与 Compose 参数](#3-环境变量与-compose-参数)
+  - [3. 环境变量与 Compose 参数（前后端 .env 填写教程）](#3-环境变量与-compose-参数前后端-env-填写教程)
+    - [3.1 配置文件分层与职责划分](#31-配置文件分层与职责划分)
+    - [3.2 密钥批量生成快捷命令](#32-密钥批量生成快捷命令)
+    - [3.3 后端配置填写教程：`backend/.env`](#33-后端配置填写教程backendenv)
+    - [3.4 前端配置填写教程：`web/.env.production`](#34-前端配置填写教程webenvproduction)
+    - [3.5 根目录 Compose 插值与 Umami 配置：`.env`](#35-根目录-compose-插值与-umami-配置env)
+    - [3.6 运维常见配置排错速查 (FAQ)](#36-运维常见配置排错速查-faq)
   - [4. 构建与镜像版本管理](#4-构建与镜像版本管理)
   - [5. 数据库初始化与历史数据接管](#5-数据库初始化与历史数据接管)
   - [6. 启动与分层验收](#6-启动与分层验收)
@@ -543,100 +549,374 @@ sudo chmod 755 backend/data/public
 
 Windows Docker Desktop 使用工作区下的 `backend/data`、`backend/backups` 作为 bind mount 时，应先创建目录，并确认 Docker Desktop 有权访问该磁盘。Linux 的 `chown/chmod` 命令不适用于 Windows ACL；数据库与资源仍应位于本地磁盘，避免放在网络共享或同步盘中。
 
-### 3. 环境变量与 Compose 参数
+### 3. 环境变量与 Compose 参数（前后端 .env 填写教程）
 
-#### 3.1 区分两层配置
+#### 3.1 配置文件分层与职责划分
 
-| 配置层 | 默认文件 | 用途 |
-| --- | --- | --- |
-| Compose 插值 | 仓库根目录 `.env`，或命令行 `--env-file` 指定的文件 | 选择镜像标签、发布地址、网络、配置文件路径与数据卷源路径 |
-| 容器进程环境 | `backend/.env`、`web/.env.production`，通过服务的 `env_file` 注入 | JWT、BFF 桥接密钥、会话密钥、站点 Origin、业务配置 |
+GuatSWR 采用严格的**分层配置模型**，确保容器编排、服务端 BFF、核心 API 与分析统计之间的安全边界清晰独立：
 
-`docker compose --env-file deploy.env ...` 指定的是 **Compose 插值文件**，不会自动替代服务的 `env_file`。若要选择其他业务配置文件，应在插值文件中设置 `BACKEND_ENV_FILE`、`WEB_ENV_FILE`。所有命令应复用同一个项目名、插值文件和 `-f` 文件列表；本机局域网的具体例子见第 8.3 节。
+| 配置层级 | 默认文件路径 | 作用容器/进程 | 核心职责与运维说明 |
+| :--- | :--- | :--- | :--- |
+| **Compose 插值层** | 仓库根目录 `.env`<br>（或命令行 `--env-file`） | Docker CLI / Compose 编排引擎 | 控制部署镜像标签（`BACKEND_SOURCE_REVISION`）、对外映射端口（`WEB_PORT`）与监听 IP、容器资源配额（CPU/Memory/PIDs）、专属网络子网、Umami 统计栈 PostgreSQL 密码与持久化目录等。 |
+| **后端进程环境** | `backend/.env` | `guatswr-backend` 容器<br>（Express 5 进程） | 业务核心机密：JWT 鉴权密钥、管理员 2FA 加密密钥、BFF 内部桥接密钥、站点规范 Origin 与 CORS 白名单、接口流控与单请求体配额、定时备份所有权、可选 Bot/Webhook 平台集成等。 |
+| **前端进程环境** | `web/.env.production`<br>（本地开发为 `web/.env`） | `guatswr-web` 容器<br>（Nuxt 4 / Nitro BFF） | BFF 代理与安全：服务端会话与 CSRF 签名密钥、BFF 内部桥接密钥（必须与后端一致）、写操作严格 Origin 白名单、站点 SEO 索引策略、**搜索引擎所有权 HTML 验证标签**（百度/Google/Bing/搜狗/360/自定义）、OpenList 网盘对接、Umami 统计脚本注入等。 |
 
-Nuxt 生产产物 `node .output/server/index.mjs` 不会自动加载 `web/.env`。密钥必须通过 Compose 等方式注入运行进程；修改配置文件后，需要重新创建容器才能生效。
+> [!IMPORTANT]
+> **关键加载时机与注意事项**：
+> 1. `docker compose --env-file deploy.env ...` 仅仅是 **Compose 命令行插值文件**，不会自动替代容器内部服务的 `env_file`。若需切换配置文件名，应在插值文件中显式设置 `BACKEND_ENV_FILE` 与 `WEB_ENV_FILE`。
+> 2. Nuxt 生产产物由 `node .output/server/index.mjs` 运行，**生产模式下不会自动扫描读取宿主机上的 `web/.env` 文件**。所有前端配置均通过 `web/.env.production` 并在容器创建时注入环境变量。
+> 3. 修改任何 `.env` 文件后，必须**重新创建或重启对应容器**（如 `docker compose up -d --pull never` 或 `docker compose restart <service>`）才能使新配置生效。
+> 4. 容器内存储路径始终固定为 `/app/data`、`/app/data/public`、`/app/backups` 与 `/app/state`，不受宿主机本地目录名变化影响。部署配置与密钥严禁提交至 Git（根目录 `.dockerignore` 与 `.gitignore` 已排除所有环境文件）。
 
-#### 3.2 后端配置：`backend/.env`
+---
 
-首次创建时复制模板；已有配置应原位检查并补齐，避免覆盖历史密钥：
+#### 3.2 密钥批量生成快捷命令
 
-```sh
+生产部署时，**严禁使用弱口令或跨服务复用同一个密钥**。请在安全的终端执行以下任一命令，一键生成全套独立的加密密钥：
+
+<details open>
+<summary>Node.js 一键批量生成（跨平台推荐）</summary>
+
+```bash
+node -e "
+const crypto = require('node:crypto');
+console.log('=== GuatSWR 运维密钥批量生成（请妥善保存） ===\n');
+console.log('JWT_SECRET (backend/.env):                 ' + crypto.randomBytes(32).toString('hex'));
+console.log('TWOFA_SECRET (backend/.env，可选独立):      ' + crypto.randomBytes(32).toString('hex'));
+console.log('BFF_BRIDGE_SECRET (前后端必须完全一致):    ' + crypto.randomBytes(32).toString('hex'));
+console.log('NUXT_SESSION_PASSWORD (web/.env.production):' + crypto.randomBytes(32).toString('hex'));
+console.log('UMAMI_HASH_SALT (根目录 .env 统计盐值):     ' + crypto.randomBytes(32).toString('hex'));
+console.log('UMAMI_DB_PASSWORD (根目录 .env PG密码):     ' + crypto.randomBytes(16).toString('hex'));
+console.log('BOT_CREDENTIAL_ENCRYPTION_KEY (选填Bot):   ' + crypto.randomBytes(32).toString('hex'));
+"
+```
+
+</details>
+
+<details>
+<summary>Linux / macOS 终端 OpenSSL 逐个生成</summary>
+
+```bash
+# 生成 32 字节（64 位十六进制）安全随机数：
+openssl rand -hex 32
+```
+
+</details>
+
+> [!WARNING]
+> 1. `JWT_SECRET`、`BFF_BRIDGE_SECRET`、`NUXT_SESSION_PASSWORD` 三者**必须各自独立**，绝不可混用。
+> 2. **`BFF_BRIDGE_SECRET`（后端）与 `NUXT_BFF_BRIDGE_SECRET`（前端）必须 100% 相同**且不少于 32 个字符。这是前端 BFF 代理向后端发起特权请求（如游客投稿、匿名草稿校验）的加密数字签名依据，若不一致将导致所有投稿和文件上传出现 `401 Unauthorized` 或 `500 Guest Proof Invalid`。
+
+---
+
+#### 3.3 后端配置填写教程：`backend/.env`
+
+首次部署时复制模板：
+```bash
 cp backend/.env.example backend/.env
 chmod 600 backend/.env
 ```
 
-编辑为实际部署配置。下列两个密钥必须填写；全新部署建议各使用独立的 32 字节随机值，例如分别执行 `openssl rand -hex 32`：
+##### 完整生产配置模板
 
 ```dotenv
+# ==========================================
+# 1. 核心运行与端口（Docker 编排下由 Compose 固定）
+# ==========================================
 NODE_ENV=production
-JWT_SECRET=
-BFF_BRIDGE_SECRET=
+BIND_HOST=0.0.0.0
+PORT=3000
+
+# ==========================================
+# 2. 身份鉴权与安全密钥（必填，请替换为随机密文）
+# ==========================================
+# 业务 JWT 签名密钥（64 位十六进制字符，已有部署请保留历史值以防用户掉线）
+JWT_SECRET=your_jwt_secret_64_hex_chars_here
+# 管理员二步验证二次密码加密密钥（选填；留空则默认复用 JWT_SECRET；服务器迁移时须保留历史值）
+TWOFA_SECRET=your_twofa_secret_64_hex_chars_here
+# BFF 内部桥接密钥（必须与 web/.env.production 的 NUXT_BFF_BRIDGE_SECRET 完全一致）
+BFF_BRIDGE_SECRET=your_bridge_secret_64_hex_chars_here
+# 游客草稿签名校验模式：生产环境固定为 required
 GUEST_DRAFT_PROOF_MODE=required
+
+# ==========================================
+# 3. 站点域名与网络边界
+# ==========================================
+# 规范公网站点 Origin（末尾严禁加斜杠 /）
 SITE_URL=https://www.guatswr.top
+# 允许跨域请求的 Origin（末尾严禁加斜杠 /，多个用逗号隔开）
 CORS_ORIGINS=https://www.guatswr.top
+# 可信反向代理/BFF 的 CIDR 列表（Docker 生产环境下由 Compose 自动指定为前端 IP 172.30.88.10/32）
+# TRUST_PROXY_CIDRS=172.30.88.10/32
+
+# ==========================================
+# 4. 流量控制与运行限制
+# ==========================================
+# 单一独立访客 IP 每分钟允许的最大请求数（超额将触发短暂封禁）
+GLOBAL_RATE_LIMIT=600
+# 共享反代总流量配额（来自可信前端但缺失独立访客 IP 时的每分钟兜底限额）
+SHARED_PROXY_RATE_LIMIT=6000
+# 最大单请求体大小（与前端上传上限保持匹配）
 MAX_BODY_SIZE=50mb
+# 上传暂存文件过期回收周期（毫秒，默认 48 小时）
 STAGING_TTL_MS=172800000
+
+# ==========================================
+# 5. 定时任务与存储（Docker 模式下路径由 Compose 固定挂载）
+# ==========================================
+# 备份调度器执行主体：app（后端内置定时器按后台规则自动执行）或 external（外部 crontab）
 BACKUP_SCHEDULER_OWNER=app
+# 容器内固定路径（Compose 已预设挂载，无需在 .env 中修改）：
+# DATA_DIR=/app/data
+# PUBLIC_DIR=/app/data/public
+# BACKUP_ROOT=/app/backups
+
+# ==========================================
+# 6. Bot / AstrBot 机器人集成（可选功能，不用可保持关闭）
+# ==========================================
+# 是否启用 Bot 平台接口（启用前主库须已显式执行 migrate v4/v6）
+BOT_PLATFORM_ENABLED=false
+# Bot 凭据本地静态加密密钥（32 字节十六进制，开启 Bot 必填且须妥善异地备份）
+# BOT_CREDENTIAL_ENCRYPTION_KEY=
+# 发往 AstrBot 实例的 Webhook 接收端完整 URL
+# ASTRBOT_WEBHOOK_URL=https://bot.example.com/api/webhook
+# 发往 AstrBot 的身份认证 Bearer Token
+# ASTRBOT_TOKEN=
+# Webhook 请求超时（毫秒）
+ASTRBOT_TIMEOUT_MS=5000
+# 推送给 Bot 的富媒体素材公网基础 Origin（留空则自动回退至 SITE_URL）
+# BOT_PUBLIC_ASSET_BASE_URL=https://www.guatswr.top
 ```
 
-将站点域名改为实际 HTTPS Origin。`BFF_BRIDGE_SECRET` 必须为 32～256 个可见 ASCII 字符，并与前端 `NUXT_BFF_BRIDGE_SECRET` 一致；保留已有部署的 `JWT_SECRET`。Bot/Webhook 等可选配置按 [`backend/.env.example`](backend/.env.example) 补充，不需要启用的集成可保持关闭。
+##### 关键参数说明表
 
-Compose 会覆盖后端的 `NODE_ENV=production`、`PORT=3000`、`BIND_HOST=0.0.0.0`、容器内存储路径与 `TRUST_PROXY_CIDRS`。不要用修改 `backend/.env` 的 `PORT` 来调整宿主机入口。
+| 变量名 | 是否必填 | 格式规范与示例 | 详细作用与运维注意事项 |
+| :--- | :---: | :--- | :--- |
+| `JWT_SECRET` | **必填** | 64 位十六进制随机字符串 | 用于签发并校验管理端会话与 API 访问令牌。**生产环境严禁随意更改**，轮换密钥将导致当前所有已登录管理员的 Token 立即失效。 |
+| `TWOFA_SECRET` | 选填 | 64 位十六进制随机字符串 | 用于加密数据库中管理员配置的二步验证二级密码。若留空则自动回退到 `JWT_SECRET`；**跨服务器数据迁移时必须保持原值不变**，否则管理员无法通过二步验证登录。 |
+| `BFF_BRIDGE_SECRET` | **必填** | 32～256 位 ASCII 字符串 | 后端用于校验来自前端 Nitro BFF 网关的 HMAC-SHA256 请求签名（游客活动报名、游客草稿创建等）。**必须与前端完全一致**。 |
+| `GUEST_DRAFT_PROOF_MODE` | **必填** | `required` 或 `optional` | 控制是否强制要求前端附带 BFF 证明签名。生产环境请保持 `required`，确保写操作不可绕过 BFF 安全门禁直接伪造。 |
+| `SITE_URL` | **必填** | `https://www.guatswr.top` | 站点的正规对外主域名。**末尾严禁携带斜杠 `/`**。影响邮件通知、日志脱敏与绝对路径拼接。 |
+| `CORS_ORIGINS` | **必填** | `https://www.guatswr.top` | 允许跨域资源共享的 Origin。同样**末尾不可带斜杠**。如有备用域名或管理端独立域名，可用逗号分隔：`https://a.top,https://b.top`。 |
+| `GLOBAL_RATE_LIMIT` | 选填 | 正整数，默认 `600` | 后端对单个客户端真实 IP 的每分钟滑动窗口请求限额。防范脚本暴力扫描与 CC 攻击。 |
+| `BACKUP_SCHEDULER_OWNER`| 选填 | `app` 或 `external` | 设为 `app` 时，后端启动后会自动拉取后台“备份设置”并执行定时滚动备份与过期清理；设为 `external` 则完全交由宿主机外部定时任务管控。 |
 
-#### 3.3 前端配置：`web/.env.production`
+> [!NOTE]
+> Compose 会覆盖后端的 `NODE_ENV=production`、`PORT=3000`、`BIND_HOST=0.0.0.0`、容器内存储路径与 `TRUST_PROXY_CIDRS`。不要用修改 `backend/.env` 的 `PORT` 来调整宿主机对外端口。
 
-```sh
+---
+
+#### 3.4 前端配置填写教程：`web/.env.production`
+
+首次部署时复制模板：
+```bash
 cp web/.env.example web/.env.production
 chmod 600 web/.env.production
 ```
 
-编辑以下配置；会话密钥与 JWT、桥接密钥应分别生成：
+##### 完整生产配置模板
 
 ```dotenv
+# ==========================================
+# 1. 内部通信与运行基础（Docker 编排下由 Compose 固定）
+# ==========================================
+NODE_ENV=production
+HOST=0.0.0.0
+PORT=3100
+# 后端在 Compose 网络内的内部服务地址（必须带协议与端口，严禁带 /api 后缀）
 NUXT_API_BASE=http://backend:3000
-NUXT_SESSION_PASSWORD=
-NUXT_BFF_BRIDGE_SECRET=
+
+# ==========================================
+# 2. BFF 核心会话与安全凭证（必填）
+# ==========================================
+# BFF 会话封存与 CSRF 签名密钥（至少 32 字符，使用 HKDF-SHA256 派生 AES-256-GCM 密钥）
+NUXT_SESSION_PASSWORD=your_session_password_at_least_32_chars_long
+# 内部桥接密钥（必须与 backend/.env 的 BFF_BRIDGE_SECRET 100% 完全相同）
+NUXT_BFF_BRIDGE_SECRET=your_bridge_secret_64_hex_chars_here
+# 允许发起写操作的 Origin 列表（必须是合法的 JSON 字符串数组，末尾严禁加斜杠 /）
 NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://www.guatswr.top"]
+# 仅在非生产环境且连接与 Host 均为回环地址时允许明文 HTTP Cookie（生产环境必须为 false）
 NUXT_BFF_AUTH_ALLOW_INSECURE_LOOPBACK_COOKIES=false
+
+# ==========================================
+# 3. 站点 SEO、索引与规范域名
+# ==========================================
 NUXT_SITE_URL=https://www.guatswr.top
 NUXT_SITE_ENV=production
+# 生产环境开启搜索引擎爬虫索引（预发布/测试环境请填 false）
 NUXT_SITE_INDEXABLE=true
+
+# ==========================================
+# 4. 搜索引擎与站点所有权 HTML 标签验证（本期新增特性）
+# ==========================================
+# 百度搜索资源平台验证（支持纯 Token 如 codeva-xxx，或整段 <meta name="..." content="..." />）
+NUXT_PUBLIC_SITE_VERIFICATION_BAIDU=codeva-g9JIawSEQ3
+# Google Search Console 网站所有权验证（可选）
+# NUXT_PUBLIC_SITE_VERIFICATION_GOOGLE=google_verification_token
+# 必应 Bing Webmaster Tools 验证（可选，对应 msvalidate.01）
+# NUXT_PUBLIC_SITE_VERIFICATION_BING=bing_verification_token
+# 搜狗站长平台验证（可选，对应 sogou_site_verification）
+# NUXT_PUBLIC_SITE_VERIFICATION_SOGOU=sogou_verification_token
+# 360 搜索站长平台验证（可选，对应 360-site-verification）
+# NUXT_PUBLIC_SITE_VERIFICATION_SO=360_verification_token
+# 自定义/其他验证标签（可选，支持 JSON 数组、对象或 key=val 逗号分隔列表）
+# NUXT_PUBLIC_SITE_VERIFICATION_CUSTOM=bytedance-verification-code=xyz123,yandex-verification=abc456
+
+# ==========================================
+# 5. OpenList v3 网盘与资源站对接（可选）
+# ==========================================
+# 网盘基础 API 地址
+NUXT_OPENLIST_BASE_URL=https://pan.guatswr.top
+# 公共资源对外下载与预览地址
+NUXT_OPENLIST_PUBLIC_URL=https://pan.guatswr.top
+# OpenList v3 认证 Token（在网盘后台“管理 - 用户/Token”中生成）
+NUXT_OPENLIST_TOKEN=openlist-your-api-token-here
+# 资源挂载的网盘根路径
+NUXT_OPENLIST_ROOT_PATH=/社团资源
+# 网盘接口交互超时时间（毫秒）
+NUXT_OPENLIST_TIMEOUT_MS=8000
+# 临时上传资源缓存目录（留空则默认使用系统临时目录）
+# NUXT_OPENLIST_UPLOAD_TEMP_DIR=
+
+# ==========================================
+# 6. Umami 访问统计分析集成（可选）
+# ==========================================
+# 统计脚本公网可访问地址（默认接入本地统一栈 https://stats.guatswr.top/script.js）
+# NUXT_PUBLIC_UMAMI_SCRIPT_URL=https://stats.guatswr.top/script.js
+# Umami 站点 ID（从 Umami 后台获取的 UUID 标识）
+# NUXT_PUBLIC_UMAMI_WEBSITE_ID=2b03bf5d-751a-4a7c-be54-d545fe250209
 ```
 
-`NUXT_SESSION_PASSWORD` 至少 32 个字符；`NUXT_BFF_BRIDGE_SECRET` 填入后端同一个桥接密钥。允许写入的 Origin 使用精确的协议、域名和端口，不带路径；多个 Origin 用 JSON 数组表示。外网和局域网的非回环地址均应使用 HTTPS，生产模式会话 Cookie 保持 `Secure`。
+##### 关键参数说明表
 
-根目录 Compose 固定覆盖 `NODE_ENV`、`HOST`、`PORT`、`NUXT_API_BASE` 和 `NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS`。其中代理信任配置以 Compose 的 `environment` 为准，在 `web/.env.production` 中设置同名变量不会覆盖它。若实际代理对端与默认网关不同，应通过额外的 Compose override 文件精确修改该列表。
+| 变量名 | 是否必填 | 格式规范与示例 | 详细作用与运维注意事项 |
+| :--- | :---: | :--- | :--- |
+| `NUXT_SESSION_PASSWORD` | **必填** | 至少 32 个字符的随机字符串 | 用于派生会话封存（AES-256-GCM）与 CSRF 防伪校验密钥。**生产环境严禁泄露或随意变更**（变更会导致当前已登录管理会话全部注销）。 |
+| `NUXT_BFF_BRIDGE_SECRET` | **必填** | 32～256 位 ASCII 字符串 | **必须与后端的 `BFF_BRIDGE_SECRET` 完全一致**。 |
+| `NUXT_BFF_AUTH_ALLOWED_ORIGINS` | **必填** | **标准 JSON 字符串数组**<br>`["https://www.guatswr.top"]` | **防 CSRF 核心屏障**。所有向 `/api/bff/**` 发起的写请求（POST/PUT/DELETE/PATCH）的 `Origin` 必须精确匹配此列表中的某一项。**严禁包含末尾斜杠 `/`**。如需允许多个域名，写为 `["https://www.guatswr.top","https://guatswr.top"]`。 |
+| `NUXT_PUBLIC_SITE_VERIFICATION_BAIDU` | 选填 | `codeva-g9JIawSEQ3` 或完整 `<meta ...>` | **百度站长平台验证**。系统会在公开页面（包括首页 `/`）的服务端渲染 `<head>` 中动态注入 `<meta name="baidu-site-verification" content="...">`。<br>运维人员既可以直接填纯 Token，也可以整段粘贴百度提供的标签代码，系统会自动提取并过滤危险字符。修改后无需重新构建镜像，**重启容器即刻生效**。 |
+| `NUXT_PUBLIC_SITE_VERIFICATION_GOOGLE` | 选填 | 谷歌验证 Token | 自动渲染为 `<meta name="google-site-verification" content="...">`。 |
+| `NUXT_PUBLIC_SITE_VERIFICATION_BING` | 选填 | 必应验证 Token | 自动渲染为 `<meta name="msvalidate.01" content="...">`。 |
+| `NUXT_PUBLIC_SITE_VERIFICATION_SOGOU` | 选填 | 搜狗验证 Token | 自动渲染为 `<meta name="sogou_site_verification" content="...">`。 |
+| `NUXT_PUBLIC_SITE_VERIFICATION_SO` | 选填 | 360 搜索验证 Token | 自动渲染为 `<meta name="360-site-verification" content="...">`。 |
+| `NUXT_PUBLIC_SITE_VERIFICATION_CUSTOM`| 选填 | `k1=v1,k2=v2` 或 JSON 数组 | 任意其他第三方平台的所有权验证标签，均会被安全解析并注入到 `<head>`。 |
+| `NUXT_OPENLIST_TOKEN` | 选填 | `openlist-xxx...` | OpenList 网盘通信密钥。配置后网站 `/resources` 页面可在线浏览、搜索与直链下载社团公共资源文件。 |
 
-#### 3.4 Compose 插值参数
+---
 
-可在根目录 `.env` 或独立的部署插值文件中配置下列参数。相对的 `env_file` 和 bind mount 路径按 Compose 文件的项目目录解析；多个 `-f` 文件合并时，以第一个 Compose 文件所在目录为基准。
+#### 3.5 根目录 Compose 插值与 Umami 配置：`.env`
 
-| 参数 | 默认值 | 说明 |
-| --- | --- | --- |
-| `BACKEND_SOURCE_REVISION` | 镜像标签 `local`；后端修订标签 `unknown` | 同时用于两个镜像的 tag；后端另写入 OCI `org.opencontainers.image.revision` |
-| `WEB_BIND_ADDRESS` | `127.0.0.1` | 宿主机发布地址；对局域网开放时设为本机实际网卡 IPv4 |
-| `WEB_PORT` | `3100` | 宿主机前端端口，容器内仍为 `3100` |
-| `DOCKER_SUBNET` | `172.30.88.0/24` | 专用 bridge 子网；需避开宿主机、VPN 与已有 Docker 网络 |
-| `DOCKER_GATEWAY` | `172.30.88.1` | 上述子网内的网关；同时用于前端默认代理信任列表 |
-| `DOCKER_WEB_IP` | `172.30.88.10` | 同一子网内的固定 Web 地址；后端信任其 `/32` |
-| `BACKEND_ENV_FILE` | `./backend/.env` | 后端业务配置文件 |
-| `WEB_ENV_FILE` | `./web/.env.production` | 前端业务配置文件 |
-| `BACKEND_DATA_DIR` | `./backend/data` | 数据 bind mount 源目录，必须存在 |
-| `BACKEND_BACKUP_DIR` | `./backend/backups` | 备份 bind mount 源目录，必须存在 |
-| `IMAGE_REGISTRY` | 空 | 仅作用于后端 Dockerfile 的基础镜像前缀；非空时需含结尾 `/`，镜像源需支持所固定的 digest |
-| `COMPOSE_PROJECT_NAME` | 文件中的项目名 `guatswr` | Docker Compose 标准项目名覆盖；相关命令需保持一致 |
+根目录下的 `.env` 文件是 Docker Compose 在解析 `docker-compose.yml` 时的参数插值源。
 
-例如，默认 Docker 子网冲突时应同时调整三个网络参数：
+首次部署时复制模板：
+```bash
+cp .env.example .env
+chmod 600 .env
+```
+
+##### 完整生产配置模板
 
 ```dotenv
-DOCKER_SUBNET=172.30.90.0/24
-DOCKER_GATEWAY=172.30.90.1
-DOCKER_WEB_IP=172.30.90.10
+# ==========================================
+# 1. 镜像构建与发布版本控制
+# ==========================================
+# 当前部署的源码 Git Commit Hash（执行 git rev-parse HEAD 获得）
+BACKEND_SOURCE_REVISION=d1920b77f54e5a7e62bc46fa214786cc9b10ec1e
+# Docker 镜像源前缀（国内镜像加速，结尾必须带斜杠 /；可选）
+# IMAGE_REGISTRY=docker.m.daocloud.io/
+
+# ==========================================
+# 2. 宿主机网络与端口映射
+# ==========================================
+# 前端服务在宿主机的监听 IP（生产环境固定为 127.0.0.1，仅供宿主机 Nginx 反代；若局域网直连可改具体局域网 IP）
 WEB_BIND_ADDRESS=127.0.0.1
+# 前端服务在宿主机的对外映射端口（内部容器端口固定为 3100）
 WEB_PORT=3100
+
+# ==========================================
+# 3. 容器资源上限约束（安全基线配置）
+# ==========================================
+BACKEND_MEMORY_LIMIT=1g
+BACKEND_CPU_LIMIT=1.5
+BACKEND_PIDS_LIMIT=256
+WEB_MEMORY_LIMIT=1g
+WEB_CPU_LIMIT=1.5
+WEB_PIDS_LIMIT=256
+
+# ==========================================
+# 4. Umami 网站统计分析服务（统一技术栈）
+# ==========================================
+# PostgreSQL 数据库密码（请生成高强度随机字符串）
+UMAMI_DB_PASSWORD=your_umami_db_password_here
+# Umami 内部数据混淆盐值（请生成随机字符串）
+UMAMI_HASH_SALT=your_umami_hash_salt_here
+# Umami Web 界面宿主机映射端口（反代至 https://stats.guatswr.top）
+UMAMI_PORT=13036
+# Umami Web 宿主机监听 IP（建议 127.0.0.1，仅供 Nginx 反向代理）
+UMAMI_BIND_ADDRESS=127.0.0.1
+# Umami PostgreSQL 数据文件持久化目录
+UMAMI_DB_DATA_DIR=/opt/umami/umami-db-data
+# IP 归属地 GeoIP 数据库目录
+UMAMI_GEO_DIR=/opt/umami/geo
 ```
 
-容器内存储路径始终使用 `/app/data`、`/app/data/public`、`/app/backups`，不会随宿主机源目录变化。部署配置和密钥不应提交到 Git；根目录 `.dockerignore` 会排除环境文件、本地数据、备份及构建缓存。
+##### 关键参数说明表
+
+| 参数名 | 默认值 | 详细作用与运维注意事项 |
+| :--- | :--- | :--- |
+| `BACKEND_SOURCE_REVISION` | `local` | 同时作为 `guatswr-backend` 与 `guatswr-web` 镜像的 tag。升级版本时应先执行 `git rev-parse HEAD` 并写入该变量，确保容器镜像版本与 Git 提交记录精确对齐。 |
+| `WEB_BIND_ADDRESS` | `127.0.0.1` | 前端宿主机监听地址。强烈建议仅监听 `127.0.0.1`，再由宿主机统一配置 Nginx/Caddy 对外提供 HTTPS 与证书管理；局域网演示时可临时配置为局域网 IP。 |
+| `WEB_PORT` | `3100` | 前端宿主机对外映射端口。内部容器端口固定为 `3100`。 |
+| `DOCKER_SUBNET` | `172.30.88.0/24` | 专用 bridge 子网；需避开宿主机物理网络、VPN 与已有 Docker 网络。 |
+| `DOCKER_GATEWAY` | `172.30.88.1` | 上述子网内的网关；同时用于前端默认代理信任列表。 |
+| `DOCKER_WEB_IP` | `172.30.88.10` | 同一子网内的固定 Web 地址；后端信任其 `/32`。 |
+| `BACKEND_MEMORY_LIMIT` | `1g` | 后端容器内存硬上限，防止内存泄露打爆宿主机。配套有 10MB × 3 的自动切分日志轮转策略。 |
+| `WEB_MEMORY_LIMIT` | `1g` | 前端容器内存硬上限。挂载有独立 `bff-state` 持久卷。 |
+| `UMAMI_DB_PASSWORD` | 无默认值 | 统一栈内 PostgreSQL 密码。生产环境必须设置强口令。数据库文件独立存储在 `UMAMI_DB_DATA_DIR` 下。 |
+
+---
+
+#### 3.6 运维常见配置排错速查 (FAQ)
+
+##### Q1: 提交活动草稿、游客投稿或在管理后台保存时提示 `403 Forbidden: Origin not allowed`？
+- **排查原因**：前端 BFF 开启了严格的 Origin 跨站请求伪造保护。检查发现请求头中的 `Origin` 未在白名单中。
+- **解决方法**：
+  1. 查看浏览器 Network 面板中写请求（如 `/api/bff/**`）的 Request Headers 中的 `Origin` 值（例如 `https://www.guatswr.top`）。
+  2. 检查 `web/.env.production` 中的 `NUXT_BFF_AUTH_ALLOWED_ORIGINS`，必须是合法的 JSON 数组且**严禁包含末尾斜杠**。
+  3. 正确写法：`NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://www.guatswr.top"]`。
+  4. 错误写法：`NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://www.guatswr.top/"]`（多了一个 `/` 将导致比对失败）。
+  5. 修改后执行 `docker compose restart web`。
+
+##### Q2: 游客活动投稿时提示 `500 Internal Error` 或后端日志显示 `guest proof verification failed`？
+- **排查原因**：前端 BFF 与后端之间的数字验签密钥不匹配。
+- **解决方法**：
+  1. 打开 `backend/.env` 检查 `BFF_BRIDGE_SECRET`。
+  2. 打开 `web/.env.production` 检查 `NUXT_BFF_BRIDGE_SECRET`。
+  3. 确认两处的密文**完全一致且长度大于等于 32 个字符**。修改后重新拉起容器。
+
+##### Q3: 修改了 `web/.env.production`（如添加了搜索引擎验证码），刷新网页却看不到 `<meta>` 标签？
+- **排查原因**：Docker 容器内的 Node 进程仅在启动初始化时读取环境变量，直接修改宿主机文件不会自动热更新正在运行的容器。
+- **解决方法**：
+  - 无需重新执行漫长的镜像构建打包，直接执行平滑重启命令即可使新配置生效：
+    ```bash
+    docker compose restart web
+    ```
+  - 重启后在宿主机验证：
+    ```bash
+    curl -fsSL http://127.0.0.1:3100/ | grep -i "baidu-site-verification"
+    ```
+
+##### Q4: 重启或重新部署前端容器后，管理员是否会掉线需要重新登录？
+- **解答**：**不会**。
+  - 本系统通过 Docker 命名持久卷 `guatswr_bff-state` 挂载到了容器内的 `/app/state`。
+  - BFF 使用 Node 原生 SQLite 与 AES-256-GCM 将会话凭据加密持久化保存在该目录中。即使容器被重新构建、升级或销毁重建，只要持久化卷存在且 `NUXT_SESSION_PASSWORD` 未改变，所有管理会话均能无缝保持有效。
+  - 若遇紧急安全事件需**强制注销所有在线管理员**，只需在 `web/.env.production` 中轮换 `NUXT_SESSION_PASSWORD` 并重启 `web` 容器即可。
+
+##### Q5: `NUXT_BFF_AUTH_ALLOWED_ORIGINS` 在启动时报错 `JSON.parse error`？
+- **排查原因**：在 `.env` 文件中使用了单引号（如 `['https://...']`），而标准 JSON 规范要求必须使用**双引号**。
+- **解决方法**：
+  - 务必使用英文双引号：`NUXT_BFF_AUTH_ALLOWED_ORIGINS=["https://www.guatswr.top"]`
+  - 若在某些特殊 Shell 环境中双引号被吃掉，可使用单引号将整体包裹：`NUXT_BFF_AUTH_ALLOWED_ORIGINS='["https://www.guatswr.top"]'`
 
 ### 4. 构建与镜像版本管理
 
