@@ -129,6 +129,7 @@ const detailData = shallowRef<PublicServerDetailResponse | null>(null)
 const detailLoading = ref(false)
 const detailError = ref<string | null>(null)
 const hiddenPingTaskIds = ref<Set<number>>(new Set())
+const hoverIndex = ref<number | null>(null)
 let detailReqSeq = 0
 
 async function fetchNodeDetail(silent = false): Promise<void> {
@@ -171,13 +172,14 @@ watch([selectedNodeId, detailTab, loadHours, pingHours], ([newNodeId], [oldNodeI
   if (newNodeId !== oldNodeId) {
     hiddenPingTaskIds.value = new Set()
   }
+  if (!import.meta.client) return
   if (newNodeId) {
     void fetchNodeDetail(false)
   }
   else {
     detailData.value = null
   }
-}, { immediate: true })
+})
 
 function togglePingTask(taskId: number): void {
   const next = new Set(hiddenPingTaskIds.value)
@@ -238,6 +240,9 @@ function stopPolling(): void {
 }
 
 onMounted(() => {
+  if (selectedNodeId.value) {
+    void fetchNodeDetail(false)
+  }
   startPolling()
 })
 
@@ -362,7 +367,6 @@ function buildMonotoneAreaPath(pts: readonly SvgCoord[]): string {
 
 const loadPoints = computed<readonly PublicServerLoadPoint[]>(() => detailData.value?.loadRecords ?? [])
 
-const hoverIndex = ref<number | null>(null)
 const activeLoadPoint = computed<PublicServerLoadPoint | null>(() => {
   const list = loadPoints.value
   if (list.length === 0) return null
