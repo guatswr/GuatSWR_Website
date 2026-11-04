@@ -25,6 +25,7 @@ it('same range with distinct environment types must not reuse another dimension 
  }
  expect(received.filter(x=>x.includes('type=os'))).toHaveLength(1)
  expect(received.some(x=>x.includes('type=region')&&x.includes('limit=10000'))).toBe(true)
+ expect(received.some(x=>x.includes('/pageviews?')&&x.includes('timezone=Asia%2FShanghai'))).toBe(true)
 })
 
 it('calculates province coverage before truncating the visible ranking',async()=>{
@@ -49,6 +50,7 @@ const {createUmamiClient}=require('../../dist/src/integrations/umami/client.js')
 const query=(startAt=1)=>({startAt,endAt:1000,unit:'day',limit:10,envType:'browser'})
 async function mockUmami(mode='normal',timeoutMs='2000',ttlMs='60000'){
  let logins=0,reads=0,active=0,peak=0
+ const paths=[]
  const server=http.createServer((req,res)=>{
   const url=new URL(req.url,'http://fixture');req.resume()
   req.on('end',()=>{
@@ -56,7 +58,7 @@ async function mockUmami(mode='normal',timeoutMs='2000',ttlMs='60000'){
    if(url.pathname.includes('login')){
     logins++;return res.end(JSON.stringify({token:`t${logins}.${Buffer.from(JSON.stringify({exp:Math.floor(Date.now()/1000)+3600})).toString('base64url')}.x`}))
    }
-   reads++;active++;peak=Math.max(peak,active);res.once('close',()=>active--)
+   paths.push(url);reads++;active++;peak=Math.max(peak,active);res.once('close',()=>active--)
    if(mode==='hang')return
    if(mode==='denied'){res.writeHead(401);return res.end('{}')}
    if(mode==='bad-json')return res.end('synthetic-private-invalid-json')
@@ -70,8 +72,16 @@ async function mockUmami(mode='normal',timeoutMs='2000',ttlMs='60000'){
  onTestFinished(()=>new Promise(r=>{server.closeAllConnections();server.close(r)}))
  const baseUrl=`http://127.0.0.1:${server.address().port}`
  const options={baseUrl,username:'synthetic',password:'synthetic-password',websiteId:'synthetic-id',timeoutMs,ttlMs,shutdown:new AbortController().signal}
- return {client:createUmamiClient(options),options,counts:()=>({logins,reads,peak})}
+ return {client:createUmamiClient(options),options,paths,counts:()=>({logins,reads,peak})}
 }
+it('requests real hourly buckets and bounds long-range series before querying Umami',async()=>{
+ const f=await mockUmami()
+ const short=await f.client.summary({...query(),unit:'hour',startAt:1,endAt:7*86400000})
+ expect(short.meta).toMatchObject({unit:'hour',timezone:'Asia/Shanghai'})
+ const long=await f.client.summary({...query(),unit:'hour',startAt:1,endAt:800*86400000})
+ expect(long.meta).toMatchObject({unit:'month',timezone:'Asia/Shanghai'})
+ expect(f.paths.filter(url=>url.pathname.endsWith('/pageviews')).map(url=>url.searchParams.get('unit'))).toEqual(['hour','month'])
+})
 it('coalesces identical summaries and login across the four upstream requests',async()=>{
  const f=await mockUmami()
  const results=await Promise.all(Array.from({length:12},()=>f.client.summary(query())))

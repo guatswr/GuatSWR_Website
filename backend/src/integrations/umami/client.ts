@@ -111,8 +111,12 @@ export function createUmamiClient(options: { baseUrl: string; username: string; 
       if (!Number.isFinite(startAt) || !Number.isFinite(endAt)) fail('UMAMI_BAD_JSON')
     }
     const { unit, limit, envType } = input
+    const span = endAt - startAt
+    let seriesUnit = unit
+    if (seriesUnit === 'hour' && span > 31 * 86400000) seriesUnit = 'day'
+    if (seriesUnit === 'day' && span > 400 * 86400000) seriesUnit = 'month'
     const [stats, pageviews, pages, environments] = await Promise.all([
-      get(`${prefix}/stats`, { startAt, endAt }, signal), get(`${prefix}/pageviews`, { startAt, endAt, unit }, signal),
+      get(`${prefix}/stats`, { startAt, endAt }, signal), get(`${prefix}/pageviews`, { startAt, endAt, unit: seriesUnit, timezone: 'Asia/Shanghai' }, signal),
       get(`${prefix}/metrics`, { startAt, endAt, type: 'path', limit }, signal), get(`${prefix}/metrics`, { startAt, endAt, type: envType, limit: envType === 'region' ? 10000 : limit }, signal)
     ])
     const series = record(pageviews)
@@ -130,7 +134,7 @@ export function createUmamiClient(options: { baseUrl: string; username: string; 
       // coverage rather than inventing a negative unknown count or a percentage.
       if (Number.isSafeInteger(total) && total >= located && total >= 0) location = { total, located, unknown: total - located }
     }
-    return { meta: { startAt, endAt, unit, limit, envType }, summary: stats || {}, series: { pageviews: series.pageviews || [], visitors: series.sessions || [] }, top: { pages: pages || [], environments: envType === 'region' && Array.isArray(environments) ? environments.slice(0, limit) : environments || [] }, ...(location ? { location } : {}) }
+    return { meta: { startAt, endAt, unit: seriesUnit, timezone: 'Asia/Shanghai', limit, envType }, summary: stats || {}, series: { pageviews: series.pageviews || [], visitors: series.sessions || [] }, top: { pages: pages || [], environments: envType === 'region' && Array.isArray(environments) ? environments.slice(0, limit) : environments || [] }, ...(location ? { location } : {}) }
   }
   return {
     configured,

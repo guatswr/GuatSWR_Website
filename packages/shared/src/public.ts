@@ -366,6 +366,7 @@ export const umamiPointSchema = z.object({
 })
 
 export const publicUmamiMetaSchema = z.object({
+  timezone: z.enum(['UTC', 'Asia/Shanghai']).optional(),
   startAt: forwardedNumberSchema,
   endAt: forwardedNumberSchema,
   unit: publicTextSchema,

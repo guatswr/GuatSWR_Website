@@ -18,18 +18,13 @@ import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import {
   ENVIRONMENT_TABS,
   LOG_ACTIONS,
-  LOG_CHART,
   LOG_RANGE_OPTIONS,
   actionStyleClass,
   averageDuration,
   bounceRate,
   buildLogChart,
-  buildPoints,
-  buildSmoothPath,
-  chartMaximum,
   environmentIconUrl,
   formatAction,
-  formatChartDate,
   formatCountry,
   formatDimensionName,
   formatLogTime,
@@ -38,7 +33,8 @@ import {
   pageTitle,
   topEntryPath,
 } from '~/utils/logs'
-import type { UmamiWindow } from '~/utils/logs'
+import type { UmamiWindow, LogChartUnit } from '~/utils/logs'
+import TrafficChart from '~/components/logs/TrafficChart.vue'
 import { buildPublicPath, parsePageParam, parsePageSizeParam, parseTextParam, queryValue } from '~/utils/public-query'
 import { displayImageSource } from '~/utils/public-image'
 import ClubIcon from '~/components/ClubIcon.vue'
@@ -59,7 +55,7 @@ const action = computed(() => {
 })
 const activeRange = computed(() => {
   const raw = parseTextParam(route.query.range, 8)
-  return LOG_RANGE_OPTIONS.some(option => option.key === raw) ? raw : LOG_RANGE_OPTIONS[0]?.key ?? '7d'
+  return LOG_RANGE_OPTIONS.some(option => option.key === raw) ? raw : '7d'
 })
 const environmentType = computed(() => {
   const raw = parseTextParam(route.query.env, 12)
@@ -69,6 +65,12 @@ const topLimit = computed(() => {
   const raw = queryValue(route.query.top)
   const parsed = Number(raw)
   return (TOP_LIMITS as readonly number[]).includes(parsed) ? parsed : 5
+})
+
+const chartInterval = computed(() => {
+  const raw = parseTextParam(route.query.interval, 8)
+  const allowed = ['24h', '7d', '30d'].includes(activeRange.value) ? ['hour', 'day'] : ['day', 'month']
+  return allowed.includes(raw) ? raw : 'auto'
 })
 
 /** Inbound filters that pagination and filter links must carry forward. */
@@ -84,6 +86,7 @@ const umamiQuery = computed<Record<string, string>>(() => ({
   range: activeRange.value,
   env: environmentType.value,
   top: String(topLimit.value),
+  ...(chartInterval.value === 'auto' ? {} : { interval: chartInterval.value }),
 }))
 
 // --- Data -----------------------------------------------------------------
@@ -125,14 +128,14 @@ const umamiRequest = computed(() => {
   return {
     startAt: String(window.startAt),
     endAt: String(window.endAt),
-    unit: window.unit,
+    unit: chartInterval.value === 'auto' ? window.unit : chartInterval.value,
     limit: String(topLimit.value),
     envType: environmentType.value,
   }
 })
 
 const { data: umami, error: umamiError, status: umamiStatus } = await useFetch<PublicUmamiStats>('/api/logs/umami', {
-  key: () => `public-logs-umami-${activeRange.value}-${environmentType.value}-${topLimit.value}`,
+  key: () => `public-logs-umami-${activeRange.value}-${environmentType.value}-${topLimit.value}-${chartInterval.value}`,
   query: umamiRequest,
   default: (): PublicUmamiStats => ({
     meta: { startAt: 0, endAt: 0, unit: '', limit: 0, envType: '' },
@@ -161,49 +164,19 @@ const summary = computed(() => umami.value.summary)
 const hasStatistics = computed(() => !statisticsUnavailable.value)
 
 // --- Chart ----------------------------------------------------------------
+const chartUnit = computed<LogChartUnit>(() => {
+  const unit = umami.value.meta.unit
+  return ['hour', 'day', 'month', 'year'].includes(unit) ? unit as LogChartUnit : logRangeWindow(activeRange.value, 0).unit
+})
 const chartData = computed(() => buildLogChart({
   rangeKey: activeRange.value,
-  endAt: Number(umami.value.meta.endAt)
-    || rangeWindows.value[activeRange.value]?.endAt
-    || Date.now(),
+  startAt: Number(umami.value.meta.startAt) || rangeWindows.value[activeRange.value]?.startAt || 0,
+  endAt: Number(umami.value.meta.endAt) || rangeWindows.value[activeRange.value]?.endAt || Date.now(),
+  unit: chartUnit.value,
+  timezone: umami.value.meta.timezone ?? 'UTC',
   pageviews: umami.value.series.pageviews,
   visitors: umami.value.series.visitors,
 }))
-const chartMetricFilter = ref<'all' | 'pv' | 'uv'>('all')
-
-const chartMax = computed(() => {
-  if (chartMetricFilter.value === 'pv') {
-    return Math.max(...chartData.value.map(item => item.pageviews), 1)
-  }
-  if (chartMetricFilter.value === 'uv') {
-    return Math.max(...chartData.value.map(item => item.visitors), 1)
-  }
-  return chartMaximum(chartData.value)
-})
-
-const pageviewPoints = computed(() => buildPoints(chartData.value.map(item => item.pageviews), chartMax.value))
-const visitorPoints = computed(() => buildPoints(chartData.value.map(item => item.visitors), chartMax.value))
-const pageviewPath = computed(() => buildSmoothPath(pageviewPoints.value))
-const visitorPath = computed(() => buildSmoothPath(visitorPoints.value))
-
-const pageviewAreaPath = computed(() => {
-  if (pageviewPoints.value.length === 0) return ''
-  const baseline = LOG_CHART.height - LOG_CHART.padding
-  const first = pageviewPoints.value[0]
-  const last = pageviewPoints.value[pageviewPoints.value.length - 1]
-  if (!first || !last) return ''
-  return `${pageviewPath.value} L ${last.x} ${baseline} L ${first.x} ${baseline} Z`
-})
-
-const visitorAreaPath = computed(() => {
-  if (visitorPoints.value.length === 0) return ''
-  const baseline = LOG_CHART.height - LOG_CHART.padding
-  const first = visitorPoints.value[0]
-  const last = visitorPoints.value[visitorPoints.value.length - 1]
-  if (!first || !last) return ''
-  return `${visitorPath.value} L ${last.x} ${baseline} L ${first.x} ${baseline} Z`
-})
-
 const maxPageCount = computed(() => {
   const counts = umami.value.top.pages.map(p => Number(p.y || 0))
   return Math.max(...counts, 1)
@@ -235,109 +208,6 @@ const envPercent = (count: number | string | undefined | null): string => {
   if (!totalEnvCount.value || num <= 0) return '0%'
   const pct = (num / totalEnvCount.value) * 100
   return pct >= 10 ? `${Math.round(pct)}%` : `${pct.toFixed(1)}%`
-}
-
-const hoveredIndex = ref<number | null>(null)
-const hoverInfo = computed(() => {
-  if (hoveredIndex.value === null) return null
-  const idx = hoveredIndex.value
-  const datum = chartData.value[idx]
-  if (!datum) return null
-
-  const pvPt = pageviewPoints.value[idx]
-  const uvPt = visitorPoints.value[idx]
-
-  let activePt = pvPt ?? uvPt
-  if (chartMetricFilter.value === 'uv' && uvPt) {
-    activePt = uvPt
-  } else if (chartMetricFilter.value === 'all' && pvPt && uvPt) {
-    activePt = pvPt.y < uvPt.y ? pvPt : uvPt
-  }
-
-  if (!activePt) return null
-
-  return {
-    x: activePt.x,
-    y: activePt.y,
-    pvY: pvPt?.y,
-    uvY: uvPt?.y,
-    date: formatChartDate(datum.date),
-    pageviews: datum.pageviews,
-    visitors: datum.visitors,
-  }
-})
-
-const tooltipStyle = computed(() => {
-  if (!hoverInfo.value) return {}
-  const pctX = (hoverInfo.value.x / LOG_CHART.width) * 100
-  const pctY = (hoverInfo.value.y / LOG_CHART.height) * 100
-
-  let translateX = '-50%'
-  if (pctX < 18) {
-    translateX = '0%'
-  } else if (pctX > 82) {
-    translateX = '-100%'
-  }
-
-  let translateY = '-120%'
-  if (pctY < 32) {
-    translateY = '20%'
-  }
-
-  return {
-    left: `${pctX}%`,
-    top: `${pctY}%`,
-    transform: `translate(${translateX}, ${translateY})`,
-  }
-})
-
-const setHoveredIndex = (index: number | null): void => {
-  if (index === null) {
-    hoveredIndex.value = null
-    return
-  }
-  hoveredIndex.value = Math.max(0, Math.min(index, chartData.value.length - 1))
-}
-
-const onChartMove = (event: MouseEvent): void => {
-  const svg = event.currentTarget as SVGSVGElement | null
-  if (!svg || chartData.value.length === 0) return
-  const rect = svg.getBoundingClientRect()
-  if (rect.width === 0) return
-  const x = ((event.clientX - rect.left) / rect.width) * LOG_CHART.width
-  const step = chartData.value.length > 1
-    ? (LOG_CHART.width - LOG_CHART.padding * 2) / (chartData.value.length - 1)
-    : 0
-  setHoveredIndex(step ? Math.round((x - LOG_CHART.padding) / step) : 0)
-}
-
-const onTouchMove = (event: TouchEvent): void => {
-  const touch = event.touches[0]
-  if (!touch) return
-  const svg = event.currentTarget as SVGSVGElement | null
-  if (!svg || chartData.value.length === 0) return
-  const rect = svg.getBoundingClientRect()
-  if (rect.width === 0) return
-  const x = ((touch.clientX - rect.left) / rect.width) * LOG_CHART.width
-  const step = chartData.value.length > 1
-    ? (LOG_CHART.width - LOG_CHART.padding * 2) / (chartData.value.length - 1)
-    : 0
-  setHoveredIndex(step ? Math.round((x - LOG_CHART.padding) / step) : 0)
-}
-
-const stepHover = (delta: number): void => {
-  if (chartData.value.length === 0) return
-  if (hoveredIndex.value === null) {
-    setHoveredIndex(delta > 0 ? 0 : chartData.value.length - 1)
-  } else {
-    setHoveredIndex(hoveredIndex.value + delta)
-  }
-}
-
-const onChartFocus = (): void => {
-  if (hoveredIndex.value === null && chartData.value.length > 0) {
-    setHoveredIndex(0)
-  }
 }
 
 // --- Controls -------------------------------------------------------------
@@ -534,220 +404,16 @@ usePublicPageSeo(() => ({
             </div>
           </div>
 
-          <!-- Trend Chart Card -->
-          <div class="logs-chart-card">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-6">
-              <div>
-                <h3 class="font-bold text-sm text-slate-800 dark:text-slate-200">流量脉动与访客走势</h3>
-                <div class="text-[11px] text-slate-400 mt-0.5">
-                  {{ LOG_RANGE_OPTIONS.find(option => option.key === activeRange)?.label || '趋势' }} 走势曲线 · 粒度自适应
-                </div>
-              </div>
-              <div class="flex flex-wrap items-center gap-3">
-                <!-- Toggle series buttons -->
-                <div class="inline-flex p-0.5 rounded bg-slate-100 dark:bg-slate-800 text-xs font-medium border border-slate-200/60 dark:border-slate-700">
-                  <button
-                    type="button"
-                    class="px-2.5 py-1 rounded transition-colors"
-                    :class="chartMetricFilter === 'all' ? 'bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
-                    @click="chartMetricFilter = 'all'"
-                  >
-                    全部走势
-                  </button>
-                  <button
-                    type="button"
-                    class="px-2.5 py-1 rounded transition-colors flex items-center gap-1.5"
-                    :class="chartMetricFilter === 'pv' ? 'bg-white dark:bg-slate-900 text-sky-600 dark:text-sky-400 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
-                    @click="chartMetricFilter = 'pv'"
-                  >
-                    <span class="w-2 h-2 rounded-full bg-sky-500" />
-                    仅 PV
-                  </button>
-                  <button
-                    type="button"
-                    class="px-2.5 py-1 rounded transition-colors flex items-center gap-1.5"
-                    :class="chartMetricFilter === 'uv' ? 'bg-white dark:bg-slate-900 text-emerald-600 dark:text-emerald-400 shadow-2xs font-bold' : 'text-slate-500 hover:text-slate-800 dark:text-slate-400 dark:hover:text-slate-200'"
-                    @click="chartMetricFilter = 'uv'"
-                  >
-                    <span class="w-2 h-2 rounded-full bg-emerald-500" />
-                    仅 UV
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <div v-if="chartData.length === 0" class="text-xs text-slate-400 py-10 text-center">
-              暂无趋势数据
-            </div>
-            <div v-else class="w-full overflow-x-auto">
-              <div class="relative pb-2 min-w-[500px]">
-                <svg
-                  :viewBox="`0 0 ${LOG_CHART.width} ${LOG_CHART.height}`"
-                  class="w-full h-44 sm:h-52 overflow-visible select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-500/50 rounded"
-                  role="region"
-                  tabindex="0"
-                  :aria-label="`${LOG_RANGE_OPTIONS.find(o => o.key === activeRange)?.label || activeRange} 访客与浏览量走势图表，可通过左右方向键浏览各节点数据`"
-                  @mousemove="onChartMove"
-                  @mouseleave="setHoveredIndex(null)"
-                  @touchstart.passive="onTouchMove"
-                  @touchmove.passive="onTouchMove"
-                  @touchend="setHoveredIndex(null)"
-                  @keydown.left.prevent="stepHover(-1)"
-                  @keydown.down.prevent="stepHover(-1)"
-                  @keydown.right.prevent="stepHover(1)"
-                  @keydown.up.prevent="stepHover(1)"
-                  @keydown.home.prevent="setHoveredIndex(0)"
-                  @keydown.end.prevent="setHoveredIndex(chartData.length - 1)"
-                  @keydown.esc="setHoveredIndex(null)"
-                  @focus="onChartFocus"
-                  @blur="setHoveredIndex(null)"
-                >
-                  <defs>
-                    <linearGradient id="pv-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#0284C7" stop-opacity="0.22" />
-                      <stop offset="100%" stop-color="#0284C7" stop-opacity="0.0" />
-                    </linearGradient>
-                    <linearGradient id="vt-grad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#10B981" stop-opacity="0.18" />
-                      <stop offset="100%" stop-color="#10B981" stop-opacity="0.0" />
-                    </linearGradient>
-                  </defs>
-
-                  <!-- Horizontal grid guidelines -->
-                  <g class="chart-grid opacity-30 dark:opacity-20 stroke-slate-400">
-                    <line
-                      v-for="(gridLine, gIdx) in [LOG_CHART.padding, (LOG_CHART.height) / 2, LOG_CHART.height - LOG_CHART.padding]"
-                      :key="`grid-${gIdx}`"
-                      :x1="LOG_CHART.padding"
-                      :y1="gridLine"
-                      :x2="LOG_CHART.width - LOG_CHART.padding"
-                      :y2="gridLine"
-                      stroke-dasharray="3 3"
-                      stroke-width="1"
-                    />
-                  </g>
-
-                  <!-- Hover crosshair line and baseline anchor -->
-                  <template v-if="hoverInfo">
-                    <line
-                      :x1="hoverInfo.x"
-                      :y1="LOG_CHART.padding"
-                      :x2="hoverInfo.x"
-                      :y2="LOG_CHART.height - LOG_CHART.padding"
-                      stroke="#94A3B8"
-                      stroke-width="1.5"
-                      stroke-dasharray="3 3"
-                      class="dark:stroke-slate-600 transition-all pointer-events-none"
-                    />
-                    <circle
-                      :cx="hoverInfo.x"
-                      :cy="LOG_CHART.height - LOG_CHART.padding"
-                      r="2.5"
-                      fill="#94A3B8"
-                      class="dark:fill-slate-500 pointer-events-none"
-                    />
-                  </template>
-
-                  <!-- Area fills -->
-                  <path v-if="chartMetricFilter !== 'uv' && pageviewAreaPath" :d="pageviewAreaPath" fill="url(#pv-grad)" class="pointer-events-none" />
-                  <path v-if="chartMetricFilter !== 'pv' && visitorAreaPath" :d="visitorAreaPath" fill="url(#vt-grad)" class="pointer-events-none" />
-
-                  <!-- Curves -->
-                  <path v-if="chartMetricFilter !== 'uv'" :d="pageviewPath" fill="none" stroke="#0284C7" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-                  <path v-if="chartMetricFilter !== 'pv'" :d="visitorPath" fill="none" stroke="#10B981" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
-
-                  <!-- Active point subtle glow halos -->
-                  <template v-if="hoverInfo">
-                    <circle
-                      v-if="chartMetricFilter !== 'uv' && hoverInfo.pvY !== undefined"
-                      :cx="hoverInfo.x"
-                      :cy="hoverInfo.pvY"
-                      r="7"
-                      fill="#0284C7"
-                      fill-opacity="0.25"
-                      class="pointer-events-none"
-                    />
-                    <circle
-                      v-if="chartMetricFilter !== 'pv' && hoverInfo.uvY !== undefined"
-                      :cx="hoverInfo.x"
-                      :cy="hoverInfo.uvY"
-                      r="7"
-                      fill="#10B981"
-                      fill-opacity="0.25"
-                      class="pointer-events-none"
-                    />
-                  </template>
-
-                  <!-- Points -->
-                  <g>
-                    <template v-if="chartMetricFilter !== 'uv'">
-                      <circle
-                        v-for="(point, index) in pageviewPoints"
-                        :key="`pv-${index}`"
-                        :cx="point.x"
-                        :cy="point.y"
-                        :r="hoveredIndex === index ? 4.5 : 2.5"
-                        fill="#0284C7"
-                        class="cursor-pointer transition-all duration-150"
-                        :stroke="hoveredIndex === index ? '#ffffff' : 'none'"
-                        :stroke-width="hoveredIndex === index ? 1.5 : 0"
-                        @mouseenter="setHoveredIndex(index)"
-                      />
-                    </template>
-                    <template v-if="chartMetricFilter !== 'pv'">
-                      <circle
-                        v-for="(point, index) in visitorPoints"
-                        :key="`vt-${index}`"
-                        :cx="point.x"
-                        :cy="point.y"
-                        :r="hoveredIndex === index ? 4.5 : 2.5"
-                        fill="#10B981"
-                        class="cursor-pointer transition-all duration-150"
-                        :stroke="hoveredIndex === index ? '#ffffff' : 'none'"
-                        :stroke-width="hoveredIndex === index ? 1.5 : 0"
-                        @mouseenter="setHoveredIndex(index)"
-                      />
-                    </template>
-                  </g>
-                </svg>
-
-                <!-- Dynamic X-axis temporal labels -->
-                <div class="flex items-center justify-between text-[11px] font-mono text-slate-400 dark:text-slate-500 pt-2 px-1 border-t border-slate-100 dark:border-slate-800/80">
-                  <span>{{ chartData[0] ? formatChartDate(chartData[0].date) : '' }}</span>
-                  <span v-if="chartData.length > 2">{{ formatChartDate(chartData[Math.floor(chartData.length / 2)]?.date) }}</span>
-                  <span>{{ chartData[chartData.length - 1] ? formatChartDate(chartData[chartData.length - 1]?.date) : '' }}</span>
-                </div>
-
-                <!-- Tooltip -->
-                <div
-                  v-if="hoverInfo"
-                  class="absolute z-20 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md border border-slate-200/90 dark:border-slate-700 rounded shadow-md px-3.5 py-2.5 text-xs text-slate-700 dark:text-slate-200 pointer-events-none transition-transform"
-                  :style="tooltipStyle"
-                >
-                  <div class="font-bold text-slate-800 dark:text-slate-100 pb-1.5 mb-1.5 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between gap-3 font-serif">
-                    <span>{{ hoverInfo.date }}</span>
-                    <span class="text-[10px] text-slate-400 font-mono">第 {{ (hoveredIndex ?? 0) + 1 }} 节点</span>
-                  </div>
-                  <div class="space-y-1 font-mono">
-                    <div class="flex items-center justify-between gap-4">
-                      <span class="flex items-center gap-1.5 text-sky-600 dark:text-sky-400">
-                        <span class="w-1.5 h-1.5 rounded-full bg-sky-500" />
-                        浏览量 (PV)
-                      </span>
-                      <span class="font-bold text-slate-900 dark:text-slate-100">{{ formatNumber(hoverInfo.pageviews) }}</span>
-                    </div>
-                    <div class="flex items-center justify-between gap-4">
-                      <span class="flex items-center gap-1.5 text-emerald-600 dark:text-emerald-400">
-                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500" />
-                        访客数 (UV)
-                      </span>
-                      <span class="font-bold text-slate-900 dark:text-slate-100">{{ formatNumber(hoverInfo.visitors) }}</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          <TrafficChart
+            :data="chartData"
+            :unit="chartUnit"
+            :interval="chartInterval"
+            :range="activeRange"
+            :timezone="umami.meta.timezone ?? 'UTC'"
+            :reference-time="rangeWindows[activeRange]?.endAt ?? Number(umami.meta.endAt)"
+            :loading="statisticsLoading"
+            @interval="router.push(linkFor({ interval: $event }))"
+          />
 
           <!-- Top Content & Audience Insights Grid -->
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -1491,19 +1157,6 @@ usePublicPageSeo(() => ({
   text-transform: uppercase;
   color: #94a3b8;
   margin-top: 0.35rem;
-}
-
-/* Chart card */
-.logs-chart-card {
-  border: 1px solid #dce4e8;
-  border-radius: 3px;
-  padding: 1.25rem 1.35rem;
-  background-color: #ffffff;
-}
-:global(.dark .logs-chart-card),
-.dark .logs-chart-card {
-  border-color: #293847;
-  background-color: #101a24;
 }
 
 /* Subcards */

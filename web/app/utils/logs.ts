@@ -15,14 +15,15 @@ export interface LogRangeOption {
   readonly key: string
   readonly label: string
   readonly days: number | null
-  readonly unit: 'day' | 'month'
+  readonly unit: 'hour' | 'day' | 'month'
 }
 
 export const LOG_RANGE_OPTIONS: readonly LogRangeOption[] = Object.freeze([
-  { key: '7d', label: '近7天', days: 7, unit: 'day' },
+  { key: '24h', label: '近24小时', days: 1, unit: 'hour' },
+  { key: '7d', label: '近7天', days: 7, unit: 'hour' },
   { key: '30d', label: '近30天', days: 30, unit: 'day' },
-  { key: '1y', label: '近1年', days: 365, unit: 'month' },
-  { key: 'all', label: '全部', days: null, unit: 'month' },
+  { key: '1y', label: '近1年', days: 365, unit: 'day' },
+  { key: 'all', label: '全部', days: null, unit: 'day' },
 ])
 
 export const LOG_ACTIONS: readonly string[] = Object.freeze([
@@ -36,7 +37,7 @@ export const LOG_ACTIONS: readonly string[] = Object.freeze([
 export interface UmamiWindow {
   readonly startAt: number
   readonly endAt: number
-  readonly unit: 'day' | 'month'
+  readonly unit: 'hour' | 'day' | 'month'
   readonly label: string
 }
 
@@ -44,7 +45,7 @@ const DAY_MS = 24 * 60 * 60 * 1000
 
 /** Archived `getRangeConfig`, with the clock supplied by the caller. */
 export function logRangeWindow(rangeKey: string, now: number): UmamiWindow {
-  const option = LOG_RANGE_OPTIONS.find(entry => entry.key === rangeKey) ?? LOG_RANGE_OPTIONS[0]
+  const option = LOG_RANGE_OPTIONS.find(entry => entry.key === rangeKey) ?? LOG_RANGE_OPTIONS.find(entry => entry.key === '7d')
   if (!option) return { startAt: 0, endAt: now, unit: 'day', label: '近7天' }
   return {
     startAt: option.days ? now - option.days * DAY_MS : 0,
@@ -159,118 +160,79 @@ export interface LogChartDatum {
   readonly visitors: number
 }
 
-const parseDateSafe = (value: string | number | null | undefined): Date | null => {
-  if (value === null || value === undefined || value === '') return null
-  const date = new Date(value)
-  return Number.isNaN(date.getTime()) ? null : date
-}
+export type LogChartUnit = 'hour' | 'day' | 'month' | 'year'
 
-const toDayKey = (date: Date): string => date.toISOString().slice(0, 10)
-
-/** UTC month key (the archived code used the process time zone). */
-const toMonthKey = (date: Date): string =>
-  `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}`
-
-const buildSeriesMap = (
-  series: readonly UmamiSeriesPoint[],
-  unit: 'day' | 'month',
-): Map<string, number> => {
-  const map = new Map<string, number>()
-  for (const item of series) {
-    const date = parseDateSafe(item.x)
-    if (!date) continue
-    map.set(unit === 'month' ? toMonthKey(date) : toDayKey(date), Number(item.y ?? 0))
+// Umami's timezone parameter returns wall-clock bucket labels with a Z suffix.
+// Their UTC fields already represent the requested timezone: do not shift twice.
+const bucketDate = (value: string | number | undefined): Date | null => {
+  if (value === undefined || value === '') return null
+  let normalized = value
+  if (typeof value === 'string') {
+    normalized = value.replace(' ', 'T')
+    if (/^\d{4}-\d{2}-\d{2}$/.test(normalized)) normalized += 'T00:00:00Z'
+    else if (/T\d{2}$/.test(normalized)) normalized += ':00:00Z'
+    else if (normalized.includes('T') && !/(?:Z|[+-]\d{2}:\d{2})$/.test(normalized)) normalized += 'Z'
   }
-  return map
+  const date = new Date(normalized)
+  return Number.isFinite(date.getTime()) ? date : null
+}
+const bucketKey = (date: Date, unit: LogChartUnit): string => {
+  const iso = date.toISOString()
+  return iso.slice(0, unit === 'hour' ? 13 : unit === 'day' ? 10 : unit === 'month' ? 7 : 4)
+}
+const floorBucket = (date: Date, unit: LogChartUnit): Date => {
+  const value = new Date(date)
+  value.setUTCMinutes(0, 0, 0)
+  if (unit !== 'hour') value.setUTCHours(0)
+  if (unit === 'month' || unit === 'year') value.setUTCDate(1)
+  if (unit === 'year') value.setUTCMonth(0)
+  return value
+}
+const previousBucket = (date: Date, unit: LogChartUnit): void => {
+  if (unit === 'hour') date.setUTCHours(date.getUTCHours() - 1)
+  else if (unit === 'day') date.setUTCDate(date.getUTCDate() - 1)
+  else if (unit === 'month') date.setUTCMonth(date.getUTCMonth() - 1)
+  else date.setUTCFullYear(date.getUTCFullYear() - 1)
 }
 
-const getSeriesMinDate = (series: readonly UmamiSeriesPoint[]): Date | null => {
-  let min: Date | null = null
-  for (const item of series) {
-    const date = parseDateSafe(item.x)
-    if (!date) continue
-    if (!min || date < min) min = date
-  }
-  return min
-}
-
-const buildDateKeys = (startDate: Date, endDate: Date, unit: 'day' | 'month'): string[] => {
-  const keys: string[] = []
-  const cursor = new Date(startDate)
-  if (unit === 'month') {
-    cursor.setUTCDate(1)
-    const end = new Date(Date.UTC(endDate.getUTCFullYear(), endDate.getUTCMonth(), 1))
-    while (cursor <= end) {
-      keys.push(toMonthKey(cursor))
-      cursor.setUTCMonth(cursor.getUTCMonth() + 1)
-    }
-    return keys
-  }
-  const end = new Date(endDate)
-  while (cursor <= end) {
-    keys.push(toDayKey(cursor))
-    cursor.setUTCDate(cursor.getUTCDate() + 1)
-  }
-  return keys
-}
-
-const buildChartDataByRange = (
-  unit: 'day' | 'month',
-  startDate: Date,
-  endDate: Date,
-  pageviews: readonly UmamiSeriesPoint[],
-  visitors: readonly UmamiSeriesPoint[],
-): LogChartDatum[] => {
-  const pageviewMap = buildSeriesMap(pageviews, unit)
-  const visitorMap = buildSeriesMap(visitors, unit)
-  return buildDateKeys(startDate, endDate, unit).map(key => ({
-    date: key,
-    pageviews: pageviewMap.get(key) ?? 0,
-    visitors: visitorMap.get(key) ?? 0,
-  }))
-}
-
-/**
- * Archived `chartData`: 30-day and 1-year ranges are re-bucketed into a dense
- * calendar axis; all other ranges use the raw series length.
- */
+/** Join series by timestamp and fill Umami's omitted zero-traffic buckets. */
 export function buildLogChart(input: {
   readonly rangeKey: string
+  readonly startAt?: number
   readonly endAt: number
+  readonly unit?: LogChartUnit
+  readonly timezone?: 'UTC' | 'Asia/Shanghai'
   readonly pageviews: readonly UmamiSeriesPoint[]
   readonly visitors: readonly UmamiSeriesPoint[]
 }): LogChartDatum[] {
-  const { pageviews, visitors, rangeKey } = input
-  const endAt = new Date(input.endAt)
-  const minDate = getSeriesMinDate([...pageviews, ...visitors])
-
-  if (rangeKey === '30d') {
-    const desiredStart = new Date(endAt)
-    desiredStart.setUTCDate(desiredStart.getUTCDate() - 29)
-    const actualStart = minDate && minDate > desiredStart ? minDate : desiredStart
-    return buildChartDataByRange('day', actualStart, endAt, pageviews, visitors)
-  }
-
-  if (rangeKey === '1y') {
-    const desiredStart = new Date(Date.UTC(endAt.getUTCFullYear(), endAt.getUTCMonth() - 11, 1))
-    const minMonth = minDate
-      ? new Date(Date.UTC(minDate.getUTCFullYear(), minDate.getUTCMonth(), 1))
-      : null
-    const actualStart = minMonth && minMonth > desiredStart ? minMonth : desiredStart
-    const endMonth = new Date(Date.UTC(endAt.getUTCFullYear(), endAt.getUTCMonth(), 1))
-    return buildChartDataByRange('month', actualStart, endMonth, pageviews, visitors)
-  }
-
-  const length = Math.max(pageviews.length, visitors.length)
-  return Array.from({ length }, (_, index) => {
-    const pageview = pageviews[index]
-    const visitor = visitors[index]
-    return {
-      date: pageview?.x || visitor?.x || '',
-      pageviews: Number(pageview?.y ?? 0),
-      visitors: Number(visitor?.y ?? 0),
+  if (!Number.isFinite(input.endAt) || input.endAt <= 0) return []
+  const window = logRangeWindow(input.rangeKey, input.endAt)
+  const unit = input.unit ?? window.unit
+  const offset = input.timezone === 'Asia/Shanghai' ? 8 * 3600000 : 0
+  const seriesMap = (series: readonly UmamiSeriesPoint[]) => {
+    const result = new Map<string, number>()
+    for (const item of series) {
+      const date = bucketDate(item.x), count = Number(item.y ?? 0)
+      if (date && Number.isFinite(count) && count >= 0) result.set(bucketKey(date, unit), count)
     }
-  })
+    return result
+  }
+  const pv = seriesMap(input.pageviews), uv = seriesMap(input.visitors)
+  const end = floorBucket(new Date(input.endAt + offset), unit)
+  let startAt = input.startAt ?? window.startAt
+  if (!startAt) {
+    const dates = [...input.pageviews, ...input.visitors].map(item => bucketDate(item.x)?.getTime()).filter((value): value is number => value !== undefined)
+    startAt = dates.length ? Math.min(...dates) - offset : input.endAt
+  }
+  const start = floorBucket(new Date(startAt + offset), unit)
+  if (!Number.isFinite(start.getTime()) || start > end) return []
+  const rows: LogChartDatum[] = []
+  // The backend bounds hourly/daily ranges; this also bounds malformed payloads.
+  for (const cursor = new Date(end); cursor >= start && rows.length < 1024; previousBucket(cursor, unit)) {
+    const key = bucketKey(cursor, unit)
+    rows.push({ date: key, pageviews: pv.get(key) ?? 0, visitors: uv.get(key) ?? 0 })
+  }
+  return rows.reverse()
 }
 
 export const LOG_CHART = Object.freeze({ width: 600, height: 160, padding: 22 })
@@ -295,30 +257,39 @@ export function buildPoints(
   if (values.length === 0) return []
   const xStep = values.length > 1 ? (config.width - config.padding * 2) / (values.length - 1) : 0
   return values.map((value, index) => {
-    const x = config.padding + xStep * index
+    const x = values.length === 1 ? config.width / 2 : config.padding + xStep * index
     const ratio = value / (maximum || 1)
     const y = config.height - config.padding - ratio * (config.height - config.padding * 2)
     return { x, y, value }
   })
 }
 
-/** Archived Catmull-Rom smoothing, unchanged. */
+/** Monotone Hermite interpolation: curves never invent a peak or dip below zero. */
 export function buildSmoothPath(points: readonly ChartPoint[]): string {
   const first = points[0]
   if (!first) return ''
   if (points.length === 1) return `M ${first.x} ${first.y}`
+  const slopes = points.slice(1).map((point, index) => {
+    const previous = points[index]!
+    return (point.y - previous.y) / (point.x - previous.x || 1)
+  })
+  const tangents = points.map((_, index) => {
+    if (index === 0) return slopes[0] ?? 0
+    if (index === points.length - 1) return slopes[index - 1] ?? 0
+    const before = slopes[index - 1] ?? 0, after = slopes[index] ?? 0
+    return before * after <= 0 ? 0 : (before + after) / 2
+  })
+  for (let index = 0; index < slopes.length; index++) {
+    const slope = slopes[index]!
+    if (!slope) { tangents[index] = 0; tangents[index + 1] = 0; continue }
+    const a = tangents[index]! / slope, b = tangents[index + 1]! / slope
+    const length = Math.hypot(a, b)
+    if (length > 3) { tangents[index] = 3 * a / length * slope; tangents[index + 1] = 3 * b / length * slope }
+  }
   let path = `M ${first.x} ${first.y}`
-  for (let index = 0; index < points.length - 1; index += 1) {
-    const p0 = points[index - 1] ?? points[index]
-    const p1 = points[index]
-    const p2 = points[index + 1]
-    const p3 = points[index + 2] ?? p2
-    if (!p0 || !p1 || !p2 || !p3) continue
-    const cp1x = p1.x + (p2.x - p0.x) / 6
-    const cp1y = p1.y + (p2.y - p0.y) / 6
-    const cp2x = p2.x - (p3.x - p1.x) / 6
-    const cp2y = p2.y - (p3.y - p1.y) / 6
-    path += ` C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${p2.x.toFixed(2)} ${p2.y.toFixed(2)}`
+  for (let index = 0; index < points.length - 1; index++) {
+    const from = points[index]!, to = points[index + 1]!, dx = (to.x - from.x) / 3
+    path += ` C ${(from.x + dx).toFixed(2)} ${(from.y + dx * tangents[index]!).toFixed(2)}, ${(to.x - dx).toFixed(2)} ${(to.y - dx * tangents[index + 1]!).toFixed(2)}, ${to.x.toFixed(2)} ${to.y.toFixed(2)}`
   }
   return path
 }

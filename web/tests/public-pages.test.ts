@@ -615,31 +615,31 @@ describe('logs helpers', () => {
     expect(topEntryPath(undefined)).toBe('')
   })
 
-  it('derives the archived Umami windows', () => {
+  it('selects useful default time granularities', () => {
     const now = 1_760_000_000_000
-    expect(logRangeWindow('7d', now)).toMatchObject({ startAt: now - 7 * 86_400_000, endAt: now, unit: 'day', label: '近7天' })
-    expect(logRangeWindow('1y', now).unit).toBe('month')
+    expect(logRangeWindow('7d', now)).toMatchObject({ startAt: now - 7 * 86_400_000, endAt: now, unit: 'hour', label: '近7天' })
+    expect(logRangeWindow('1y', now).unit).toBe('day')
     expect(logRangeWindow('all', now).startAt).toBe(0)
     expect(logRangeWindow('unknown', now).label).toBe('近7天')
   })
 
-  it('builds dense 30-day and 1-year axes with UTC bucket keys', () => {
+  it('keeps the full selected calendar axis instead of trimming leading zeroes', () => {
     const pageviews = [{ x: '2026-10-01', y: 180 }, { x: '2026-10-02', y: 220 }]
     const visitors = [{ x: '2026-10-01', y: 60 }, { x: '2026-10-02', y: 75 }]
     const endAt = Date.parse('2026-10-02T00:00:00Z')
 
     const raw = buildLogChart({ rangeKey: '7d', endAt, pageviews, visitors })
-    expect(raw).toHaveLength(2)
-    expect(raw[0]).toEqual({ date: '2026-10-01', pageviews: 180, visitors: 60 })
+    expect(raw).toHaveLength(169)
+    expect(raw.find(row => row.date === '2026-10-01T00')).toEqual({ date: '2026-10-01T00', pageviews: 180, visitors: 60 })
 
     const monthly = buildLogChart({ rangeKey: '30d', endAt, pageviews, visitors })
-    expect(monthly[0]?.date).toBe('2026-10-01')
+    expect(monthly[0]?.date).toBe('2026-09-02')
     expect(monthly.at(-1)?.date).toBe('2026-10-02')
-    expect(monthly).toHaveLength(2)
+    expect(monthly).toHaveLength(31)
 
     const yearly = buildLogChart({ rangeKey: '1y', endAt, pageviews, visitors })
-    expect(yearly[0]?.date).toBe('2026-10')
-    expect(yearly.at(-1)?.date).toBe('2026-10')
+    expect(yearly).toHaveLength(366)
+    expect(yearly.at(-1)?.date).toBe('2026-10-02')
 
     const empty = buildLogChart({ rangeKey: '30d', endAt, pageviews: [], visitors: [] })
     expect(empty.every(point => point.pageviews === 0 && point.visitors === 0)).toBe(true)
@@ -689,23 +689,23 @@ describe('logs helpers', () => {
     }
   })
 
-  it('builds dense 30-day and 1-year axes with UTC bucket keys', () => {
+  it('keeps the full selected calendar axis instead of trimming leading zeroes', () => {
     const pageviews = [{ x: '2026-10-01', y: 180 }, { x: '2026-10-02', y: 220 }]
     const visitors = [{ x: '2026-10-01', y: 60 }, { x: '2026-10-02', y: 75 }]
     const endAt = Date.parse('2026-10-02T00:00:00Z')
 
     const raw = buildLogChart({ rangeKey: '7d', endAt, pageviews, visitors })
-    expect(raw).toHaveLength(2)
-    expect(raw[0]).toEqual({ date: '2026-10-01', pageviews: 180, visitors: 60 })
+    expect(raw).toHaveLength(169)
+    expect(raw.find(row => row.date === '2026-10-01T00')).toEqual({ date: '2026-10-01T00', pageviews: 180, visitors: 60 })
 
     const monthly = buildLogChart({ rangeKey: '30d', endAt, pageviews, visitors })
-    expect(monthly[0]?.date).toBe('2026-10-01')
+    expect(monthly[0]?.date).toBe('2026-09-02')
     expect(monthly.at(-1)?.date).toBe('2026-10-02')
-    expect(monthly).toHaveLength(2)
+    expect(monthly).toHaveLength(31)
 
     const yearly = buildLogChart({ rangeKey: '1y', endAt, pageviews, visitors })
-    expect(yearly[0]?.date).toBe('2026-10')
-    expect(yearly.at(-1)?.date).toBe('2026-10')
+    expect(yearly).toHaveLength(366)
+    expect(yearly.at(-1)?.date).toBe('2026-10-02')
 
     const empty = buildLogChart({ rangeKey: '30d', endAt, pageviews: [], visitors: [] })
     expect(empty.every(point => point.pageviews === 0 && point.visitors === 0)).toBe(true)

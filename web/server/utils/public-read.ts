@@ -578,7 +578,8 @@ export const readUmamiStats = async (
     meta: {
       startAt: meta.startAt,
       endAt: meta.endAt,
-      unit: query.unit,
+      unit: ['hour', 'day', 'month', 'year'].includes(String(meta.unit)) ? meta.unit : query.unit,
+      ...(meta.timezone !== undefined ? { timezone: meta.timezone } : {}),
       limit: query.limit,
       envType: query.envType,
     },
