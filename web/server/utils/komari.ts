@@ -14,6 +14,7 @@ import {
   formatRemainingDays,
   formatServerBytes,
   formatServerSpeed,
+  formatUptimeDetailed,
   latencySignalLevel,
   lossSignalLevel,
   parseServerRegion,
@@ -23,9 +24,13 @@ import {
 } from '../../shared/servers'
 import type {
   CurrencyCode,
+  PublicServerDetailResponse,
+  PublicServerLoadPoint,
   PublicServerNode,
   PublicServerPingBar,
+  PublicServerPingPoint,
   PublicServerPingSummary,
+  PublicServerPingTaskSeries,
   PublicServersOverview,
   PublicServersResponse,
   ServerBarStatus,
@@ -51,6 +56,9 @@ export interface KomariRawNodeInfo {
   readonly arch?: string
   readonly cpu_cores?: number
   readonly os?: string
+  readonly kernel_version?: string
+  readonly gpu_name?: string
+  readonly public_remark?: string
   readonly region?: string
   readonly mem_total?: number
   readonly swap_total?: number
@@ -114,6 +122,8 @@ const MOCK_NODES_RAW: readonly KomariRawNodeInfo[] = Object.freeze([
     arch: 'amd64',
     cpu_cores: 4,
     os: 'Ubuntu 24.04.5 LTS',
+    kernel_version: '6.8.0-147-generic',
+    gpu_name: 'None',
     region: '🇨🇳',
     mem_total: 8_058_507_264,
     swap_total: 2_084_564_992,
@@ -136,6 +146,8 @@ const MOCK_NODES_RAW: readonly KomariRawNodeInfo[] = Object.freeze([
     arch: 'amd64',
     cpu_cores: 4,
     os: 'Ubuntu 24.04.5 LTS',
+    kernel_version: '6.8.0-1021-gcp',
+    gpu_name: 'None',
     region: '🇺🇸',
     mem_total: 16_762_126_336,
     swap_total: 0,
@@ -158,6 +170,8 @@ const MOCK_NODES_RAW: readonly KomariRawNodeInfo[] = Object.freeze([
     arch: 'amd64',
     cpu_cores: 2,
     os: 'Ubuntu 24.04.5 LTS',
+    kernel_version: '6.8.0-49-generic',
+    gpu_name: 'None',
     region: '🇨🇳',
     mem_total: 1_691_435_008,
     swap_total: 0,
@@ -191,6 +205,9 @@ const MOCK_STATUS_MAP: Readonly<Record<string, KomariRawNodeStatus>> = Object.fr
     net_total_up: 3_801_046_056,
     net_total_down: 13_378_824_192,
     uptime: 1_012_616,
+    process: 196,
+    connections: 145,
+    connections_udp: 5,
     online: true,
   },
   'c891ac0f-8e1b-46fa-8ba5-9da611eb62aa': {
@@ -209,6 +226,9 @@ const MOCK_STATUS_MAP: Readonly<Record<string, KomariRawNodeStatus>> = Object.fr
     net_total_up: 4_670_776_934,
     net_total_down: 7_677_253_222,
     uptime: 1_379_241,
+    process: 112,
+    connections: 24,
+    connections_udp: 3,
     online: true,
   },
   '5443b6e9-1dc3-4813-9e98-47e27d072f0e': {
@@ -227,6 +247,9 @@ const MOCK_STATUS_MAP: Readonly<Record<string, KomariRawNodeStatus>> = Object.fr
     net_total_up: 709_571_379,
     net_total_down: 1_460_288_880,
     uptime: 547_331,
+    process: 94,
+    connections: 18,
+    connections_udp: 2,
     online: true,
   },
 })
@@ -382,6 +405,13 @@ export function projectServerSnapshot(input: {
     const speedDown = online ? safeNonNegative(status?.net_in) : 0
     const uptime = safeNonNegative(status?.uptime)
     const uptimeDays = uptime > 0 ? Math.floor(uptime / 86_400) : 0
+    const processCount = Math.max(0, Math.trunc(safeNonNegative(status?.process)))
+    const tcpConnections = Math.max(0, Math.trunc(safeNonNegative(status?.connections)))
+    const udpConnections = Math.max(0, Math.trunc(safeNonNegative(status?.connections_udp)))
+    const rawGpu = redactServerText(raw.gpu_name || '')
+    const gpuName = rawGpu && rawGpu.toLowerCase() !== 'none' ? rawGpu : '未检测到'
+    const kernelVersion = redactServerText(raw.kernel_version || '') || '--'
+    const publicRemark = redactServerText(raw.public_remark || '')
 
     const price = safeNum(raw.price, 0)
     const billingCycle = safeNum(raw.billing_cycle, 0)
@@ -407,9 +437,17 @@ export function projectServerSnapshot(input: {
       cpuCores: Math.max(0, Math.trunc(safeNum(raw.cpu_cores, 0))),
       arch: redactServerText(raw.arch || ''),
       virtualization: redactServerText(raw.virtualization || ''),
+      gpuName,
+      kernelVersion,
       weight: safeNum(raw.weight, 0),
       uptime,
       uptimeDays,
+      uptimeDetailText: formatUptimeDetailed(uptime, online),
+      process: processCount,
+      connections: tcpConnections,
+      connectionsUdp: udpConnections,
+      processConnectionsText: online ? `${processCount} / ${tcpConnections + udpConnections}` : '--',
+      publicRemark,
       cpuUsage,
       cpuPercentText: `${cpuUsage.toFixed(1)}%`,
       cpuStatus: barStatusForPercent(cpuUsage),
@@ -657,4 +695,268 @@ export async function readPublicServersSnapshot(
   }
 
   return loadPromise
+}
+
+const PING_SERIES_COLORS = [
+  '#2563b9',
+  '#10b981',
+  '#f59e0b',
+  '#3b82f6',
+  '#f43f5e',
+  '#06b6d4',
+  '#ec4899',
+  '#84cc16',
+] as const
+
+export function formatServerChartTimeLabel(timeMs: number, hours: number): string {
+  if (!Number.isFinite(timeMs)) return ''
+  // Format in China Standard Time (UTC+8) deterministically across SSR & client
+  const beijing = new Date(timeMs + 8 * 3_600_000)
+  const month = String(beijing.getUTCMonth() + 1).padStart(2, '0')
+  const day = String(beijing.getUTCDate()).padStart(2, '0')
+  const hour24 = beijing.getUTCHours()
+  const minute = String(beijing.getUTCMinutes()).padStart(2, '0')
+  const second = String(beijing.getUTCSeconds()).padStart(2, '0')
+
+  if (hours <= 1) {
+    const suffix = hour24 >= 12 ? 'PM' : 'AM'
+    const hour12 = String(hour24 % 12 || 12).padStart(2, '0')
+    return `${hour12}:${minute}:${second} ${suffix}`
+  }
+  if (hours <= 4) {
+    return `${String(hour24).padStart(2, '0')}:${minute}`
+  }
+  return `${month}/${day} ${String(hour24).padStart(2, '0')}:${minute}`
+}
+
+export function normalizeKomariLoadRecords(
+  rawList: readonly Record<string, unknown>[],
+  hours: number,
+): PublicServerLoadPoint[] {
+  const points: PublicServerLoadPoint[] = []
+  for (const item of rawList) {
+    if (!item || typeof item !== 'object') continue
+    const rawTime = typeof item.time === 'string'
+      ? item.time
+      : typeof item.updated_at === 'string'
+        ? item.updated_at
+        : ''
+    const timeMs = Date.parse(rawTime)
+    if (!Number.isFinite(timeMs)) continue
+
+    const cpuObj = item.cpu && typeof item.cpu === 'object' ? (item.cpu as Record<string, unknown>) : null
+    const ramObj = item.ram && typeof item.ram === 'object' ? (item.ram as Record<string, unknown>) : null
+    const diskObj = item.disk && typeof item.disk === 'object' ? (item.disk as Record<string, unknown>) : null
+    const netObj = item.network && typeof item.network === 'object' ? (item.network as Record<string, unknown>) : null
+
+    const cpu = clampPercentage(safeNonNegative(cpuObj ? cpuObj.usage : item.cpu))
+    const ram = safeNonNegative(ramObj ? ramObj.used : item.ram)
+    const disk = safeNonNegative(diskObj ? diskObj.used : item.disk)
+    const netIn = safeNonNegative(netObj ? netObj.down : item.net_in)
+    const netOut = safeNonNegative(netObj ? netObj.up : item.net_out)
+
+    points.push({
+      time: timeMs,
+      timeLabel: formatServerChartTimeLabel(timeMs, hours),
+      cpu,
+      ram,
+      disk,
+      netIn,
+      netOut,
+    })
+  }
+  return points.sort((a, b) => a.time - b.time)
+}
+
+export function normalizeKomariPingSeries(
+  rawTasks: readonly Record<string, unknown>[],
+  rawRecords: readonly Record<string, unknown>[],
+  hours: number,
+): PublicServerPingTaskSeries[] {
+  if (!Array.isArray(rawTasks) || rawTasks.length === 0 || !Array.isArray(rawRecords) || rawRecords.length === 0) {
+    return []
+  }
+
+  const byTaskId = new Map<number, PublicServerPingPoint[]>()
+  for (const rec of rawRecords) {
+    if (!rec || typeof rec !== 'object') continue
+    const taskId = Math.trunc(safeNum(rec.task_id, -1))
+    if (taskId < 0) continue
+    const timeMs = Date.parse(String(rec.time || ''))
+    if (!Number.isFinite(timeMs)) continue
+    const rawVal = safeNum(rec.value, -1)
+    const list = byTaskId.get(taskId) ?? []
+    list.push({
+      time: timeMs,
+      timeLabel: formatServerChartTimeLabel(timeMs, hours),
+      value: rawVal >= 0 ? rawVal : null,
+    })
+    byTaskId.set(taskId, list)
+  }
+
+  const result: PublicServerPingTaskSeries[] = []
+  rawTasks.forEach((task, index) => {
+    if (!task || typeof task !== 'object') return
+    const id = Math.trunc(safeNum(task.id, -1))
+    const points = (byTaskId.get(id) ?? []).sort((a, b) => a.time - b.time)
+    if (points.length === 0) return
+
+    const validPoints = points.filter(p => p.value !== null && Number.isFinite(p.value))
+    const latestLatency = validPoints.at(-1)?.value ?? 0
+    const lossPercent = Number.isFinite(Number(task.loss))
+      ? clampPercentage(Number(task.loss))
+      : points.length > 0
+        ? clampPercentage(((points.length - validPoints.length) / points.length) * 100)
+        : 0
+
+    result.push({
+      id,
+      name: redactServerText(String(task.name || `探测任务 #${id}`)) || `探测任务 #${id}`,
+      color: PING_SERIES_COLORS[index % PING_SERIES_COLORS.length]!,
+      latestLatency,
+      lossPercent,
+      points,
+    })
+  })
+
+  return result
+}
+
+function buildMockDetailSnapshot(nodeId: string, hours: number): PublicServerDetailResponse {
+  const safeHours = [0, 1, 4, 24].includes(hours) ? hours : 0
+  const baseNode = MOCK_NODES_RAW.find(n => n.uuid === nodeId) ?? MOCK_NODES_RAW[0]!
+  const baseStatus = MOCK_STATUS_MAP[baseNode.uuid || ''] ?? Object.values(MOCK_STATUS_MAP)[0]!
+  const nowMs = Date.parse('2026-11-04T17:50:42Z')
+  const count = safeHours === 0 ? 24 : 36
+  const stepMs = safeHours === 0 ? 3_000 : Math.floor((safeHours * 3_600_000) / count)
+
+  const loadRecords: PublicServerLoadPoint[] = Array.from({ length: count }, (_, idx) => {
+    const time = nowMs - (count - 1 - idx) * stepMs
+    const wave = Math.sin(idx * 0.45) * 0.8 + Math.cos(idx * 0.25) * 0.5
+    const cpu = clampPercentage(Math.max(0.2, (baseStatus.cpu ?? 2.4) + wave))
+    const ram = Math.max(0, Math.round((baseStatus.ram ?? 2_880_000_000) + wave * 4_200_000))
+    const disk = Math.max(0, Math.round((baseStatus.disk ?? 46_042_015_334) + idx * 12_000))
+    const spike = idx >= count - 2 ? 3.2 : 1
+    const netOut = Math.max(80, Math.round(((baseStatus.net_out ?? 3_200) * (0.4 + Math.abs(Math.sin(idx * 0.5)))) * spike))
+    const netIn = Math.max(60, Math.round(((baseStatus.net_in ?? 1_800) * (0.4 + Math.abs(Math.cos(idx * 0.4)))) * spike))
+    return {
+      time,
+      timeLabel: formatServerChartTimeLabel(time, safeHours || 1),
+      cpu,
+      ram,
+      disk,
+      netIn,
+      netOut,
+    }
+  })
+
+  return {
+    nodeId: redactServerText(nodeId),
+    hours: safeHours,
+    updatedAt: new Date(nowMs).toISOString(),
+    source: 'mock',
+    loadRecords,
+    pingTasks: [],
+  }
+}
+
+interface CachedDetailEntry {
+  readonly fetchedAt: number
+  readonly data: PublicServerDetailResponse
+}
+
+const detailCache = new Map<string, CachedDetailEntry>()
+
+export async function readPublicServerDetailSnapshot(
+  config: KomariRuntimeConfig,
+  params: { readonly nodeId: string; readonly hours: number },
+): Promise<PublicServerDetailResponse> {
+  const cleanNodeId = String(params.nodeId || '').trim()
+  const safeHours = [0, 1, 4, 24, 168, 720].includes(params.hours) ? params.hours : 0
+  const baseUrl = (config.baseUrl || '').trim().replace(/\/+$/, '')
+  const timeoutMs = config.timeoutMs && config.timeoutMs > 0 ? config.timeoutMs : 5_000
+
+  if (!baseUrl || !cleanNodeId) {
+    return buildMockDetailSnapshot(cleanNodeId || 'mock-node', safeHours)
+  }
+
+  const cacheKey = `${baseUrl}::${cleanNodeId}::${safeHours}`
+  const now = Date.now()
+  const existing = detailCache.get(cacheKey)
+  if (existing && now - existing.fetchedAt < CACHE_FRESH_MS) {
+    return existing.data
+  }
+
+  const endpoint = `${baseUrl}/api/rpc2`
+  const loadMethod = safeHours === 0 ? 'public:getClientRecentRecords' : 'public:getRecordsByUUID'
+  const loadParams = safeHours === 0
+    ? { uuid: cleanNodeId }
+    : { uuid: cleanNodeId, hours: String(safeHours) }
+  const pingHours = safeHours === 0 ? '1' : String(safeHours)
+
+  const batchPayload = [
+    { jsonrpc: '2.0', id: 1, method: loadMethod, params: loadParams },
+    { jsonrpc: '2.0', id: 2, method: 'public:getPingRecords', params: { uuid: cleanNodeId, hours: pingHours } },
+  ]
+
+  try {
+    const response = await fetch(endpoint, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json',
+      },
+      body: JSON.stringify(batchPayload),
+      signal: AbortSignal.timeout(timeoutMs),
+      redirect: 'error',
+    })
+
+    if (!response.ok) {
+      throw new Error(`Komari detail upstream returned HTTP ${response.status}`)
+    }
+
+    const parsed = (await response.json()) as unknown
+    if (!Array.isArray(parsed)) {
+      throw new Error('Komari detail RPC2 batch response is not an array')
+    }
+
+    const byId = new Map<number, JsonRpcResponseItem>()
+    for (const item of parsed) {
+      if (item && typeof item === 'object' && typeof (item as JsonRpcResponseItem).id === 'number') {
+        byId.set((item as JsonRpcResponseItem).id as number, item as JsonRpcResponseItem)
+      }
+    }
+
+    const loadRes = byId.get(1)?.result
+    const rawLoadList: Record<string, unknown>[] = Array.isArray(loadRes)
+      ? (loadRes as Record<string, unknown>[])
+      : loadRes && typeof loadRes === 'object' && Array.isArray((loadRes as { records?: unknown }).records)
+        ? ((loadRes as { records: Record<string, unknown>[] }).records)
+        : []
+
+    const pingRes = byId.get(2)?.result as { tasks?: Record<string, unknown>[]; records?: Record<string, unknown>[] } | undefined
+    const rawPingTasks = Array.isArray(pingRes?.tasks) ? pingRes.tasks : []
+    const rawPingRecords = Array.isArray(pingRes?.records) ? pingRes.records : []
+
+    const detail: PublicServerDetailResponse = {
+      nodeId: redactServerText(cleanNodeId),
+      hours: safeHours,
+      updatedAt: new Date().toISOString(),
+      source: 'komari',
+      loadRecords: normalizeKomariLoadRecords(rawLoadList, safeHours || 1),
+      pingTasks: normalizeKomariPingSeries(rawPingTasks, rawPingRecords, safeHours || 1),
+    }
+
+    if (detailCache.size > 64) {
+      detailCache.clear()
+    }
+    detailCache.set(cacheKey, { fetchedAt: Date.now(), data: detail })
+    return detail
+  }
+  catch (err) {
+    if (existing && Date.now() - existing.fetchedAt < CACHE_STALE_MS) {
+      return existing.data
+    }
+    throw err
+  }
 }

@@ -48,9 +48,17 @@ export interface PublicServerNode {
   readonly cpuCores: number
   readonly arch: string
   readonly virtualization: string
+  readonly gpuName: string
+  readonly kernelVersion: string
   readonly weight: number
   readonly uptime: number
   readonly uptimeDays: number
+  readonly uptimeDetailText: string
+  readonly process: number
+  readonly connections: number
+  readonly connectionsUdp: number
+  readonly processConnectionsText: string
+  readonly publicRemark: string
   readonly cpuUsage: number
   readonly cpuPercentText: string
   readonly cpuStatus: ServerBarStatus
@@ -127,6 +135,40 @@ export interface PublicServersResponse {
   readonly nodes: readonly PublicServerNode[]
 }
 
+export interface PublicServerLoadPoint {
+  readonly time: number
+  readonly timeLabel: string
+  readonly cpu: number
+  readonly ram: number
+  readonly disk: number
+  readonly netIn: number
+  readonly netOut: number
+}
+
+export interface PublicServerPingPoint {
+  readonly time: number
+  readonly timeLabel: string
+  readonly value: number | null
+}
+
+export interface PublicServerPingTaskSeries {
+  readonly id: number
+  readonly name: string
+  readonly color: string
+  readonly latestLatency: number
+  readonly lossPercent: number
+  readonly points: readonly PublicServerPingPoint[]
+}
+
+export interface PublicServerDetailResponse {
+  readonly nodeId: string
+  readonly hours: number
+  readonly updatedAt: string
+  readonly source: 'komari' | 'mock'
+  readonly loadRecords: readonly PublicServerLoadPoint[]
+  readonly pingTasks: readonly PublicServerPingTaskSeries[]
+}
+
 const BYTE_UNITS = ['B', 'KB', 'MB', 'GB', 'TB', 'PB'] as const
 
 export function formatServerBytes(bytes: number, decimals = 2): string {
@@ -146,6 +188,16 @@ export function splitServerBytes(bytes: number, decimals = 2): { value: string; 
 
 export function formatServerSpeed(bytesPerSecond: number, decimals = 2): string {
   return `${formatServerBytes(bytesPerSecond, decimals)}/s`
+}
+
+export function formatUptimeDetailed(seconds: number, online = true): string {
+  if (!online || !Number.isFinite(seconds) || seconds <= 0) return '--'
+  const days = Math.floor(seconds / 86_400)
+  const hours = Math.floor((seconds % 86_400) / 3_600)
+  const minutes = Math.floor((seconds % 3_600) / 60)
+  if (days > 0) return `${days} 天 ${hours} 小时`
+  if (hours > 0) return `${hours} 小时 ${minutes} 分钟`
+  return `${minutes} 分钟`
 }
 
 export function clampPercentage(value: number): number {

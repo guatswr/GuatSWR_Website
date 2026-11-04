@@ -7,11 +7,12 @@ import {
   formatRemainingDays,
   formatServerBytes,
   formatServerSpeed,
+  formatUptimeDetailed,
   parseServerRegion,
   redactServerText,
   splitServerBytes,
 } from '../shared/servers'
-import { projectServerSnapshot } from '../server/utils/komari'
+import { normalizeKomariLoadRecords, projectServerSnapshot } from '../server/utils/komari'
 
 describe('server monitor projection & IP redaction', () => {
   it('redacts IPv4 and IPv6 literals from untrusted text', () => {
@@ -202,5 +203,42 @@ describe('server monitor projection & IP redaction', () => {
     expect(serialized).not.toContain('34.82.111.222')
     expect(serialized).not.toContain('47.108.99.88')
     expect(serialized).not.toContain('10.0.0.1')
+
+    expect(snapshot.nodes[0]?.uptimeDetailText).toBe('11 天 0 小时')
+    expect(snapshot.nodes[0]?.processConnectionsText).toBe('120 / 57')
+    expect(snapshot.nodes[0]?.gpuName).toBe('未检测到')
+    expect(formatUptimeDetailed(1_011_600, true)).toBe('11 天 17 小时')
+  })
+
+  it('normalizes both Komari realtime recent records and historical load records', () => {
+    const realtimePoints = normalizeKomariLoadRecords([
+      {
+        cpu: { usage: 1.76 },
+        ram: { used: 2_909_840_000 },
+        disk: { used: 46_192_400_000 },
+        network: { up: 32_409, down: 16_343 },
+        updated_at: '2026-11-04T18:18:31Z',
+      },
+    ], 0)
+    expect(realtimePoints).toHaveLength(1)
+    expect(realtimePoints[0]?.cpu).toBeCloseTo(1.76)
+    expect(realtimePoints[0]?.ram).toBe(2_909_840_000)
+    expect(realtimePoints[0]?.netOut).toBe(32_409)
+    expect(realtimePoints[0]?.netIn).toBe(16_343)
+
+    const historyPoints = normalizeKomariLoadRecords([
+      {
+        cpu: 4.82,
+        ram: 2_920_000_000,
+        disk: 46_200_000_000,
+        net_out: 18_432,
+        net_in: 9_216,
+        time: '2026-11-04T18:00:00Z',
+      },
+    ], 1)
+    expect(historyPoints).toHaveLength(1)
+    expect(historyPoints[0]?.cpu).toBeCloseTo(4.82)
+    expect(historyPoints[0]?.netOut).toBe(18_432)
+    expect(historyPoints[0]?.netIn).toBe(9_216)
   })
 })
