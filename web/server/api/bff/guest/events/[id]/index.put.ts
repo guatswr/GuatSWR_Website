@@ -63,7 +63,8 @@ export default bffAuthHandler(async (event) => {
   const response = await guestUpstream(context.runtime, context).request({
     operation: { name: 'save', id },
     clientIp: guestIp,
-    body: { type: payload.type, title: payload.title, content: payload.content, submit: true }
+    body: { type: payload.type, title: payload.title, content: payload.content, submit: true },
+    submissionDigest: digest
   }).catch((error: unknown) => {
     draft.store.abortSubmission(draft.intent, id)
     throw error

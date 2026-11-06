@@ -6,7 +6,7 @@ import { AsyncLocalStorage } from 'node:async_hooks'
 import type { SqlExecutor, SqliteStore } from '../database/sqlite.js'
 import { AppError } from '../errors.js'
 import { isSafePath } from '../utils/storage-boundary.js'
-import { referencesFromValues, assetReferences } from './reference-inventory.js'
+import { referencesFromValues, isAnyAssetTargetReferenced, rebuildAssetReferences } from './reference-inventory.js'
 import { captureCleanupTargets, processCleanupJob, type CleanupTarget } from './cleanup.js'
 
 export interface AssetPublication {
@@ -33,6 +33,19 @@ export function createAssetPublication(options: {
     if (inside(options.publicRoot, options.journalRoot)) throw new Error('ASSET_JOURNAL_PUBLIC')
     await fs.mkdir(options.journalRoot, { recursive: true, mode: 0o700 })
     if ((await fs.lstat(options.journalRoot)).isSymbolicLink() || inside(await fs.realpath(options.publicRoot), await fs.realpath(options.journalRoot))) throw new Error('ASSET_JOURNAL_PUBLIC')
+    try {
+      const hasShadow = await options.store.get<{ name: string }>(
+        "SELECT name FROM sqlite_master WHERE type='table' AND name='asset_references'"
+      )
+      if (hasShadow) {
+        const countRow = await options.store.get<{ count: number }>('SELECT count(*) as count FROM asset_references')
+        if (countRow && countRow.count === 0) {
+          await rebuildAssetReferences(options.store, options.publicRoot, { dryRun: false })
+        }
+      }
+    } catch {
+      // Non-fatal during initialize
+    }
   }
   const journalFile = (id: string) => path.join(options.journalRoot, id + '.json')
   const write = async (journal: Journal) => {
@@ -167,19 +180,16 @@ export function createAssetPublication(options: {
           const result = await save(prepared, tx)
           for (const [filename, expected] of observed) await check(filename, expected)
           if (journal.entries.length) {
-          const refs = await assetReferences(tx, options.publicRoot)
-          const family = (filename: string) => {
-            const normalized = process.platform === 'win32' ? filename.toLowerCase() : filename
-            return path.join(path.dirname(normalized), path.basename(normalized, path.extname(normalized)).replace(/-thumb$/, ''))
-          }
-          const used = standalone || refs.invalidLocalUrls > 0 || journal.entries.some(entry => [...refs.references].some(value => family(value) === family(absolute(entry.target))))
-          if (used) queued = [...sources.values()]
-          else {
-            const leftovers: CleanupTarget[] = []
-            for (const entry of journal.entries) if (entry.finalIdentity) leftovers.push({ id: entry.targetJob, url: '/uploads/' + entry.target.split('/').map(encodeURIComponent).join('/'), identity: entry.finalIdentity })
-            queued = leftovers
-          }
-          await enqueue(tx, queued)
+            const targets = journal.entries.map(entry => absolute(entry.target))
+            const used = standalone || (await isAnyAssetTargetReferenced(tx, targets, options.publicRoot, references))
+            if (used) {
+              queued = [...sources.values()]
+            } else {
+              const leftovers: CleanupTarget[] = []
+              for (const entry of journal.entries) if (entry.finalIdentity) leftovers.push({ id: entry.targetJob, url: '/uploads/' + entry.target.split('/').map(encodeURIComponent).join('/'), identity: entry.finalIdentity })
+              queued = leftovers
+            }
+            await enqueue(tx, queued)
           }
           return result
         })

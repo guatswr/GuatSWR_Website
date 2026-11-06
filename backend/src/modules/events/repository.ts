@@ -2,6 +2,13 @@ import type { Row, SqlExecutor, SqliteStore, SqlValue } from '../../database/sql
 import { AppError } from '../../errors.js'
 import { legacyJsonBinding } from '../../database/legacy-json-binding.js'
 export interface EventRow extends Row { id: number; status: string | null; created_by: number | null; content: string | null }
+export interface EventSubmissionRow extends Row {
+  event_id: number
+  capability_key: string
+  digest: string
+  response: string
+  created_at: number
+}
 // Verified against both native runtimes: sqlite3 maps JSON objects/arrays to
 // this fixed text and booleans to integers. Do not use JavaScript String(array).
 export const eventBinding = legacyJsonBinding
@@ -29,7 +36,12 @@ export function createEventsRepository(store: SqliteStore) {
       return result
     },
     discard: (id: number, initial: Record<string, unknown>, user: number) => store.run("DELETE FROM events WHERE id=? AND status='draft' AND type IS ? AND title IS ? AND content IS ? AND created_by IS ?", [id, eventBinding(initial.type), eventBinding(initial.title || ''), JSON.stringify(initial.content || {}), user]),
-    participants: (id: number) => store.all('SELECT * FROM event_participants WHERE event_id=? ORDER BY created_at ASC', [id])
+    participants: (id: number) => store.all('SELECT * FROM event_participants WHERE event_id=? ORDER BY created_at ASC', [id]),
+    getSubmission: (eventId: number, executor: SqlExecutor = store) =>
+      executor.get<EventSubmissionRow>('SELECT * FROM event_submissions WHERE event_id=?', [eventId]),
+    createSubmission: (eventId: number, capabilityKey: string, digest: string, response: string, createdAt: number, executor: SqlExecutor = store) =>
+      executor.run('INSERT INTO event_submissions(event_id, capability_key, digest, response, created_at) VALUES (?, ?, ?, ?, ?)',
+        [eventId, capabilityKey, digest, response, createdAt])
   }
 }
 export type EventsRepository = ReturnType<typeof createEventsRepository>

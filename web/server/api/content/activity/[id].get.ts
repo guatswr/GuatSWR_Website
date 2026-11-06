@@ -11,7 +11,7 @@ import type { ActivityContentResponse, ActivityDisplay } from '#shared/content'
 import { createError, defineEventHandler, getRouterParam } from 'h3'
 import { useRuntimeConfig } from '#imports'
 import { readCachedActivity } from '../../../utils/public-data'
-import { renderSafeMarkdown } from '../../../utils/markdown'
+import { renderCachedMarkdown } from '../../../utils/markdown-cache'
 
 /** Malformed, missing and non-public ids are all a plain 404. */
 const ACTIVITY_ID = /^[1-9][0-9]{0,14}$/
@@ -26,7 +26,7 @@ export default defineEventHandler(async (event): Promise<ActivityContentResponse
   // failure; both are passed through unchanged.
   const activity = await readCachedActivity({ apiBase }, Number(raw))
   const { content, ...display } = activity
-  const body = await renderSafeMarkdown(content)
+  const body = await renderCachedMarkdown(content)
   return {
     activity: display satisfies ActivityDisplay,
     body: body.nodes,

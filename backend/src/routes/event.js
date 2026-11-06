@@ -20,7 +20,7 @@ module.exports = context => {
   const events = createEventsController(createEventsService({ repository: createEventsRepository(context.sql.main), publication: context.storage.publication,
     persist: createEventContentPersister({ imageRoot: context.IMG_ROOT_DIR, moveStagedFile: context.storage.moveStagedFile }),
     audit: context.addLog, notify: callBotHook, report: auditFailure, ...queued }), report);
-  const signup = createSignupController(createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook, publication: context.storage.publication, ...queued }), report);
+  const signup = createSignupController(createSignupService({ repository: createSignupRepository(context.sql.main), notify: callBotHook, publication: context.storage.publication, publicRoot: context.PUBLIC_DIR, ...queued }), report);
   const state = createEventStateController(createEventStateService({ repository: createEventStateRepository(context.sql.main), audit: context.addLog,
     notify: callBotHook, reportAuditFailure: auditFailure, publication: context.storage.publication, ...queued }), report);
   const websiteIdentity = async (req, res, next) => {

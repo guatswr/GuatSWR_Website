@@ -50,20 +50,26 @@ const activeChartSchool = computed(() =>
 
 // One request returns both the projected members and the server-derived sort
 // keys; the browser never computes pinyin.
-const { data: memberContent, error: membersError, status: membersStatus, refresh: refreshMembers } =
-  await useFetch<MembersContentResponse>('/api/content/members', {
-    // Keyed by the normalized school so filters never share a cache slot.
-    key: () => `public-members-${selectedSchool.value || 'all'}`,
-    query: computed(() => (selectedSchool.value ? { school: selectedSchool.value } : {})),
-    default: (): MembersContentResponse => ({ members: [], sortKeys: {} }),
-  })
+// Parallelize independent initial public reads to eliminate server waterfall
+const membersFetch = useFetch<MembersContentResponse>('/api/content/members', {
+  // Keyed by the normalized school so filters never share a cache slot.
+  key: () => `public-members-${selectedSchool.value || 'all'}`,
+  query: computed(() => (selectedSchool.value ? { school: selectedSchool.value } : {})),
+  default: (): MembersContentResponse => ({ members: [], sortKeys: {} }),
+})
 
-const members = computed(() => memberContent.value.members)
-
-const { data: schoolStats,refresh:refreshSchoolStats,error:schoolStatsError } = await useFetch<PublicSchoolStat[]>('/api/members/stats/schools', {
+const schoolStatsFetch = useFetch<PublicSchoolStat[]>('/api/members/stats/schools', {
   key: 'public-member-school-stats',
   default: () => [],
 })
+
+const [
+  { data: memberContent, error: membersError, status: membersStatus, refresh: refreshMembers },
+  { data: schoolStats, refresh: refreshSchoolStats, error: schoolStatsError },
+] = await Promise.all([membersFetch, schoolStatsFetch])
+
+const members = computed(() => memberContent.value.members)
+
 
 const observedRevision=ref(memberContent.value.revision ?? 0)
 let revisionTimer:ReturnType<typeof setInterval>|undefined

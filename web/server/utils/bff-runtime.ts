@@ -50,10 +50,15 @@ export interface BffRuntimeFactoryDeps {
   createLimiter?: (options: { limit: number, windowMs: number }) => FixedWindowRateLimiter
   createUpstream?: (options: UpstreamClientOptions) => UpstreamClient
   createAuth?: (deps: Parameters<typeof createBffAuthService>[0]) => BffAuthService
+  cleanupIntervalMs?: number
+  enableCleanupTimer?: boolean
 }
 
 export interface BffRuntimeFactory {
   resolve: (inputs: BffRuntimeInputs) => BffRuntime
+  close: () => void
+  sweepBatch?: (batchSize?: number) => number
+  getActiveCleanupTimer?: () => NodeJS.Timeout | undefined
 }
 
 const DEFAULT_SESSION_COOKIE_NAME = 'guatswr-next'
@@ -135,6 +140,9 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
   let store: BffSessionStore | undefined
   let storeLimit = -1
   let storeSecret = ''
+  let cleanupTimer: NodeJS.Timeout | undefined
+  const cleanupIntervalMs = deps.cleanupIntervalMs ?? 60_000
+  const enableCleanupTimer = deps.enableCleanupTimer ?? true
   let limiter: FixedWindowRateLimiter | undefined
   let limiterKey = ''
   let auth: BffAuthService | undefined
@@ -171,9 +179,29 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
       }
 
       if (!store || storeLimit !== config.memorySessionLimit || storeSecret !== secret) {
+        if (cleanupTimer) {
+          clearInterval(cleanupTimer)
+          cleanupTimer = undefined
+        }
+        if (store) {
+          store.close?.()
+        }
         store = createStore({ maxEntries: config.memorySessionLimit, secret })
         storeLimit = config.memorySessionLimit
         storeSecret = secret
+
+        if (enableCleanupTimer) {
+          const targetStore = store
+          cleanupTimer = setInterval(() => {
+            try {
+              targetStore.sweepBatch?.(100)
+            }
+            catch {
+              // Background sweep errors must not crash the process
+            }
+          }, cleanupIntervalMs)
+          cleanupTimer.unref()
+        }
       }
       const currentStore = store
 
@@ -228,6 +256,24 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
         sessionCookieName: sessionCookieNameOf(inputs.session),
         trust,
       }
+    },
+    close() {
+      if (cleanupTimer) {
+        clearInterval(cleanupTimer)
+        cleanupTimer = undefined
+      }
+      if (store) {
+        store.close?.()
+        store = undefined
+        storeLimit = -1
+        storeSecret = ''
+      }
+    },
+    sweepBatch(batchSize = 100) {
+      return store?.sweepBatch?.(batchSize) ?? 0
+    },
+    getActiveCleanupTimer() {
+      return cleanupTimer
     },
   }
 }

@@ -292,3 +292,49 @@ export async function assertImageMagic(upload: GuestUpload): Promise<void> {
     await handle.close()
   }
 }
+
+interface AvatarQuotaEntry {
+  count: number
+  totalBytes: number
+  windowStart: number
+}
+
+const avatarQuotaMap = new Map<string, AvatarQuotaEntry>()
+const MAX_AVATAR_QUOTA_KEYS = 5000
+const AVATAR_WINDOW_MS = 3600_000 // 1 hour
+export const MAX_AVATAR_UPLOADS_PER_WINDOW = 5
+export const MAX_AVATAR_BYTES_PER_WINDOW = 100 * 1024 * 1024 // 100 MiB cumulative
+
+export function checkAndRecordAvatarQuota(key: string, bytes: number, now = Date.now()): void {
+  if (!avatarQuotaMap.has(key) && avatarQuotaMap.size >= MAX_AVATAR_QUOTA_KEYS) {
+    for (const [k, v] of avatarQuotaMap.entries()) {
+      if (now - v.windowStart >= AVATAR_WINDOW_MS) {
+        avatarQuotaMap.delete(k)
+      }
+    }
+    if (avatarQuotaMap.size >= MAX_AVATAR_QUOTA_KEYS) {
+      throw new BffError(429, 'quota_exceeded', '头像上传繁忙，请稍后再试')
+    }
+  }
+
+  let entry = avatarQuotaMap.get(key)
+  if (!entry || (now - entry.windowStart >= AVATAR_WINDOW_MS)) {
+    entry = { count: 0, totalBytes: 0, windowStart: now }
+    avatarQuotaMap.set(key, entry)
+  }
+
+  if (entry.count >= MAX_AVATAR_UPLOADS_PER_WINDOW) {
+    throw new BffError(429, 'quota_exceeded', '头像上传次数已达上限，请稍后再试')
+  }
+
+  if (entry.totalBytes + bytes > MAX_AVATAR_BYTES_PER_WINDOW) {
+    throw new BffError(429, 'quota_exceeded', '头像上传累计体积已达上限，请稍后再试')
+  }
+
+  entry.count += 1
+  entry.totalBytes += bytes
+}
+
+export function resetAvatarQuotaForTesting(): void {
+  avatarQuotaMap.clear()
+}

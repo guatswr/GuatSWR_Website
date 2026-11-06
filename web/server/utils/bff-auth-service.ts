@@ -286,12 +286,16 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
         || identity.username !== current.identity.username
         || identity.role !== current.identity.role
         || identity.avatar !== current.identity.avatar
-      const updated: BffSessionRecord = {
-        ...current,
-        identity,
-        lastSeenAt: now(),
+      let finalRecord = current
+      if (identityChanged) {
+        const updated: BffSessionRecord = {
+          ...current,
+          identity,
+          lastSeenAt: now(),
+        }
+        deps.store.set(updated)
+        finalRecord = updated
       }
-      deps.store.set(updated)
 
       // Authorization uses the freshly fetched current role, never the role
       // captured at login or the role hinted by the browser.
@@ -306,19 +310,22 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
         sessionKey: key,
         identity,
         twofaEnabled: me.twofa_enabled ?? false,
-        expiresAt: updated.expiresAt,
+        expiresAt: finalRecord.expiresAt,
         identityChanged,
         upstreamToken: token,
       }
     },
 
     async logout(sessionId) {
+      let key: string
       try {
-        deps.store.delete(hashSessionId(sessionId))
+        key = hashSessionId(sessionId)
       }
       catch {
         // Nothing to revoke for an implausible id.
+        return
       }
+      deps.store.delete(key)
     },
 
     revokeForUser(userId) {

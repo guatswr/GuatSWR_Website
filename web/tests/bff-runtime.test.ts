@@ -152,3 +152,65 @@ describe('runtime configuration fails closed without leaking values', () => {
     expect(() => factory.resolve(inputs({ apiBase: 'http://user:pass@127.0.0.1:8080' }))).toThrow(BffConfigError)
   })
 })
+
+describe('runtime lifecycle, bounded sweep and cleanup timer', () => {
+  it('repeated runtime resolution does not add timers', () => {
+    const { factory } = createHarness()
+    const firstRuntime = factory.resolve(inputs())
+    const initialTimer = factory.getActiveCleanupTimer()
+    expect(initialTimer).toBeDefined()
+
+    for (let i = 0; i < 50; i += 1) {
+      const runtime = factory.resolve(inputs())
+      expect(runtime.store).toBe(firstRuntime.store)
+      expect(factory.getActiveCleanupTimer()).toBe(initialTimer)
+    }
+  })
+
+  it('replacing store clears previous cleanup timer and registers a new one', () => {
+    const { factory, created } = createHarness()
+    factory.resolve(inputs())
+    const firstTimer = factory.getActiveCleanupTimer()
+    expect(firstTimer).toBeDefined()
+
+    factory.resolve(inputs({
+      rawBffAuth: { ...inputs().rawBffAuth as object, memorySessionLimit: 250 },
+    }))
+    const secondTimer = factory.getActiveCleanupTimer()
+    expect(secondTimer).toBeDefined()
+    expect(secondTimer).not.toBe(firstTimer)
+    expect(created.stores).toBe(2)
+  })
+
+  it('closing the factory clears the timer, closes the store, and is safely idempotent', () => {
+    const { factory } = createHarness()
+    factory.resolve(inputs())
+    expect(factory.getActiveCleanupTimer()).toBeDefined()
+
+    factory.close()
+    expect(factory.getActiveCleanupTimer()).toBeUndefined()
+
+    // Idempotent: repeated calls must not throw
+    expect(() => factory.close()).not.toThrow()
+    expect(() => factory.close()).not.toThrow()
+  })
+
+  it('forwards batch sweeps to the underlying session store', () => {
+    const { factory } = createHarness()
+    const runtime = factory.resolve(inputs())
+    const past = Date.now() - 5000
+    runtime.store.set({
+      recordId: 'expired-rec',
+      key: 'expired-key',
+      identity: { id: 99, username: 'test', role: 'admin' as const, avatar: null },
+      token: { iv: '', tag: '', ciphertext: '' },
+      createdAt: past,
+      lastSeenAt: past,
+      expiresAt: past + 1000,
+    })
+    expect(runtime.store.size()).toBe(1)
+    const swept = factory.sweepBatch(100)
+    expect(swept).toBe(1)
+    expect(runtime.store.size()).toBe(0)
+  })
+})

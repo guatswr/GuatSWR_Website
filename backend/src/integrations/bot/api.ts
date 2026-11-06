@@ -29,6 +29,7 @@ export function createBotApi(options: {
   requireSuperAdmin: RequestHandler; report(error: unknown): void
   images: BotImageOptions
   memberSync?:MemberSync
+  publicRoot?: string
 }) {
   const router = express.Router(), { platform, store } = options
   const identities = createBotIdentityService(store), queries = createBotQueries(store,Boolean(options.memberSync))
@@ -95,7 +96,7 @@ export function createBotApi(options: {
   for (const method of ['get','post','delete'] as const) router[method]('/v1/events/:id/signup', authorize(method==='get' ? 'signup:read' : 'signup:write'), handle(async (req,res) => {
     const qq=botQqSchema.parse(method==='post' ? req.body?.qq : req.query.qq), bound=await platform.identity(credential(req),qq)
     const id=integer(req.params.id), identity={ userId:bound.user_id,visitorIp:null,...(bound.user_id ? {} : { botIdentityId:bound.id }) }
-    const signup=createSignupService({ repository:createSignupRepository(store), notify:async () => {}, ...(options.publication ? { publication:options.publication } : {}), enqueue:platform.enqueue,
+    const signup=createSignupService({ repository:createSignupRepository(store), notify:async () => {}, ...(options.publication ? { publication:options.publication } : {}), ...(options.publicRoot ? { publicRoot: options.publicRoot } : {}), enqueue:platform.enqueue,
       authorize:async tx => {
         await assertCredential(tx,credential(req),'signup:write')
         const current=await platform.identity(credential(req),qq,tx)

@@ -102,6 +102,9 @@ services:
     restart: unless-stopped
     init: true
     stop_grace_period: 30s
+    mem_limit: ${UMAMI_MEMORY_LIMIT:-512m}
+    pids_limit: ${UMAMI_PIDS_LIMIT:-128}
+    cpus: ${UMAMI_CPU_LIMIT:-1.0}
     ports:
       - "${UMAMI_BIND_ADDRESS:-127.0.0.1}:${UMAMI_PORT:-13036}:3000"
     environment:
@@ -114,7 +117,12 @@ services:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: "1"
     volumes:
-      - ${UMAMI_GEO_DIR:-./deploy/umami/geo}:/geo:ro
+      - type: bind
+        source: ${UMAMI_GEO_DIR:-./deploy/umami/geo}
+        target: /geo
+        read_only: true
+        bind:
+          create_host_path: false
     depends_on:
       umami-db:
         condition: service_healthy
@@ -133,12 +141,19 @@ services:
     image: ${UMAMI_DB_IMAGE:-postgres:15-alpine}
     container_name: ${UMAMI_DB_CONTAINER_NAME:-umami-db}
     restart: unless-stopped
+    mem_limit: ${UMAMI_DB_MEMORY_LIMIT:-512m}
+    pids_limit: ${UMAMI_DB_PIDS_LIMIT:-128}
+    cpus: ${UMAMI_DB_CPU_LIMIT:-1.0}
     environment:
       POSTGRES_DB: ${UMAMI_DB_NAME:-umami}
       POSTGRES_USER: ${UMAMI_DB_USER:-umami}
       POSTGRES_PASSWORD: ${UMAMI_DB_PASSWORD:-umami}
     volumes:
-      - ${UMAMI_DB_DATA_DIR:-./deploy/umami/data/db}:/var/lib/postgresql/data
+      - type: bind
+        source: ${UMAMI_DB_DATA_DIR:-./deploy/umami/data/db}
+        target: /var/lib/postgresql/data
+        bind:
+          create_host_path: false
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${UMAMI_DB_USER:-umami} -d ${UMAMI_DB_NAME:-umami}"]
       interval: 10s
@@ -161,10 +176,17 @@ services:
     restart: unless-stopped
     init: true
     stop_grace_period: 30s
+    mem_limit: ${KOMARI_MEMORY_LIMIT:-256m}
+    pids_limit: ${KOMARI_PIDS_LIMIT:-64}
+    cpus: ${KOMARI_CPU_LIMIT:-0.5}
     ports:
       - "${KOMARI_BIND_ADDRESS:-127.0.0.1}:${KOMARI_PORT:-25774}:25774"
     volumes:
-      - ${KOMARI_DATA_DIR:-./deploy/komari/data}:/app/data
+      - type: bind
+        source: ${KOMARI_DATA_DIR:-./deploy/komari/data}
+        target: /app/data
+        bind:
+          create_host_path: false
     networks:
       app:
         ipv4_address: ${DOCKER_KOMARI_IP:-172.30.88.30}

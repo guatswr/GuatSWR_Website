@@ -1,4 +1,5 @@
 import { originalRequestPath } from '../utils/bff-request-path'
+import { closeBffRuntime } from '../utils/bff-auth-context'
 
 /**
  * Defense in depth around nuxt-auth-utils' own session hooks.
@@ -17,7 +18,7 @@ import { originalRequestPath } from '../utils/bff-request-path'
  * `replaceUserSession` (login rotation) clears h3's in-memory session manager,
  * not through this hook, so a successful login is unaffected.
  */
-export default defineNitroPlugin(() => {
+export default defineNitroPlugin((nitroApp) => {
   sessionHooks.hook('fetch', (_session, event) => {
     const path = originalRequestPath(event)
     if (path === '/api/_auth' || path.startsWith('/api/_auth/')) {
@@ -28,5 +29,9 @@ export default defineNitroPlugin(() => {
   sessionHooks.hook('clear', (_session, event) => {
     if (event.context.bffAuthInternalClear === true) return
     throw createError({ statusCode: 403, statusMessage: 'Forbidden' })
+  })
+
+  nitroApp.hooks.hook('close', () => {
+    closeBffRuntime()
   })
 })

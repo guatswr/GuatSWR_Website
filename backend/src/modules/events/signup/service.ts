@@ -2,6 +2,7 @@ import { signupDeadlineClosed } from '@guatswr/shared'
 import type { Actor } from '../../actor.js'
 import type { EventRow, Identity, SignupRepository } from './repository.js'
 import { guardAssetReferences, type AssetPublication } from '../../../storage/publication.js'
+import { syncEntityAssetReferences, removeEntityAssetReferences } from '../../../storage/reference-inventory.js'
 import type { Enqueue } from '../../../integrations/bot/platform.js'
 import type { SqlExecutor } from '../../../database/sqlite.js'
 
@@ -20,6 +21,7 @@ export function createSignupService(options: {
   publication?: AssetPublication
   enqueue?: Enqueue
   authorize?: (tx: SqlExecutor, identity: Identity, action: 'signup' | 'remove') => Promise<void>
+  publicRoot?: string
 }) {
   const { repository } = options
   return {
@@ -38,6 +40,20 @@ export function createSignupService(options: {
         if (!input.common_id || !input.qq) throw new SignupError(400, '请填写常用ID与QQ')
         if (!input.avatar) throw new SignupError(400, '请上传头像')
         await tx.save(id, identity, input)
+        const savedRecord = await tx.find(id, identity)
+        if (!savedRecord || !savedRecord.id) {
+          throw new SignupError(500, '报名记录保存异常')
+        }
+        const participantId = Number(savedRecord.id)
+        const publicRoot = options.publicRoot || process.env.PUBLIC_DIR || ''
+        if (input.avatar) {
+          await syncEntityAssetReferences(tx.executor, publicRoot, {
+            sourceType: 'event_participants',
+            sourceId: participantId,
+            sourceField: 'avatar',
+            value: input.avatar
+          })
+        }
         if (options.enqueue) await options.enqueue('event.signup', { eventId:id,type:event.type,common_id:input.common_id },actor,tx.executor)
         return { eventId: id, type: event.type, participant: { common_id: input.common_id, qq: input.qq, avatar: input.avatar, pilot_source: input.pilot_source } }
       }, executor))
@@ -55,8 +71,12 @@ export function createSignupService(options: {
     remove: async (id: number, identity: Identity) => {
       await repository.transaction(async tx => {
         if (options.authorize) await options.authorize(tx.executor,identity,'remove')
+        const existing = await tx.find(id, identity)
         const result = await tx.remove(id, identity)
         if (!result.changes) throw new SignupError(404, '报名记录不存在')
+        if (existing && existing.id !== undefined && existing.id !== null) {
+          await removeEntityAssetReferences(tx.executor, 'event_participants', Number(existing.id))
+        }
         if (options.enqueue) await options.enqueue('event.signup_cancelled',{ eventId:id },null,tx.executor)
       })
     },

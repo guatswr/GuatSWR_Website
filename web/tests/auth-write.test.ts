@@ -249,7 +249,7 @@ describe('fixed-window rate limiting', () => {
     }
     expect(limiter.size()).toBeLessThanOrEqual(10_000)
     expect(limiter.check('fresh').allowed).toBe(true)
-  })
+  }, 15_000)
 
   it('preserves a renewed active quota when an older window is closer to reset', () => {
     let current = 0

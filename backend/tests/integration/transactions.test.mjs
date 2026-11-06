@@ -5,7 +5,7 @@ import { createRequire } from 'node:module'
 import { spawn, execFile } from 'node:child_process'
 import { promisify } from 'node:util'
 import { once } from 'node:events'
-import { expect, it, onTestFinished } from 'vitest'
+import { expect, it, onTestFinished, vi } from 'vitest'
 import { fixture as application } from '../helpers/fixture.mjs'
 const require = createRequire(import.meta.url)
 const sqlite = require('sqlite3')
@@ -277,4 +277,40 @@ it('caps pending writers and drains queued cancellations promptly on close', asy
   const results = await settled
   expect(results.every(result => result.status === 'rejected')).toBe(true)
   expect(calls).toBe(0)
+})
+
+it('DB-01: leases a bounded connection pool where connections do not grow linearly with query volume', async () => {
+  const f = await fixture()
+  const db = f.store({ maxReaders: 4 })
+  for (let i = 0; i < 50; i++) {
+    await db.run('INSERT INTO items(label) VALUES (?)', [`seq-${i}`])
+    await db.get('SELECT count(*) AS count FROM items')
+  }
+  const reads = await Promise.all(Array.from({ length: 20 }, () => db.all('SELECT count(*) AS count FROM items')))
+  expect(reads.length).toBe(20)
+  expect(await db.get('SELECT count(*) AS count FROM items')).toEqual({ count: 50 })
+  await db.close()
+})
+
+it('reserves reader slots before asynchronous connection opening completes', async () => {
+  const f = await fixture()
+  const NativeDatabase = sqlite.Database
+  const opened = []
+  const constructor = vi.spyOn(sqlite, 'Database').mockImplementation(function (...args) {
+    const connection = new NativeDatabase(...args)
+    opened.push(connection)
+    return connection
+  })
+  try {
+    const db = f.store({ maxReaders: 2 })
+    const reads = await Promise.all(Array.from({ length: 30 }, () => db.get('SELECT 1 AS value')))
+    expect(reads).toEqual(Array.from({ length: 30 }, () => ({ value: 1 })))
+    expect(opened).toHaveLength(2)
+    await db.close()
+  } finally { constructor.mockRestore() }
+})
+
+it('keeps invalid statements on the asynchronous rejection contract', async () => {
+  const db = (await fixture()).store()
+  await expect(db.get('PRAGMA foreign_keys')).rejects.toMatchObject({ kind: 'scope' })
 })

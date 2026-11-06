@@ -12,7 +12,7 @@ import {
   isPublicEventStatusForUpload,
   projectUpload
 } from '../../../../utils/guest-bff'
-import { assertImageMagic, readGuestUpload, UPLOAD_EXTENSIONS } from '../../../../utils/guest-upload'
+import { assertImageMagic, checkAndRecordAvatarQuota, readGuestUpload, UPLOAD_EXTENSIONS } from '../../../../utils/guest-upload'
 
 /**
  * Avatar for a publicly visible signup event.
@@ -54,6 +54,7 @@ export default bffAuthHandler(async (event) => {
       throw new BffError(403, 'forbidden', '当前状态不允许上传头像')
     }
     await assertImageMagic(upload)
+    checkAndRecordAvatarQuota(`avatar:${guestIp}:${eid}`, upload.size)
 
     const form = new FormData()
     form.append(

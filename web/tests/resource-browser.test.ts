@@ -1,6 +1,13 @@
 import { describe, expect, it } from 'vitest'
 import type { ResourceItem } from '../shared/resources'
-import { mergeResourcePages, resourceMatches, resourceWebUrl, sortResources } from '../app/utils/resource-browser'
+import {
+  RESOURCE_VIEW_PAGE_SIZE,
+  mergeResourcePages,
+  paginateResources,
+  resourceMatches,
+  resourceWebUrl,
+  sortResources,
+} from '../app/utils/resource-browser'
 
 const item = (name: string, overrides: Partial<ResourceItem> = {}): ResourceItem => ({
   name, path: '/' + name, is_dir: false, size: 1, kind: 'document', modified: '', ...overrides,
@@ -38,5 +45,72 @@ describe('resource browser interactions', () => {
   it('accepts download URLs while rejecting executable and ambiguous relative URLs', () => {
     for (const url of ['https://pan.example/d/a?sign=123', '/api/resources/detail?path=%2Fa']) expect(resourceWebUrl(url)).toBe(url)
     for (const url of ['javascript:alert(1)', 'data:text/html,hello', '//evil.example', '/\\evil.example', 'file:///etc/passwd', 'https://a.example/ bad']) expect(resourceWebUrl(url)).toBe('')
+  })
+})
+
+describe('accessible client pagination at scale (WEB-02)', () => {
+  it.each([100, 1_000, 10_000])(
+    'bounds DOM item count to at most 100 entries with %i items',
+    scale => {
+      const synthetic = Array.from({ length: scale }, (_, i) =>
+        item(`file_${String(i).padStart(5, '0')}.zip`, { size: i + 10 }),
+      )
+
+      // Page 1
+      const page1 = paginateResources(synthetic, 1)
+      expect(page1.items.length).toBe(Math.min(scale, RESOURCE_VIEW_PAGE_SIZE))
+      expect(page1.items[0]?.name).toBe('file_00000.zip')
+      expect(page1.totalItems).toBe(scale)
+      expect(page1.totalPages).toBe(Math.ceil(scale / RESOURCE_VIEW_PAGE_SIZE))
+      expect(page1.currentPage).toBe(1)
+
+      // Page 2 (if scale > 100)
+      if (scale > 100) {
+        const page2 = paginateResources(synthetic, 2)
+        expect(page2.items.length).toBe(RESOURCE_VIEW_PAGE_SIZE)
+        expect(page2.items[0]?.name).toBe('file_00100.zip')
+        expect(page2.currentPage).toBe(2)
+      }
+
+      // Last page
+      const lastPageNum = Math.ceil(scale / RESOURCE_VIEW_PAGE_SIZE)
+      const lastPage = paginateResources(synthetic, lastPageNum)
+      expect(lastPage.items.length).toBe(
+        scale % RESOURCE_VIEW_PAGE_SIZE === 0 ? RESOURCE_VIEW_PAGE_SIZE : scale % RESOURCE_VIEW_PAGE_SIZE,
+      )
+      expect(lastPage.currentPage).toBe(lastPageNum)
+    },
+  )
+
+  it('clamps invalid and out-of-range pages gracefully', () => {
+    const items = [item('a'), item('b'), item('c')]
+    expect(paginateResources(items, 0).currentPage).toBe(1)
+    expect(paginateResources(items, -99).currentPage).toBe(1)
+    expect(paginateResources(items, 999).currentPage).toBe(1)
+    expect(paginateResources([], 1)).toEqual({
+      items: [],
+      totalItems: 0,
+      totalPages: 1,
+      currentPage: 1,
+    })
+  })
+
+  it('preserves sorting and filtering across pages', () => {
+    const items = [
+      item('c_doc.pdf', { kind: 'document' }),
+      item('a_doc.pdf', { kind: 'document' }),
+      item('b_doc.pdf', { kind: 'document' }),
+      item('image.png', { kind: 'image' }),
+    ]
+    const filtered = items.filter(x => x.kind === 'document')
+    const sorted = sortResources(filtered, 'name', 'asc')
+    expect(sorted.map(x => x.name)).toEqual(['a_doc.pdf', 'b_doc.pdf', 'c_doc.pdf'])
+
+    const paginated = paginateResources(sorted, 1, 2)
+    expect(paginated.items.map(x => x.name)).toEqual(['a_doc.pdf', 'b_doc.pdf'])
+    expect(paginated.totalPages).toBe(2)
+
+    const paginatedP2 = paginateResources(sorted, 2, 2)
+    expect(paginatedP2.items.map(x => x.name)).toEqual(['c_doc.pdf'])
   })
 })

@@ -38,6 +38,11 @@ try {
   const port = bound.stdout.match(/127\.0\.0\.1:(\d+)/)?.[1]
   assert.ok(port)
     origin = `http://127.0.0.1:${port}`
+    const inspected = JSON.parse((await exec('docker', ['inspect', container])).stdout)
+    const healthcheck = inspected[0]?.Config?.Healthcheck
+    assert.ok(healthcheck, 'container image missing Healthcheck configuration')
+    assert.ok(Array.isArray(healthcheck.Test) && healthcheck.Test.length > 0, 'container Healthcheck.Test must be an array')
+    report.healthcheck = { test: healthcheck.Test }
   }
   let ready = false
   for (let attempt = 0; attempt < 100; attempt++) {

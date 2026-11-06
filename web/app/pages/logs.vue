@@ -100,27 +100,6 @@ const umamiQuery = computed<Record<string, string>>(() => ({
 }))
 
 // --- Data -----------------------------------------------------------------
-const { data: logPage, error: logsError, status: logsStatus, refresh: refreshLogs } =
-  await useFetch<PublicLogsPage>('/api/logs', {
-    // Keyed by the normalized filters so each view has its own cache slot.
-    key: () => `public-logs-${page.value}-${pageSize.value}-${username.value}-${action.value}`,
-    query: computed(() => {
-      const query: Record<string, string | number> = {
-        page: page.value,
-        limit: pageSize.value,
-      }
-      if (username.value) query.username = username.value
-      if (action.value) query.action = action.value
-      return query
-    }),
-    default: (): PublicLogsPage => ({ total: 0, logs: [] }),
-  })
-
-const { data: stats } = await useFetch<PublicLogStat[]>('/api/logs/stats', {
-  key: 'public-log-stats',
-  default: () => [],
-})
-
 /**
  * Umami windows are cached in the payload for the range that SSR rendered, so
  * hydration reuses the server's timestamps instead of re-fetching with a
@@ -143,7 +122,28 @@ const umamiRequest = computed(() => {
   }
 })
 
-const { data: incomingUmami, error: umamiError, status: umamiStatus, refresh: retryStatistics } = await useFetch<PublicUmamiStats>('/api/logs/umami', {
+// Parallelize the three independent initial public reads to eliminate server waterfall
+const logsFetch = useFetch<PublicLogsPage>('/api/logs', {
+  // Keyed by the normalized filters so each view has its own cache slot.
+  key: () => `public-logs-${page.value}-${pageSize.value}-${username.value}-${action.value}`,
+  query: computed(() => {
+    const query: Record<string, string | number> = {
+      page: page.value,
+      limit: pageSize.value,
+    }
+    if (username.value) query.username = username.value
+    if (action.value) query.action = action.value
+    return query
+  }),
+  default: (): PublicLogsPage => ({ total: 0, logs: [] }),
+})
+
+const statsFetch = useFetch<PublicLogStat[]>('/api/logs/stats', {
+  key: 'public-log-stats',
+  default: () => [],
+})
+
+const umamiFetch = useFetch<PublicUmamiStats>('/api/logs/umami', {
   key: () => `public-logs-umami-${activeRange.value}-${environmentType.value}-${topLimit.value}-${chartInterval.value}`,
   query: umamiRequest,
   default: (): PublicUmamiStats => ({
@@ -153,6 +153,13 @@ const { data: incomingUmami, error: umamiError, status: umamiStatus, refresh: re
     top: { pages: [], environments: [] },
   }),
 })
+
+const [
+  { data: logPage, error: logsError, status: logsStatus, refresh: refreshLogs },
+  { data: stats },
+  { data: incomingUmami, error: umamiError, status: umamiStatus, refresh: retryStatistics },
+] = await Promise.all([logsFetch, statsFetch, umamiFetch])
+
 
 // Query navigation retains mounted content while the new keyed request resolves.
 // Overview data is independent of audience/top-list filters; preserving its

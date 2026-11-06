@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto'
 import type { Actor } from '../actor.js'
 import type { SqlValue } from '../../database/sqlite.js'
 import { AppError } from '../../errors.js'
@@ -7,6 +8,25 @@ import { eventStatuses } from './state/service.js'
 import { eventBinding, type EventRow, type EventsRepository } from './repository.js'
 import { publishAssets, type AssetPublication } from '../../storage/publication.js'
 import type { Enqueue } from '../../integrations/bot/platform.js'
+
+function canonicalizeValue(val: unknown): unknown {
+  if (val === null || typeof val !== 'object') return val
+  if (Array.isArray(val)) return val.map(canonicalizeValue)
+  const sorted: Record<string, unknown> = {}
+  for (const k of Object.keys(val as Record<string, unknown>).sort()) {
+    sorted[k] = canonicalizeValue((val as Record<string, unknown>)[k])
+  }
+  return sorted
+}
+
+export function computeCanonicalPayloadDigest(body: Record<string, unknown>): string {
+  const canonical = {
+    type: body.type ? String(body.type) : '',
+    title: body.title ? String(body.title) : '',
+    content: canonicalizeValue(body.content ?? null),
+  }
+  return createHash('sha256').update(JSON.stringify(canonical)).digest('hex')
+}
 
 const publicStatuses = ['published', 'ongoing', 'ended', 'settled']
 const parseContent = (row: EventRow) => {
@@ -24,12 +44,29 @@ export function createEventsService(options: {
   const audit = (username: string, action: string, details: string) => { try { options.audit(username, action, details) } catch (error) { options.report(error) } }
   return {
     draft: async (actor: Actor | undefined, ip: string) => (await options.repository.draft(actor?.id ?? null, ip)).lastID,
-    save: async (id: string, body: Record<string, unknown>, actor?: Actor) => {
+    save: async (id: string, body: Record<string, unknown>, actor?: Actor, saveOptions?: { capabilityKey?: string | undefined }) => {
       const row = await options.repository.row(id)
       if (!row) throw new AppError('Event not found', 'not_found', 404)
-      if (row.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
       if (body.content && !['admin', 'super_admin'].includes(actor?.role || '')) assertVisitorContent(body.content)
       if (!body.type && !body.title && !body.content && body.submit !== true) throw new AppError('No fields to update', 'empty_update', 400)
+      const numericId = Number(id)
+      // The receipt binds the actual request, never a caller-supplied digest.
+      const canonicalDigest = computeCanonicalPayloadDigest(body)
+      const isReplay = async (tx: import('../../database/sqlite.js').SqlExecutor) => {
+        if (body.submit !== true || !Number.isInteger(numericId)) return false
+        const existing = await options.repository.getSubmission(numericId, tx)
+        if (!existing) return false
+        if (existing.capability_key !== (saveOptions?.capabilityKey || '') && !['admin', 'super_admin'].includes(actor?.role || '')) {
+          throw new AppError('草稿凭据不匹配', 'forbidden', 403)
+        }
+        if (existing.digest !== canonicalDigest) throw new AppError('该活动已提交，请勿修改后重复提交', 'conflict', 409)
+        return true
+      }
+      // Staged sources may have been cleaned and moderation may have advanced
+      // the event status. A durable replay must not prepare files or mutate it.
+      if (await isReplay(options.repository.store)) return { id: numericId, message: '保存成功', replayed: true }
+      if (row.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
+      let replayed = false
       await publishAssets(options.publication, [body.content], async () => {
         try { return body.content ? await options.persist(body.content, row.id) : undefined }
         catch (cause) { throw new AppError('活动图片保存失败，请重试', 'event_asset_failed', 500, { cause }) }
@@ -42,17 +79,30 @@ export function createEventsService(options: {
       if (!sets.length) throw new AppError('No fields to update', 'empty_update', 400)
       sets.push('updated_at=CURRENT_TIMESTAMP')
       const save = async (tx: import('../../database/sqlite.js').SqlExecutor) => {
-        const current = await tx.get('SELECT id,status FROM events WHERE id=?', [id])
+        const current = await tx.get<{ id: number; status: string | null }>('SELECT id,status FROM events WHERE id=?', [id])
         if (!current) throw new AppError('Event not found', 'not_found', 404)
         if (current.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
+        if (await isReplay(tx)) { replayed = true; return }
         await tx.run(`UPDATE events SET ${sets.join(',')} WHERE id=?`, [...params, id])
+        if (body.submit === true && Number.isInteger(numericId)) {
+          const receiptPayload = JSON.stringify({ message: '保存成功', id: numericId })
+          await options.repository.createSubmission(
+            numericId,
+            saveOptions?.capabilityKey || '',
+            canonicalDigest,
+            receiptPayload,
+            Date.now(),
+            tx
+          )
+        }
         if (options.enqueue && (body.submit === true || ['published','ongoing'].includes(String(current.status)))) {
           await options.enqueue(body.submit === true ? 'event.pending' : 'event.updated',{ eventId:row.id },actor,tx)
         }
       }
       if (transaction) await save(transaction); else await options.repository.store.transaction(save)
       })
-      if (body.submit) audit(actor ? actor.username : 'Visitor', 'SUBMIT_EVENT', `提交事件审核 EID: ${id}`)
+      if (body.submit && !replayed) audit(actor ? actor.username : 'Visitor', 'SUBMIT_EVENT', `提交事件审核 EID: ${id}`)
+      return { id: Number(id), message: '保存成功', replayed }
     },
     list: async (query: Record<string, unknown>, admin: boolean) => {
       const page = Math.max(1, parseInt(String(query.page), 10) || 1), limit = Math.min(100, Math.max(1, parseInt(String(query.limit), 10) || 20))

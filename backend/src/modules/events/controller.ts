@@ -1,7 +1,15 @@
 import type { Actor } from '../actor.js'
 import { AppError } from '../../errors.js'
 import type { EventsService } from './service.js'
-interface Request { body?: unknown; params: { id: string }; query: Record<string, unknown>; ip: string; user?: Actor }
+interface Request {
+  body?: unknown
+  params: { id: string }
+  query: Record<string, unknown>
+  ip: string
+  user?: Actor
+  headers?: Record<string, string | string[] | undefined>
+  guestDraftProof?: { eid: number; scope: string; ip: string; expires: number }
+}
 interface Response { status(code: number): Response; json(body: unknown): unknown; vary(name: string): void; setHeader(name: string, value: string): void }
 const body = (request: Request) => request.body && typeof request.body === 'object' ? request.body as Record<string, unknown> : {}
 export function createEventsController(service: EventsService, report: (error: unknown) => void) {
@@ -14,7 +22,12 @@ export function createEventsController(service: EventsService, report: (error: u
       try { return res.json({ id: await service.draft(req.user, req.ip), message: '草稿创建成功' }) } catch (error) { return failure(res, error) }
     },
     save: async (req: Request, res: Response) => {
-      try { await service.save(req.params.id, body(req), req.user); return res.json({ message: '保存成功', id: req.params.id }) }
+      try {
+        const proof = req.guestDraftProof
+        const capabilityKey = proof ? `proof:${proof.ip}:${proof.eid}` : (req.user ? `user:${req.user.id}` : `ip:${req.ip}`)
+        const result = await service.save(req.params.id, body(req), req.user, { capabilityKey })
+        return res.json(result)
+      }
       catch (error) { return failure(res, error) }
     },
     list: async (req: Request, res: Response) => { try { return res.json(await service.list(req.query, false)) } catch (error) { return failure(res, error) } },

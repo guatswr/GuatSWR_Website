@@ -1,4 +1,5 @@
 import { durableRecords } from './durable-records'
+import type { DurableRecords } from './durable-records'
 import {
   createCipheriv,
   createDecipheriv,
@@ -49,6 +50,10 @@ export interface BffSessionStore {
   /** Revokes every local session (backend token_version refresh). */
   clear: () => number
   size: () => number
+  close?: () => void
+  sweepBatch?: (batchSize?: number, now?: number) => number
+  onClose?: (callback: () => void) => void
+  onSweep?: (callback: (batchSize: number, now: number) => number) => void
 }
 
 export function createOpaqueSessionId(): string {
@@ -219,20 +224,16 @@ export function createMemorySessionStore(options: MemorySessionStoreOptions = {}
     ? Math.floor(options.maxEntries)
     : 10_000
   const records = options.secret ? durableRecords<BffSessionRecord>('sessions', Buffer.from(options.secret)) : new Map<string, BffSessionRecord>()
-
-  const sweep = (now: number) => {
-    for (const [key, record] of records) {
-      if (record.expiresAt <= now) records.delete(key)
-    }
-  }
+  const closeCallbacks = new Set<() => void>()
+  const sweepCallbacks = new Set<(batchSize: number, now: number) => number>()
 
   const evictOldest = () => {
     let oldestKey: string | undefined
     let oldestCreatedAt = Number.POSITIVE_INFINITY
-    for (const [key, record] of records) {
+    for (const record of records.values()) {
       if (record.createdAt < oldestCreatedAt) {
         oldestCreatedAt = record.createdAt
-        oldestKey = key
+        oldestKey = record.key
       }
     }
     if (oldestKey !== undefined) records.delete(oldestKey)
@@ -249,7 +250,6 @@ export function createMemorySessionStore(options: MemorySessionStoreOptions = {}
       return record
     },
     set(record) {
-      sweep(record.lastSeenAt)
       if (!records.has(record.key) && records.size >= maxEntries) evictOldest()
       records.set(record.key, record)
     },
@@ -257,14 +257,67 @@ export function createMemorySessionStore(options: MemorySessionStoreOptions = {}
       return records.delete(key)
     },
     deleteByUserId(userId) {
-      let removed = 0
+      const keysToDelete: string[] = []
       for (const [key, record] of records) {
         if (record.identity.id === userId) {
-          records.delete(key)
-          removed += 1
+          keysToDelete.push(key)
         }
       }
+      if (keysToDelete.length === 0) return 0
+      const durable = records as Partial<DurableRecords<BffSessionRecord>>
+      if (typeof durable.deleteMany === 'function') {
+        return durable.deleteMany(keysToDelete)
+      }
+      let removed = 0
+      for (const key of keysToDelete) {
+        if (records.delete(key)) removed += 1
+      }
       return removed
+    },
+    sweepBatch(batchSize: number = 100, now: number = Date.now()): number {
+      const limit = typeof batchSize === 'number' && Number.isFinite(batchSize) && batchSize > 0
+        ? Math.floor(batchSize)
+        : 100
+      const currentTime = typeof now === 'number' && Number.isFinite(now) ? now : Date.now()
+      let relatedRemoved = 0
+      for (const callback of sweepCallbacks) relatedRemoved += callback(limit, currentTime)
+      const expiredKeys: string[] = []
+      for (const [key, record] of records) {
+        if (record.expiresAt <= currentTime) {
+          expiredKeys.push(key)
+          if (expiredKeys.length >= limit) break
+        }
+      }
+      if (expiredKeys.length === 0) return relatedRemoved
+      const durable = records as Partial<DurableRecords<BffSessionRecord>>
+      if (typeof durable.deleteMany === 'function') {
+        return relatedRemoved + durable.deleteMany(expiredKeys)
+      }
+      let removed = 0
+      for (const key of expiredKeys) {
+        if (records.delete(key)) removed += 1
+      }
+      return relatedRemoved + removed
+    },
+    close() {
+      for (const cb of closeCallbacks) {
+        try {
+          cb()
+        }
+        catch {
+          // Ignore callback error on shutdown
+        }
+      }
+      closeCallbacks.clear()
+      sweepCallbacks.clear()
+      const durable = records as Partial<DurableRecords<BffSessionRecord>>
+      durable.close?.()
+    },
+    onClose(callback: () => void) {
+      closeCallbacks.add(callback)
+    },
+    onSweep(callback: (batchSize: number, now: number) => number) {
+      sweepCallbacks.add(callback)
     },
     clear() {
       const removed = records.size

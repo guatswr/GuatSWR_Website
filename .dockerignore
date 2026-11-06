@@ -25,3 +25,7 @@ uploads/**
 **/*.tsbuildinfo
 **/__pycache__
 **/*.pyc
+deploy/**/data
+deploy/**/data/**
+deploy/umami/geo/*.mmdb
+deploy/umami/geo/*.tar.gz

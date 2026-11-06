@@ -1,4 +1,5 @@
 import { durableRecords } from './durable-records'
+import type { DurableRecords } from './durable-records'
 import { createHmac, randomBytes } from 'node:crypto'
 
 /**
@@ -108,6 +109,8 @@ export interface GuestDraftStore {
   digest(intent: GuestIntent, payload: unknown): string
   size(): number
   inflight(): number
+  close?: () => void
+  sweepBatch?: (batchSize?: number, nowTime?: number) => number
 }
 
 /** Finite positive integers only; NaN/Infinity/huge options fall back to defaults. */
@@ -163,12 +166,8 @@ export function createGuestDraftStore(
     if (record) submissionsInFlight.delete(`${record.key}:${id}`)
   }
 
-  /** Evicts expired entries first, then oldest, and never leaves the map oversized. */
+  /** Keeps the record count bounded within maxRecords. */
   function enforceRecordBound(): void {
-    const cutoff = now() - ttlMs
-    for (const [recordKey, record] of records) {
-      if (record.updatedAt < cutoff) discardRecord(recordKey)
-    }
     while (records.size >= maxRecords) {
       const oldest = records.keys().next().value
       if (oldest === undefined) break
@@ -206,7 +205,11 @@ export function createGuestDraftStore(
     const { recordKey } = keyFor(intent)
     if (!recordKey) return undefined
     const record = records.get(recordKey)
-    if (!record || record.updatedAt < now() - ttlMs) return undefined
+    if (!record) return undefined
+    if (record.updatedAt < now() - ttlMs) {
+      discardRecord(recordKey)
+      return undefined
+    }
     return record.clientIp === intent.clientIp ? record : undefined
   }
 
@@ -228,7 +231,14 @@ export function createGuestDraftStore(
       // No cookie and no intent key: a fresh opaque id per call, still one per call.
       const fresh = newGuestCookieId()
       const created = await create()
-      put(hashGuestCookieId(key, fresh), { ...emptyRecord(hashGuestCookieId(key, fresh), intent), drafts: [created], lastIssuedAt: now() })
+      const freshKey = hashGuestCookieId(key, fresh)
+      const candidate: GuestDraftRecord = {
+        ...emptyRecord(freshKey, intent),
+        drafts: [created],
+        lastIssuedAt: now(),
+        updatedAt: now(),
+      }
+      put(freshKey, candidate)
       return { cookieId: fresh, id: created, reused: false }
     }
     const pending = inFlight.get(recordKey)
@@ -256,27 +266,32 @@ export function createGuestDraftStore(
       // A foreign, expired or missing record is never reassigned: rotate the cookie.
       const effectiveCookieId = sameOwner ? cookieId ?? newGuestCookieId() : newGuestCookieId()
       const effectiveKey = sameOwner ? recordKey : hashGuestCookieId(key, effectiveCookieId)
-      const record = sameOwner
-        ? (existing as GuestDraftRecord)
-        : emptyRecord(effectiveKey, intent)
-      record.clientIp = intent.clientIp
-      record.updatedAt = now()
-      const reusable = record.drafts.at(-1)
+      const base = sameOwner ? existing! : emptyRecord(effectiveKey, intent)
+      const candidate: GuestDraftRecord = {
+        key: effectiveKey,
+        clientIp: intent.clientIp,
+        drafts: [...base.drafts],
+        submitted: [...base.submitted],
+        receipts: base.receipts.map(r => ({ ...r })),
+        lastIssuedAt: base.lastIssuedAt,
+        updatedAt: now(),
+      }
+      const reusable = candidate.drafts.at(-1)
       if (
         reusable !== undefined &&
-        record.lastIssuedAt > 0 &&
-        now() - record.lastIssuedAt < reuseMs &&
-        !record.submitted.includes(reusable)
+        candidate.lastIssuedAt > 0 &&
+        now() - candidate.lastIssuedAt < reuseMs &&
+        !candidate.submitted.includes(reusable)
       ) {
-        put(effectiveKey, record)
+        put(effectiveKey, candidate)
         return { cookieId: effectiveCookieId, id: reusable, reused: true }
       }
       const created = await create()
-      record.drafts.push(created)
-      while (record.drafts.length > maxDrafts) record.drafts.shift()
-      record.lastIssuedAt = now()
-      record.updatedAt = now()
-      put(effectiveKey, record)
+      candidate.drafts.push(created)
+      while (candidate.drafts.length > maxDrafts) candidate.drafts.shift()
+      candidate.lastIssuedAt = now()
+      candidate.updatedAt = now()
+      put(effectiveKey, candidate)
       return { cookieId: effectiveCookieId, id: created, reused: false }
     })()
     inFlight.set(recordKey, work)
@@ -320,14 +335,22 @@ export function createGuestDraftStore(
       releaseMarker(intent, id)
       const record = read(intent)
       if (!record) return
-      if (!record.submitted.includes(id)) record.submitted.push(id)
-      while (record.submitted.length > maxDrafts) record.submitted.shift()
-      record.receipts = record.receipts.filter((entry) => entry.id !== id)
-      record.receipts.push({ digest, id })
-      while (record.receipts.length > maxReceipts) record.receipts.shift()
-      record.lastIssuedAt = 0
-      record.updatedAt = now()
-      put(record.key, record)
+      const submitted = [...record.submitted]
+      if (!submitted.includes(id)) submitted.push(id)
+      while (submitted.length > maxDrafts) submitted.shift()
+      const receipts = record.receipts.filter((entry) => entry.id !== id).map(r => ({ ...r }))
+      receipts.push({ digest, id })
+      while (receipts.length > maxReceipts) receipts.shift()
+      const candidate: GuestDraftRecord = {
+        key: record.key,
+        clientIp: record.clientIp,
+        drafts: [...record.drafts],
+        submitted,
+        receipts,
+        lastIssuedAt: 0,
+        updatedAt: now(),
+      }
+      put(record.key, candidate)
     },
     abortSubmission(intent, id) {
       releaseMarker(intent, id)
@@ -338,6 +361,39 @@ export function createGuestDraftStore(
     },
     inflight() {
       return inFlight.size
+    },
+    sweepBatch(batchSize: number = 100, nowTime?: number): number {
+      const limit = typeof batchSize === 'number' && Number.isFinite(batchSize) && batchSize > 0
+        ? Math.floor(batchSize)
+        : 100
+      const currentTime = typeof nowTime === 'number' && Number.isFinite(nowTime) ? nowTime : now()
+      const cutoff = currentTime - ttlMs
+      const expiredKeys: string[] = []
+      for (const [recordKey, record] of records) {
+        if (record.updatedAt < cutoff) {
+          expiredKeys.push(recordKey)
+          if (expiredKeys.length >= limit) break
+        }
+      }
+      if (expiredKeys.length === 0) return 0
+      for (const key of expiredKeys) {
+        for (const marker of submissionsInFlight) {
+          if (marker.startsWith(`${key}:`)) submissionsInFlight.delete(marker)
+        }
+      }
+      const durable = records as Partial<DurableRecords<GuestDraftRecord>>
+      if (typeof durable.deleteMany === 'function') {
+        return durable.deleteMany(expiredKeys)
+      }
+      let removed = 0
+      for (const key of expiredKeys) {
+        if (records.delete(key)) removed += 1
+      }
+      return removed
+    },
+    close() {
+      const durable = records as Partial<DurableRecords<GuestDraftRecord>>
+      durable.close?.()
     }
   }
 }

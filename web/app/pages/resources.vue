@@ -9,7 +9,7 @@ import ResourceDirectoryTree from '~/components/ResourceDirectoryTree.vue'
 import SafeMarkdown from '~/components/SafeMarkdown.vue'
 import { usePublicPageSeo } from '~/composables/usePublicPageSeo'
 import { queryValue } from '~/utils/public-query'
-import { mergeResourcePages, resourceMatches, resourceWebUrl, sortResources } from '~/utils/resource-browser'
+import { mergeResourcePages, paginateResources, resourceMatches, resourceWebUrl, sortResources } from '~/utils/resource-browser'
 import type { ResourceSort } from '~/utils/resource-browser'
 import '~/assets/css/resources.css'
 import { vReveal } from '~/utils/motion'
@@ -56,6 +56,7 @@ const viewMode = ref<'list' | 'grid'>('list')
 const extraItems = ref<ResourceItem[]>([])
 const directoryPage = ref(1)
 const searchPage = ref(1)
+const viewPage = ref(1)
 const currentPage = computed(() => isGlobalSearch.value ? searchPage.value : directoryPage.value)
 const morePending = ref(false)
 const moreError = ref(false)
@@ -80,6 +81,7 @@ function invalidateSearch() {
   submittedQuery.value = ''
   selectedKind.value = 'all'
   searchPage.value = 1
+  viewPage.value = 1
   moreError.value = false
   moreExhausted.value = false
 }
@@ -91,6 +93,7 @@ watch(currentPath, () => {
   invalidateSearch()
   extraItems.value = []
   directoryPage.value = 1
+  viewPage.value = 1
   closeDrawer()
 })
 function clearSearch() {
@@ -127,6 +130,11 @@ const kindOptions = computed(() => {
   return [...counts].map(([value, count]) => ({ value, count, label: kindLabels[value] }))
 })
 const filteredItems = computed(() => sortResources(matchingItems.value.filter(item => selectedKind.value === 'all' || item.kind === selectedKind.value), sortBy.value, sortOrder.value))
+const paginationResult = computed(() => paginateResources(filteredItems.value, viewPage.value, 100))
+const displayedItems = computed(() => paginationResult.value.items)
+const totalViewPages = computed(() => paginationResult.value.totalPages)
+const currentViewPage = computed(() => paginationResult.value.currentPage)
+watch(selectedKind, () => { viewPage.value = 1 })
 const mobileTreeOpen = ref(false)
 const totalCount = computed(() => isGlobalSearch.value ? searchTotal.value : dirData.value.total)
 const loadedCount = computed(() => sourceItems.value.length)
@@ -180,6 +188,7 @@ function navigateToPath(path: string) {
   void router.push({ path: '/resources', query: path === '/' ? {} : { path: normalizeResourcePath(path) } })
 }
 function changeSort(field: ResourceSort) {
+  viewPage.value = 1
   if (sortBy.value === field) sortOrder.value = sortOrder.value === 'asc' ? 'desc' : 'asc'
   else { sortBy.value = field; sortOrder.value = field === 'name' ? 'asc' : 'desc' }
 }
@@ -364,7 +373,7 @@ onBeforeUnmount(() => {
                 <th scope="col" class="resources-date-col" :aria-sort="sortBy === 'modified' ? sortOrder === 'asc' ? 'ascending' : 'descending' : 'none'"><button type="button" @click="changeSort('modified')">修改日期 <span v-if="sortBy === 'modified'" aria-hidden="true">{{ sortOrder === 'asc' ? '↑' : '↓' }}</span></button></th>
                 <th scope="col" class="resources-actions-col"><span class="sr-only">操作</span></th>
               </tr></thead>
-              <TransitionGroup name="resources-item" tag="tbody"><tr v-for="(item, index) in filteredItems" :key="item.path" class="resources-entry" :style="{ '--resource-order': Math.min(index, 7) }">
+              <TransitionGroup name="resources-item" tag="tbody"><tr v-for="(item, index) in displayedItems" :key="item.path" class="resources-entry" :style="{ '--resource-order': Math.min(index, 7) }">
                 <td><button type="button" class="resources-item-main" @click="openItem(item)"><span class="resources-item-icon" :data-kind="item.kind"><ResourceFileIcon :name="item.name" :is-dir="item.is_dir" :kind="item.kind" /></span><span class="resources-item-text"><span class="resources-item-title"><span class="resources-item-name">{{ item.name }}</span><span v-if="item.version" class="resources-version-pill">{{ item.version }}</span></span><span v-if="item.summary && !isGlobalSearch" class="resources-item-summary">{{ item.summary }}</span></span></button>
                   <button v-if="isGlobalSearch" type="button" class="resources-location" :aria-label="'打开所在目录 ' + parentResourcePath(item.path)" @click="navigateToPath(parentResourcePath(item.path))">所在目录：{{ parentResourcePath(item.path) }} ↗</button>
                 </td>
@@ -375,7 +384,7 @@ onBeforeUnmount(() => {
             </table>
 
             <TransitionGroup v-else name="resources-item" tag="div" class="resources-grid" role="list" aria-label="目录文件网格">
-              <article v-for="(item, index) in filteredItems" :key="item.path" role="listitem" class="resources-card resources-entry" :style="{ '--resource-order': Math.min(index, 7) }">
+              <article v-for="(item, index) in displayedItems" :key="item.path" role="listitem" class="resources-card resources-entry" :style="{ '--resource-order': Math.min(index, 7) }">
                 <button type="button" class="resources-card-main" @click="openItem(item)"><span class="resources-card-top"><span class="resources-item-icon" :data-kind="item.kind"><ResourceFileIcon :name="item.name" :is-dir="item.is_dir" :kind="item.kind" /></span><span class="resources-file-kind">{{ kindLabels[item.kind] }}</span></span><span class="resources-item-name">{{ item.name }}</span><span class="resources-item-summary">{{ item.summary || (item.is_dir ? '打开文件夹继续浏览' : '查看详情与下载') }}</span></button>
                 <button v-if="isGlobalSearch" type="button" class="resources-location" @click="navigateToPath(parentResourcePath(item.path))">所在目录：{{ parentResourcePath(item.path) }} ↗</button>
                 <div class="resources-card-meta"><span>{{ item.is_dir ? '文件夹' : formatResourceSize(item.size) }}</span><span>{{ item.version || fileDate(item.modified) }}</span></div>
@@ -384,6 +393,11 @@ onBeforeUnmount(() => {
 
             <footer v-if="!busy && !globalSearchIdle && !hasError" class="resources-list-footer">
               <span>{{ activeFolderCount }} 个文件夹 · {{ filteredItems.length - activeFolderCount }} 个文件<span v-if="loadedCount < totalCount"> · 已载入 {{ loadedCount }} / {{ totalCount }} 项</span></span>
+              <nav v-if="totalViewPages > 1" class="resources-pagination" aria-label="文件分页导航">
+                <button type="button" class="resources-action-btn" :disabled="currentViewPage <= 1" aria-label="上一页" @click="viewPage = currentViewPage - 1">上一页</button>
+                <span class="resources-page-indicator" aria-current="page">第 {{ currentViewPage }} / {{ totalViewPages }} 页</span>
+                <button type="button" class="resources-action-btn" :disabled="currentViewPage >= totalViewPages" aria-label="下一页" @click="viewPage = currentViewPage + 1">下一页</button>
+              </nav>
               <button v-if="canLoadMore" type="button" class="resources-action-btn" :disabled="morePending" @click="loadMore">{{ morePending ? '加载中…' : moreError ? '加载失败，重试' : '加载更多' }}</button>
               <span v-else-if="!hasFilters && !isGlobalSearch">目录已展示完毕</span>
               <span v-if="moreExhausted || currentPage >= 100" role="status">此页已到加载上限，请缩小搜索范围或进入子目录。</span>

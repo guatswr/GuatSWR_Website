@@ -293,4 +293,94 @@ describe('guest draft ownership and receipts', () => {
     expect(qa.store.inflight()).toBe(0)
     expect(newGuestCookieId()).not.toBe(newGuestCookieId())
   })
+
+  it('does not mutate existing in-memory draft if subsequent create fails', async () => {
+    const qa = setup()
+    const first = await qa.store.issue(qa.intent(undefined, '203.0.113.5', 'csrf-fail-safe'), qa.create)
+    const recordBefore = qa.store.read(qa.intent(first.cookieId))!
+    const originalDrafts = [...recordBefore.drafts]
+
+    qa.advance(GUEST_DRAFT_REUSE_MS + 10)
+    await expect(
+      qa.store.issue(qa.intent(first.cookieId), async () => {
+        throw new Error('create-rejected')
+      })
+    ).rejects.toThrow('create-rejected')
+
+    const recordAfter = qa.store.read(qa.intent(first.cookieId))!
+    expect(recordAfter.drafts).toEqual(originalDrafts)
+  })
+
+  it('creates immutable copies of drafts and receipts on update without mutating previous objects', async () => {
+    const qa = setup()
+    const first = await qa.store.issue(qa.intent(), qa.create)
+    const recordBefore = qa.store.read(qa.intent(first.cookieId))!
+    const draftsBefore = recordBefore.drafts
+
+    qa.advance(GUEST_DRAFT_REUSE_MS + 10)
+    const second = await qa.store.issue(qa.intent(first.cookieId), qa.create)
+    const recordAfter = qa.store.read(qa.intent(first.cookieId))!
+
+    expect(draftsBefore).not.toBe(recordAfter.drafts)
+    expect(recordAfter.drafts).toContain(second.id)
+
+    const digest = qa.store.digest(qa.intent(first.cookieId), { title: 'Test' })
+    qa.store.beginSubmission(qa.intent(first.cookieId), first.id, digest)
+    const receiptsBefore = recordAfter.receipts
+    qa.store.confirmSubmission(qa.intent(first.cookieId), first.id, digest)
+    const recordFinal = qa.store.read(qa.intent(first.cookieId))!
+
+    expect(receiptsBefore).not.toBe(recordFinal.receipts)
+    expect(recordFinal.submitted).toContain(first.id)
+  })
+})
+
+describe('bounded sweep and clean shutdown (AUTH-03)', () => {
+  it('does not synchronously wipe expired drafts on issue and bounds cleanup in batches', async () => {
+    const qa = setup({ maxRecords: 500, ttlMs: 1000 })
+
+    // Add 150 drafts
+    for (let i = 0; i < 150; i += 1) {
+      await qa.store.issue(qa.intent(`cookie-${i}`), qa.create)
+    }
+    expect(qa.store.size()).toBe(150)
+
+    // Advance time past TTL
+    qa.advance(2000)
+
+    // Issue a new draft: must NOT wipe all 150 expired drafts in a full scan
+    await qa.store.issue(qa.intent('fresh-cookie'), qa.create)
+    // 150 expired + 1 fresh = 151
+    expect(qa.store.size()).toBe(151)
+
+    // sweepBatch removes at most 100 in 1st batch
+    const firstSwept = qa.store.sweepBatch?.(100)
+    expect(firstSwept).toBe(100)
+    expect(qa.store.size()).toBe(51)
+
+    // 2nd batch removes remaining 50
+    const secondSwept = qa.store.sweepBatch?.(100)
+    expect(secondSwept).toBe(50)
+    expect(qa.store.size()).toBe(1)
+
+    // 3rd batch removes 0
+    expect(qa.store.sweepBatch?.(100)).toBe(0)
+  })
+
+  it('rejects expired drafts upon read and discards them', async () => {
+    const qa = setup({ ttlMs: 1000 })
+    const issued = await qa.store.issue(qa.intent(), qa.create)
+    const activeIntent = qa.intent(issued.cookieId)
+    expect(qa.store.read(activeIntent)).toBeDefined()
+
+    qa.advance(2000)
+    expect(qa.store.read(activeIntent)).toBeUndefined()
+    expect(qa.store.size()).toBe(0)
+  })
+
+  it('supports safe idempotent close', () => {
+    const qa = setup()
+    expect(() => qa.store.close?.()).not.toThrow()
+    expect(() => qa.store.close?.()).not.toThrow()
+  })
 })

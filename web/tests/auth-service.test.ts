@@ -381,3 +381,144 @@ describe('store contract', () => {
     expect(store.size()).toBe(0)
   })
 })
+
+describe('AUTH-01 zero-disk-write verification and store invariants', () => {
+  it('calls store.set exactly once on login and zero times across 100 consecutive no-change verifications', async () => {
+    const { store, service } = createHarness({ login: () => LOGIN_OK, me: () => ME_OK })
+    let setCount = 0
+    const originalSet = store.set.bind(store)
+    store.set = (record) => {
+      setCount += 1
+      originalSet(record)
+    }
+
+    const login = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
+    expect(setCount).toBe(1)
+
+    for (let i = 0; i < 100; i++) {
+      const verified = await service.verify(login.sessionId)
+      expect(verified.identityChanged).toBe(false)
+      expect(verified.identity).toEqual(login.user)
+      expect(verified.expiresAt).toBe(login.expiresAt)
+    }
+
+    expect(setCount).toBe(1)
+  })
+
+  it('persists identity updates only when safe user fields actually change', async () => {
+    let currentMe = { id: 1, username: 'admin', role: 'super_admin', avatar: null, twofa_enabled: 1 }
+    const { store, service } = createHarness({
+      login: () => LOGIN_OK,
+      me: () => ({ status: 200, data: currentMe }),
+    })
+    const login = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
+
+    let setCount = 0
+    const originalSet = store.set.bind(store)
+    store.set = (record) => {
+      setCount += 1
+      originalSet(record)
+    }
+
+    let verified = await service.verify(login.sessionId)
+    expect(verified.identityChanged).toBe(false)
+    expect(setCount).toBe(0)
+
+    currentMe = { ...currentMe, avatar: '/uploads/new-avatar.webp' }
+    verified = await service.verify(login.sessionId)
+    expect(verified.identityChanged).toBe(true)
+    expect(verified.identity.avatar).toBe('/uploads/new-avatar.webp')
+    expect(setCount).toBe(1)
+    expect(store.get(hashSessionId(login.sessionId), NOW)?.identity.avatar).toBe('/uploads/new-avatar.webp')
+
+    verified = await service.verify(login.sessionId)
+    expect(verified.identityChanged).toBe(false)
+    expect(setCount).toBe(1)
+
+    currentMe = { ...currentMe, role: 'admin' }
+    verified = await service.verify(login.sessionId)
+    expect(verified.identityChanged).toBe(true)
+    expect(verified.identity.role).toBe('admin')
+    expect(setCount).toBe(2)
+    expect(store.get(hashSessionId(login.sessionId), NOW)?.identity.role).toBe('admin')
+
+    verified = await service.verify(login.sessionId)
+    expect(verified.identityChanged).toBe(false)
+    expect(setCount).toBe(2)
+
+    currentMe = { ...currentMe, username: 'admin-renamed' }
+    verified = await service.verify(login.sessionId)
+    expect(verified.identityChanged).toBe(true)
+    expect(verified.identity.username).toBe('admin-renamed')
+    expect(setCount).toBe(3)
+    expect(store.get(hashSessionId(login.sessionId), NOW)?.identity.username).toBe('admin-renamed')
+  })
+
+  it('does not resurrect or write to session store when revoked during slow requestMe race', async () => {
+    let releaseMe: (() => void) | undefined
+    let meCalls = 0
+    const { store, service } = createHarness({
+      login: () => LOGIN_OK,
+      me: () => {
+        meCalls += 1
+        if (meCalls === 1) return ME_OK
+        return new Promise((resolve) => {
+          releaseMe = () => resolve({
+            status: 200,
+            data: { id: 1, username: 'admin', role: 'admin', avatar: '/changed.png', twofa_enabled: 0 },
+          })
+        })
+      },
+    })
+    const login = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
+
+    let setCount = 0
+    const originalSet = store.set.bind(store)
+    store.set = (record) => {
+      setCount += 1
+      originalSet(record)
+    }
+
+    const pending = service.verify(login.sessionId)
+    await service.logout(login.sessionId)
+    releaseMe?.()
+
+    await expectBffError(pending, 401, 'session_expired')
+    expect(setCount).toBe(0)
+    expect(store.get(hashSessionId(login.sessionId), NOW)).toBeUndefined()
+    expect(store.size()).toBe(0)
+  })
+
+  it('never extends expiresAt during verification across simulated time passage', async () => {
+    const { clock, store, service } = createHarness({ login: () => LOGIN_OK, me: () => ME_OK })
+    const login = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
+    const originalExpiresAt = login.expiresAt
+
+    clock.value = NOW + 600_000
+    const verified1 = await service.verify(login.sessionId)
+    expect(verified1.expiresAt).toBe(originalExpiresAt)
+    expect(store.get(hashSessionId(login.sessionId), clock.value)?.expiresAt).toBe(originalExpiresAt)
+
+    clock.value = originalExpiresAt - 1000
+    const verified2 = await service.verify(login.sessionId)
+    expect(verified2.expiresAt).toBe(originalExpiresAt)
+    expect(store.get(hashSessionId(login.sessionId), clock.value)?.expiresAt).toBe(originalExpiresAt)
+
+    clock.value = originalExpiresAt + 1
+    await expectBffError(service.verify(login.sessionId), 401, 'session_expired')
+  })
+
+  it('fails non-successfully when persistent deletion fails during logout, and refuses further authorization', async () => {
+    const { store, service } = createHarness({ login: () => LOGIN_OK, me: () => ME_OK })
+    const login = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
+
+    const originalDelete = store.delete.bind(store)
+    store.delete = (key: string) => {
+      originalDelete(key)
+      throw new Error('disk-write-failure')
+    }
+
+    await expect(service.logout(login.sessionId)).rejects.toThrow('disk-write-failure')
+    await expectBffError(service.verify(login.sessionId), 401, 'session_expired')
+  })
+})

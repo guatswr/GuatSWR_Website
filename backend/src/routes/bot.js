@@ -12,7 +12,7 @@ module.exports = context => {
   }
   if (context.botPlatform) {
     const { createBotApi } = require(path.join(context.BACKEND_ROOT, 'dist/src/integrations/bot/api'));
-    router.use(createBotApi({ platform: context.botPlatform, store: context.sql.main, publication: context.storage.publication,
+    router.use(createBotApi({ platform: context.botPlatform, store: context.sql.main, publication: context.storage.publication, publicRoot: context.PUBLIC_DIR,
       ...(context.memberSync ? {memberSync:context.memberSync} : {}),
       images: { assetBaseUrl: () => context.env.BOT_PUBLIC_ASSET_BASE_URL || context.env.SITE_URL || 'https://www.guatswr.top',
         siteUrl: () => context.env.SITE_URL || 'https://www.guatswr.top', resolveUploadsPath: context.storage.resolveUploadsPath },

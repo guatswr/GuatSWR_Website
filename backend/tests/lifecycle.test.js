@@ -10,6 +10,8 @@ const migrations = path.resolve(__dirname, '../src/migrations');
 const adoptFixture = async db => {
   // Construct a synthetic pre-v2 legacy fixture, never discard real pending intent.
   await new Promise((resolve,reject)=>db.exec(`
+    DROP TABLE IF EXISTS asset_references; DROP TABLE IF EXISTS event_submissions;
+    DROP INDEX IF EXISTS idx_events_status_created; DROP INDEX IF EXISTS idx_events_type_status_created; DROP INDEX IF EXISTS idx_members_active_sort;
     DROP TABLE activity_revisions; DROP TABLE bot_credential_secrets;
     DROP TRIGGER members_revision_insert; DROP TRIGGER members_revision_update; DROP TRIGGER members_revision_delete;
     DROP TABLE member_profile_tasks; DROP TABLE member_group_memberships; DROP TABLE member_sync_avatars;
@@ -74,7 +76,7 @@ test('two applications have independent real databases, resources and HTTP state
   for (const instance of [a, b]) {
     assert.equal((await get(instance.context.db, 'PRAGMA foreign_keys')).foreign_keys, 1);
     assert.equal((await get(instance.context.logDb, 'PRAGMA journal_mode')).journal_mode, 'wal');
-    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 27);
+    assert.equal((await get(instance.context.db, "SELECT count(*) AS n FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%' AND name != '_guatswr_migrations'" )).n, 29);
     assert.equal((await get(instance.context.logDb, "SELECT count(*) AS n FROM audit_logs")).n, 0);
     assert.equal(instance.context.timers.size, 0);
     const server = await instance.listen(0, '127.0.0.1');

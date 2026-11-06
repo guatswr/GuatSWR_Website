@@ -13,7 +13,8 @@ import {
   projectUpload,
   resolveGuestOperation
 } from '../server/utils/guest-bff'
-import { createGuestDraftStore } from '../server/utils/guest-drafts'
+import { createGuestDraftStore, GUEST_RECORD_TTL_MS } from '../server/utils/guest-drafts'
+import { createMemorySessionStore } from '../server/utils/bff-session'
 import type { BffRuntime } from '../server/utils/bff-auth-context'
 
 /**
@@ -136,6 +137,18 @@ describe('closed operation map', () => {
         clientIp: '203.0.113.5'
       })
     ).rejects.toMatchObject({ statusCode: 400 })
+  })
+
+  it('forwards submissionDigest via x-submission-digest header when specified', async () => {
+    const { impl, calls } = recordingFetch([() => new Response('{"id":27}', { status: 200 })])
+    const upstream = createGuestUpstream({ origin: 'http://127.0.0.1:8080', fetch: impl })
+    await upstream.request({
+      operation: { name: 'save', id: 27 },
+      clientIp: '203.0.113.5',
+      submissionDigest: 'test-digest-abc'
+    })
+    const headers = calls[0]?.init.headers as Record<string, string>
+    expect(headers['x-submission-digest']).toBe('test-digest-abc')
   })
 })
 
@@ -351,6 +364,16 @@ describe('signup rules', () => {
 })
 
 describe('draft store identity', () => {
+  it('includes guest draft expiration in the session maintenance sweep', async () => {
+    const sessionStore = createMemorySessionStore()
+    try {
+      const drafts = guestDraftStore(runtimeShape(undefined, sessionStore), 'http://127.0.0.1:8080')
+      await drafts.issue({ intentKey: 'expiration-test', clientIp: '203.0.113.5' }, async () => 7)
+      expect(drafts.size()).toBe(1)
+      sessionStore.sweepBatch?.(100, Date.now() + GUEST_RECORD_TTL_MS + 1)
+      expect(drafts.size()).toBe(0)
+    } finally { sessionStore.close?.() }
+  })
   it('reuses one store for separate runtime wrappers with stable components', () => {
     const csrfKey = createHmac('sha256', 'stable-secret').digest()
     const sessionStore = { name: 'stable-store' }

@@ -38,6 +38,7 @@ import {
   createGuestDraftStore
 } from './guest-drafts'
 import type { GuestDraftStore, GuestIntent, IssuedDraft } from './guest-drafts'
+import type { BffSessionStore } from './bff-session'
 import { signGuestDraftProof } from './guest-proof'
 
 /**
@@ -244,10 +245,24 @@ export function guestDraftStore(runtime: BffRuntime, origin: string): GuestDraft
     .digest('base64url')
     .slice(0, 22)}`
   const holder = runtime.store as unknown
-  const registry =
-    typeof holder === 'object' && holder !== null
-      ? (storeRegistries.get(holder) ?? new Map<string, GuestDraftStore>())
-      : (fallbackRegistries as Map<string, GuestDraftStore>)
+  const isHolderObject = typeof holder === 'object' && holder !== null
+  let registry: Map<string, GuestDraftStore>
+  if (isHolderObject) {
+    let existingRegistry = storeRegistries.get(holder)
+    if (!existingRegistry) {
+      existingRegistry = new Map<string, GuestDraftStore>()
+      storeRegistries.set(holder, existingRegistry)
+      const bffStore = holder as Partial<BffSessionStore>
+      bffStore.onClose?.(() => {
+        closeGuestDraftStores(holder)
+      })
+      bffStore.onSweep?.((batchSize, now) => sweepGuestDraftStores(holder, batchSize, now))
+    }
+    registry = existingRegistry
+  }
+  else {
+    registry = fallbackRegistries
+  }
   const existing = registry.get(identity)
   if (existing) return existing
   const created = createGuestDraftStore(
@@ -258,10 +273,48 @@ export function guestDraftStore(runtime: BffRuntime, origin: string): GuestDraft
   while (registry.size > MAX_STORE_IDENTITIES) {
     const oldest = registry.keys().next().value
     if (oldest === undefined || oldest === identity) break
+    const evicted = registry.get(oldest)
     registry.delete(oldest)
+    evicted?.close?.()
   }
-  if (typeof holder === 'object' && holder !== null) storeRegistries.set(holder, registry)
   return created
+}
+
+export function closeGuestDraftStores(holder?: object): void {
+  if (holder && typeof holder === 'object') {
+    const registry = storeRegistries.get(holder)
+    if (registry) {
+      for (const store of registry.values()) {
+        store.close?.()
+      }
+      registry.clear()
+      storeRegistries.delete(holder)
+    }
+  }
+  else {
+    for (const store of fallbackRegistries.values()) {
+      store.close?.()
+    }
+    fallbackRegistries.clear()
+  }
+}
+
+export function sweepGuestDraftStores(holder?: object, batchSize: number = 100, now?: number): number {
+  let count = 0
+  if (holder && typeof holder === 'object') {
+    const registry = storeRegistries.get(holder)
+    if (registry) {
+      for (const store of registry.values()) {
+        count += store.sweepBatch?.(batchSize, now) ?? 0
+      }
+    }
+  }
+  else {
+    for (const store of fallbackRegistries.values()) {
+      count += store.sweepBatch?.(batchSize, now) ?? 0
+    }
+  }
+  return count
 }
 
 export interface GuestDraftContext {
@@ -311,6 +364,7 @@ export interface GuestUpstreamRequest {
   /** Exactly one validated address, sent as `X-Forwarded-For`. */
   clientIp: string
   signal?: AbortSignal
+  submissionDigest?: string
 }
 
 export interface GuestUpstreamResponse {
@@ -350,6 +404,7 @@ export function createGuestUpstream(options: GuestUpstreamOptions): GuestUpstrea
       }
       if (options.bridgeSecret) headers['x-bff-bridge'] = options.bridgeSecret
       if (request.bearerToken) headers.authorization = `Bearer ${request.bearerToken}`
+      if (request.submissionDigest) headers['x-submission-digest'] = request.submissionDigest
 
       try {
         if (options.bridgeSecret && ['draft', 'save', 'uploadContent'].includes(request.operation.name)) {

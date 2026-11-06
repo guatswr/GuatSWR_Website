@@ -19,7 +19,11 @@ function readRecord(raw: unknown): Record<string, unknown> {
   return typeof raw === 'object' && raw !== null ? raw as Record<string, unknown> : {}
 }
 
-const runtimeFactory = createBffRuntimeFactory()
+export const runtimeFactory = createBffRuntimeFactory()
+
+export function closeBffRuntime(): void {
+  runtimeFactory.close()
+}
 
 /**
  * Resolve the per-request runtime through the factory. The factory owns the

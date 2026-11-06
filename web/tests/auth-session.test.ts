@@ -25,6 +25,20 @@ function tokenWithExpiry(expSeconds: number): string {
   return `${header}.${payload}.signature`
 }
 
+function recordFor(sessionId: string, expiresAt: number, userId = 1, createdAt = NOW) {
+  return {
+    ...createSessionRecord({
+      sessionId,
+      identity: { id: userId, username: `user${userId}`, role: 'admin' as const, avatar: null },
+      token: tokenWithExpiry(Math.floor(expiresAt / 1000)),
+      upstreamExpiresAt: expiresAt,
+      now: createdAt,
+      tokenKey: TOKEN_KEY,
+    }),
+    createdAt,
+  }
+}
+
 describe('opaque session ids', () => {
   it('generates 256-bit, URL-safe, unpredictable ids', () => {
     const first = createOpaqueSessionId()
@@ -165,20 +179,6 @@ describe('session records', () => {
 })
 
 describe('in-memory session store', () => {
-  function recordFor(sessionId: string, expiresAt: number, userId = 1, createdAt = NOW) {
-    return {
-      ...createSessionRecord({
-        sessionId,
-        identity: { id: userId, username: `user${userId}`, role: 'admin' as const, avatar: null },
-        token: tokenWithExpiry(Math.floor(expiresAt / 1000)),
-        upstreamExpiresAt: expiresAt,
-        now: createdAt,
-        tokenKey: TOKEN_KEY,
-      }),
-      createdAt,
-    }
-  }
-
   it('returns live records, deletes expired ones on read, and supports explicit delete', () => {
     const store = createMemorySessionStore()
     const id = createOpaqueSessionId()
@@ -253,5 +253,94 @@ describe('in-memory session store', () => {
     expect(store.size()).toBe(1)
     expect(store.get(hashSessionId(first), NOW)).toBeUndefined()
     expect(store.get(hashSessionId(second), NOW)?.identity.id).toBe(2)
+  })
+
+  it('does not use lastSeenAt as sliding expiration basis', () => {
+    const store = createMemorySessionStore()
+    const id = createOpaqueSessionId()
+    const key = hashSessionId(id)
+    const initial = recordFor(id, NOW + 1000, 1, NOW)
+    store.set(initial)
+
+    // Even if a record hypothetically has a later lastSeenAt, expiry is strictly bound to expiresAt
+    const updated = { ...initial, lastSeenAt: NOW + 2000 }
+    expect(updated.expiresAt).toBe(NOW + 1000)
+    expect(store.get(key, NOW + 1001)).toBeUndefined()
+  })
+})
+
+describe('bounded sweep and clean shutdown (AUTH-03)', () => {
+  it('does not synchronously wipe 10,000 expired records on set and bounds cleanup in 100-item batches', () => {
+    const store = createMemorySessionStore({ maxEntries: 10_000 })
+    const past = NOW - 1000
+
+    // Populate 10,000 expired records
+    for (let i = 0; i < 10_000; i += 1) {
+      const id = createOpaqueSessionId()
+      store.set(recordFor(id, past, i + 1, past - 1000))
+    }
+    expect(store.size()).toBe(10_000)
+
+    // Inserting an active record must not wipe out the 10,000 expired records synchronously
+    const activeId = createOpaqueSessionId()
+    const start = performance.now()
+    store.set(recordFor(activeId, NOW + 60_000, 999_999, NOW))
+    const duration = performance.now() - start
+
+    // Must be fast (< 200ms) and size remains bounded at maxEntries (10,000)
+    expect(duration).toBeLessThan(200)
+    expect(store.size()).toBe(10_000)
+
+    // sweepBatch removes at most 100 records in a single batch
+    const swept = store.sweepBatch?.(100, NOW)
+    expect(swept).toBe(100)
+    expect(store.size()).toBe(9_900)
+  })
+
+  it('completes eventual cleanup through repeated bounded sweep batches', () => {
+    const store = createMemorySessionStore({ maxEntries: 500 })
+    const past = NOW - 1000
+
+    // Populate 250 expired records
+    for (let i = 0; i < 250; i += 1) {
+      const id = createOpaqueSessionId()
+      store.set(recordFor(id, past, i + 1, past - 1000))
+    }
+    const liveId = createOpaqueSessionId()
+    store.set(recordFor(liveId, NOW + 60_000, 1001, NOW))
+    expect(store.size()).toBe(251)
+
+    // 1st batch removes 100
+    expect(store.sweepBatch?.(100, NOW)).toBe(100)
+    expect(store.size()).toBe(151)
+
+    // 2nd batch removes 100
+    expect(store.sweepBatch?.(100, NOW)).toBe(100)
+    expect(store.size()).toBe(51)
+
+    // 3rd batch removes remaining 50
+    expect(store.sweepBatch?.(100, NOW)).toBe(50)
+    expect(store.size()).toBe(1)
+
+    // Only live record remains
+    expect(store.get(hashSessionId(liveId), NOW)?.identity.id).toBe(1001)
+
+    // 4th batch on clean store removes 0
+    expect(store.sweepBatch?.(100, NOW)).toBe(0)
+  })
+
+  it('supports safe idempotent close and calls registered onClose listeners', () => {
+    const store = createMemorySessionStore()
+    let closedCount = 0
+    store.onClose?.(() => {
+      closedCount += 1
+    })
+
+    store.close?.()
+    expect(closedCount).toBe(1)
+
+    // Idempotent close
+    expect(() => store.close?.()).not.toThrow()
+    expect(() => store.close?.()).not.toThrow()
   })
 })
