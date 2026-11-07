@@ -94,3 +94,4 @@ deploy/umami/geo/*.mmdb*
 deploy/umami/geo/*.json
 deploy/umami/geo/*.lock
 deploy/umami/data/
+deploy/postgres/
