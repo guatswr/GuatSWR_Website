@@ -1,53 +1,11 @@
-import path from 'node:path'
-import fs from 'node:fs/promises'
-import sqlite from 'sqlite3'
-import { resolvePaths } from '../models/db.js'
-import { checkDatabase, inspectSchema, migrateDatabase, type Connection } from './engine.js'
+import { runMigrationCli } from './postgres/cli.js'
 
 async function main() {
-  const [action, ...args] = process.argv.slice(2)
-  const accepted = new Set(['--data-dir', '--main-db', '--audit-db', '--main-fingerprint', '--audit-fingerprint'])
-  const options = new Map<string, string>()
-  for (let index = 0; index < args.length; index += 2) {
-    const key = args[index], value = args[index + 1]
-    if (!key || !value || !accepted.has(key) || options.has(key)) throw new Error('MIGRATION_ARGUMENTS')
-    options.set(key, value)
-  }
-  const data = options.get('--data-dir')
-  if (!data || !path.isAbsolute(data) || !['check', 'inspect', 'initialize', 'adopt', 'upgrade'].includes(action || '')) throw new Error('MIGRATION_ARGUMENTS')
-  if (action === 'adopt' && (!options.has('--main-fingerprint') || !options.has('--audit-fingerprint'))) throw new Error('MIGRATION_ADOPT_FINGERPRINT_REQUIRED')
-  const files = { main: options.get('--main-db') || path.join(data, 'guatswr_web_main.db'), audit: options.get('--audit-db') || path.join(data, 'guatswr_web_logs.db') }
-  if (!path.isAbsolute(files.main) || !path.isAbsolute(files.audit) || path.resolve(files.main) === path.resolve(files.audit)) throw new Error('MIGRATION_DATABASE_PATHS')
-  const stat = async (filename: string) => {
-    try { return await fs.stat(filename, { bigint: true }) } catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error }
-  }
-  const [mainStat, auditStat] = await Promise.all([stat(files.main), stat(files.audit)])
-  if (mainStat && auditStat && mainStat.dev === auditStat.dev && mainStat.ino === auditStat.ino) throw new Error('MIGRATION_DATABASE_PATHS')
-  const directory = path.join(resolvePaths({}).BACKEND_ROOT, 'src/migrations')
-  // Each database commits independently. On failure, check both and retry explicitly.
-  for (const kind of ['main', 'audit'] as const) {
-    const filename = files[kind]
-    const mode = action === 'initialize' ? sqlite.OPEN_READWRITE | sqlite.OPEN_CREATE : ['adopt', 'upgrade'].includes(action || '') ? sqlite.OPEN_READWRITE : sqlite.OPEN_READONLY
-    const db = await new Promise<sqlite.Database>((resolve, reject) => {
-      const connection = new sqlite.Database(filename, mode, error => error ? reject(error) : resolve(connection))
-    })
-    try {
-      await new Promise<void>((resolve, reject) => db.exec('PRAGMA busy_timeout=5000; PRAGMA foreign_keys=ON; PRAGMA trusted_schema=OFF;', error => error ? reject(error) : resolve()))
-      const connection = db as unknown as Connection
-      let result
-      if (action === 'inspect') result = await inspectSchema(connection)
-      else if (action === 'check') result = await checkDatabase(connection, directory, kind)
-      else if (action === 'upgrade') result = await migrateDatabase(connection, directory, kind, { mode: 'upgrade' })
-      else if (action === 'adopt') result = await migrateDatabase(connection, directory, kind, { mode: 'adopt', expectedFingerprint: options.get(`--${kind}-fingerprint`)! })
-      else result = await migrateDatabase(connection, directory, kind, { mode: 'initialize' })
-      console.log(JSON.stringify({ database: kind, action, ...result }))
-    } finally {
-      await new Promise<void>((resolve, reject) => db.close(error => error ? reject(error) : resolve()))
-    }
-  }
+  const result = await runMigrationCli()
+  console.log(JSON.stringify(result))
 }
-if (require.main === module) main().catch((error: unknown) => {
-  const code = error instanceof Error ? error.message : 'MIGRATION_FAILED'
-  console.error(JSON.stringify({ error: /^MIGRATION_[A-Z_]+$/.test(code) ? code : 'MIGRATION_DATABASE_ERROR' }))
+
+if (require.main === module) void main().catch(error => {
+  console.error(JSON.stringify({ error: /^PG_MIGRATION_[A-Z_]+$/.test(error?.message || '') ? error.message : 'PG_MIGRATION_FAILED' }))
   process.exitCode = 1
 })

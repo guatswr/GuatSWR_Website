@@ -10,7 +10,7 @@ export function createLogsRepository(main: SqlExecutor, audit: SqlExecutor) {
       if (username) { from += ` AND ${likeExpression(audit, 'username', params.length + 1)}`; params.push(`%${String(username)}%`) }
       if (action) { from += ` AND ${likeExpression(audit, 'action', params.length + 1)}`; params.push(`%${String(action)}%`) }
       const count = await audit.get<{ count: number }>(`SELECT COUNT(*) AS count ${from}`, params)
-      const rows = await audit.all<LogRow>(`SELECT id,username,action,details,created_at ${from} ORDER BY created_at DESC NULLS LAST LIMIT $${params.length + 1} OFFSET $${params.length + 2}`, [...params, audit.dialect === 'postgres' && limit < 0 ? null : limit, Math.max(0, offset)])
+      const rows = await audit.all<LogRow>(`SELECT id,username,action,details,created_at ${from} ORDER BY created_at DESC NULLS LAST LIMIT $${params.length + 1} OFFSET $${params.length + 2}`, [...params, limit < 0 ? null : limit, Math.max(0, offset)])
       return { total: count?.count || 0, rows: rows.map<LogRow>(row => ({ ...row, created_at: clubTimestamp(row.created_at) })) }
     },
     stats: (limit: number) => audit.all<UsernameRow & { count: number }>(`SELECT username,COUNT(*) AS count FROM audit_logs WHERE action IN ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11) GROUP BY username ORDER BY count DESC LIMIT $12`, [

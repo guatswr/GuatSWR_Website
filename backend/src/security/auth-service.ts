@@ -1,6 +1,6 @@
 import { createRequire } from 'node:module'
 import type { loginSchema, profileSchema, registerSchema } from '@guatswr/shared/backend-v1'
-import type { Row, DatabaseStore, SqlValue } from '../database/contracts.js'
+import type { Row, DatabaseStore, SqlValue, SqlExecutor } from '../database/contracts.js'
 import type { Actor } from '../modules/actor.js'
 import { AppError } from '../errors.js'
 import { comparePassword, createSecondPasswordCodec, hashPassword } from './credentials.js'
@@ -81,7 +81,7 @@ export function createAuthService(options: {
     profile: async (input: Profile, actor: Actor) => {
       requireSecuritySchema(options.ready)
       await publishAssets(options.publication, [input.avatar], async () => ({ avatar: await options.moveAvatar(input.avatar), hash: input.password ? hashPassword(input.password) : undefined }), async ({ avatar, hash }, transaction) => {
-      const save = async (tx: import('../database/sqlite.js').SqlExecutor) => {
+      const save = async (tx: SqlExecutor) => {
         const current = await authorizeSecurityActor(tx, actor)
         const second = await tx.get("SELECT twofa_enabled FROM users WHERE id=$1", [actor.id])
         const sets: string[] = [], params: SqlValue[] = []

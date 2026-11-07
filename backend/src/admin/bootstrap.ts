@@ -10,7 +10,7 @@ export async function bootstrapAdministrator(store: DatabaseStore, username: unk
   // Hash outside the write transaction; never reset credentials or promote an existing user.
   const hash = await bcrypt.hash(password, 10)
   return store.transaction(async tx => {
-    if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
+    await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
     const existing = await tx.get("SELECT role FROM users WHERE username = $1", [username])
     if (existing) {
       if (existing.role === 'super_admin') return 'unchanged' as const

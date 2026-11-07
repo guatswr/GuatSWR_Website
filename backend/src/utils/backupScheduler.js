@@ -1,19 +1,27 @@
 module.exports = (context) => {
   const path = require('node:path');
   const compiled = path.join(context.BACKEND_ROOT, 'dist/src/backup');
-  const { createBackupRunner, BackupError } = require(path.join(compiled, 'runner'));
+  const { BackupError } = require(path.join(compiled, 'runner'));
   const { createBackupScheduler } = require(path.join(compiled, 'scheduler'));
-  const run = createBackupRunner({
-    script: context.backup.FULL_BACKUP_SCRIPT,
-    env: { ...context.env, BACKUP_NODE_BIN: process.execPath, DATA_DIR: context.DATA_DIR, PUBLIC_DIR: context.PUBLIC_DIR, BACKUP_ROOT: context.BACKUP_ROOT, DB_PATH: context.dbPath, LOG_DB_PATH: context.logDbPath },
-    shutdown: context.shutdownSignal, timeoutMs: context.env.BACKUP_TIMEOUT_MS,
-    trackChild: child => context.trackChild(child, { processGroup: true })
+  const service = createBackupScheduler({
+    store: context.sql.main,
+    run: async () => {
+      const { createPostgresBackup } = await import(path.join(context.BACKEND_ROOT, 'scripts/postgres/backup.mjs'));
+      const outputDir = path.join(context.BACKUP_ROOT, 'postgres');
+      await createPostgresBackup({
+        databaseUrl: context.env.POSTGRES_BACKUP_URL || context.env.POSTGRES_URL,
+        uploadsDir: context.PUBLIC_DIR,
+        dataDir: context.DATA_DIR,
+        quarantineDir: path.join(context.DATA_DIR, 'asset-quarantine'),
+        journalDir: path.join(context.DATA_DIR, 'asset-publications'),
+        outputDir,
+        sourceRevision: context.env.SOURCE_REVISION
+      });
+    },
+    enabled: () => context.externalServices,
+    audit: context.addLog,
+    report: error => context.logger.warn('backup.failed', { error })
   });
-  const service = createBackupScheduler({ store: context.sql.main, run: async () => {
-    if (context.databaseDriver === 'postgres') throw new BackupError('BACKUP_DISABLED', 'PostgreSQL backup requires PG-05');
-    await context.backup.ensureBackupDirs(); await run();
-  }, enabled: () => context.externalServices,
-    audit: context.addLog, report: error => context.logger.warn('backup.failed', { error }) });
   const owner = context.env.BACKUP_SCHEDULER_OWNER || 'app';
   if (!['app', 'external'].includes(owner)) throw new BackupError('BACKUP_CONFIGURATION');
   let timer;

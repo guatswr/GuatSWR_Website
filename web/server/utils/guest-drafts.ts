@@ -73,7 +73,7 @@ export interface GuestDraftStoreOptions {
   maxInflight?: number
   namespace?: string
   reuseMs?: number
-  driver?: 'sqlite' | 'postgres' | 'memory'
+  driver?: 'postgres' | 'memory'
   connectionString?: string
   submissionLeaseMs?: number
 }

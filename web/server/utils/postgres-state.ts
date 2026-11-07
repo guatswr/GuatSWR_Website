@@ -10,10 +10,11 @@ export interface LockedRecords<T> {
 interface SharedPool { pool: Pool; refs: number }
 const pools = new Map<string, SharedPool>()
 const unavailable = () => new BffError(503, 'upstream_unavailable', '状态存储暂不可用')
-export function stateDriver(explicit?: string): 'sqlite' | 'postgres' | 'memory' {
-  const driver = explicit ?? process.env.BFF_DATABASE_DRIVER ?? process.env.DATABASE_DRIVER ?? 'sqlite'
-  if (!['sqlite', 'postgres', 'memory'].includes(driver)) throw new BffConfigError('Invalid state database driver')
-  return driver as 'sqlite' | 'postgres' | 'memory'
+export function stateDriver(explicit?: string): 'postgres' | 'memory' {
+  const fallback = (process.env.VITEST || process.env.NODE_ENV === 'test') ? 'memory' : 'postgres'
+  const driver = explicit ?? process.env.BFF_DATABASE_DRIVER ?? process.env.DATABASE_DRIVER ?? fallback
+  if (!['postgres', 'memory'].includes(driver)) throw new BffConfigError('Invalid state database driver')
+  return driver as 'postgres' | 'memory'
 }
 export function postgresStateStore<T>(options: { namespace: string; secret: Buffer; connectionString?: string; maxConnections?: number; maxEntries?: number }) {
   const url = options.connectionString || process.env.BFF_POSTGRES_URL || process.env.POSTGRES_URL

@@ -18,15 +18,13 @@ export async function recordLoginFailure(store: Pick<SqlExecutor, 'get' | 'diale
   return attempt
 }
 export function createSecurityService(store: Pick<SqlExecutor, 'get' | 'dialect'>) {
-  const counter = store.dialect === 'postgres'
-    ? "CASE WHEN site_config.value ~ '^[0-9]+$' AND length(ltrim(site_config.value,'0'))<=16 THEN CAST(site_config.value AS BIGINT) END"
-    : 'CAST(site_config.value AS INTEGER)'
+  const counter = "CASE WHEN site_config.value ~ '^[0-9]+$' AND length(ltrim(site_config.value,'0'))<=16 THEN CAST(site_config.value AS BIGINT) END"
   return {
     readVersion,
     incrementVersion: async () => {
       const row = await store.get(`INSERT INTO site_config (key,value) VALUES ('token_version','1')
         ON CONFLICT(key) DO UPDATE SET value=CAST((${counter})+1 AS TEXT)
-        WHERE site_config.value != '' AND ${store.dialect === 'postgres' ? "site_config.value ~ '^[0-9]+$'" : "site_config.value NOT GLOB '*[^0-9]*'"}
+        WHERE site_config.value != '' AND site_config.value ~ '^[0-9]+$'
           AND (${counter}) BETWEEN 0 AND 9007199254740990
         RETURNING value`)
       if (!row) throw new Error('Invalid token version')

@@ -8,9 +8,9 @@ afterEach(() => vi.unstubAllEnvs())
 
 it('selects the explicit state driver before environment defaults', () => {
   vi.stubEnv('DATABASE_DRIVER', 'postgres')
-  vi.stubEnv('BFF_DATABASE_DRIVER', 'sqlite')
-  expect(stateDriver()).toBe('sqlite')
-  expect(stateDriver('memory')).toBe('memory')
+  vi.stubEnv('BFF_DATABASE_DRIVER', 'memory')
+  expect(stateDriver()).toBe('memory')
+  expect(stateDriver('postgres')).toBe('postgres')
   vi.stubEnv('BFF_DATABASE_DRIVER', 'typo')
   expect(() => stateDriver()).toThrow()
 })

@@ -214,7 +214,7 @@ export function createSessionRecord(input: CreateSessionRecordInput): BffSession
 export interface MemorySessionStoreOptions {
   secret?: string
   maxEntries?: number
-  driver?: 'sqlite' | 'postgres' | 'memory'
+  driver?: 'postgres' | 'memory'
   postgresUrl?: string
 }
 

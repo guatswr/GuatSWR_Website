@@ -176,7 +176,7 @@ export function createAssetPublication(options: {
         }
         const prepared = await assetOperation.run(operation, prepare)
         const result = await options.store.transaction(async tx => {
-          if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57125,1)')
+          await tx.get('SELECT pg_advisory_xact_lock(57125,1)')
           const result = await save(prepared, tx)
           for (const [filename, expected] of observed) await check(filename, expected)
           if (journal.entries.length) {

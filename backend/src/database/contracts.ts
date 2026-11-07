@@ -4,7 +4,7 @@ export type SqlValue = string | number | Buffer | null
 export type Row = Record<string, unknown>
 export interface RunResult { changes: number; lastID: number }
 export interface SqlExecutor {
-  readonly dialect?: 'sqlite' | 'postgres'
+  readonly dialect?: 'postgres'
   readonly schema?: 'main' | 'audit' | 'bff'
   get<T extends Row = Row>(sql: string, params?: readonly SqlValue[]): Promise<T | undefined>
   all<T extends Row = Row>(sql: string, params?: readonly SqlValue[]): Promise<T[]>

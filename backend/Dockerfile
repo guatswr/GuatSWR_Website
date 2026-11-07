@@ -27,7 +27,7 @@ RUN pnpm --filter @guatswr/shared build && pnpm --filter guiair-backend build \
 FROM ${IMAGE_REGISTRY}node:24.16.0-bookworm-slim@sha256:2c87ef9bd3c6a3bd4b472b4bec2ce9d16354b0c574f736c476489d09f560a203 AS runtime
 WORKDIR /app
 RUN apt-get update -o Acquire::Retries=3 \
-    && apt-get install -y --no-install-recommends python3 sqlite3 ca-certificates \
+    && apt-get install -y --no-install-recommends python3 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 ARG SOURCE_REVISION=unknown
 LABEL org.opencontainers.image.revision=$SOURCE_REVISION

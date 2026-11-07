@@ -32,7 +32,7 @@ export function createOnThisDayQuery(db: SqlExecutor, now: () => number = Date.n
     // Only exact authored calendar dates count. SQLite's +0 days normalizes bad
     // dates, so equality excludes corrupt leap days without silently moving them.
     const selections: string[] = [], params: SqlValue[] = []
-    const dated = (alias: string) => `${db.dialect === 'postgres' ? `main.is_calendar_date(${alias}.date)` : `${alias}.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' AND date(${alias}.date,'+0 days')=${alias}.date`}
+    const dated = (alias: string) => `main.is_calendar_date(${alias}.date)
       AND substr(${alias}.date,1,4)>='0001' AND substr(${alias}.date,6,5)=$${params.length + 1} AND substr(${alias}.date,1,4)<$${params.length + 2}`
     if (source !== 'history') {
       selections.push(`SELECT 'articles' AS source,a.id,substr(a.title,1,200) AS title,a.date,

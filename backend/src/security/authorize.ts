@@ -9,7 +9,7 @@ export function requireSecuritySchema(ready: boolean | undefined) {
 export async function authorizeSecurityActor(tx: SqlExecutor, actor: Actor, superOnly = false) {
   // Serialize privilege/version mutations, including the last-superadmin check.
   // This is a security-domain lock, not a global business writer lock.
-  if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
+  await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
   const user = await tx.get(`SELECT id,username,role,auth_version,
     (SELECT value FROM site_config WHERE key='token_version') AS global_version FROM users WHERE id=$1`, [actor.id])
   if (!user || readVersion(user.auth_version) !== readVersion(actor.user_token_version)

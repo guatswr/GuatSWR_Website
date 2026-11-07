@@ -3,7 +3,7 @@ import { lockRow } from '../../database/sql.js'
 import { utcTimestamp } from '../../database/sql.js'
 import { createHash } from 'node:crypto'
 import type { Actor } from '../actor.js'
-import type { SqlValue } from '../../database/contracts.js'
+import type { SqlExecutor, SqlValue } from '../../database/contracts.js'
 import { AppError } from '../../errors.js'
 import { assertVisitorContent } from '../../utils/eventContentStorage.js'
 import { publicEvent } from '../../utils/public-event.js'
@@ -55,7 +55,7 @@ export function createEventsService(options: {
       const numericId = Number(id)
       // The receipt binds the actual request, never a caller-supplied digest.
       const canonicalDigest = computeCanonicalPayloadDigest(body)
-      const isReplay = async (tx: import('../../database/sqlite.js').SqlExecutor) => {
+      const isReplay = async (tx: SqlExecutor) => {
         if (body.submit !== true || !Number.isInteger(numericId)) return false
         const existing = await options.repository.getSubmission(numericId, tx)
         if (!existing) return false
@@ -81,7 +81,7 @@ export function createEventsService(options: {
       if (body.submit === true) { sets.push(`status=$${params.length + 1}`); params.push('pending') }
       if (!sets.length) throw new AppError('No fields to update', 'empty_update', 400)
       sets.push(`updated_at=${utcTimestamp(options.repository.store)}`)
-      const save = async (tx: import('../../database/sqlite.js').SqlExecutor) => {
+      const save = async (tx: SqlExecutor) => {
         const current = await tx.get<{ id: number; status: string | null }>(lockRow(tx, "SELECT id,status FROM events WHERE id=$1"), [idBinding(id)])
         if (!current) throw new AppError('Event not found', 'not_found', 404)
         if (current.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)

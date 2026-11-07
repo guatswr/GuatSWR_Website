@@ -75,7 +75,7 @@ export async function processCleanupJob(store: DatabaseStore, root: string, quar
   if (!actualRelative.startsWith('..') && !path.isAbsolute(actualRelative)) throw new Error('CLEANUP_QUARANTINE_PUBLIC')
   try {
     return await store.transaction(async tx => {
-      if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57125,1)')
+      await tx.get('SELECT pg_advisory_xact_lock(57125,1)')
       if (await paused(quarantine)) return 'pending'
       const job = await tx.get<Job>("SELECT * FROM asset_cleanup_jobs WHERE id=$1", [id])
       if (!job || !['pending', 'quarantined'].includes(job.state)) return job?.state || 'missing'

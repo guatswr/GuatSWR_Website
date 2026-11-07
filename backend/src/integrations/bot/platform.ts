@@ -46,7 +46,7 @@ export function createBotPlatform(options: {
   const enqueue: Enqueue = async (event, input, actor, executor, key = randomUUID()) => {
     if (!(botEventNames as readonly string[]).includes(event)) throw new AppError('未知 Bot 事件', 'bot_event', 400)
     const write = async (tx: SqlExecutor) => {
-      if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(hashtextextended($1,57126))', [key])
+      await tx.get('SELECT pg_advisory_xact_lock(hashtextextended($1,57126))', [key])
       const existing = await tx.get<{ id: string; active: number }>(`SELECT n.id,EXISTS(SELECT 1 FROM bot_deliveries d WHERE d.notification_id=n.id AND d.status!='skipped') AS active
         FROM bot_notifications n WHERE n.dedupe_key=$1`, [key])
       if (existing) return { id: existing.id, status: existing.active ? 'queued' as const : 'skipped' as const }
@@ -86,7 +86,7 @@ export function createBotPlatform(options: {
   }
   const enqueueDirected:DirectedEnqueue=async(tx,input)=>{
     if(!options.syncSchema)throw new AppError('请先升级成员同步数据库','member_sync_migration',503)
-    if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(hashtextextended($1,57126))', [input.key])
+    await tx.get('SELECT pg_advisory_xact_lock(hashtextextended($1,57126))', [input.key])
     const old=await tx.get<{id:string}>("SELECT id FROM bot_notifications WHERE dedupe_key=$1",[input.key])
     if(old)return old.id
     const id=randomUUID(),payload=JSON.stringify({event_id:id,kind:input.kind,event:input.event,data:input.data,source:'guatswr_web',timestamp:new Date(now()).toISOString()})
@@ -141,7 +141,7 @@ export function createBotPlatform(options: {
       const job = await store.transaction(async tx => {
         const row = await tx.get<Delivery>(`SELECT d.*,n.payload,n.event_name FROM bot_deliveries d JOIN bot_notifications n ON n.id=d.notification_id
           WHERE ((d.status='pending' AND d.next_attempt_at<=$1) OR (d.status='sending' AND d.lease_until<=$2))
-          AND d.attempts<5 ORDER BY d.next_attempt_at,d.id LIMIT 1${tx.dialect === 'postgres' ? ' FOR UPDATE OF d SKIP LOCKED' : ''}`, [now(),now()])
+          AND d.attempts<5 ORDER BY d.next_attempt_at,d.id LIMIT 1 FOR UPDATE OF d SKIP LOCKED`, [now(),now()])
         if (!row) return undefined
         await tx.run("UPDATE bot_deliveries SET status='sending',lease_token=$1,lease_until=$2,attempts=attempts+1 WHERE id=$3", [lease,now()+60000,row.id])
         return row
@@ -238,7 +238,7 @@ export function createBotPlatform(options: {
   }
 }
 export async function assertAdmin(tx: SqlExecutor, actor: Actor, superOnly = false) {
-  if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
+  await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
   if (actor.token_version !== undefined || actor.user_token_version !== undefined) await authorizeSecurityActor(tx,actor,superOnly)
   const row = await tx.get("SELECT role,auth_version FROM users WHERE id=$1", [actor.id])
   if (!row || !(superOnly ? ['super_admin'] : ['admin','super_admin']).includes(String(row.role))
