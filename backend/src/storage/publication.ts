@@ -1,9 +1,10 @@
+import { findTable } from '../database/sql.js'
 import fs from 'node:fs/promises'
 import { constants } from 'node:fs'
 import path from 'node:path'
 import { randomUUID } from 'node:crypto'
 import { AsyncLocalStorage } from 'node:async_hooks'
-import type { SqlExecutor, SqliteStore } from '../database/sqlite.js'
+import type { SqlExecutor, DatabaseStore } from '../database/contracts.js'
 import { AppError } from '../errors.js'
 import { isSafePath } from '../utils/storage-boundary.js'
 import { referencesFromValues, isAnyAssetTargetReferenced, rebuildAssetReferences } from './reference-inventory.js'
@@ -23,7 +24,7 @@ const identity = (value: import('node:fs').BigIntStats) => [value.dev, value.ino
 const sameMoved = (actual: string, expected: string) => actual.split(':').slice(0, 4).join(':') === expected.split(':').slice(0, 4).join(':')
 const stat = async (filename: string) => { try { return await fs.lstat(filename, { bigint: true }) } catch (error) { if ((error as NodeJS.ErrnoException).code === 'ENOENT') return undefined; throw error } }
 export function createAssetPublication(options: {
-  store: SqliteStore; filename: string; publicRoot: string; journalRoot: string; quarantine: string
+  store: DatabaseStore; filename: string; publicRoot: string; journalRoot: string; quarantine: string
   signal: AbortSignal; track<T>(work: () => Promise<T>): Promise<T>; report(error: unknown): void
   ready?: boolean
 }): AssetPublication {
@@ -34,9 +35,7 @@ export function createAssetPublication(options: {
     await fs.mkdir(options.journalRoot, { recursive: true, mode: 0o700 })
     if ((await fs.lstat(options.journalRoot)).isSymbolicLink() || inside(await fs.realpath(options.publicRoot), await fs.realpath(options.journalRoot))) throw new Error('ASSET_JOURNAL_PUBLIC')
     try {
-      const hasShadow = await options.store.get<{ name: string }>(
-        "SELECT name FROM sqlite_master WHERE type='table' AND name='asset_references'"
-      )
+      const hasShadow = await findTable(options.store, 'asset_references')
       if (hasShadow) {
         const countRow = await options.store.get<{ count: number }>('SELECT count(*) as count FROM asset_references')
         if (countRow && countRow.count === 0) {
@@ -68,8 +67,8 @@ export function createAssetPublication(options: {
   }
   const enqueue = async (tx: SqlExecutor, targets: CleanupTarget[]) => {
     for (const target of targets) {
-      await tx.run('INSERT OR IGNORE INTO asset_cleanup_jobs(id,url,identity) VALUES(?,?,?)', [target.id, target.url, target.identity])
-      const stored = await tx.get('SELECT url,identity FROM asset_cleanup_jobs WHERE id=?', [target.id])
+      await tx.run("INSERT INTO asset_cleanup_jobs(id,url,identity) VALUES($1,$2,$3) ON CONFLICT(id) DO NOTHING", [target.id, target.url, target.identity])
+      const stored = await tx.get("SELECT url,identity FROM asset_cleanup_jobs WHERE id=$1", [target.id])
       if (!stored || stored.url !== target.url || stored.identity !== target.identity) throw new Error('ASSET_CLEANUP_IDENTITY')
     }
   }
@@ -177,6 +176,7 @@ export function createAssetPublication(options: {
         }
         const prepared = await assetOperation.run(operation, prepare)
         const result = await options.store.transaction(async tx => {
+          if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57125,1)')
           const result = await save(prepared, tx)
           for (const [filename, expected] of observed) await check(filename, expected)
           if (journal.entries.length) {

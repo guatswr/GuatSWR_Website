@@ -1,4 +1,4 @@
-import type { SqlValue } from './sqlite.js'
+import type { SqlValue } from './contracts.js'
 // Preserve sqlite3's native parameter coercion for legacy JSON/query inputs.
 // Objects AND arrays use this fixed text, never JavaScript String(array).
 export function legacyJsonBinding(value: unknown): SqlValue {

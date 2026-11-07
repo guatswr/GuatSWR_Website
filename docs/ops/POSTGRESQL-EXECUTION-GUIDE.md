@@ -1,6 +1,6 @@
 # PostgreSQL 迁移：条件执行手册
 
-日期：2026-11-05。只有 STABILITY-TASKS.md 的 DECISION-01 明确记录用户选择 PostgreSQL，才执行本文。默认全部为 DEFERRED；本文件不是生产切换授权。
+日期：2026-11-05；2026-11-06 用户已明确要求继续推进数据库迁移并保留未提交改动供 review，已授权本地代码迁移及隔离验证。2026-11-08 已修复生产准入 review 问题并以真实隔离演练替换模拟报告；最新结果与边界见 evidence/stability/PRODUCTION-REVIEW-FIXES.md。本文件不是生产切换授权。
 
 ## 固定目标和禁止项
 
@@ -134,3 +134,41 @@
 初始观察期至少 48 小时并覆盖一次完整业务高峰和备份周期；未覆盖则延长。旧库和旧镜像保留至少 7 天且直到用户验收完成，之后另行安排退役。
 
 退出：记录 PostgreSQL 第一笔生产写入时刻，备份和告警真实验证通过，无持续错误/队列增长/超过约定的延迟退化。代码迁移完成但生产未切换时，状态只能是 CODE_VERIFIED，不能写 ACCEPTED。
+
+
+## 2026-11-08 可执行工具入口与上线门槛
+
+先在 Node 24.16 / pnpm 11.25 环境构建 shared 和 backend。连接串由私有环境文件/秘密注入提供，不放 CLI 参数或工单。
+
+冻结源必须来自已校验的完整备份。示例仅用于已经准备好的隔离副本，变量必须由操作人填写；不得对在线 SQLite 目录运行：
+
+```sh
+pnpm prepare:postgres-source --bundle "$SOURCE_FULL_BUNDLE" --sha256 "$SOURCE_BUNDLE_SHA256" --target-dir "$NEW_VERIFIED_COPY"
+pnpm migrate:postgres --source "$NEW_VERIFIED_COPY/data" --target-database "$ISOLATED_NEW_DATABASE" --run-id "$REVIEW_RUN_ID" --dry-run
+pnpm migrate:postgres --source "$NEW_VERIFIED_COPY/data" --target-database "$ISOLATED_NEW_DATABASE" --run-id "$REVIEW_RUN_ID"
+```
+
+私有 POSTGRES_MIGRATION_URL 指向与 --target-database 精确一致的新隔离库；名称必须以 guatswr_migration_/guatswr_restore_ 等认可前缀开头（或 _test 结尾），不允许任意生产库名。dry-run 不初始化、不写数据；成功后也要使用全量校验结果和资源报告决定是否进入下一步。
+
+部署镜像内的原生备份入口：
+
+```sh
+node /app/scripts/postgres/cli.mjs create --tag "$BACKUP_TAG" --output-dir /app/backups/postgres
+node /app/scripts/postgres/cli.mjs verify --bundle "$PRIVATE_NATIVE_BUNDLE"
+node /app/scripts/postgres/cli.mjs restore --bundle "$PRIVATE_NATIVE_BUNDLE" --target-database "$ISOLATED_NEW_DATABASE" --target-dir "$NEW_RECOVERY_ROOT" --runtime-role guatswr_app
+```
+
+create 使用私有 POSTGRES_BACKUP_URL，restore 使用私有 POSTGRES_RESTORE_URL。备份账号需要 CONNECT、三个 schema 的 USAGE、全部表和序列的 SELECT（包括 bff.records 和 schema ledger）；不授予写入/DDL/角色管理。普通运行账号的 sequence USAGE 不足以 pg_dump，必须单独配置备份账号并做一次实际演练。恢复账号仅用于隔离新库的 DDL，应用不使用它。
+
+恢复后的路径为 NEW_RECOVERY_ROOT/data（DATA_DIR）、该目录的 public（PUBLIC_DIR）、asset-quarantine 和 asset-publications。候选失败时不切流量，保留诊断并新建空目标重试；数据库与目录发布不是跨资源事务。
+
+上线前必须记录并核对：
+
+- 审核后的源码与镜像 digest、模式校验和、Node/PG/client 版本、角色及 TLS、真实持久卷挂载。当前未提交镜像只用于 review。
+- 暂停所有写入口和定时任务；停止新访客草稿发行，排空在途及迁移前未完成访客草稿。SQLite BFF cookie/草稿状态不会自动导入 PG；切换需明确使旧状态失效，不能让用户继续向旧状态写入。
+- 生产数据规模的全链路耗时、资源与数据库磁盘峰值、维护窗口及停止条件。合成数据报告不用于容量承诺。
+- 单一宿主调度 owner；实际 timer 触发、GPG 加密、异地接收校验、远端取回解密、空实例恢复并启动网站、通知/告警真实到达。仅 mock SSH 或 pg_restore 返回 0 不构成验收。
+- PG 本地包与异地包的磁盘预算和保留规则；只有经过独立恢复验证的点可授权删除旧点。逻辑定时备份 RPO 受间隔限制，未实现 PITR。
+- 在放写前可回到冻结 SQLite；记录第一笔 PG 生产写入后，禁止直接切回旧 SQLite，走 PG 恢复/前向修复。至少覆盖一次业务高峰和完整备份周期。
+
+当前不 commit、不 push、不切生产流量，PG-07 仍等待 review 和单独部署授权。

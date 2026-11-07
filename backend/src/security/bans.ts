@@ -1,4 +1,4 @@
-import type { Row, SqliteStore } from '../database/sqlite.js'
+import type { Row, DatabaseStore } from '../database/contracts.js'
 import type { Actor } from '../modules/actor.js'
 import { AppError } from '../errors.js'
 import { authorizeSecurityActor, requireSecuritySchema } from './authorize.js'
@@ -75,7 +75,7 @@ export class BoundedBanCache {
 }
 
 export function createBanService(options: {
-  store: SqliteStore
+  store: DatabaseStore
   ready: boolean
   committed(): void
   report(error: unknown): void
@@ -89,7 +89,7 @@ export function createBanService(options: {
   const cleanup = async (now = Date.now()) => {
     cacheGeneration++
     cache.clear()
-    return options.store.run('DELETE FROM banned_ips WHERE expires_at IS NOT NULL AND expires_at<=?', [now])
+    return options.store.run("DELETE FROM banned_ips WHERE expires_at IS NOT NULL AND expires_at<=$1", [now])
   }
 
   return {
@@ -97,8 +97,8 @@ export function createBanService(options: {
     cleanup,
     list: async (now = Date.now()) => {
       cache.cleanupExpired(now)
-      await options.store.run('DELETE FROM banned_ips WHERE expires_at IS NOT NULL AND expires_at<=?', [now]).catch(options.report)
-      return options.store.all('SELECT * FROM banned_ips ORDER BY created_at DESC')
+      await options.store.run("DELETE FROM banned_ips WHERE expires_at IS NOT NULL AND expires_at<=$1", [now]).catch(options.report)
+      return options.store.all('SELECT * FROM banned_ips ORDER BY created_at DESC NULLS LAST')
     },
     blocked: async (ip: string, now = Date.now()) => {
       const cached = cache.get(ip, now)
@@ -111,7 +111,7 @@ export function createBanService(options: {
       let row: (Row & { ip: string; reason: string | null; expires_at: number | null }) | undefined
       try {
         row = await options.store.get<Row & { ip: string; reason: string | null; expires_at: number | null }>(
-          'SELECT ip,reason,expires_at FROM banned_ips WHERE ip=?',
+          "SELECT ip,reason,expires_at FROM banned_ips WHERE ip=$1",
           [ip]
         )
       } catch (error) {
@@ -131,7 +131,7 @@ export function createBanService(options: {
 
       const expiresAt = row.expires_at !== null && row.expires_at !== undefined ? Number(row.expires_at) : null
       if (expiresAt !== null && expiresAt <= now) {
-        await options.store.run('DELETE FROM banned_ips WHERE ip=? AND expires_at IS NOT NULL AND expires_at<=?', [ip, now]).catch(options.report)
+        await options.store.run("DELETE FROM banned_ips WHERE ip=$1 AND expires_at IS NOT NULL AND expires_at<=$2", [ip, now]).catch(options.report)
         cache.delete(ip)
         return undefined
       }
@@ -155,7 +155,7 @@ export function createBanService(options: {
       await options.store.transaction(async tx => {
         const principal = actor ? await authorizeSecurityActor(tx, actor, true) : undefined
         const username = principal ? String(principal.username || 'System') : operator
-        await tx.run('INSERT OR REPLACE INTO banned_ips(ip,reason,created_at,expires_at,created_by) VALUES(?,?,?,?,?)', [ip, reason, Date.now(), expires, username])
+        await tx.run("INSERT INTO banned_ips(ip,reason,created_at,expires_at,created_by) VALUES($1,$2,$3,$4,$5) ON CONFLICT(ip) DO UPDATE SET reason=excluded.reason,created_at=excluded.created_at,expires_at=excluded.expires_at,created_by=excluded.created_by", [ip, reason, Date.now(), expires, username])
         await enqueueSecurityAudit(tx, username, 'BAN_IP', `封禁IP ${ip}${reason ? ` (${reason})` : ''}${until}`)
       })
       cacheGeneration++
@@ -166,7 +166,7 @@ export function createBanService(options: {
       requireSecuritySchema(options.ready)
       await options.store.transaction(async tx => {
         const principal = actor ? await authorizeSecurityActor(tx, actor, true) : undefined
-        await tx.run('DELETE FROM banned_ips WHERE ip=?', [ip])
+        await tx.run("DELETE FROM banned_ips WHERE ip=$1", [ip])
         await enqueueSecurityAudit(tx, principal ? String(principal.username || 'System') : operator, 'UNBAN_IP', `解封IP ${ip}`)
       })
       cacheGeneration++

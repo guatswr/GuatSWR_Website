@@ -21,8 +21,8 @@ function readRecord(raw: unknown): Record<string, unknown> {
 
 export const runtimeFactory = createBffRuntimeFactory()
 
-export function closeBffRuntime(): void {
-  runtimeFactory.close()
+export function closeBffRuntime(): Promise<void> | void {
+  return runtimeFactory.close()
 }
 
 /**

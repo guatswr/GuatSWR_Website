@@ -8,7 +8,7 @@ export default bffProtectedHandler(async (event) => {
   const id = parseAdminId(getRouterParam(event, 'id'))
   const result = await adminResetUserPassword(session.admin, id, body)
   // The frozen backend does not bump token_version on a forced reset.
-  session.runtime.auth.revokeForUser(id)
+  await session.runtime.auth.revokeForUser(id)
   if (id === session.identity.id) {
     await clearCookieSession(event, session.runtime)
     clearCsrfCookie(event, session.runtime)

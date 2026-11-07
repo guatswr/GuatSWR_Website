@@ -21,6 +21,7 @@ function installQueryOnly() {
   };
 }
 async function createReadOnlyApplication(options) {
+  if ((options?.env?.DATABASE_DRIVER || process.env.DATABASE_DRIVER) === 'postgres') throw new Error('SQLite read-only launcher does not protect PostgreSQL');
   installQueryOnly();
   const instance = await require('../dist/src/app.js').createApplication({ ...options, backgroundTasks: false, externalServices: false });
   const dispatch = instance.app.handle.bind(instance.app);

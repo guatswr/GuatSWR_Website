@@ -25,7 +25,7 @@ it('preserves settlement status compatibility, shallow merge, malformed content 
   expect((await f.http.post('/api/event/999/set_result').set(auth).send({ results: null })).body).toEqual({ message: 'results must be an array' })
   expect((await f.http.post('/api/event/999/set_result').set(auth).send({ results: [] })).status).toBe(404)
   expect((await f.http.post('/api/event/2/set_result').set(auth).send({ results: [] })).status).toBe(400)
-  await f.context.sql.main.run('UPDATE events SET content=? WHERE id=1', ['malformed json'])
+  await f.context.sql.main.run("UPDATE events SET content=$1 WHERE id=1", ['malformed json'])
   expect((await settle({ payload: ['old-array-value'] })).status).toBe(200)
   row = await get(f.db, 'SELECT content,status FROM events WHERE id=1')
   expect(JSON.parse(row.content)).toEqual({ 0: 'old-array-value' })
@@ -36,7 +36,7 @@ it('preserves all eight by eight status transitions, including restoring deleted
   const f = await fixture(), auth = { Authorization: `Bearer ${token(2, 'admin')}` }
   const states = ['draft','pending','published','ongoing','ended','settled','rejected','deleted']
   for (const from of states) for (const to of states) {
-    await f.context.sql.main.run('UPDATE events SET status=? WHERE id=1', [from])
+    await f.context.sql.main.run("UPDATE events SET status=$1 WHERE id=1", [from])
     const response = await f.http.post('/api/event/1/status').set(auth).send({ status: ` ${to} ` })
     expect(response.body).toEqual({ message: '状态已更新' })
     expect((await get(f.db, 'SELECT status FROM events WHERE id=1')).status).toBe(to)
@@ -48,7 +48,7 @@ it('keeps approve/reject/delete broad source states and legacy review audit and 
   const f = await fixture(), auth = { Authorization: `Bearer ${token(2, 'admin')}` }
   for (const state of ['draft','pending','published','ongoing','ended','settled','rejected','deleted']) {
     for (const [action, target] of [['approve','published'],['reject','rejected'],['delete','deleted']]) {
-      await f.context.sql.main.run('UPDATE events SET status=? WHERE id=1', [state])
+      await f.context.sql.main.run("UPDATE events SET status=$1 WHERE id=1", [state])
       expect((await f.http.post(`/api/event/1/${action}`).set(auth).send({})).status).toBe(200)
       expect((await get(f.db, 'SELECT status FROM events WHERE id=1')).status).toBe(target)
     }
@@ -57,7 +57,7 @@ it('keeps approve/reject/delete broad source states and legacy review audit and 
     const response = await f.http.post('/api/admin/events/001/review').set(auth).send({ action })
     expect(response.body).toEqual({ message: `操作成功，事件已${action === 'approve' ? '发布' : '驳回'}` })
     expect((await get(f.db, 'SELECT status FROM events WHERE id=1')).status).toBe(target)
-    await expect.poll(() => get(f.logDb, 'SELECT details FROM audit_logs WHERE action=? ORDER BY id DESC LIMIT 1', ['REVIEW_EVENT'])).toEqual({ details: `审核事件 EID: 001 -> ${target}` })
+    await expect.poll(() => get(f.logDb, "SELECT details FROM audit_logs WHERE action=$1 ORDER BY id DESC LIMIT 1", ['REVIEW_EVENT'])).toEqual({ details: `审核事件 EID: 001 -> ${target}` })
   }
   expect((await f.http.post('/api/admin/events/not-an-id/review').set(auth).send({ action: 'approve' })).status).toBe(404)
   expect((await f.http.post('/api/event/not-an-id/approve').set(auth).send({})).status).toBe(400)

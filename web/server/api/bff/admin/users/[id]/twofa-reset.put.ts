@@ -7,7 +7,7 @@ export default bffProtectedHandler(async (event) => {
   await requireBffBodylessMutation(event, session.runtime)
   const id = parseAdminId(getRouterParam(event, 'id'))
   const result = await adminResetUserTwofa(session.admin, id)
-  session.runtime.auth.revokeForUser(id)
+  await session.runtime.auth.revokeForUser(id)
   if (id === session.identity.id) {
     await clearCookieSession(event, session.runtime)
     clearCsrfCookie(event, session.runtime)

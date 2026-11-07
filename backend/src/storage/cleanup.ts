@@ -1,8 +1,9 @@
+import { utcTimestamp } from '../database/sql.js'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { randomUUID } from 'node:crypto'
 import type { BigIntStats } from 'node:fs'
-import type { Row, SqlExecutor, SqliteStore } from '../database/sqlite.js'
+import type { Row, SqlExecutor, DatabaseStore } from '../database/contracts.js'
 import { assetReferences, localAssetPath, referencesFromValues } from './reference-inventory.js'
 import { isSafePath } from '../utils/storage-boundary.js'
 
@@ -60,10 +61,10 @@ export async function captureCleanupTargets(root: string, values: unknown[], dir
   return targets
 }
 export async function enqueueCleanup(tx: SqlExecutor, targets: CleanupTarget[]) {
-  for (const target of targets) await tx.run('INSERT INTO asset_cleanup_jobs(id,url,identity) VALUES(?,?,?)', [target.id, target.url, target.identity])
+  for (const target of targets) await tx.run("INSERT INTO asset_cleanup_jobs(id,url,identity) VALUES($1,$2,$3)", [target.id, target.url, target.identity])
 }
 
-export async function processCleanupJob(store: SqliteStore, root: string, quarantine: string, id: string) {
+export async function processCleanupJob(store: DatabaseStore, root: string, quarantine: string, id: string) {
   if (!path.isAbsolute(root) || !path.isAbsolute(quarantine) || !/^[a-f0-9-]{36}$/.test(id)) throw new Error('CLEANUP_ARGUMENTS')
   const relative = path.relative(root, quarantine)
   if (!relative.startsWith('..') && !path.isAbsolute(relative)) throw new Error('CLEANUP_QUARANTINE_PUBLIC')
@@ -74,8 +75,9 @@ export async function processCleanupJob(store: SqliteStore, root: string, quaran
   if (!actualRelative.startsWith('..') && !path.isAbsolute(actualRelative)) throw new Error('CLEANUP_QUARANTINE_PUBLIC')
   try {
     return await store.transaction(async tx => {
+      if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57125,1)')
       if (await paused(quarantine)) return 'pending'
-      const job = await tx.get<Job>('SELECT * FROM asset_cleanup_jobs WHERE id=?', [id])
+      const job = await tx.get<Job>("SELECT * FROM asset_cleanup_jobs WHERE id=$1", [id])
       if (!job || !['pending', 'quarantined'].includes(job.state)) return job?.state || 'missing'
       const filename = localAssetPath(root, job.url)
       if (!filename) throw new Error('CLEANUP_PATH')
@@ -107,7 +109,7 @@ export async function processCleanupJob(store: SqliteStore, root: string, quaran
           state = 'obsolete'
         } else state = 'quarantined'
       }
-      await tx.run('UPDATE asset_cleanup_jobs SET state=?,attempts=attempts+1,last_error=NULL,updated_at=CURRENT_TIMESTAMP WHERE id=?', [state, id])
+      await tx.run(`UPDATE asset_cleanup_jobs SET state=$1,attempts=attempts+1,last_error=NULL,updated_at=${utcTimestamp(tx)} WHERE id=$2`, [state, id])
       return state
     })
   } catch (error) {
@@ -115,15 +117,15 @@ export async function processCleanupJob(store: SqliteStore, root: string, quaran
     // reconciles the deterministic quarantine path; no public file is unlinked.
     const code = (error as NodeJS.ErrnoException).code
     const category = code === 'EXDEV' ? 'cross_device' : code === 'EACCES' || code === 'EPERM' ? 'permission' : 'cleanup_failed'
-    await store.run('UPDATE asset_cleanup_jobs SET attempts=attempts+1,last_error=?,updated_at=CURRENT_TIMESTAMP WHERE id=?', [category, id]).catch(() => {})
+    await store.run(`UPDATE asset_cleanup_jobs SET attempts=attempts+1,last_error=$1,updated_at=${utcTimestamp(store)} WHERE id=$2`, [category, id]).catch(() => {})
     throw new Error('CLEANUP_RETRY_REQUIRED', { cause: error })
   }
 }
 
-export async function runCleanupBatch(store: SqliteStore, root: string, quarantine: string, limit = 20, signal?: AbortSignal) {
+export async function runCleanupBatch(store: DatabaseStore, root: string, quarantine: string, limit = 20, signal?: AbortSignal) {
   if (!Number.isInteger(limit) || limit < 1 || limit > 1000) throw new Error('CLEANUP_LIMIT')
   if (await paused(quarantine)) return { processed: 0, failed: 0 }
-  const jobs = await store.all<Job>("SELECT * FROM asset_cleanup_jobs WHERE state='pending' AND attempts<10 ORDER BY updated_at,id LIMIT ?", [limit])
+  const jobs = await store.all<Job>("SELECT * FROM asset_cleanup_jobs WHERE state='pending' AND attempts<10 ORDER BY updated_at,id LIMIT $1", [limit])
   const result = { processed: 0, failed: 0 }
   for (const job of jobs) {
     if (signal?.aborted) break

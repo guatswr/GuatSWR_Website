@@ -1,6 +1,6 @@
 import path from 'node:path'
 import type { BackendV1Activity } from '@guatswr/shared/backend-v1'
-import type { Row } from '../../database/sqlite.js'
+import type { Row } from '../../database/contracts.js'
 import { AppError } from '../../errors.js'
 import { positiveId } from '../../utils/storage-boundary.js'
 import type { Actor } from '../actor.js'

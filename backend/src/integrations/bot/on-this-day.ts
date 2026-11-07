@@ -1,4 +1,4 @@
-import type { Row, SqlExecutor, SqlValue } from '../../database/sqlite.js'
+import type { Row, SqlExecutor, SqlValue } from '../../database/contracts.js'
 import { AppError } from '../../errors.js'
 import { BOT_IMAGE_SOURCE_LIMIT, createBotImageProjection, type BotImageOptions } from './images.js'
 
@@ -31,10 +31,9 @@ export function createOnThisDayQuery(db: SqlExecutor, now: () => number = Date.n
       : query.source === 'all' || query.source === 'articles' || query.source === 'history' ? query.source : invalid()
     // Only exact authored calendar dates count. SQLite's +0 days normalizes bad
     // dates, so equality excludes corrupt leap days without silently moving them.
-    const dated = (alias: string) => `${alias}.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]'
-      AND substr(${alias}.date,1,4)>='0001' AND substr(${alias}.date,6,5)=? AND substr(${alias}.date,1,4)<?
-      AND date(${alias}.date,'+0 days')=${alias}.date`
     const selections: string[] = [], params: SqlValue[] = []
+    const dated = (alias: string) => `${db.dialect === 'postgres' ? `main.is_calendar_date(${alias}.date)` : `${alias}.date GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9]' AND date(${alias}.date,'+0 days')=${alias}.date`}
+      AND substr(${alias}.date,1,4)>='0001' AND substr(${alias}.date,6,5)=$${params.length + 1} AND substr(${alias}.date,1,4)<$${params.length + 2}`
     if (source !== 'history') {
       selections.push(`SELECT 'articles' AS source,a.id,substr(a.title,1,200) AS title,a.date,
         substr(a.description,1,500) AS description,a.cover_image AS image,a.tag
@@ -50,7 +49,7 @@ export function createOnThisDayQuery(db: SqlExecutor, now: () => number = Date.n
     // One statement gives count and page the same SQLite read snapshot. The
     // LEFT JOIN retains the total even when a requested page has no items.
     const rows = await db.all<Match>(`WITH matches AS (${selections.join(' UNION ALL ')}),
-      paged AS (SELECT * FROM matches ORDER BY date DESC,source ASC,id ASC LIMIT ? OFFSET ?),
+      paged AS (SELECT * FROM matches ORDER BY date DESC NULLS LAST,source ASC,id ASC LIMIT $${params.length + 1} OFFSET $${params.length + 2}),
       totals AS (SELECT COUNT(*) AS total FROM matches)
       SELECT totals.total,paged.*,substr(h.description,1,${BOT_IMAGE_SOURCE_LIMIT}) AS image_description,
         CASE WHEN length(h.description)>${BOT_IMAGE_SOURCE_LIMIT} THEN 1 ELSE 0 END AS source_truncated

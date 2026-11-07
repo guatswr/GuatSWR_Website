@@ -20,6 +20,7 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const origin=`http://127.0.0.1:${port}`
  let logs=''
  const spawnBff=()=>spawn(process.execPath,[entry],{cwd:path.dirname(entry),env:{...process.env,
+   BFF_DATABASE_DRIVER:f.context.databaseDriver || 'sqlite',BFF_POSTGRES_URL:f.context.env.POSTGRES_URL || '',
    NODE_ENV:'test',NITRO_HOST:'127.0.0.1',HOST:'127.0.0.1',PORT:String(port),NITRO_PORT:String(port),
    NUXT_API_BASE:f.origin,NUXT_BFF_BRIDGE_SECRET:f.context.env.BFF_BRIDGE_SECRET,NUXT_SESSION_PASSWORD:'isolated-bff-session-key-at-least-32-characters',
    NUXT_BFF_AUTH_ALLOWED_ORIGINS:JSON.stringify([origin]),NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS:'[]',
@@ -81,7 +82,7 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const historyCreated = await call('/api/bff/admin/history', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': login.data.csrfToken }, body: JSON.stringify({ date: '2026-10-23', title: 'BFF history ID regression' }) })
  expect(historyCreated.response.status, JSON.stringify(historyCreated.data)).toBe(200)
  expect(historyCreated.data.id).toEqual(expect.any(Number))
- expect(await get(f.db, 'SELECT id FROM history WHERE title=?', ['BFF history ID regression'])).toEqual({ id: historyCreated.data.id })
+ expect(await get(f.db, "SELECT id FROM history WHERE title=$1", ['BFF history ID regression'])).toEqual({ id: historyCreated.data.id })
 
  expect((await call('/api/members')).data).toHaveLength(1)
  const memberCreated = await call('/api/bff/admin/members', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': login.data.csrfToken }, body: JSON.stringify({ name: 'BFF member cache regression', role: 'member', tags: ['tag', 'tag'] }) })
@@ -106,12 +107,12 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const signupRead = await call('/api/bff/guest/events/1/signup', {}, a.jar)
  expect(JSON.stringify(signupRead.data)).toContain('real BFF signup')
  expect(JSON.stringify(signupRead.data)).not.toContain('visitor_ip')
- expect((await get(f.db, 'SELECT common_id FROM event_participants WHERE visitor_ip=?', ['127.0.0.1'])).common_id).toBe('real BFF signup')
+ expect((await get(f.db, "SELECT common_id FROM event_participants WHERE visitor_ip=$1", ['127.0.0.1'])).common_id).toBe('real BFF signup')
  const cancelled = await call('/api/bff/guest/events/1/signup', { method: 'DELETE', headers: signupHeaders }, a.jar)
  expect(cancelled.response.status, JSON.stringify(cancelled.data)).toBe(200)
- expect(await get(f.db, 'SELECT id FROM event_participants WHERE visitor_ip=?', ['127.0.0.1'])).toBeUndefined()
+ expect(await get(f.db, "SELECT id FROM event_participants WHERE visitor_ip=$1", ['127.0.0.1'])).toBeUndefined()
  expect(a.id).not.toBe(b.id)
- expect((await get(f.db,'SELECT visitor_ip FROM events WHERE id=?',[a.id])).visitor_ip).toBe('127.0.0.1')
+ expect((await get(f.db,"SELECT visitor_ip FROM events WHERE id=$1",[a.id])).visitor_ip).toBe('127.0.0.1')
  const uploadBody = new FormData()
  uploadBody.append('eid', String(a.id))
  uploadBody.append('file', new Blob([png], { type: 'image/png' }), 'guest-proof.png')
@@ -122,17 +123,17 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const body=JSON.stringify({type:'STG',title:'guest bridge integration',content:{copy:'fixture',rules:'fixture rules'},submit:true})
  const submit=(visitor,id)=>call(`/api/bff/guest/events/${id}`,{method:'PUT',headers:{origin,'content-type':'application/json','x-csrf-token':visitor.csrf},body},visitor.jar)
  expect((await submit(b,a.id)).response.status).toBe(404)
- expect((await get(f.db,'SELECT title FROM events WHERE id=?',[a.id])).title).toBeNull()
+ expect((await get(f.db,"SELECT title FROM events WHERE id=$1",[a.id])).title).toBeNull()
  const saved=await submit(a,a.id)
  expect(saved.response.status,JSON.stringify(saved.data)).toBe(200)
- expect((await get(f.db,'SELECT status FROM events WHERE id=?',[a.id])).status).toBe('pending')
+ expect((await get(f.db,"SELECT status FROM events WHERE id=$1",[a.id])).status).toBe('pending')
  expect((await submit(a,a.id)).response.status).toBe(200)
  const stateHeaders = { origin, 'content-type': 'application/json', 'x-csrf-token': login.data.csrfToken }
  expect((await call(`/api/bff/admin/events/${a.id}/approve`, { method: 'POST', headers: stateHeaders, body: '{}' })).response.status).toBe(200)
  expect((await call(`/api/bff/admin/events/${a.id}/results`, { method: 'PUT', headers: stateHeaders, body: JSON.stringify({ results: [{ rank: 1, id: 'fixture', avatar: '/uploads/avatar.png' }] }) })).response.status).toBe(200)
  const settled = await call(`/api/bff/admin/events/${a.id}/settle`, { method: 'POST', headers: stateHeaders, body: JSON.stringify({ payload: { completion: true } }) })
  expect(settled.response.status, JSON.stringify(settled.data)).toBe(200)
- const finalEvent = await get(f.db, 'SELECT status,content FROM events WHERE id=?', [a.id])
+ const finalEvent = await get(f.db, "SELECT status,content FROM events WHERE id=$1", [a.id])
  expect(finalEvent.status).toBe('settled')
  expect(JSON.parse(finalEvent.content)).toMatchObject({ completion: true, results: [{ rank: 1, id: 'fixture' }] })
  expect((await get(f.logDb,"SELECT count(*) AS n FROM audit_logs WHERE action='SUBMIT_EVENT'")).n).toBe(1)
@@ -142,7 +143,7 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  expect(await home.text()).not.toContain(f.context.env.BFF_BRIDGE_SECRET)
  const cleanupUrl = '/uploads/img/bff-cleanup.png'
  await f.fs.writeFile(path.join(f.root, 'public', 'img', 'bff-cleanup.png'), png)
- await f.context.sql.main.run('UPDATE members SET avatar=? WHERE id=?', [cleanupUrl, memberCreated.data.id])
+ await f.context.sql.main.run("UPDATE members SET avatar=$1 WHERE id=$2", [cleanupUrl, memberCreated.data.id])
  expect((await call(`/api/bff/admin/members/${memberCreated.data.id}`, { method: 'DELETE', headers: stateHeaders })).response.status).toBe(200)
  const ownerJar = new Map()
  const ownerCsrf = await call('/api/bff/auth/csrf', {}, ownerJar)
@@ -176,8 +177,8 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  }
  const purge = await call('/api/bff/admin/recycle-bin/purge', { method: 'POST', headers: { origin, 'x-csrf-token': ownerLogin.data.csrfToken } }, ownerJar)
  expect(purge.response.status, JSON.stringify(purge.data)).toBe(200)
- expect(await get(f.db, 'SELECT id FROM members WHERE id=?', [memberCreated.data.id])).toBeUndefined()
- expect(await get(f.db, 'SELECT state FROM asset_cleanup_jobs WHERE url=?', [cleanupUrl])).toEqual({ state: 'quarantined' })
+ expect(await get(f.db, "SELECT id FROM members WHERE id=$1", [memberCreated.data.id])).toBeUndefined()
+ expect(await get(f.db, "SELECT state FROM asset_cleanup_jobs WHERE url=$1", [cleanupUrl])).toEqual({ state: 'quarantined' })
  const secondJar = new Map(), secondCsrf = await call('/api/bff/auth/csrf', {}, secondJar)
  const secondLogin = await call('/api/bff/auth/login', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': secondCsrf.data.csrfToken }, body: JSON.stringify({ username: 'admin', password: 'fixture-password' }) }, secondJar)
  expect(secondLogin.response.status).toBe(200)
@@ -204,7 +205,7 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  console.info('BFF restarted process ready')
  const lostOwnership = await call(`/api/bff/guest/events/${pending.id}`, { method: 'PUT', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': pending.csrf }, body: draftBody }, pending.jar)
  expect(lostOwnership.response.status, JSON.stringify(lostOwnership.data)).toBe(404)
- expect(await get(f.db, 'SELECT title,status FROM events WHERE id=?', [pending.id])).toEqual({ title: null, status: 'draft' })
+ expect(await get(f.db, "SELECT title,status FROM events WHERE id=$1", [pending.id])).toEqual({ title: null, status: 'draft' })
  expect((await f.http.get(beforeRestart.data.url)).status).toBe(200)
  const newIntent = await visitor()
  expect(newIntent.id).not.toBe(pending.id)

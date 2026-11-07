@@ -1,4 +1,5 @@
-import type { SqliteStore } from '../database/sqlite.js'
+import { idBinding } from '../database/sql.js'
+import type { DatabaseStore } from '../database/contracts.js'
 import type { Actor } from '../modules/actor.js'
 import { createLogsRepository } from '../modules/logs/repository.js'
 import { AppError } from '../errors.js'
@@ -10,7 +11,7 @@ import { randomUUID } from 'node:crypto'
 import { redactSecrets } from '../security/redact-secrets.js'
 
 export function createAdminService(options: {
-  main: SqliteStore; audit: SqliteStore; report(error: unknown): void
+  main: DatabaseStore; audit: DatabaseStore; report(error: unknown): void
   ready?: boolean; committed(): void
 }) {
   const committed = () => { try { options.committed() } catch (error) { options.report(error) } }
@@ -24,7 +25,7 @@ export function createAdminService(options: {
         const current = await authorizeSecurityActor(tx, actor, true)
         const deleted = await createSecurityService(tx).deleteAdmin(id, actor.id)
         if (!deleted) {
-          const target = await tx.get('SELECT role FROM users WHERE id=?', [id])
+          const target = await tx.get("SELECT role FROM users WHERE id=$1", [idBinding(id)])
           throw new AppError(target ? '不能删除最后一个超级管理员或使用已失效权限' : '用户不存在', 'delete_admin_rejected', target ? 409 : 404)
         }
         await enqueueSecurityAudit(tx, String(current.username || 'System'), 'DELETE_USER', `删除管理员: ${deleted.username}`)
@@ -38,8 +39,8 @@ export function createAdminService(options: {
       const hash = hashPassword(password)
       await options.main.transaction(async tx => {
         const current = await authorizeSecurityActor(tx, actor, true)
-        const target = await tx.get('SELECT username FROM users WHERE id=?', [id])
-        await tx.run('UPDATE users SET password=? WHERE id=?', [hash, id])
+        const target = await tx.get("SELECT username FROM users WHERE id=$1", [idBinding(id)])
+        await tx.run("UPDATE users SET password=$1 WHERE id=$2", [hash, idBinding(id)])
         await nextUserVersion(tx, id)
         await enqueueSecurityAudit(tx, String(current.username || 'System'), 'RESET_PWD', `重置密码: ${target ? target.username : 'Unknown'}`)
       })
@@ -49,8 +50,8 @@ export function createAdminService(options: {
       requireSecuritySchema(options.ready)
       await options.main.transaction(async tx => {
         const current = await authorizeSecurityActor(tx, actor, true)
-        const target = await tx.get('SELECT username FROM users WHERE id=?', [id])
-        await tx.run('UPDATE users SET twofa_enabled=0,twofa_secret=NULL WHERE id=?', [id])
+        const target = await tx.get("SELECT username FROM users WHERE id=$1", [idBinding(id)])
+        await tx.run("UPDATE users SET twofa_enabled=0,twofa_secret=NULL WHERE id=$1", [idBinding(id)])
         await nextUserVersion(tx, id)
         await enqueueSecurityAudit(tx, String(current.username || 'System'), 'RESET_2FA', `重置二步密码: ${target ? target.username : 'Unknown'}`)
       })
@@ -77,14 +78,14 @@ export function createAdminService(options: {
       const current = await options.main.transaction(tx => authorizeSecurityActor(tx, actor, true))
       // Both this mutation and its audit record live in the audit database.
       await options.audit.transaction(async tx => {
-        await tx.run('DELETE FROM audit_logs WHERE id=?', [id])
-        await tx.run('INSERT INTO audit_logs(username,action,details,source_id) VALUES(?,?,?,?)', [String(current.username || 'System'), 'DELETE_LOG', `删除日志: ${id}`, randomUUID()])
+        await tx.run("DELETE FROM audit_logs WHERE id=$1", [idBinding(id)])
+        await tx.run("INSERT INTO audit_logs(username,action,details,source_id) VALUES($1,$2,$3,$4) RETURNING id", [String(current.username || 'System'), 'DELETE_LOG', `删除日志: ${id}`, randomUUID()])
       })
     },
     pending: async (pageValue: unknown) => {
       const page = Math.max(1, parseInt(String(pageValue), 10) || 1)
       const total = await options.main.get<{ count: number }>("SELECT COUNT(*) AS count FROM events WHERE status='pending'")
-      const rows = await options.main.all("SELECT * FROM events WHERE status='pending' ORDER BY created_at ASC LIMIT ? OFFSET ?", [20, (page - 1) * 20])
+      const rows = await options.main.all("SELECT * FROM events WHERE status='pending' ORDER BY created_at ASC NULLS FIRST LIMIT $1 OFFSET $2", [20, (page - 1) * 20])
       const items = rows.map(row => {
         let content: unknown
         try { content = JSON.parse(String(row.content)) } catch { content = {} }

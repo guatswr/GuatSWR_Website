@@ -18,6 +18,8 @@ const errors = new Set(['SQLITE_BUSY', 'SQLITE_LOCKED', 'SQLITE_ERROR', 'SQLITE_
   'BACKUP_CONFIGURATION', 'BACKUP_CANCELLED', 'BACKUP_TIMEOUT', 'BACKUP_OUTPUT_LIMIT', 'BACKUP_EXECUTION_FAILED', 'BACKUP_DISABLED', 'BACKUP_BUSY', 'BACKUP_FAILED', 'BACKUP_SETTINGS_FAILED',
   'BACKUP_FILENAME', 'BACKUP_VERIFICATION_INVALID', 'BACKUP_VERIFICATION_PROTECTED', 'BACKUP_LAST_VERIFIED',
   'database_busy', 'database_constraint', 'database_interrupted', 'database_unavailable', 'database_query', 'database_scope',
+  'database_serialization', 'database_deadlock', 'database_data', 'database_outcome_unknown', 'DATABASE_DRIVER_NOT_READY',
+  'PG_RUNTIME_ROLE', 'PG_MIGRATION_REQUIRED', 'PG_MIGRATION_SCHEMA_DRIFT', 'PG_MIGRATION_ROLE',
   'SQLITE_CORRUPT', 'SQLITE_MISUSE', 'ENOENT', 'ENOTDIR', 'EACCES', 'EPERM', 'ENOSPC', 'EADDRINUSE', 'ECONNRESET',
   'SHUTDOWN_TIMEOUT', 'invalid_configuration', 'LIMIT_FILE_SIZE', 'LIMIT_PART_COUNT', 'LIMIT_FILE_COUNT', 'LIMIT_FIELD_COUNT'])
 const classify = (error: unknown): string => {

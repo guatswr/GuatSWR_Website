@@ -1,6 +1,9 @@
+import { idBinding } from '../../database/sql.js'
+import { lockRow } from '../../database/sql.js'
+import { utcTimestamp } from '../../database/sql.js'
 import { createHash } from 'node:crypto'
 import type { Actor } from '../actor.js'
-import type { SqlValue } from '../../database/sqlite.js'
+import type { SqlValue } from '../../database/contracts.js'
 import { AppError } from '../../errors.js'
 import { assertVisitorContent } from '../../utils/eventContentStorage.js'
 import { publicEvent } from '../../utils/public-event.js'
@@ -72,18 +75,18 @@ export function createEventsService(options: {
         catch (cause) { throw new AppError('活动图片保存失败，请重试', 'event_asset_failed', 500, { cause }) }
       }, async (content, transaction) => {
       const sets: string[] = [], params: SqlValue[] = []
-      if (body.type) { sets.push('type=?'); params.push(eventBinding(body.type)) }
-      if (body.title) { sets.push('title=?'); params.push(eventBinding(body.title)) }
-      if (body.content) { sets.push('content=?'); params.push(JSON.stringify(content) ?? null) }
-      if (body.submit === true) { sets.push('status=?'); params.push('pending') }
+      if (body.type) { sets.push(`type=$${params.length + 1}`); params.push(eventBinding(body.type)) }
+      if (body.title) { sets.push(`title=$${params.length + 1}`); params.push(eventBinding(body.title)) }
+      if (body.content) { sets.push(`content=$${params.length + 1}`); params.push(JSON.stringify(content) ?? null) }
+      if (body.submit === true) { sets.push(`status=$${params.length + 1}`); params.push('pending') }
       if (!sets.length) throw new AppError('No fields to update', 'empty_update', 400)
-      sets.push('updated_at=CURRENT_TIMESTAMP')
+      sets.push(`updated_at=${utcTimestamp(options.repository.store)}`)
       const save = async (tx: import('../../database/sqlite.js').SqlExecutor) => {
-        const current = await tx.get<{ id: number; status: string | null }>('SELECT id,status FROM events WHERE id=?', [id])
+        const current = await tx.get<{ id: number; status: string | null }>(lockRow(tx, "SELECT id,status FROM events WHERE id=$1"), [idBinding(id)])
         if (!current) throw new AppError('Event not found', 'not_found', 404)
         if (current.status === 'published' && !actor) throw new AppError('事件已发布，无法修改', 'event_published', 403)
         if (await isReplay(tx)) { replayed = true; return }
-        await tx.run(`UPDATE events SET ${sets.join(',')} WHERE id=?`, [...params, id])
+        await tx.run(`UPDATE events SET ${sets.join(',')} WHERE id=$${params.length + 1}`, [...params, idBinding(id)])
         if (body.submit === true && Number.isInteger(numericId)) {
           const receiptPayload = JSON.stringify({ message: '保存成功', id: numericId })
           await options.repository.createSubmission(

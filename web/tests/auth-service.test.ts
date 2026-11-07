@@ -367,7 +367,7 @@ describe('protected verification uses fresh upstream identity', () => {
     const { store, service } = createHarness({ login: () => LOGIN_OK, me: () => ME_OK })
     const first = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
     const second = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.10' })
-    expect(service.revokeForUser(1)).toBe(2)
+    expect(await service.revokeForUser(1)).toBe(2)
     expect(store.size()).toBe(0)
     await expectBffError(service.verify(first.sessionId), 401, 'session_expired')
     await expectBffError(service.verify(second.sessionId), 401, 'session_expired')
@@ -414,10 +414,10 @@ describe('AUTH-01 zero-disk-write verification and store invariants', () => {
     const login = await service.login({ username: 'admin', password: 'x' }, { clientIp: '203.0.113.9' })
 
     let setCount = 0
-    const originalSet = store.set.bind(store)
-    store.set = (record) => {
+    const originalReplace = store.replaceIfCurrent!.bind(store)
+    store.replaceIfCurrent = (previous, next) => {
       setCount += 1
-      originalSet(record)
+      return originalReplace(previous, next)
     }
 
     let verified = await service.verify(login.sessionId)

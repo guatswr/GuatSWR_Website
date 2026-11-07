@@ -43,6 +43,12 @@ const close = (db) => new Promise((resolve, reject) => db.close((error) => error
 
 const createDatabase = async ({ env, paths, logger }) => {
   const resolved = resolvePaths(env, paths);
+  const { parseDatabaseConfiguration } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/database/config'));
+  const configuration = parseDatabaseConfiguration(env);
+  if (configuration.driver === 'postgres') {
+    const { createPostgresDatabase } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/database/application'));
+    return createPostgresDatabase(configuration.connectionString, resolved, logger);
+  }
   if (resolved.dbPath === resolved.logDbPath) throw new Error('Main and audit databases must be different files');
   const sqlite3 = require('sqlite3').verbose();
 
@@ -88,7 +94,7 @@ const createDatabase = async ({ env, paths, logger }) => {
     };
     const sql = { main: createSqliteStore(resolved.dbPath), audit: createSqliteStore(resolved.logDbPath) };
     stores.push(sql.main, sql.audit);
-    return { ...resolved, db, logDb, sql, addLog, mainSchemaVersion: mainSchema.version, auditSchemaVersion: auditSchema.version, close: closeAll };
+    return { ...resolved, databaseDriver: 'sqlite', db, logDb, sql, addLog, mainSchemaVersion: mainSchema.version, auditSchemaVersion: auditSchema.version, close: closeAll };
   } catch (error) {
     await closeAll();
     throw error;

@@ -1,13 +1,13 @@
 import fs from 'node:fs/promises'
 import path from 'node:path'
-import type { SqliteStore } from '../database/sqlite.js'
+import type { DatabaseStore } from '../database/contracts.js'
 import { AppError } from '../errors.js'
 import { isSafePath } from '../utils/storage-boundary.js'
 import { captureCleanupTargets, enqueueCleanup, runCleanupBatch } from './cleanup.js'
 import { assetReferences, localAssetPath } from './reference-inventory.js'
 
 export function createAssetRetention(options: {
-  store: SqliteStore; publicRoot: string; staging: string; privateRoot: string; quarantine: string
+  store: DatabaseStore; publicRoot: string; staging: string; privateRoot: string; quarantine: string
   ready: boolean; signal: AbortSignal
 }) {
   const request = async (values: unknown[], directories: string[] = []) => {

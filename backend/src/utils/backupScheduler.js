@@ -9,7 +9,10 @@ module.exports = (context) => {
     shutdown: context.shutdownSignal, timeoutMs: context.env.BACKUP_TIMEOUT_MS,
     trackChild: child => context.trackChild(child, { processGroup: true })
   });
-  const service = createBackupScheduler({ store: context.sql.main, run: async () => { await context.backup.ensureBackupDirs(); await run(); }, enabled: () => context.externalServices,
+  const service = createBackupScheduler({ store: context.sql.main, run: async () => {
+    if (context.databaseDriver === 'postgres') throw new BackupError('BACKUP_DISABLED', 'PostgreSQL backup requires PG-05');
+    await context.backup.ensureBackupDirs(); await run();
+  }, enabled: () => context.externalServices,
     audit: context.addLog, report: error => context.logger.warn('backup.failed', { error }) });
   const owner = context.env.BACKUP_SCHEDULER_OWNER || 'app';
   if (!['app', 'external'].includes(owner)) throw new BackupError('BACKUP_CONFIGURATION');

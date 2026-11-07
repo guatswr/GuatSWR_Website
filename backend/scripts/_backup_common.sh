@@ -2,6 +2,7 @@
 set -euo pipefail
 umask 077
 fail() { echo "Backup error: $*" >&2; exit 1; }
+[[ "${DATABASE_DRIVER:-sqlite}" == sqlite ]] || fail 'PostgreSQL backup requires PG-05'
 require_tool() { command -v "$1" >/dev/null 2>&1 || fail "required tool unavailable: $1"; }
 SQLITE3_BIN="${SQLITE3_BIN:-sqlite3}"
 require_tool "$SQLITE3_BIN"

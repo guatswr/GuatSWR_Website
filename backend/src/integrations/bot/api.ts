@@ -1,7 +1,8 @@
+import { utcTimestamp } from '../../database/sql.js'
 import express, { type Request, type Response, type NextFunction, type RequestHandler } from 'express'
 import { botCredentialSchema, botSubscriptionSchema, botLinkSchema, botSignupSchema, botReviewSchema, botQqSchema } from '@guatswr/shared/bot'
 import type { Actor } from '../../modules/actor.js'
-import type { SqliteStore } from '../../database/sqlite.js'
+import type { DatabaseStore } from '../../database/contracts.js'
 import { AppError } from '../../errors.js'
 import { randomUUID } from 'node:crypto'
 import { assertAdmin, assertCredential, privateScope, requireScope, type BotPlatform, type Credential } from './platform.js'
@@ -24,7 +25,7 @@ const integer = (raw: unknown, fallback?: number, max = Number.MAX_SAFE_INTEGER)
 }
 // This module owns additive APIs; the 71 v1 operations keep their original routes.
 export function createBotApi(options: {
-  platform: BotPlatform; store: SqliteStore; publication?: AssetPublication
+  platform: BotPlatform; store: DatabaseStore; publication?: AssetPublication
   authenticateToken: RequestHandler; optionalAuth: RequestHandler; guestGateway: RequestHandler
   requireSuperAdmin: RequestHandler; report(error: unknown): void
   images: BotImageOptions
@@ -51,7 +52,7 @@ export function createBotApi(options: {
   router.delete('/admin/credentials/:id', options.authenticateToken, options.requireSuperAdmin, handle(async (req,res) => { await platform.revoke(String(req.params.id),req.user!); return res.json({ revoked:true }) }))
   router.get('/admin/deliveries', options.authenticateToken, options.requireSuperAdmin, handle(async (req,res) => {
     const limit=integer(req.query.limit,20,100), page=integer(req.query.page,1,1000000)
-    return res.json({ page,limit,items:await store.all('SELECT d.*,n.event_name FROM bot_deliveries d JOIN bot_notifications n ON n.id=d.notification_id ORDER BY n.created_at DESC,d.id LIMIT ? OFFSET ?', [limit,(page-1)*limit]) })
+    return res.json({ page,limit,items:await store.all("SELECT d.*,n.event_name FROM bot_deliveries d JOIN bot_notifications n ON n.id=d.notification_id ORDER BY n.created_at DESC NULLS LAST,d.id LIMIT $1 OFFSET $2", [limit,(page-1)*limit]) })
   }))
   router.post('/admin/deliveries/:id/retry', options.authenticateToken, options.requireSuperAdmin, handle(async (req,res) => {
     await store.transaction(async tx => {
@@ -74,23 +75,23 @@ export function createBotApi(options: {
   }))
   router.get('/v1/events/:id', authorize('query:read'), handle(async (req,res) => res.json(await queries.event(integer(req.params.id)))))
   router.get('/v1/on-this-day', authorize('query:read'), handle(async (req,res) => res.json(await onThisDay(req.query))))
-  router.get('/v1/subscriptions', authorize('subscriptions:write'), handle(async (req,res) => res.json({ items:await store.all('SELECT id,group_id,event_name,event_id,lead_minutes FROM bot_subscriptions WHERE credential_id=?', [credential(req).id]) })))
+  router.get('/v1/subscriptions', authorize('subscriptions:write'), handle(async (req,res) => res.json({ items:await store.all("SELECT id,group_id,event_name,event_id,lead_minutes FROM bot_subscriptions WHERE credential_id=$1", [credential(req).id]) })))
   router.post('/v1/subscriptions', authorize('subscriptions:write'), handle(async (req,res) => {
     const input=botSubscriptionSchema.parse(req.body), client=credential(req)
     if (!JSON.parse(client.groups_json).includes(input.group_id)) throw new AppError('此群未获授权','bot_group',403)
     const needed=privateScope(input.event); if (needed) requireScope(client,needed)
     const id=randomUUID()
-    await store.run(`INSERT INTO bot_subscriptions(id,credential_id,group_id,event_name,event_id,lead_minutes) VALUES(?,?,?,?,?,?)
+    await store.run(`INSERT INTO bot_subscriptions(id,credential_id,group_id,event_name,event_id,lead_minutes) VALUES($1,$2,$3,$4,$5,$6)
       ON CONFLICT(credential_id,group_id,event_name,event_id) DO UPDATE SET lead_minutes=excluded.lead_minutes`, [id,client.id,input.group_id,input.event,input.event_id || 0,input.lead_minutes])
-    return res.json(await store.get('SELECT id,group_id,event_name,event_id,lead_minutes FROM bot_subscriptions WHERE credential_id=? AND group_id=? AND event_name=? AND event_id=?', [client.id,input.group_id,input.event,input.event_id || 0]))
+    return res.json(await store.get("SELECT id,group_id,event_name,event_id,lead_minutes FROM bot_subscriptions WHERE credential_id=$1 AND group_id=$2 AND event_name=$3 AND event_id=$4", [client.id,input.group_id,input.event,input.event_id || 0]))
   }))
   router.delete('/v1/subscriptions/:id', authorize('subscriptions:write'), handle(async (req,res) => {
-    if (!(await store.run('DELETE FROM bot_subscriptions WHERE id=? AND credential_id=?',[String(req.params.id),credential(req).id])).changes) throw new AppError('订阅不存在','not_found',404)
+    if (!(await store.run("DELETE FROM bot_subscriptions WHERE id=$1 AND credential_id=$2",[String(req.params.id),credential(req).id])).changes) throw new AppError('订阅不存在','not_found',404)
     return res.json({ deleted:true })
   }))
   router.get('/v1/deliveries', authorize('deliveries:read'), handle(async (req,res) => {
     const limit=integer(req.query.limit,20,100),page=integer(req.query.page,1,1000000)
-    return res.json({ page,limit,items:await store.all('SELECT d.id,d.notification_id,d.group_id,d.status,d.attempts,d.last_error,d.delivered_at,n.event_name FROM bot_deliveries d JOIN bot_notifications n ON n.id=d.notification_id WHERE d.credential_id=? ORDER BY n.created_at DESC,d.id LIMIT ? OFFSET ?', [credential(req).id,limit,(page-1)*limit]) })
+    return res.json({ page,limit,items:await store.all("SELECT d.id,d.notification_id,d.group_id,d.status,d.attempts,d.last_error,d.delivered_at,n.event_name FROM bot_deliveries d JOIN bot_notifications n ON n.id=d.notification_id WHERE d.credential_id=$1 ORDER BY n.created_at DESC NULLS LAST,d.id LIMIT $2 OFFSET $3", [credential(req).id,limit,(page-1)*limit]) })
   }))
   router.post('/v1/deliveries/:id/retry', authorize('deliveries:retry'), handle(async (req,res) => { await platform.retry(String(req.params.id),credential(req)); return res.json({ status:'queued' }) }))
   for (const method of ['get','post','delete'] as const) router[method]('/v1/events/:id/signup', authorize(method==='get' ? 'signup:read' : 'signup:write'), handle(async (req,res) => {
@@ -114,7 +115,7 @@ export function createBotApi(options: {
     const page=integer(req.query.page,1,1000000),limit=integer(req.query.limit,20,100)
     const items=await store.transaction(async tx => {
       await assertAdmin(tx,{ id:bound.user_id!,username:'',role:'' })
-      return tx.all("SELECT id,type,title,status,created_at FROM events WHERE status='pending' ORDER BY created_at,id LIMIT ? OFFSET ?",[limit,(page-1)*limit])
+      return tx.all("SELECT id,type,title,status,created_at FROM events WHERE status='pending' ORDER BY created_at ASC NULLS FIRST,id LIMIT $1 OFFSET $2",[limit,(page-1)*limit])
     })
     return res.json({ page,limit,items })
   }))
@@ -124,11 +125,11 @@ export function createBotApi(options: {
       await assertCredential(tx,client,'review:write')
       const bound=await platform.identity(client,input.qq,tx)
       if (!bound.user_id) throw new AppError('需要绑定网站管理员','bot_admin_required',403)
-      const user=await tx.get<{ id:number;username:string;role:string }>('SELECT id,username,role FROM users WHERE id=?',[bound.user_id])
+      const user=await tx.get<{ id:number;username:string;role:string }>("SELECT id,username,role FROM users WHERE id=$1",[bound.user_id])
       if (!user) throw new AppError('管理员不存在','bot_admin_required',403)
       await assertAdmin(tx,user)
       const status=input.action==='approve' ? 'published' : 'rejected'
-      if (!(await tx.run("UPDATE events SET status=?,updated_at=CURRENT_TIMESTAMP WHERE id=? AND status='pending'",[status,id])).changes) throw new AppError('活动不存在或已被审核','bot_review_conflict',409)
+      if (!(await tx.run(`UPDATE events SET status=$1,updated_at=${utcTimestamp(tx)} WHERE id=$2 AND status='pending'`,[status,id])).changes) throw new AppError('活动不存在或已被审核','bot_review_conflict',409)
       await enqueueSecurityAudit(tx,user.username,'BOT_REVIEW_EVENT',JSON.stringify({ bot:client.id,event_id:id,action:input.action,reason:input.reason }))
       await platform.enqueue(input.action==='approve' ? 'event.approved' : 'event.rejected',{ eventId:id,status },user,tx)
     })

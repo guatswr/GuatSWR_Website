@@ -34,7 +34,7 @@ export default bffAuthHandler(async (event) => {
     }
 
     const draft = await guestDraftContext(event, context.runtime, context.origin, guestIp)
-    if (!draft.store.owns(draft.intent, eid)) {
+    if (!(await draft.store.owns(draft.intent, eid))) {
       throw new BffError(403, 'forbidden', '禁止上传')
     }
     await assertImageMagic(upload)

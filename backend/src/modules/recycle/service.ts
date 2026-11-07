@@ -1,9 +1,10 @@
+import { idBinding } from '../../database/sql.js'
 import path from 'node:path'
-import type { Row, SqliteStore } from '../../database/sqlite.js'
+import type { Row, DatabaseStore } from '../../database/contracts.js'
 import { captureCleanupTargets, enqueueCleanup, processCleanupJob, type CleanupTarget } from '../../storage/cleanup.js'
 
 export class RecycleError extends Error { constructor(readonly status: number, message: string) { super(message) } }
-export function createRecycleService(store: SqliteStore, root: string, quarantine: string) {
+export function createRecycleService(store: DatabaseStore, root: string, quarantine: string) {
   return {
     purge: async () => {
       const definitions = [
@@ -24,7 +25,7 @@ export function createRecycleService(store: SqliteStore, root: string, quarantin
         const jobs: string[] = []
         for (const { definition, row, targets } of prepared) {
           const columns = definition.columns
-          const deleted = await tx.run(`DELETE FROM ${definition.table} WHERE id=? AND deleted_at IS NOT NULL AND ${columns.map(column => `${column} IS ?`).join(' AND ')}`,
+          const deleted = await tx.run(`DELETE FROM ${definition.table} WHERE id=$1 AND deleted_at IS NOT NULL AND ${columns.map((column, index) => `${column} IS NOT DISTINCT FROM $${index + 2}`).join(' AND ')}`,
             [row.id as number, ...columns.map(column => row[column] as string | null)])
           result[definition.table] += deleted.changes
           if (deleted.changes) { await enqueueCleanup(tx, targets); jobs.push(...targets.map(target => target.id)) }
@@ -38,14 +39,14 @@ export function createRecycleService(store: SqliteStore, root: string, quarantin
     },
     removeEvent: async (id: string) => {
       // The legacy endpoint binds raw IDs; select the canonical row ID before paths.
-      const event = await store.get('SELECT id,content FROM events WHERE id=?', [id])
+      const event = await store.get("SELECT id,content FROM events WHERE id=$1", [idBinding(id)])
       if (!event) throw new RecycleError(404, 'Event not found')
-      const participants = await store.all('SELECT avatar FROM event_participants WHERE event_id=?', [event.id as number])
+      const participants = await store.all("SELECT avatar FROM event_participants WHERE event_id=$1", [event.id as number])
       const targets = await captureCleanupTargets(root, [event.content, ...participants.map(row => row.avatar)], [path.join(root, 'img', 'events', String(event.id))])
       await store.transaction(async tx => {
-        const result = await tx.run('DELETE FROM events WHERE id=? AND content IS ?', [event.id as number, event.content as string | null])
+        const result = await tx.run("DELETE FROM events WHERE id=$1 AND content IS NOT DISTINCT FROM $2", [event.id as number, event.content as string | null])
         if (!result.changes) {
-          const exists = await tx.get<Row>('SELECT id FROM events WHERE id=?', [event.id as number])
+          const exists = await tx.get<Row>("SELECT id FROM events WHERE id=$1", [event.id as number])
           throw new RecycleError(exists ? 409 : 404, exists ? '事件已变化，请重试' : 'Event not found')
         }
         await enqueueCleanup(tx, targets)

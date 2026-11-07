@@ -220,7 +220,25 @@ class HostBackupIdentityTest(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             ops_backup.check_app_scheduler_conflict('backend', runner=failing_query)
 
+    def test_scheduler_probe_executes_real_javascript_against_sqlite(self):
+        with tempfile.TemporaryDirectory() as folder:
+            database = Path(folder) / 'main.db'
+            node = os.environ.get('BACKUP_NODE_BIN', 'node')
+            subprocess.run([node, '-e', "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync(process.argv[1]);db.exec(\"CREATE TABLE site_config(key TEXT PRIMARY KEY,value TEXT);INSERT INTO site_config VALUES('backup_enabled','1')\");db.close()", str(database)], check=True, capture_output=True)
+            def real_probe(cmd):
+                self.assertEqual(cmd[:5], ['docker', 'exec', 'synthetic', 'node', '-e'])
+                return subprocess.check_output([node, '-e', cmd[-1]], env={**os.environ, 'DATABASE_DRIVER': 'sqlite', 'DATA_DIR': folder, 'DB_PATH': str(database)}, stderr=subprocess.DEVNULL)
+            self.assertTrue(ops_backup.check_app_scheduler_conflict('synthetic', runner=real_probe))
+            subprocess.run([node, '-e', "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync(process.argv[1]);db.exec(\"UPDATE site_config SET value='0'\");db.close()", str(database)], check=True, capture_output=True)
+            self.assertFalse(ops_backup.check_app_scheduler_conflict('synthetic', runner=real_probe))
+
     def test_transfer_uses_receiver_before_pruning_and_keeps_default_umami_dump(self):
+        self._check_transfer('sqlite')
+
+    def test_postgres_transfer_uses_native_bundle_and_no_sqlite_prune(self):
+        self._check_transfer('postgres')
+
+    def _check_transfer(self, driver):
         with tempfile.TemporaryDirectory() as folder:
             root = Path(folder)
             mount = root / 'backups'
@@ -231,6 +249,8 @@ class HostBackupIdentityTest(unittest.TestCase):
                 if args[0:3] == ('docker', 'exec', '-e'):
                     tag = args[3].split('=', 1)[1]
                     (mount / 'full' / f'full_{tag}.tar.gz').write_bytes(b'website')
+                elif args[0] == 'tar':
+                    Path(args[args.index('-czf') + 1]).write_bytes(b'postgres-native-bundle')
                 elif args[0] == 'cp':
                     shutil.copyfile(args[-2], args[-1])
                 elif args[0] == 'gpg':
@@ -243,15 +263,20 @@ class HostBackupIdentityTest(unittest.TestCase):
                       'ssh_alias': 'backup-host', 'gpg_recipient': 'test-key'}
             with patch.object(ops_backup, 'resolve_single_container', return_value='cid'), \
                  patch.object(ops_backup, 'check_app_scheduler_conflict', return_value=False), \
-                 patch.object(ops_backup.subprocess, 'check_output', return_value=json.dumps([{'Mounts': [{'Destination': '/app/backups', 'Source': str(mount)}]}]).encode()), \
+                 patch.object(ops_backup.subprocess, 'check_output', return_value=json.dumps([{'Config': {'Env': ['DATABASE_DRIVER=' + driver]}, 'Mounts': [{'Destination': '/app/backups', 'Source': str(mount)}]}]).encode()), \
                  patch.object(ops_backup.subprocess, 'Popen', return_value=process):
                 receipt = ops_backup.execute_backup(config, apply=True, runner=runner)
             self.assertTrue(any(call[:4] == ('docker', 'exec', 'umami-db', 'timeout') for call in calls))
             transfer = next(call for call in calls if call[0] == 'rsync')
             self.assertTrue(transfer[-1].endswith('.incoming'))
             receive_index = next(i for i, call in enumerate(calls) if call[0] == 'ssh' and '--receive' in call[-1])
-            prune_index = next(i for i, call in enumerate(calls) if 'backup_prune.py' in ' '.join(call))
-            self.assertLess(receive_index, prune_index)
+            if driver == 'sqlite':
+                prune_index = next(i for i, call in enumerate(calls) if 'backup_prune.py' in ' '.join(call))
+                self.assertLess(receive_index, prune_index)
+            else:
+                self.assertTrue(any('create' in call and '/app/scripts/postgres/cli.mjs' in call for call in calls))
+                self.assertFalse(any('backup_prune.py' in ' '.join(call) for call in calls))
+                self.assertEqual(receipt['database_driver'], 'postgres')
             self.assertEqual(receipt['status'], 'accepted')
             # Receiver-owned transfer receipts must not be overwritten by host sidecars.
             self.assertEqual(len([call for call in calls if call[0] == 'rsync']), 1)

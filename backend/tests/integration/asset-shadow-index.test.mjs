@@ -21,9 +21,9 @@ describe('asset reference shadow index (ASSET-01)', () => {
     const f = await fixture()
     const root = path.join(f.root, 'public')
     for (let i = 0; i < 25; i++) {
-      await run(f.db, 'INSERT INTO activities(title,cover_image) VALUES(?,?)', [`collision-${i}`, `/uploads/img/other-${i}-photo.png`])
+      await run(f.db, "INSERT INTO activities(title,cover_image) VALUES($1,$2)", [`collision-${i}`, `/uploads/img/other-${i}-photo.png`])
     }
-    await run(f.db, 'INSERT INTO activities(title,cover_image) VALUES(?,?)', ['actual', '/uploads/img/photo.png'])
+    await run(f.db, "INSERT INTO activities(title,cover_image) VALUES($1,$2)", ['actual', '/uploads/img/photo.png'])
     expect(await isAnyAssetTargetReferenced(f.context.sql.main, [path.join(root, 'img', 'photo.png')], root)).toBe(true)
     expect(await isAnyAssetTargetReferenced(f.context.sql.main, [path.join(root, 'img', 'photo.webp')], root)).toBe(true)
   })
@@ -31,7 +31,7 @@ describe('asset reference shadow index (ASSET-01)', () => {
   it('finds percent-encoded references when the shadow index has not been synchronized', async () => {
     const f = await fixture()
     const root = path.join(f.root, 'public')
-    await run(f.db, 'UPDATE activities SET cover_image=? WHERE id=1', ['/uploads/img/%70hoto.png'])
+    await run(f.db, "UPDATE activities SET cover_image=$1 WHERE id=1", ['/uploads/img/%70hoto.png'])
     expect(await isAnyAssetTargetReferenced(f.context.sql.main, [path.join(root, 'img', 'photo.png')], root)).toBe(true)
   })
   it('defines the comprehensive list of 8 authoritative reference sources', () => {
@@ -75,26 +75,26 @@ describe('asset reference shadow index (ASSET-01)', () => {
 
     // Populate all 8 sources:
     // 1. users
-    await run(f.db, 'UPDATE users SET avatar=? WHERE id=1', ['/uploads/img/user_av.png'])
+    await run(f.db, "UPDATE users SET avatar=$1 WHERE id=1", ['/uploads/img/user_av.png'])
     // 2. members (soft-deleted!)
-    await run(f.db, 'UPDATE members SET avatar=?, deleted_at=CURRENT_TIMESTAMP WHERE id=1', ['/uploads/img/member_del.png'])
+    await run(f.db, "UPDATE members SET avatar=$1, deleted_at=CURRENT_TIMESTAMP WHERE id=1", ['/uploads/img/member_del.png'])
     // 3. history
-    await run(f.db, 'UPDATE history SET image=? WHERE id=1', ['/uploads/img/hist.png'])
+    await run(f.db, "UPDATE history SET image=$1 WHERE id=1", ['/uploads/img/hist.png'])
     // 4. activities
-    await run(f.db, 'UPDATE activities SET cover_image=?, content=? WHERE id=1', [
+    await run(f.db, "UPDATE activities SET cover_image=$1, content=$2 WHERE id=1", [
       '/uploads/img/act_cover.png',
       '正文引用图片：![图](/uploads/img/act_inline.png)',
     ])
     // 5. events
-    await run(f.db, 'UPDATE events SET content=? WHERE id=1', [
+    await run(f.db, "UPDATE events SET content=$1 WHERE id=1", [
       JSON.stringify({ banner: '/uploads/img/event_embed.png' }),
     ])
     // 6. event_participants
-    await run(f.db, 'INSERT INTO event_participants(event_id, user_id, avatar) VALUES(1, 1, ?)', [
+    await run(f.db, "INSERT INTO event_participants(event_id, user_id, avatar) VALUES(1, 1, $1)", [
       '/uploads/img/signup_av.png',
     ])
     // 7. site_config
-    await run(f.db, "INSERT OR REPLACE INTO site_config(key, value) VALUES('site_logo', ?)", [
+    await run(f.db, "INSERT OR REPLACE INTO site_config(key, value) VALUES('site_logo', $1)", [
       '/uploads/img/site_logo.png',
     ])
 
@@ -127,7 +127,7 @@ describe('asset reference shadow index (ASSET-01)', () => {
     const f = await fixture()
     const root = path.join(f.root, 'public')
 
-    await run(f.db, 'UPDATE events SET content=? WHERE id=1', ['{"suspicious":"/uploads/%ZZ_corrupt"}'])
+    await run(f.db, "UPDATE events SET content=$1 WHERE id=1", ['{"suspicious":"/uploads/%ZZ_corrupt"}'])
     const report = await rebuildAssetReferences(f.context.sql.main, root, { dryRun: false })
     expect(report.incompleteCount).toBeGreaterThan(0)
 
@@ -193,8 +193,8 @@ describe('asset reference shadow index (ASSET-01)', () => {
 
     // 2. Substring collision test on business tables
     // Row 1 contains 'my_photo.png', Row 2 contains 'photo.png'
-    await run(f.db, 'INSERT INTO activities(id, title, cover_image) VALUES(101, "A1", "/uploads/img/my_photo.png")')
-    await run(f.db, 'INSERT INTO activities(id, title, cover_image) VALUES(102, "A2", "/uploads/img/photo.png")')
+    await run(f.db, 'INSERT INTO activities(id,title,cover_image) VALUES(101,$1,$2)', ['A1', '/uploads/img/my_photo.png'])
+    await run(f.db, 'INSERT INTO activities(id,title,cover_image) VALUES(102,$1,$2)', ['A2', '/uploads/img/photo.png'])
 
     // Searching for fileTarget ('photo.png') must return true even though 'my_photo.png' exists in earlier row
     const targetDetected = await isAnyAssetTargetReferenced(f.context.sql.main, [fileTarget], root)
@@ -206,7 +206,7 @@ describe('asset reference shadow index (ASSET-01)', () => {
 
     // 3. Underscore escaping: 'photo_1.png' should NOT match 'photoX1.png'
     const underscoreTarget = path.join(root, 'img', 'photo_1.png')
-    await run(f.db, 'INSERT INTO activities(id, title, cover_image) VALUES(103, "A3", "/uploads/img/photoX1.png")')
+    await run(f.db, 'INSERT INTO activities(id,title,cover_image) VALUES(103,$1,$2)', ['A3', '/uploads/img/photoX1.png'])
     const underscoreDetected = await isAnyAssetTargetReferenced(f.context.sql.main, [underscoreTarget], root)
     expect(underscoreDetected).toBe(false)
 

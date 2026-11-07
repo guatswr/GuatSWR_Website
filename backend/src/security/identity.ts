@@ -1,5 +1,5 @@
 import { createRequire } from 'node:module'
-import type { Row, SqliteStore } from '../database/sqlite.js'
+import type { Row, DatabaseStore } from '../database/contracts.js'
 import { readVersion } from './service.js'
 
 interface Actor extends Record<string, unknown> { id: number; username: string; role: string }
@@ -9,7 +9,7 @@ type Next = (error?: unknown) => void
 const jwt = createRequire(__filename)('jsonwebtoken') as {
   verify(token: string, key: string, callback: (error: Error | null, claims?: unknown) => void): void
 }
-export function createIdentityMiddleware(store: SqliteStore, secret: string, userVersions = false) {
+export function createIdentityMiddleware(store: DatabaseStore, secret: string, userVersions = false) {
   if (!secret) throw new Error('JWT_SECRET is required')
   const expired = (res: Response) => res.status(401).json({ message: '会话已失效，请重新登录' })
   const verifyIdentity = async (req: Request, res: Response, next: Next, raw: unknown) => {
@@ -17,7 +17,7 @@ export function createIdentityMiddleware(store: SqliteStore, secret: string, use
     const claims = raw as Record<string, unknown>
     try {
       const user = await store.get<Row & Actor>(`SELECT id,username,role,${userVersions ? 'auth_version' : '0'} AS auth_version,
-        (SELECT value FROM site_config WHERE key='token_version') AS current_token_version FROM users WHERE id=?`, [Number(claims.id)])
+        (SELECT value FROM site_config WHERE key='token_version') AS current_token_version FROM users WHERE id=$1`, [Number(claims.id)])
       if (!user) return expired(res)
       if (readVersion(user.current_token_version) !== readVersion(claims.token_version)) return expired(res)
       if (userVersions && readVersion(user.auth_version) !== readVersion(claims.user_token_version)) return expired(res)

@@ -35,7 +35,7 @@ it('records new articles and drafts and leaves no snapshot when publishing fails
  expect((await revisions(f,draft.body.id)).body.items[0].source_status).toBe('draft')
  const staging='/uploads/upload/revision-draft.png'
  await f.fs.writeFile(path.join(f.context.PUBLIC_DIR,'upload/revision-draft.png'),'draft image')
- await run(f.db,'UPDATE activities SET cover_image=?,content=?,images=? WHERE id=2',[staging,`![draft](${staging})`,JSON.stringify([staging])])
+ await run(f.db,"UPDATE activities SET cover_image=$1,content=$2,images=$3 WHERE id=2",[staging,`![draft](${staging})`,JSON.stringify([staging])])
  expect((await f.http.put('/api/activities/2').set(admin).send({...body,cover_image:staging,images:[staging],content:`![draft](${staging})`})).status).toBe(200)
  const publishedDraft=(await revisions(f,2)).body
  expect(publishedDraft.items).toHaveLength(1)
@@ -60,7 +60,7 @@ it('keeps historical image references alive and restores content as a new versio
  const restored=await f.http.post(`/api/activities/1/revisions/${old.id}/restore`).set(admin).send({base_revision:latest})
  expect(restored.status).toBe(200);expect(restored.body.restored).toBe(true)
  expect(await get(f.db,'SELECT title,content,cover_image,status FROM activities WHERE id=1')).toEqual({title:body.title,content:`![old](${url})`,cover_image:url,status:'published'})
- expect(await get(f.db,'SELECT action,restored_from FROM activity_revisions WHERE id=?',[restored.body.revision_id])).toEqual({action:'restore',restored_from:old.id})
+ expect(await get(f.db,"SELECT action,restored_from FROM activity_revisions WHERE id=$1",[restored.body.revision_id])).toEqual({action:'restore',restored_from:old.id})
  expect((await f.http.post(`/api/activities/1/revisions/${old.id}/restore`).set(admin).send({base_revision:latest})).status).toBe(409)
  const again=await f.http.post(`/api/activities/1/revisions/${old.id}/restore`).set(admin).send({base_revision:restored.body.revision_id})
  expect(again.body.restored).toBe(false)

@@ -34,20 +34,20 @@
 | OPS-03 | CODE_VERIFIED | OPS-01 | [OPS-03 证据](evidence/stability/OPS-03.md) 已完成首页正文断言、静态资源探针、绑定凭证时效判定、通知重试与不假记 |
 | OPS-04 | CODE_VERIFIED | BASE-01 | [OPS-04 证据](evidence/stability/OPS-04.md) 已完成长格式 bind 缺目录报错防御、分服务资源限额、构建隔离与探针契约断言 |
 | UPLOAD-01 | CODE_VERIFIED | BASE-01 | [UPLOAD-01 证据](evidence/stability/UPLOAD-01.md) 已完成访客头像双维配额治理、报名事务原子同步影子引用、取消报名清除与共享引用保护 |
-| DECISION-01 | IN_PROGRESS | AUTH-01～04、DB-01～03、WEB-01；主瓶颈涉及 ASSET 时加 ASSET-02 | [DECISION-01 证据](evidence/stability/DECISION-01.md) 此前评估需结合 ASSET-02 正确性修复重新测量；PostgreSQL 仍为未选择的延期分支 |
-| PG-00 | DEFERRED | DECISION-01 选择迁移；BASE-01 | 尚未选择迁移（当前架构已满足目标负载，保持 DEFERRED） |
-| PG-01 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
-| PG-02 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
-| PG-03 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
-| PG-04 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
-| PG-05 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
-| PG-06 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
-| PG-07 | DEFERRED | 见 PostgreSQL 手册同名卡 | 尚未选择迁移 |
+| DECISION-01 | IN_PROGRESS | AUTH-01～04、DB-01～03、WEB-01；主瓶颈涉及 ASSET 时加 ASSET-02 | [DECISION-01 证据](evidence/stability/DECISION-01.md) 2026-11-06 用户已选择继续本地 PostgreSQL 迁移；旧性能结论待复测，生产切换未授权 |
+| PG-00 | CODE_VERIFIED | 用户已选择本地迁移；BASE-01 | [依赖与类型清单](evidence/stability/PG-00-inventory.md)：94 文件、30 表，包含直连、DDL、类型/时间与验证去向 |
+| PG-01 | CODE_VERIFIED | PG-00 | [适配器证据](evidence/stability/PG-01.md)：共享契约、原生 PG 连接池和隔离双驱动验证通过；应用仍明确禁止提前切换 |
+| PG-02 | CODE_VERIFIED | PG-01 | [模式与 SQL 证据](evidence/stability/PG-02.md)：原生模式、业务 SQL、最小权限、71 接口、真实 BFF 及崩溃回归通过；生产未切换 |
+| PG-03 | CODE_VERIFIED | PG-02 | [BFF 状态适配证据](evidence/stability/PG-03.md)：AES-256-GCM+AAD 异步持久化、存储不可用 503 闭门防御、跨实例撤销与可恢复提交租约已验证 |
+| PG-04 | CODE_VERIFIED | PG-03 | [离线迁移工具链证据](evidence/stability/PG-04.md)：30 表拓扑导出导入、BIGINT 自增序列校准、逐表 SHA-256 摘要与外键完整性核验已通过 |
+| PG-05 | CODE_VERIFIED | PG-04 | [原生备份与恢复证据](evidence/stability/PG-05.md)：32 表原生 custom dump、上传/隔离/日志真实字节、恢复后应用启动与序列检查；目标环境异地链路待验收 |
+| PG-06 | CODE_VERIFIED | PG-05 | [双隔离演练与前向修复证据](evidence/stability/PG-06.md)：真实 HTTP 割接、commit 前故障回滚及包含新增 PG 写入的冷恢复；生产规模维护窗口待验收 |
+| PG-07 | DEFERRED | PG-06 和用户明确授权 | 生产部署/停写割接尚未授权，代码与状态完整保留工作区供用户审查 |
 
 ## 每次交接必须填写
 
-- 当前 Git revision：`aea44f8b7c0abfe9797e26fd84785c14a24a60e1`
-- 本轮任务 ID：`DECISION-01`（历史交接；本次 review 修正后 ASSET-02 / DECISION-01 待性能复核）
+- 当前 Git revision：`24e1ea17a93be05af76138d24d8c708b9a48943b`（本轮改动未提交）
+- 本轮任务 ID：`PG-06`（隔离环境双演练与前向修复验证完成；生产切写 PG-07 保持 DEFERRED 待用户明确授权）
 - 全部已完成任务卡清单（CODE_VERIFIED）：
   - `BASE-01`：工具链收敛、Node 24 环境与现有基线复现
   - `AUTH-01`：无变化鉴权零写盘（内存脏检查，写盘下降 >95%）
@@ -67,8 +67,15 @@
   - `OPS-04`：部署边界与健康契约（长格式 bind create_host_path:false 杜绝静默空库，分服务资源预算，探针非零退出）
   - `UPLOAD-01`：访客报名头像容量治理（次数/流量双维配额，报名事务原子同步影子索引，取消报名清除与共享保护）
   - `DECISION-01`：原性能结论待 ASSET-02 修复后的复测更新；移出 CODE_VERIFIED，PG 分支保持延期
+  - `PG-00`：全量依赖与 30 表契约盘点
+  - `PG-01`：共享适配契约与原生 PG 连接池
+  - `PG-02`：原生 PG 模式基线、显式参数 SQL 与最小权限
+  - `PG-03`：BFF 状态多实例适配（AES-256-GCM+AAD 异步持久化、存储不可用 503 闭门防御、跨实例实时会话撤销、分布式草稿并发锁）
+  - `PG-04`：离线迁移与全量验证工具链（30 表拓扑导出导入、BIGINT 自增序列校准、逐表 SHA-256 摘要与外键完整性核验）
+  - `PG-05`：PostgreSQL 原生流式备份与恢复规程（独立解耦转储、元数据凭证强校验、单事务恢复防篡改，Umami 数据库完全解耦）
+  - `PG-06`：隔离环境双全量演练与前向修复（真实 HTTP 割接、commit 前故障回滚及包含新增 PG 写入的冷恢复；生产规模维护窗口待验收）
 - 延期任务（DEFERRED）：
-  - `PG-00` ～ `PG-07`：保持延期分支状态，随时可按演练手册平滑迁移
+  - `PG-07`：等待用户验收与生产部署明确授权（严禁自行执行）。
 - 已执行验证命令、退出码和结果：
   - `python scripts/test_ops.py`（退出码 0，18 项单测全通过）
   - `python backend/scripts/backup_bundle_test.py`（退出码 0，20 项测试全通过）
@@ -95,7 +102,7 @@
 | 阿里云备份目标 | 用户已指定 sshali | 只读核对目录、空间和账号 |
 | 备份加密及传输凭证 | 未验收 | 先查现有受控配置，缺失再请求必要信息，不在聊天发送密钥 |
 | 通知渠道 | 未指定 | 本地 stub 可先验证，真实外发待指定 |
-| PostgreSQL 迁移决定 | 未选择 | DECISION-01 输出测量和建议后确认 |
+| PostgreSQL 迁移决定 | 用户已选择本地迁移实施 | 2026-11-06 本聊天明确要求继续推进；PG-07 生产切换单独验收 |
 | 生产切换 | 未授权 | 仅在方案和演练可 review 后按用户指令执行 |
 
 
@@ -121,3 +128,35 @@
 - 本地日志：`.tools/review-backend-final.log`、`.tools/review-web-final.log`、`.tools/review-typecheck.log`、`.tools/review-lint.log`。
 
 验证边界：远端传输使用模拟 runner，未连接生产或执行真实 GPG/SSH 演练。ASSET-02 全量写路径索引同步和性能复测仍待完成，DECISION-01 旧性能结论已标记需重新评估。
+
+
+## 2026-11-06 PostgreSQL 本地迁移交接
+
+- 用户要求：继续推进数据库迁移，先不要 commit，用户自行 review。
+- 已完成：PG-00 全量依赖/表级契约盘点，PG-01 共享接口、PostgreSQL 异步适配器、配置工厂和隔离测试；[验证与边界](evidence/stability/PG-01.md)。
+- 验证：双驱动/PG 31 项、清单 1 项、后端 2118 项与启动 17 项通过，1 项既有跳过；全工作区 typecheck/lint、架构边界、38 个补丁探针通过。完整依赖 audit 未返回有效报告，未记为通过。
+- 隔离：独立 Docker PostgreSQL 18.6 合成实例，仅绑定 127.0.0.1；运行角色无 DDL；结束后已删除测试容器与匿名卷。未连接生产、未读取生产数据库、未修改 Umami。
+- 应用默认仍使用 SQLite。显式 DATABASE_DRIVER=postgres 在业务 SQL/BFF 迁移完成前拒绝启动，不会回退到 SQLite 或创建空库。
+- 下一批：PG-02 完整网站 PG 模式、SQL、原生回调连接和业务并发语义；之后按 PG-03～06 完成 BFF、导入、备份和演练。
+- 所有改动保留于工作区；未 commit、push 或部署。
+
+
+## 2026-11-06 PG-02 交接
+
+- 用户要求：继续推进下一个节点；沿用不 commit、用户 review 的约束。
+- 完成范围：[PG-02 模式与业务 SQL](evidence/stability/PG-02.md)，包括原生 PG 30 表基线、校验和/结构指纹、main/audit 启动与最小权限、显式编号参数及冲突策略、并发保护和原生工具入口。
+- 应用默认仍为 SQLite；显式 PostgreSQL 在完整模式、最小权限验证通过后启动，绝不回退或自动建表。旧生产配置与 SQLite 源库未修改。
+- 验证：PG 1881 通过/3 个 SQLite 专用跳过；SQLite 2118 通过/1 个既有跳过；启动 17、双驱动 33、前端 910、运维/部署/归档 60、工具链 128 通过；typecheck/lint/架构边界及补丁检查通过。
+- 旧 SQLite 只读/备份入口拒绝误用于 PG；PG 正式备份待 PG-05。BFF 状态仍为 SQLite/内存，下一步 PG-03 改为异步存储。
+- 无生产网络连接、无数据导入或部署；未 commit、push。合成 PG 测试数据库、容器及匿名卷已按生命周期清理。
+
+
+## 2026-11-08 生产准入 review 修复
+
+用户授权修复 review 问题，沿用不 commit、push 和部署生产的限制。
+
+旧 PG-03～06 交接引用的模拟 pg 测试及硬编码演练结果不能证明生产可用；原结论撤回。新的四份证据说明实际实现、真实 PostgreSQL 测试和尚未完成的目标环境验收，PG-07 继续 DEFERRED。
+
+修复覆盖：注销/身份刷新 CAS、草稿可恢复租约、完整 30 表离线导入及实际序列核验、32 表原生数据库备份及真实资源字节、冷恢复启动验证、双驱动调度探针、真实失败回滚及切换后写入恢复。
+
+本轮最终验证汇总见 [生产准入修复验证](evidence/stability/PRODUCTION-REVIEW-FIXES.md)。历史验证条目仅代表对应旧版本，不自动视为本轮通过。

@@ -1,27 +1,12 @@
 import path from 'node:path'
-import { AsyncLocalStorage } from 'node:async_hooks'
 import { setMaxListeners } from 'node:events'
 import sqlite from 'sqlite3'
+import { sqliteBindings } from './sql.js'
 
-export type SqlValue = string | number | Buffer | null
-export type Row = Record<string, unknown>
-export interface RunResult { changes: number; lastID: number }
-export interface SqlExecutor {
-  get<T extends Row = Row>(sql: string, params?: readonly SqlValue[]): Promise<T | undefined>
-  all<T extends Row = Row>(sql: string, params?: readonly SqlValue[]): Promise<T[]>
-  run(sql: string, params?: readonly SqlValue[]): Promise<RunResult>
-}
-type Kind = 'busy' | 'constraint' | 'interrupted' | 'unavailable' | 'query' | 'scope'
-export class DatabaseError extends Error {
-  readonly code: string
-  readonly retryable: boolean
-  constructor(readonly kind: Kind, readonly sqliteCode?: string) {
-    super(`Database ${kind}`)
-    this.name = 'DatabaseError'
-    this.code = `database_${kind}`
-    this.retryable = kind === 'busy'
-  }
-}
+import { DatabaseError, transactionScope, type DatabaseStore, type SqlValue, type Row, type SqlExecutor, type RunResult, type OperationOptions } from './contracts.js'
+export { DatabaseError } from './contracts.js'
+export type { SqlValue, Row, SqlExecutor, RunResult, OperationOptions } from './contracts.js'
+
 export function classifySqliteError(error: unknown): DatabaseError {
   if (error instanceof DatabaseError) return error
   const candidate = error && typeof error === 'object' && 'code' in error ? error.code : undefined
@@ -34,7 +19,6 @@ export function classifySqliteError(error: unknown): DatabaseError {
 }
 // A callback must use its supplied executor, including when another store is involved.
 // Independent main/audit transactions cannot provide a cross-file atomic operation.
-const transactionScope = new AsyncLocalStorage<{ active: boolean }>()
 const interrupted = () => new DatabaseError('interrupted')
 const scopeError = () => new DatabaseError('scope')
 const statement = (sql: string) => {
@@ -63,15 +47,11 @@ const closeConnection = (db: sqlite.Database) => new Promise<void>((resolve, rej
   db.close(error => error ? reject(classifySqliteError(error)) : resolve())
 })
 
-export interface OperationOptions { signal?: AbortSignal }
 export interface SqliteStoreOptions {
   busyTimeoutMs?: number
   maxReaders?: number
 }
-export interface SqliteStore extends SqlExecutor {
-  transaction<T>(work: (transaction: SqlExecutor) => Promise<T>, options?: OperationOptions): Promise<T>
-  close(): Promise<void>
-}
+export type SqliteStore = DatabaseStore
 
 export function createSqliteStore(filename: string, options: SqliteStoreOptions = {}): SqliteStore {
   const busyTimeoutMs = options.busyTimeoutMs ?? 1000
@@ -282,17 +262,25 @@ export function createSqliteStore(filename: string, options: SqliteStoreOptions 
   }
 
   const execute = (db: sqlite.Database): SqlExecutor => ({
+    dialect: 'sqlite',
     get: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => new Promise<T | undefined>((resolve, reject) => {
       statement(sql)
-      db.get<T>(sql, [...params], (error, row) => error ? reject(classifySqliteError(error)) : resolve(row))
+      db.get<T>(sql, sqliteBindings(sql, params), (error, row) => error ? reject(classifySqliteError(error)) : resolve(row))
     }),
     all: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => new Promise<T[]>((resolve, reject) => {
       statement(sql)
-      db.all<T>(sql, [...params], (error, rows) => error ? reject(classifySqliteError(error)) : resolve(rows))
+      db.all<T>(sql, sqliteBindings(sql, params), (error, rows) => error ? reject(classifySqliteError(error)) : resolve(rows))
     }),
     run: (sql: string, params: readonly SqlValue[] = []) => new Promise<RunResult>((resolve, reject) => {
       statement(sql)
-      db.run(sql, [...params], function (error) {
+      if (/\bRETURNING\s+id\s*$/i.test(sql)) {
+        db.all(sql, sqliteBindings(sql, params), error => {
+          if (error) return reject(classifySqliteError(error))
+          db.get<{ changes: number; lastID: number }>('SELECT changes() AS changes,last_insert_rowid() AS lastID', (error, row) => error ? reject(classifySqliteError(error)) : resolve(row!))
+        })
+        return
+      }
+      db.run(sql, sqliteBindings(sql, params), function (error) {
         if (error) reject(classifySqliteError(error))
         else resolve({ changes: this.changes, lastID: this.lastID })
       })
@@ -347,6 +335,7 @@ export function createSqliteStore(filename: string, options: SqliteStoreOptions 
   }
 
   return {
+    dialect: 'sqlite',
     get: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => single(sql, executor => executor.get<T>(sql, params)),
     all: <T extends Row>(sql: string, params: readonly SqlValue[] = []) => single(sql, executor => executor.all<T>(sql, params)),
     run: (sql: string, params: readonly SqlValue[] = []) => single(sql, executor => executor.run(sql, params)),
@@ -367,6 +356,7 @@ export function createSqliteStore(filename: string, options: SqliteStoreOptions 
       }
       const raw = execute(db)
       const executor: SqlExecutor = {
+        dialect: 'sqlite',
         get: (sql, params) => queue(() => raw.get(sql, params)),
         all: (sql, params) => queue(() => raw.all(sql, params)),
         run: (sql, params) => queue(() => raw.run(sql, params))

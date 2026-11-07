@@ -1,4 +1,4 @@
-import type { SqlExecutor } from '../../database/sqlite.js'
+import type { SqlExecutor } from '../../database/contracts.js'
 
 export interface ConfigEntry { key: string; value: string | null }
 export interface ConfigRepository {
@@ -8,6 +8,6 @@ export interface ConfigRepository {
 export function createConfigRepository(db: SqlExecutor): ConfigRepository {
   return {
     list: () => db.all<{ key: string; value: string | null }>('SELECT key,value FROM site_config'),
-    save: async (key, value, executor = db) => { await executor.run('INSERT OR REPLACE INTO site_config (key, value) VALUES (?, ?)', [key, value]) }
+    save: async (key, value, executor = db) => { await executor.run("INSERT INTO site_config (key, value) VALUES ($1, $2) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [key, value]) }
   }
 }

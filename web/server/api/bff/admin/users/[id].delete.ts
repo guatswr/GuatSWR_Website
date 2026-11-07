@@ -16,7 +16,7 @@ export default bffProtectedHandler(async (event) => {
     if (target.role === 'super_admin' && users.filter(user => user.role === 'super_admin').length <= 1)
       throw new BffError(409, 'conflict', '不能删除最后一位超级管理员')
     const result = await adminDeleteUser(current.admin, id)
-    current.runtime.auth.revokeForUser(id)
+    await current.runtime.auth.revokeForUser(id)
     return result
   })
 })

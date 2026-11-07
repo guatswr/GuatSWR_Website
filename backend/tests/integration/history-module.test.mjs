@@ -26,7 +26,7 @@ it('EX-06 create returns each committed ID and sends that ID to the real local B
   for (const [index, response] of responses.entries()) {
     expect(response.status).toBe(200)
     expect(response.body.id).toEqual(expect.any(Number))
-    expect(await get(f.db, 'SELECT id FROM history WHERE title=?', [titles[index]])).toEqual({ id: response.body.id })
+    expect(await get(f.db, "SELECT id FROM history WHERE title=$1", [titles[index]])).toEqual({ id: response.body.id })
   }
   expect(new Set(responses.map(response => response.body.id)).size).toBe(3)
   await expect.poll(() => notifications.length).toBe(3)
@@ -81,12 +81,12 @@ it('preserves date-based move rules, missing image URLs and nullable persistence
   await f.fs.writeFile(path.join(staging, 'history.png'), 'synthetic-history-image')
   const created = await save(f, { date: '2026-10-23', title: 'moved history', image: '/uploads/upload/history.png', sort_order: 3 })
   expect(created.status).toBe(200)
-  expect(await get(f.db, 'SELECT image,description,sort_order FROM history WHERE id=?', [created.body.id])).toEqual({ image: '/uploads/img/History/2026/10/23/history.png', description: null, sort_order: 3 })
+  expect(await get(f.db, "SELECT image,description,sort_order FROM history WHERE id=$1", [created.body.id])).toEqual({ image: '/uploads/img/History/2026/10/23/history.png', description: null, sort_order: 3 })
   expect(await f.fs.readFile(path.join(f.context.IMG_ROOT_DIR, 'History/2026/10/23/history.png'), 'utf8')).toBe('synthetic-history-image')
   expect((await save(f, { date: '2026-10-24', title: 'missing image', image: '/uploads/upload/not-present.png' }, created.body.id)).body).toEqual({ message: '更新成功' })
-  expect(await get(f.db, 'SELECT image,sort_order FROM history WHERE id=?', [created.body.id])).toEqual({ image: '/uploads/upload/not-present.png', sort_order: 0 })
+  expect(await get(f.db, "SELECT image,sort_order FROM history WHERE id=$1", [created.body.id])).toEqual({ image: '/uploads/upload/not-present.png', sort_order: 0 })
   expect((await save(f, { date: '2026-10-24', title: 'null image', image: null }, created.body.id)).status).toBe(200)
-  expect(await get(f.db, 'SELECT image FROM history WHERE id=?', [created.body.id])).toEqual({ image: null })
+  expect(await get(f.db, "SELECT image FROM history WHERE id=$1", [created.body.id])).toEqual({ image: null })
 })
 
 it('keeps missing-ID update/delete/restore success semantics during the type migration', async () => {

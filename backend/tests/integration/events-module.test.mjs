@@ -5,10 +5,10 @@ import { fixture, token, run, get, all } from '../helpers/fixture.mjs'
 it('retains permissive native sqlite bindings and content shapes instead of adding an Event schema', async () => {
   const f = await fixture()
   for (const value of [true, 7, { legacy: 'object' }, ['legacy', 'array']]) {
-    const expected = await get(f.db, 'SELECT CAST(? AS TEXT) AS value', [value])
+    const expected = await get(f.db, "SELECT CAST($1 AS TEXT) AS value", [value])
     const response = await f.http.post('/api/event/admin').set('Authorization', `Bearer ${token(2, 'admin')}`).send({ type: value, title: value, content: ['legacy'], status: 'unknown-state' })
     expect(response.status).toBe(200)
-    expect(await get(f.db, 'SELECT type,title,content,status FROM events WHERE id=?', [response.body.id])).toEqual({ type: expected.value, title: expected.value, content: '["legacy"]', status: 'published' })
+    expect(await get(f.db, "SELECT type,title,content,status FROM events WHERE id=$1", [response.body.id])).toEqual({ type: expected.value, title: expected.value, content: '["legacy"]', status: 'published' })
   }
 })
 
@@ -16,7 +16,7 @@ it('preserves public/admin query coercion, status fallback and private historica
   const f = await fixture(), authorize = `Bearer ${token(2, 'admin')}`
   await run(f.db, 'ALTER TABLE events ADD COLUMN legacy_extra TEXT')
   await run(f.db, "INSERT INTO events(id,type,title,status,content,visitor_ip,legacy_extra) VALUES(10,'[object Object]','legacy binding','published',NULL,'203.0.113.99','private historical extension')")
-  const native = await all(f.db, "SELECT id FROM events WHERE status IN ('published','ongoing','ended','settled') AND type=?", [{ nested: 'legacy' }])
+  const native = await all(f.db, "SELECT id FROM events WHERE status IN ('published','ongoing','ended','settled') AND type=$1", [{ nested: 'legacy' }])
   const publicList = await f.http.get('/api/event?type[nested]=legacy')
   expect(publicList.body.items.map(row => row.id)).toEqual(native.map(row => row.id))
   expect(publicList.body.items[0].content).toEqual({})

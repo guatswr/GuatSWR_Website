@@ -1,5 +1,5 @@
 import { createReadinessProbe } from '@guatswr/shared'
-import type { SqlExecutor } from './database/sqlite.js'
+import type { SqlExecutor } from './database/contracts.js'
 
 export function createBackendHealth(options: { main: SqlExecutor; audit: SqlExecutor; isClosing(): boolean }) {
   const probe = createReadinessProbe({

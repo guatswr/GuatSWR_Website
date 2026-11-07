@@ -8,7 +8,7 @@ export default bffProtectedHandler(async (event) => {
   const result = await adminRefreshTokenVersion(session.admin)
   // The backend token_version bump invalidates every upstream JWT, including
   // this one; local records are revoked and the caller must sign in again.
-  session.runtime.auth.revokeAll()
+  await session.runtime.auth.revokeAll()
   await clearCookieSession(event, session.runtime)
   clearCsrfCookie(event, session.runtime)
   return { ...result, reauthenticate: true }

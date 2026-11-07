@@ -10,7 +10,7 @@ it('keeps recoverable tokens encrypted, reveals only to a live owner, audits wit
   const created=await f.http.post('/api/bot/admin/credentials').set(headers).send({name:'vault',scopes:['query:read'],groups:[]})
   expect(created.status).toBe(200)
   const c=created.body
-  const stored=await get(f.db,'SELECT * FROM bot_credential_secrets WHERE credential_id=?',[c.id])
+  const stored=await get(f.db,"SELECT * FROM bot_credential_secrets WHERE credential_id=$1",[c.id])
   expect(stored.encrypted_token).not.toContain(c.token)
   const list=await f.http.get('/api/bot/admin/credentials').set(headers)
   expect(list.body.vault_enabled).toBe(true);expect(list.body.items[0].secret_available).toBe(1)
@@ -24,7 +24,7 @@ it('keeps recoverable tokens encrypted, reveals only to a live owner, audits wit
   expect((await f.http.post(`/api/bot/admin/credentials/${c.id}/reveal`).set(headers)).status).toBe(403)
   await run(f.db,"UPDATE users SET role='super_admin' WHERE id=1")
   expect((await f.http.delete(`/api/bot/admin/credentials/${c.id}`).set(headers)).status).toBe(200)
-  expect(await get(f.db,'SELECT * FROM bot_credential_secrets WHERE credential_id=?',[c.id])).toBeUndefined()
+  expect(await get(f.db,"SELECT * FROM bot_credential_secrets WHERE credential_id=$1",[c.id])).toBeUndefined()
   expect((await f.http.post(`/api/bot/admin/credentials/${c.id}/reveal`).set(headers)).status).toBe(409)
 })
 it('does not invent unrecoverable legacy tokens and rejects tampering or swapped credential IDs',async()=>{
@@ -42,7 +42,7 @@ it('redacts tokens before audit writes and when reading legacy administrator log
   const {enqueueSecurityAudit}=require('../../dist/src/security/audit-outbox.js')
   await enqueueSecurityAudit(f.context.sql.main,'owner','TEST',`Token: ${secret}`)
   expect(JSON.stringify(await all(f.db,'SELECT details FROM security_audit_outbox'))).not.toContain(secret)
-  await run(f.logDb,'INSERT INTO audit_logs(username,action,details) VALUES(?,?,?)',['owner','TEST',`copied ${secret}; token="short-private"; Authorization: Bearer abc.def.ghi`])
+  await run(f.logDb,"INSERT INTO audit_logs(username,action,details) VALUES($1,$2,$3)",['owner','TEST',`copied ${secret}; token="short-private"; Authorization: Bearer abc.def.ghi`])
   const logs=(await f.http.get('/api/admin/logs').set(headers)).body
   expect(JSON.stringify(logs)).not.toMatch(/gwb_|short-private|abc\.def\.ghi/)
   const once=redactSecrets(`token=${secret}`)

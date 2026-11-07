@@ -4,7 +4,7 @@ import type { EventRow, Identity, SignupRepository } from './repository.js'
 import { guardAssetReferences, type AssetPublication } from '../../../storage/publication.js'
 import { syncEntityAssetReferences, removeEntityAssetReferences } from '../../../storage/reference-inventory.js'
 import type { Enqueue } from '../../../integrations/bot/platform.js'
-import type { SqlExecutor } from '../../../database/sqlite.js'
+import type { SqlExecutor } from '../../../database/contracts.js'
 
 export class SignupError extends Error {
   constructor(readonly status: number, message: string) { super(message) }
@@ -71,6 +71,7 @@ export function createSignupService(options: {
     remove: async (id: number, identity: Identity) => {
       await repository.transaction(async tx => {
         if (options.authorize) await options.authorize(tx.executor,identity,'remove')
+        await tx.event(id) // Same parent-row lock as signup, including newly inserted participants.
         const existing = await tx.find(id, identity)
         const result = await tx.remove(id, identity)
         if (!result.changes) throw new SignupError(404, '报名记录不存在')

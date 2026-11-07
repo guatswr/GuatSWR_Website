@@ -78,7 +78,7 @@ it('keeps staging bytes and quarantines the unused prepared copy when the databa
   expect(await get(f.db, "SELECT value FROM site_config WHERE key='home_bg'")).toBeUndefined()
   expect(await f.fs.readFile(path.join(f.context.PUBLIC_DIR, 'upload/save-error.png'), 'utf8')).toBe('moved-before-save')
   await expect(f.fs.stat(path.join(f.context.IMG_ROOT_DIR, 'bg/home/save-error.png'))).rejects.toHaveProperty('code', 'ENOENT')
-  expect(lines.find(line => line.event === 'http.failed')).toMatchObject({ route: '/api/config', code: 'database_constraint' })
+  expect(lines.find(line => line.event === 'http.failed')).toMatchObject({ route: '/api/config', code: f.context.databaseDriver === 'postgres' ? 'database_query' : 'database_constraint' })
   expect(await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE action='UPDATE_CONFIG'")).toEqual({ n: 0 })
 })
 it('returns the existing safe HTTP read failure without raw database details', async () => {
@@ -94,8 +94,8 @@ it('bounds a locked config write and succeeds after the other writer releases', 
   try {
     const started = performance.now()
     const response = await post(f, { key: 'banner_text', value: 'blocked' })
-    expect(response.status).toBe(500)
-    expect(response.body).toEqual({ message: '服务器错误' })
+    expect(response.status).toBe(f.context.databaseDriver === 'postgres' ? 503 : 500)
+    expect(response.body).toEqual({ message: f.context.databaseDriver === 'postgres' ? '数据库服务暂不可用' : '服务器错误' })
     expect(performance.now() - started).toBeLessThan(6000)
     expect(await get(f.db, "SELECT value FROM site_config WHERE key='banner_text'")).toEqual({ value: 'fixture' })
   } finally { await run(f.db, 'ROLLBACK') }
@@ -108,5 +108,5 @@ it('keeps successful config writes successful when audit delivery fails', async 
   expect(response.status).toBe(200)
   expect(response.body).toEqual({ message: '已保存' })
   expect(await get(f.db, "SELECT value FROM site_config WHERE key='banner_text'")).toEqual({ value: 'committed' })
-  await expect.poll(() => lines.find(line => line.event === 'audit.failed')).toMatchObject({ code: 'SQLITE_ERROR' })
+  await expect.poll(() => lines.find(line => line.event === 'audit.failed')).toMatchObject({ code: f.context.databaseDriver === 'postgres' ? 'database_query' : 'SQLITE_ERROR' })
 })

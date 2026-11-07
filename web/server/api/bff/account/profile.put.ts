@@ -9,7 +9,7 @@ export default bffProtectedHandler(async (event) => {
   if (result.credentialsChanged) {
     // Confirmed credential change: revoke opaque BFF sessions as well as the
     // backend's user-level JWT version so every browser must authenticate again.
-    session.runtime.auth.revokeForUser(session.identity.id)
+    await session.runtime.auth.revokeForUser(session.identity.id)
     await clearCookieSession(event, session.runtime)
     clearCsrfCookie(event, session.runtime)
     return { message: result.message, reauthenticate: true }

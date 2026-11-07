@@ -6,7 +6,7 @@ const {createLogsRepository}=require('../../dist/src/modules/logs/repository.js'
 const {createLogsService}=require('../../dist/src/modules/logs/service.js')
 it('preserves audit filtering, Beijing timestamps, NULLs and public field projection',async()=>{
  const f=await fixture()
- await run(f.logDb,'INSERT INTO audit_logs(username,action,details,created_at) VALUES(?,?,?,?)',['admin','UPDATE_MEMBER',null,'2026-01-02 01:02:03'])
+ await run(f.logDb,"INSERT INTO audit_logs(username,action,details,created_at) VALUES($1,$2,$3,$4)",['admin','UPDATE_MEMBER',null,'2026-01-02 01:02:03'])
  const response=await f.http.get('/api/logs?username=admin&action=UPDATE_MEMBER')
  expect(response.status).toBe(200)
  expect(response.body.total).toBe(1)

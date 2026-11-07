@@ -14,7 +14,7 @@ it.each([
   const original = f.context.sql.main.get
   f.context.sql.main.get = async function(sql, params) {
     const row = await original(sql, params)
-    if (/^SELECT id,\s*status FROM events WHERE id\s*=\s*\?$/.test(sql) && String(params[0]) === '3') {
+    if (/^SELECT id,\s*status FROM events WHERE id\s*=\s*(?:\?|\$1)$/.test(sql) && String(params[0]) === '3') {
       observed.resolve(); await release.promise
     }
     return row

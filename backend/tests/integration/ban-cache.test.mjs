@@ -29,7 +29,7 @@ describe('DB-02: Ban query short-term caching & invalidation', () => {
     const f = await fixture()
     const service = f.context.ban.service
     const ip = '198.51.100.98'
-    await run(f.db, 'INSERT INTO banned_ips(ip,reason,created_at,expires_at) VALUES(?,?,?,?)', [ip, 'old', 0, 1])
+    await run(f.db, "INSERT INTO banned_ips(ip,reason,created_at,expires_at) VALUES($1,$2,$3,$4)", [ip, 'old', 0, 1])
     const store = f.context.sql.main
     const lookup = store.get.bind(store)
     const read = Promise.withResolvers(), release = Promise.withResolvers()
@@ -100,7 +100,7 @@ describe('DB-02: Ban query short-term caching & invalidation', () => {
 
     // Ban with 100ms expiration
     const expiresAt = Date.now() + 150
-    await run(f.db, 'INSERT INTO banned_ips(ip,reason,created_at,expires_at) VALUES(?,?,?,?)', [ip, 'temporary', Date.now(), expiresAt])
+    await run(f.db, "INSERT INTO banned_ips(ip,reason,created_at,expires_at) VALUES($1,$2,$3,$4)", [ip, 'temporary', Date.now(), expiresAt])
 
     const firstCheck = await service.blocked(ip)
     expect(firstCheck).toEqual({ reason: 'temporary' })

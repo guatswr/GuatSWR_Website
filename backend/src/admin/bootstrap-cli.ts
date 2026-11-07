@@ -4,9 +4,20 @@ import { checkDatabase } from '../migrations/engine.js'
 import { resolvePaths } from '../models/db.js'
 import { createSqliteStore } from '../database/sqlite.js'
 import { bootstrapAdministrator } from './bootstrap.js'
+import { createPostgresStore } from '../database/postgres.js'
+import { checkPostgresSchema } from '../migrations/postgres/engine.js'
 
 async function main() {
   const [flag, filename, ...extra] = process.argv.slice(2)
+  if (flag === '--postgres-url-env') {
+    if (filename !== 'POSTGRES_URL' || !process.env.POSTGRES_URL || extra.length) throw new Error('BOOTSTRAP_ARGUMENTS')
+    const store = createPostgresStore({ connectionString: process.env.POSTGRES_URL, schema: 'main', maxConnections: 1 })
+    try {
+      await checkPostgresSchema(store)
+      console.log(JSON.stringify({ bootstrap: await bootstrapAdministrator(store, process.env.SUPER_ADMIN_USERNAME, process.env.SUPER_ADMIN_PASSWORD) }))
+      return
+    } finally { await store.close() }
+  }
   if (flag !== '--main-db' || !filename || !path.isAbsolute(filename) || extra.length) throw new Error('BOOTSTRAP_ARGUMENTS')
   const db = await new Promise<sqlite.Database>((resolve, reject) => {
     const connection = new sqlite.Database(filename, sqlite.OPEN_READWRITE, error => error ? reject(error) : resolve(connection))

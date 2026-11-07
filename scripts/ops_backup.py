@@ -81,17 +81,30 @@ def resolve_single_container(service_name: str, runner=subprocess.check_output) 
 
 def check_app_scheduler_conflict(container_id: str, runner=subprocess.check_output) -> bool:
     """Check if the internal application scheduler is enabled."""
-    code = (
-        "import sqlite3, os; from pathlib import Path; "
-        "db = Path(os.environ.get('DB_PATH', 'guatswr_web_main.db')); "
-        "db = db if db.is_absolute() else Path(os.environ.get('DATA_DIR', '/app/data')) / db; "
-        "con = sqlite3.connect(db.as_uri() + '?mode=ro', uri=True); "
-        "cur = con.cursor(); "
-        "cur.execute(\"SELECT value FROM site_config WHERE key='backup_enabled'\"); "
-        "row = cur.fetchone(); "
-        "print('1' if row and str(row[0]) == '1' else '0')"
-    )
-    cmd = ['docker', 'exec', container_id, 'python3', '-c', code]
+    code = r"""
+(async () => {
+  const driver = process.env.DATABASE_DRIVER || 'sqlite';
+  let enabled;
+  if (driver === 'postgres') {
+    if (!process.env.POSTGRES_URL) throw Error('configuration');
+    const { Pool } = require('pg');
+    const pool = new Pool({ connectionString: process.env.POSTGRES_URL, max: 1,
+      connectionTimeoutMillis: 1000, statement_timeout: 1000 });
+    pool.on('error', () => {});
+    try { enabled = (await pool.query("SELECT value FROM main.site_config WHERE key='backup_enabled'")).rows[0]?.value === '1'; }
+    finally { await pool.end(); }
+  } else if (driver === 'sqlite') {
+    const path = require('node:path');
+    const { DatabaseSync } = require('node:sqlite');
+    const filename = path.resolve(process.env.DATA_DIR || '/app/data', process.env.DB_PATH || 'guatswr_web_main.db');
+    const db = new DatabaseSync(filename, { readOnly: true });
+    try { enabled = db.prepare("SELECT value FROM site_config WHERE key='backup_enabled'").get()?.value === '1'; }
+    finally { db.close(); }
+  } else throw Error('configuration');
+  console.log(enabled ? '1' : '0');
+})().catch(() => { console.error('SCHEDULER_CHECK_FAILED'); process.exitCode = 1; });
+"""
+    cmd = ['docker', 'exec', container_id, 'node', '-e', code]
     try:
         output = runner(cmd).decode().strip()
         if output not in ('0', '1'):
@@ -178,6 +191,10 @@ def execute_backup(config: dict, apply: bool = False, runner=run_command) -> dic
 
             # Inspect container to find backup mount path on host
             info = json.loads(subprocess.check_output(['docker', 'inspect', container_id]))[0]
+            environment = dict(item.split('=', 1) for item in info.get('Config', {}).get('Env', []) if '=' in item)
+            driver = environment.get('DATABASE_DRIVER', 'sqlite')
+            if driver not in ('sqlite', 'postgres'):
+                raise RuntimeError('DATABASE_DRIVER_INVALID')
             source_mount = Path(next(m['Source'] for m in info['Mounts'] if m['Destination'] == '/app/backups'))
             source_full = source_mount / 'full'
             source_full.mkdir(parents=True, exist_ok=True)
@@ -189,18 +206,24 @@ def execute_backup(config: dict, apply: bool = False, runner=run_command) -> dic
             with tempfile.TemporaryDirectory(prefix='backup-', dir=root) as directory:
                 work = Path(directory)
 
-                # Execute backup inside container with explicit BACKUP_DATE_TAG
-                runner('docker', 'exec', '-e', f'BACKUP_DATE_TAG={tag}', container_id,
-                       'timeout', '--kill-after=5s', '240s', '/bin/bash', '/app/scripts/backup_all.sh')
-
-                # Strictly verify generated archive (never rely on mtime globbing)
+                if driver == 'postgres':
+                    runner('docker', 'exec', container_id, 'timeout', '--kill-after=5s', '1200s',
+                           'node', '/app/scripts/postgres/cli.mjs', 'create', '--tag', tag,
+                           '--output-dir', '/app/backups/postgres')
+                    runner('docker', 'exec', container_id, 'node', '/app/scripts/postgres/cli.mjs',
+                           'verify', '--bundle', f'/app/backups/postgres/pg_{tag}')
+                    partial = source_full / f'.full_{tag}.tar.gz.partial'
+                    runner('tar', '-C', str(source_mount / 'postgres'), '-czf', str(partial), f'pg_{tag}')
+                    os.replace(partial, preexisting)
+                else:
+                    runner('docker', 'exec', '-e', f'BACKUP_DATE_TAG={tag}', container_id,
+                           'timeout', '--kill-after=5s', '240s', '/bin/bash', '/app/scripts/backup_all.sh')
                 archive = verify_archive_target(source_full, tag)
                 plaintext_sha = file_sha256(archive)
-
-                # Verify archive integrity through bundle verify
-                runner('docker', 'exec', container_id, 'timeout', '--kill-after=5s', '300s',
-                       'python3', '/app/scripts/backup_bundle.py', 'verify', f'/app/backups/full/{archive.name}',
-                       '--work-dir', '/tmp')
+                if driver == 'sqlite':
+                    runner('docker', 'exec', container_id, 'timeout', '--kill-after=5s', '300s',
+                           'python3', '/app/scripts/backup_bundle.py', 'verify', f'/app/backups/full/{archive.name}',
+                           '--work-dir', '/tmp')
 
                 runner('cp', '--', str(archive), str(work / 'website.tar.gz'))
 
@@ -249,8 +272,11 @@ def execute_backup(config: dict, apply: bool = False, runner=run_command) -> dic
                            shlex.join(receiver_command + ['--days', '30', '--minimum', '7', '--apply']))
 
                     # Local container prune
-                    runner('docker', 'exec', container_id, 'python3', '/app/scripts/backup_prune.py',
-                           '--root', '/app/backups', '--days', '30', '--minimum', '7', '--apply')
+                    if driver == 'sqlite':
+                        runner('docker', 'exec', container_id, 'python3', '/app/scripts/backup_prune.py',
+                               '--root', '/app/backups', '--days', '30', '--minimum', '7', '--apply')
+                    # PG plaintext bundles are retained until an independently
+                    # verified recovery point authorizes explicit retention.
 
                     receipt = {
                         'format': 'guatswr-backup-receipt-v1',
@@ -259,6 +285,7 @@ def execute_backup(config: dict, apply: bool = False, runner=run_command) -> dic
                         'created_at': dt.datetime.now(dt.timezone.utc).isoformat(),
                         'container_id': container_id,
                         'source_archive': archive.name,
+                        'database_driver': driver,
                         'plaintext_sha256': plaintext_sha,
                         'encrypted_sha256': encrypted_sha,
                         'status': 'accepted',

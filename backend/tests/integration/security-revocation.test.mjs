@@ -55,7 +55,7 @@ it('returns committed success during audit-store failure and retries the durable
   expect((await get(f.db, 'SELECT auth_version FROM users WHERE id=2')).auth_version).toBe(1)
   f.context.sql.audit.transaction = original
   expect((await f.context.securityAudit.flush()).delivered).toBe(1)
-  expect((await get(f.logDb, 'SELECT count(*) AS n FROM audit_logs WHERE source_id=?', [intent.id])).n).toBe(1)
+  expect((await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE source_id=$1", [intent.id])).n).toBe(1)
 })
 
 it('deduplicates delivery after audit commit but before main acknowledgement and rejects stale actor writes', async () => {
@@ -65,10 +65,10 @@ it('deduplicates delivery after audit commit but before main acknowledgement and
   await f.context.securityAudit.flush()
   const intent = await get(f.db, "SELECT * FROM security_audit_outbox WHERE action='RESET_PWD'")
   expect(intent.delivered_at).toBeNull()
-  expect((await get(f.logDb, 'SELECT count(*) AS n FROM audit_logs WHERE source_id=?', [intent.id])).n).toBe(1)
+  expect((await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE source_id=$1", [intent.id])).n).toBe(1)
   main.run = original
   await f.context.securityAudit.flush()
-  expect((await get(f.logDb, 'SELECT count(*) AS n FROM audit_logs WHERE source_id=?', [intent.id])).n).toBe(1)
+  expect((await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE source_id=$1", [intent.id])).n).toBe(1)
   const { createAdminService } = require('../../dist/src/admin/service.js')
   const service = createAdminService({ main, audit: f.context.sql.audit, ready: true, committed() {}, report() {} })
   await run(f.db, 'UPDATE users SET auth_version=1 WHERE id=1')
@@ -82,16 +82,16 @@ it('recovers without duplicate audit records after a real process dies between c
   const id = await f.context.sql.main.transaction(tx => enqueueSecurityAudit(tx, 'owner', 'RESET_PWD', 'synthetic crash recovery'))
   const { promisify } = await import('node:util'), { execFile } = await import('node:child_process'), path = await import('node:path')
   let failure
-  try { await promisify(execFile)(process.execPath, [path.resolve('tests/helpers/audit-outbox-crash.cjs'), f.context.dbPath, f.context.logDbPath], { timeout: 5000 }) }
+  try { await promisify(execFile)(process.execPath, [path.resolve('tests/helpers/audit-outbox-crash.cjs'), f.context.dbPath, f.context.logDbPath], { timeout: 5000, env: { ...process.env, DATABASE_DRIVER: f.context.databaseDriver, POSTGRES_URL: f.context.env.POSTGRES_URL } }) }
   catch (error) { failure = error }
   expect(failure?.stdout).toBe('AUDIT_COMMITTED_BEFORE_ACK')
-  expect((await get(f.db, 'SELECT delivered_at FROM security_audit_outbox WHERE id=?', [id])).delivered_at).toBeNull()
-  expect((await get(f.logDb, 'SELECT count(*) AS n FROM audit_logs WHERE source_id=?', [id])).n).toBe(1)
+  expect((await get(f.db, "SELECT delivered_at FROM security_audit_outbox WHERE id=$1", [id])).delivered_at).toBeNull()
+  expect((await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE source_id=$1", [id])).n).toBe(1)
   expect((await f.context.securityAudit.flush()).delivered).toBe(1)
-  expect((await get(f.logDb, 'SELECT count(*) AS n FROM audit_logs WHERE source_id=?', [id])).n).toBe(1)
+  expect((await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE source_id=$1", [id])).n).toBe(1)
 })
 
-it('keeps security writes unavailable until both independent database upgrades are present', async () => {
+it.skipIf(Boolean(process.env.PG_BUSINESS_ADMIN_URL))('keeps security writes unavailable until both independent database upgrades are present', async () => {
   const f = await fixture(), path = await import('node:path'), fs = await import('node:fs/promises')
   const sqlite = require('sqlite3'), { migrateDatabase } = require('../../dist/src/migrations/engine.js')
   const { createSqliteStore } = require('../../dist/src/database/sqlite.js'), { bootstrapAdministrator } = require('../../dist/src/admin/bootstrap.js')
@@ -126,6 +126,7 @@ it('rechecks super-admin permission after a queued request acquires the writer',
   const entered = Promise.withResolvers(), release = Promise.withResolvers(), queued = Promise.withResolvers()
   const before = await get(f.db, 'SELECT password,auth_version FROM users WHERE id=2')
   const holding = original(async tx => {
+    if (tx.dialect === 'postgres') await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
     entered.resolve(); await release.promise
     await tx.run("UPDATE users SET role='admin' WHERE id=1")
   })

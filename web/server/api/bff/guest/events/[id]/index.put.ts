@@ -43,14 +43,15 @@ export default bffAuthHandler(async (event) => {
   const draft = await guestDraftContext(event, context.runtime, context.origin, guestIp)
   // A confirmed draft no longer accepts uploads/edits, but its owner may replay
   // an identical receipt after losing the success response.
-  if (!draft.store.read(draft.intent)?.drafts.includes(id)) {
+  const existingRecord = await draft.store.read(draft.intent)
+  if (!existingRecord?.drafts.includes(id)) {
     throw new BffError(404, 'not_found', '找不到该活动')
   }
   enforceGuestLimit(guestLimiters.save, `save:${guestIp}`)
 
   const payload = parseGuestDraftSave(await readGuestJson(event, context.runtime))
   const digest = draft.store.digest(draft.intent, payload)
-  const state = draft.store.beginSubmission(draft.intent, id, digest)
+  const state = await draft.store.beginSubmission(draft.intent, id, digest)
   if (state.kind === 'replay') return projectSavedEvent(state.id)
   if (state.kind === 'conflict') throw new BffError(409, 'conflict', '该活动已提交，请勿修改后重复提交')
   if (state.kind === 'busy') {
@@ -65,17 +66,17 @@ export default bffAuthHandler(async (event) => {
     clientIp: guestIp,
     body: { type: payload.type, title: payload.title, content: payload.content, submit: true },
     submissionDigest: digest
-  }).catch((error: unknown) => {
-    draft.store.abortSubmission(draft.intent, id)
+  }).catch(async (error: unknown) => {
+    await draft.store.abortSubmission(draft.intent, id)
     throw error
   })
   if (response.status !== 200) {
-    draft.store.abortSubmission(draft.intent, id)
+    await draft.store.abortSubmission(draft.intent, id)
     throw guestUpstreamError(response.status)
   }
 
   // Receipt only after a confirmed successful write.
-  draft.store.confirmSubmission(draft.intent, id, digest)
+  await draft.store.confirmSubmission(draft.intent, id, digest)
   invalidateAfterGuestMutation(['events', 'logs'])
   return projectSavedEvent(id)
 })

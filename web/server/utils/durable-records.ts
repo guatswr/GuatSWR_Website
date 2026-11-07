@@ -2,11 +2,87 @@ import { DatabaseSync } from 'node:sqlite'
 import { mkdirSync, chmodSync } from 'node:fs'
 import { join, resolve } from 'node:path'
 import { createCipheriv, createDecipheriv, createHash, randomBytes } from 'node:crypto'
+import { postgresStateStore, stateDriver } from './postgres-state.ts'
 
 export interface DurableRecords<T> extends Map<string, T> {
   close: () => void
   deleteMany: (keys: Iterable<string>) => number
   atomicUpdate: (id: string, updater: (current: T | undefined) => T) => T
+}
+
+export interface AsyncDurableStore<T> {
+  get: (key: string) => Promise<T | undefined>
+  set: (key: string, value: T) => Promise<void>
+  delete: (key: string) => Promise<boolean>
+  deleteMany: (keys: Iterable<string>) => Promise<number>
+  atomicUpdate: (id: string, updater: (current: T | undefined) => T) => Promise<T>
+  clear: () => Promise<number>
+  size: () => Promise<number>
+  close: () => Promise<void>
+  sweepBatch?: (batchSize?: number, isExpired?: (item: T) => boolean) => Promise<number>
+  scan?: (filter?: (item: T, id: string) => boolean) => Promise<Array<{ id: string; item: T }>>
+}
+
+export interface PostgresDurableStoreOptions {
+  namespace: string
+  secret: Buffer
+  connectionString?: string
+  maxConnections?: number
+  maxEntries?: number
+}
+
+export function createPostgresDurableStore<T>(options: PostgresDurableStoreOptions) {
+  return postgresStateStore<T>(options)
+}
+
+export function createAsyncDurableStore<T>(options: {
+  namespace: string
+  secret: Buffer
+  driver?: 'sqlite' | 'postgres' | 'memory'
+  connectionString?: string
+  maxConnections?: number
+}): AsyncDurableStore<T> {
+  const driver = stateDriver(options.driver)
+  if (driver === 'postgres') {
+    return createPostgresDurableStore<T>(options)
+  }
+  const syncStore = durableRecords<T>(options.namespace, options.secret)
+  return {
+    get: async (id: string) => syncStore.get(id),
+    set: async (id: string, value: T) => {
+      syncStore.set(id, value)
+    },
+    delete: async (id: string) => syncStore.delete(id),
+    deleteMany: async (ids: Iterable<string>) => syncStore.deleteMany(ids),
+    atomicUpdate: async (id: string, updater: (current: T | undefined) => T) => syncStore.atomicUpdate(id, updater),
+    clear: async () => {
+      const size = syncStore.size
+      syncStore.clear()
+      return size
+    },
+    size: async () => syncStore.size,
+    close: async () => syncStore.close(),
+    sweepBatch: async (batchSize = 100, isExpired?: (item: T) => boolean) => {
+      if (!isExpired) return 0
+      const expired: string[] = []
+      for (const [k, v] of syncStore) {
+        if (isExpired(v)) {
+          expired.push(k)
+          if (expired.length >= batchSize) break
+        }
+      }
+      return syncStore.deleteMany(expired)
+    },
+    scan: async (filter?: (item: T, id: string) => boolean) => {
+      const result: Array<{ id: string; item: T }> = []
+      for (const [k, v] of syncStore) {
+        if (!filter || filter(v, k)) {
+          result.push({ id: k, item: v })
+        }
+      }
+      return result
+    },
+  }
 }
 
 class MemoryDurableRecords<T> extends Map<string, T> implements DurableRecords<T> {

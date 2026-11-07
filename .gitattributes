@@ -3,3 +3,4 @@
 # Unified-diff context prefixes intentionally combine spaces and upstream tabs.
 patches/*.patch text eol=lf -whitespace
 backend/src/migrations/*.sql text eol=lf
+backend/src/migrations/postgres/*.sql text eol=lf

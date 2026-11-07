@@ -1,4 +1,5 @@
-import { durableRecords } from './durable-records'
+import { stateDriver } from './postgres-state'
+import { durableRecords, createPostgresDurableStore } from './durable-records'
 import type { DurableRecords } from './durable-records'
 import {
   createCipheriv,
@@ -42,18 +43,19 @@ export interface BffSessionRecord {
 }
 
 export interface BffSessionStore {
-  get: (key: string, now: number) => BffSessionRecord | undefined
-  set: (record: BffSessionRecord) => void
-  delete: (key: string) => boolean
+  get: (key: string, now: number) => Promise<BffSessionRecord | undefined> | BffSessionRecord | undefined
+  set: (record: BffSessionRecord) => Promise<void> | void
+  replaceIfCurrent?: (previous: BffSessionRecord, next: BffSessionRecord) => Promise<boolean> | boolean
+  delete: (key: string) => Promise<boolean> | boolean
   /** Used by the profile route when a password or second password changes. */
-  deleteByUserId: (userId: number) => number
+  deleteByUserId: (userId: number) => Promise<number> | number
   /** Revokes every local session (backend token_version refresh). */
-  clear: () => number
-  size: () => number
-  close?: () => void
-  sweepBatch?: (batchSize?: number, now?: number) => number
-  onClose?: (callback: () => void) => void
-  onSweep?: (callback: (batchSize: number, now: number) => number) => void
+  clear: () => Promise<number> | number
+  size: () => Promise<number> | number
+  close?: () => Promise<void> | void
+  sweepBatch?: (batchSize?: number, now?: number) => Promise<number> | number
+  onClose?: (callback: () => Promise<void> | void) => void
+  onSweep?: (callback: (batchSize: number, now: number) => number | Promise<number>) => void
 }
 
 export function createOpaqueSessionId(): string {
@@ -212,6 +214,77 @@ export function createSessionRecord(input: CreateSessionRecordInput): BffSession
 export interface MemorySessionStoreOptions {
   secret?: string
   maxEntries?: number
+  driver?: 'sqlite' | 'postgres' | 'memory'
+  postgresUrl?: string
+}
+
+export function createPostgresSessionStore(options: {
+  secret: string
+  connectionString?: string
+  maxConnections?: number
+  maxEntries?: number
+}): BffSessionStore {
+  derivePurposeKey(options.secret, UPSTREAM_TOKEN_PURPOSE)
+  const store = createPostgresDurableStore<BffSessionRecord>({
+    namespace: 'sessions',
+    secret: Buffer.from(options.secret),
+    connectionString: options.connectionString,
+    maxConnections: options.maxConnections,
+    maxEntries: options.maxEntries,
+  })
+
+  const closeCallbacks = new Set<() => Promise<void> | void>()
+  const sweepCallbacks = new Set<(batchSize: number, now: number) => number | Promise<number>>()
+
+  return {
+    async get(key, now) {
+      return store.withLock(key, async ctx => {
+        const record = await ctx.get(key)
+        if (record && record.expiresAt <= now) { await ctx.delete(key); return undefined }
+        return record
+      })
+    },
+    async set(record) {
+      await store.set(record.key, record)
+    },
+    async replaceIfCurrent(previous, next) {
+      return store.compareAndSwap(previous.key, previous, next)
+    },
+    async delete(key) {
+      return await store.delete(key)
+    },
+    async deleteByUserId(userId) {
+      return store.deleteWhere(record => record.identity.id === userId)
+    },
+    async clear() {
+      return await store.clear()
+    },
+    async size() {
+      return await store.size()
+    },
+    async sweepBatch(batchSize = 100, now = Date.now()) {
+      let count = 0
+      for (const cb of sweepCallbacks) {
+        count += await cb(batchSize, now)
+      }
+      const swept = await store.sweepBatch?.(batchSize, r => r.expiresAt <= now) ?? 0
+      return count + swept
+    },
+    async close() {
+      for (const cb of closeCallbacks) {
+        try { await cb() } catch { /* Continue closing the state pool after callback failure. */ }
+      }
+      closeCallbacks.clear()
+      sweepCallbacks.clear()
+      await store.close()
+    },
+    onClose(cb) {
+      closeCallbacks.add(cb)
+    },
+    onSweep(cb) {
+      sweepCallbacks.add(cb)
+    },
+  }
 }
 
 /**
@@ -219,13 +292,22 @@ export interface MemorySessionStoreOptions {
  * encrypted restart persistence; concurrent instances remain unsupported.
  */
 export function createMemorySessionStore(options: MemorySessionStoreOptions = {}): BffSessionStore {
+  const driver = stateDriver(options.driver)
+  if (driver === 'postgres') {
+    return createPostgresSessionStore({
+      secret: options.secret || '',
+      connectionString: options.postgresUrl,
+      maxEntries: options.maxEntries,
+    })
+  }
+
   // A non-finite or sub-one capacity must never disable the bound.
   const maxEntries = typeof options.maxEntries === 'number' && Number.isFinite(options.maxEntries) && options.maxEntries >= 1
     ? Math.floor(options.maxEntries)
     : 10_000
   const records = options.secret ? durableRecords<BffSessionRecord>('sessions', Buffer.from(options.secret)) : new Map<string, BffSessionRecord>()
-  const closeCallbacks = new Set<() => void>()
-  const sweepCallbacks = new Set<(batchSize: number, now: number) => number>()
+  const closeCallbacks = new Set<() => Promise<void> | void>()
+  const sweepCallbacks = new Set<(batchSize: number, now: number) => number | Promise<number>>()
 
   const evictOldest = () => {
     let oldestKey: string | undefined
@@ -253,6 +335,12 @@ export function createMemorySessionStore(options: MemorySessionStoreOptions = {}
       if (!records.has(record.key) && records.size >= maxEntries) evictOldest()
       records.set(record.key, record)
     },
+    replaceIfCurrent(previous, next) {
+      const current = records.get(previous.key)
+      if (!current || JSON.stringify(current) !== JSON.stringify(previous)) return false
+      records.set(next.key, next)
+      return true
+    },
     delete(key) {
       return records.delete(key)
     },
@@ -274,13 +362,22 @@ export function createMemorySessionStore(options: MemorySessionStoreOptions = {}
       }
       return removed
     },
-    sweepBatch(batchSize: number = 100, now: number = Date.now()): number {
+    sweepBatch(batchSize: number = 100, now: number = Date.now()): number | Promise<number> {
       const limit = typeof batchSize === 'number' && Number.isFinite(batchSize) && batchSize > 0
         ? Math.floor(batchSize)
         : 100
       const currentTime = typeof now === 'number' && Number.isFinite(now) ? now : Date.now()
       let relatedRemoved = 0
-      for (const callback of sweepCallbacks) relatedRemoved += callback(limit, currentTime)
+      const asyncCallbacks: Promise<number>[] = []
+      for (const callback of sweepCallbacks) {
+        const res = callback(limit, currentTime)
+        if (res instanceof Promise) {
+          asyncCallbacks.push(res)
+        }
+        else if (typeof res === 'number') {
+          relatedRemoved += res
+        }
+      }
       const expiredKeys: string[] = []
       for (const [key, record] of records) {
         if (record.expiresAt <= currentTime) {
@@ -288,35 +385,40 @@ export function createMemorySessionStore(options: MemorySessionStoreOptions = {}
           if (expiredKeys.length >= limit) break
         }
       }
-      if (expiredKeys.length === 0) return relatedRemoved
       const durable = records as Partial<DurableRecords<BffSessionRecord>>
-      if (typeof durable.deleteMany === 'function') {
-        return relatedRemoved + durable.deleteMany(expiredKeys)
+      const localRemoved = expiredKeys.length === 0
+        ? 0
+        : (typeof durable.deleteMany === 'function'
+            ? durable.deleteMany(expiredKeys)
+            : (() => {
+                let count = 0
+                for (const key of expiredKeys) {
+                  if (records.delete(key)) count += 1
+                }
+                return count
+              })())
+
+      const totalSyncRemoved = relatedRemoved + localRemoved
+      if (asyncCallbacks.length > 0) {
+        return Promise.all(asyncCallbacks).then(results => totalSyncRemoved + results.reduce((a, b) => a + b, 0))
       }
-      let removed = 0
-      for (const key of expiredKeys) {
-        if (records.delete(key)) removed += 1
-      }
-      return relatedRemoved + removed
+      return totalSyncRemoved
     },
     close() {
+      const pending: Promise<void>[] = []
       for (const cb of closeCallbacks) {
-        try {
-          cb()
-        }
-        catch {
-          // Ignore callback error on shutdown
-        }
+        try { pending.push(Promise.resolve(cb())) } catch { /* Continue closing remaining stores. */ }
       }
       closeCallbacks.clear()
       sweepCallbacks.clear()
       const durable = records as Partial<DurableRecords<BffSessionRecord>>
       durable.close?.()
+      return Promise.allSettled(pending).then(() => {})
     },
-    onClose(callback: () => void) {
+    onClose(callback: () => Promise<void> | void) {
       closeCallbacks.add(callback)
     },
-    onSweep(callback: (batchSize: number, now: number) => number) {
+    onSweep(callback: (batchSize: number, now: number) => number | Promise<number>) {
       sweepCallbacks.add(callback)
     },
     clear() {

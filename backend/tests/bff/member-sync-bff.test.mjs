@@ -64,8 +64,8 @@ it('integrates member-sync BFF writes and refreshes warmed public members after 
   expect(deliveries.data.items.length).toBeGreaterThan(0)
   expect(JSON.stringify(deliveries.data)).not.toMatch(/"payload"|"target_id"|"recipient_user_id"|"secret_hash"/)
   const delivery=deliveries.data.items[0]
-  await run(f.db,"UPDATE bot_deliveries SET status='failed',attempts=2 WHERE id=?",[delivery.id])
+  await run(f.db,"UPDATE bot_deliveries SET status='failed',attempts=2 WHERE id=$1",[delivery.id])
   expect((await call(`/api/bff/admin/bot-deliveries?id=${delivery.id}`,{method:'POST',headers:{origin,'content-type':'application/json'},body:'{}'})).response.status).toBe(403)
   expect((await call(`/api/bff/admin/bot-deliveries?id=${delivery.id}`,{method:'POST',headers,body:'{}'})).response.status).toBe(200)
-  expect(await get(f.db,'SELECT status,attempts FROM bot_deliveries WHERE id=?',[delivery.id])).toEqual({status:'pending',attempts:0})
+  expect(await get(f.db,"SELECT status,attempts FROM bot_deliveries WHERE id=$1",[delivery.id])).toEqual({status:'pending',attempts:0})
 })

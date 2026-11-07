@@ -1,7 +1,7 @@
 import fs from 'node:fs'
 import path from 'node:path'
 import sharp from 'sharp'
-import type { SqlExecutor } from '../database/sqlite.js'
+import type { SqlExecutor } from '../database/contracts.js'
 import { legacyJsonBinding } from '../database/legacy-json-binding.js'
 import { isSafePath, positiveId } from '../utils/storage-boundary.js'
 import type { ImageStorage, UploadedImage } from './images.js'
@@ -24,7 +24,7 @@ export function createUploadControllers(options: {
     if (!isSafePath(options.publicRoot, filename)) throw new Error('Unsafe storage path')
     await fs.promises.mkdir(filename, { recursive: true })
   }
-  const event = (eid: unknown) => options.store.get<{ id: number; status: string | null }>('SELECT id,status FROM events WHERE id=?', [legacyJsonBinding(eid)])
+  const event = (eid: unknown) => options.store.get<{ id: number; status: string | null }>("SELECT id,status FROM events WHERE id=$1", [legacyJsonBinding(eid)])
   return {
     adminParameters: (req: UploadRequest, res: UploadResponse, next: UploadNext) => {
       if (req.query.activityId !== undefined && !positiveId(req.query.activityId)) return res.status(400).json({ message: 'Invalid activity id' })

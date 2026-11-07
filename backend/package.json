@@ -21,9 +21,11 @@
     "admin:bootstrap": "node dist/src/admin/bootstrap-cli.js",
     "db:check": "node dist/src/migrations/cli.js check",
     "db:inspect": "node dist/src/migrations/cli.js inspect",
-    "db:migrate": "node dist/src/migrations/cli.js"
+    "db:migrate": "node dist/src/migrations/cli.js",
+    "db:postgres": "node dist/src/migrations/postgres/cli.js"
   },
   "dependencies": {
+    "@guatswr/shared": "workspace:*",
     "bcryptjs": "2.4.3",
     "cors": "2.8.6",
     "dotenv": "16.6.1",
@@ -33,23 +35,24 @@
     "js-yaml": "4.3.2",
     "jsonwebtoken": "9.0.3",
     "multer": "2.5.0",
+    "pg": "8.23.1",
     "pino": "10.4.0",
     "proxy-addr": "2.0.8",
     "sharp": "0.35.5",
     "sqlite3": "5.1.7",
-    "swagger-ui-express": "5.0.1",
-    "@guatswr/shared": "workspace:*"
+    "swagger-ui-express": "5.0.1"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@types/express": "5.0.6",
     "@types/node": "24.10.0",
+    "@types/pg": "8.23.1",
     "eslint": "10.13.0",
     "nodemon": "3.1.14",
     "supertest": "7.3.1",
     "typescript": "6.0.2",
     "typescript-eslint": "8.71.2",
-    "vitest": "5.0.5",
-    "@types/express": "5.0.6"
+    "vitest": "5.0.5"
   },
   "engines": {
     "node": ">=24.16.0 <25"

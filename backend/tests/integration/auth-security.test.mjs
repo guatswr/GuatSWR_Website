@@ -44,7 +44,7 @@ it('A02 incorrect second passwords count toward the same five-attempt lock',asyn
 it('A02 fixed legacy CBC remains readable and malformed ciphertext fails safely',async()=>{
  const f=await fixture()
  // Frozen CBC bytes produced before the TypeScript extraction, using the fixture key.
- await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret=? WHERE id=2",['BwcHBwcHBwcHBwcHBwcHBw==:tHx0e38DbY3/JeeueK45eyfKCqmMl+vDt2fwZ6xqfuk='])
+ await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret=$1 WHERE id=2",['BwcHBwcHBwcHBwcHBwcHBw==:tHx0e38DbY3/JeeueK45eyfKCqmMl+vDt2fwZ6xqfuk='])
  expect((await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'legacy-second-password'})).status).toBe(200)
  await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret='bad:bad' WHERE id=2")
  const response=await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'second-password'})
@@ -55,7 +55,7 @@ it('A02 fixed legacy CBC remains readable and malformed ciphertext fails safely'
 
 it('A02 legacy CBC seamlessly upgrades to bcrypt hash on successful login and supports bcrypt 2FA',async()=>{
  const f=await fixture()
- await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret=? WHERE id=2",['BwcHBwcHBwcHBwcHBwcHBw==:tHx0e38DbY3/JeeueK45eyfKCqmMl+vDt2fwZ6xqfuk='])
+ await run(f.db,"UPDATE users SET twofa_enabled=1,twofa_secret=$1 WHERE id=2",['BwcHBwcHBwcHBwcHBwcHBw==:tHx0e38DbY3/JeeueK45eyfKCqmMl+vDt2fwZ6xqfuk='])
  const res1=await f.http.post('/api/auth/login').send({username:'admin',password:'fixture-password',twofa:'legacy-second-password'})
  expect(res1.status).toBe(200)
  const row=await get(f.db,'SELECT twofa_secret FROM users WHERE id=2')
@@ -78,21 +78,19 @@ it('A04 missing administrator targets return 404 and cannot alter existing users
  expect((await f.http.delete('/api/admin/users/999').set('Authorization',`Bearer ${token()}`)).status).toBe(404)
  expect((await get(f.db,'SELECT count(*) AS n FROM users')).n).toBe(4)
 })
-it('D04 early security statements remain atomic across two real SQLite connections',async()=>{
+it.skipIf(Boolean(process.env.PG_BUSINESS_ADMIN_URL))('D04 early security statements remain atomic across two real SQLite connections',async()=>{
  const f=await fixture()
  const {createRequire}=await import('node:module')
  const require=createRequire(import.meta.url)
- const sqlite=require('sqlite3')
- const db2=await new Promise((resolve,reject)=>{const db=new sqlite.Database(f.context.dbPath,error=>error?reject(error):resolve(db))})
+ const otherStore=require('../../dist/src/database/sqlite.js').createSqliteStore(f.context.dbPath)
  try{
-  await run(db2,'PRAGMA busy_timeout=5000')
-  const other=require('../../src/models/security')({db:db2})
+  const other=require('../../dist/src/security/service.js').createSecurityService(otherStore)
   const versions=await Promise.all(Array.from({length:12},(_,n)=>(n%2?other:f.context.security).incrementVersion()))
   expect([...versions].sort((a,b)=>a-b)).toEqual(Array.from({length:12},(_,n)=>n+1))
   const deleted=await Promise.all([f.context.security.deleteAdmin(3,1),other.deleteAdmin(1,3)])
   expect(deleted.filter(Boolean)).toHaveLength(1)
   expect((await get(f.db,"SELECT count(*) AS n FROM users WHERE role='super_admin'")).n).toBe(1)
- }finally{await new Promise((resolve,reject)=>db2.close(error=>error?reject(error):resolve()))}
+ }finally{await otherStore.close()}
 })
 it('A02 concurrent credential failures count atomically and cap at five',async()=>{
  const f=await fixture()

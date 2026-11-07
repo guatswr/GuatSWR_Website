@@ -1,6 +1,6 @@
 import path from 'node:path'
 import { existsSync } from 'node:fs'
-import type { Row } from '../../database/sqlite.js'
+import type { Row } from '../../database/contracts.js'
 import type { MemberRow } from './repository.js'
 
 export function normalizeTags(tags: unknown): string[] {

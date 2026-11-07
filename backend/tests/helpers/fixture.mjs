@@ -33,12 +33,13 @@ export const fixture = async (overrides = {}) => {
     if (path.dirname(absolute) !== path.resolve(os.tmpdir()) || !path.basename(absolute).startsWith('guatswr-contract-')) throw new Error('Unsafe fixture cleanup')
     await fs.rm(absolute, { recursive: true, force: true })
   })
-  instance = await createApplication({ env: { NODE_ENV: 'test', JWT_SECRET: secret, BFF_BRIDGE_SECRET: bridgeKey, ...overrides.env },
+  const factory = process.env.PG_BUSINESS_ADMIN_URL ? (await import('./postgres-application.mjs')).createPostgresTestApplication : createApplication
+  instance = await factory({ env: { NODE_ENV: 'test', JWT_SECRET: secret, BFF_BRIDGE_SECRET: bridgeKey, ...overrides.env },
     paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },
     backgroundTasks: false, externalServices: false, logDestination: overrides.logDestination })
   // Explicit direct-loopback test topology. Production proxy policy is tested separately.
   // Default policy is supplied by the application, never overridden here.
-  const db = instance.context.db
+  const db = instance.fixtureDb || instance.context.db
   for (const [id, name, role] of [[1, 'owner', 'super_admin'], [2, 'admin', 'admin'], [3, 'second', 'super_admin'], [4, 'target', 'admin']]) {
     await run(db, 'INSERT INTO users(id,username,password,role,avatar) VALUES (?,?,?,?,?)', [id,name,hash,role,'/uploads/avatar.png'])
   }
@@ -48,9 +49,10 @@ export const fixture = async (overrides = {}) => {
   await run(db, "INSERT INTO events(id,type,title,status,content,visitor_ip,created_by) VALUES (1,'STG','public','published','{}','203.0.113.1',2),(2,'general','draft','draft','{}','203.0.113.2',NULL),(3,'STG','pending','pending','{}','203.0.113.3',2)")
   await run(db, "INSERT INTO event_participants(event_id,user_id,visitor_ip,common_id,qq,avatar) VALUES (1,2,'203.0.113.2','pilot','12345','/uploads/avatar.png')")
   await run(db, "INSERT INTO site_config VALUES ('banner_text','fixture'),('internal_test_key','private')")
-  await run(instance.context.logDb, "INSERT INTO audit_logs(id,username,action,details,created_at) VALUES (1,'admin','CREATE_ACTIVITY','synthetic details','2026-01-01 00:00:00')")
+  await run(instance.fixtureLogDb || instance.context.logDb, "INSERT INTO audit_logs(id,username,action,details,created_at) VALUES (1,'admin','CREATE_ACTIVITY','synthetic details','2026-01-01 00:00:00')")
+  await instance.fixtureSeeded?.()
   await fs.mkdir(path.join(root, 'backups/full'), { recursive: true })
   await fs.writeFile(path.join(root, 'backups/full/fixture.tar.gz'), Buffer.from('synthetic backup bytes'))
   const server = await instance.listen(0, '127.0.0.1')
-  return { ...instance, root, db, logDb: instance.context.logDb, http: request(server), origin: `http://127.0.0.1:${server.address().port}`, fs }
+  return { ...instance, root, db, logDb: instance.fixtureLogDb || instance.context.logDb, http: request(server), origin: `http://127.0.0.1:${server.address().port}`, fs }
 }

@@ -47,7 +47,7 @@ describe('AUTH-04: Event submission idempotency across crash and retry', () => {
     const replay = await f.http.put(`/api/event/${eid}`).set(headers('save', eid)).send(payload)
     expect(replay.status).toBe(200)
     expect(replay.body.replayed).toBe(true)
-    await run(f.db, "UPDATE events SET status='published' WHERE id=?", [eid])
+    await run(f.db, "UPDATE events SET status='published' WHERE id=$1", [eid])
     const approvedReplay = await f.http.put(`/api/event/${eid}`).set(headers('save', eid)).send(payload)
     expect(approvedReplay.status).toBe(200)
     expect(approvedReplay.body.replayed).toBe(true)
@@ -69,7 +69,7 @@ describe('AUTH-04: Event submission idempotency across crash and retry', () => {
     expect(firstRes.body.replayed).toBe(false)
 
     // Verify submission record was created in the same transaction
-    const submission = await get(f.db, 'SELECT * FROM event_submissions WHERE event_id=?', [eid])
+    const submission = await get(f.db, "SELECT * FROM event_submissions WHERE event_id=$1", [eid])
     expect(submission).toBeDefined()
     expect(submission.event_id).toBe(eid)
     expect(submission.digest).toBe(computeCanonicalPayloadDigest(submitPayload))
@@ -90,7 +90,7 @@ describe('AUTH-04: Event submission idempotency across crash and retry', () => {
     expect(replayRes.body.replayed).toBe(true)
 
     // Verify no duplicate submission or duplicate notification
-    const subCount = await get(f.db, 'SELECT count(*) as count FROM event_submissions WHERE event_id=?', [eid])
+    const subCount = await get(f.db, "SELECT count(*) as count FROM event_submissions WHERE event_id=$1", [eid])
     expect(subCount.count).toBe(1)
     const notifsAfter = await all(f.db, "SELECT * FROM bot_notifications WHERE event_name='event.pending'")
     expect(notifsAfter.length).toBe(1)
@@ -162,7 +162,7 @@ describe('AUTH-04: Event submission idempotency across crash and retry', () => {
     expect(notifications.length).toBe(1)
 
     // Exactly 1 submission receipt
-    const subCount = await get(f.db, 'SELECT count(*) as count FROM event_submissions WHERE event_id=?', [eid])
+    const subCount = await get(f.db, "SELECT count(*) as count FROM event_submissions WHERE event_id=$1", [eid])
     expect(subCount.count).toBe(1)
   })
 })

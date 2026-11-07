@@ -56,8 +56,8 @@ export interface BffRuntimeFactoryDeps {
 
 export interface BffRuntimeFactory {
   resolve: (inputs: BffRuntimeInputs) => BffRuntime
-  close: () => void
-  sweepBatch?: (batchSize?: number) => number
+  close: () => Promise<void> | void
+  sweepBatch?: (batchSize?: number) => number | Promise<number>
   getActiveCleanupTimer?: () => NodeJS.Timeout | undefined
 }
 
@@ -184,7 +184,7 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
           cleanupTimer = undefined
         }
         if (store) {
-          store.close?.()
+          void Promise.resolve(store.close?.()).catch(() => {})
         }
         store = createStore({ maxEntries: config.memorySessionLimit, secret })
         storeLimit = config.memorySessionLimit
@@ -194,7 +194,7 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
           const targetStore = store
           cleanupTimer = setInterval(() => {
             try {
-              targetStore.sweepBatch?.(100)
+              void Promise.resolve(targetStore.sweepBatch?.(100)).catch(() => {})
             }
             catch {
               // Background sweep errors must not crash the process
@@ -257,13 +257,13 @@ export function createBffRuntimeFactory(deps: BffRuntimeFactoryDeps = {}): BffRu
         trust,
       }
     },
-    close() {
+    async close() {
       if (cleanupTimer) {
         clearInterval(cleanupTimer)
         cleanupTimer = undefined
       }
       if (store) {
-        store.close?.()
+        await store.close?.()
         store = undefined
         storeLimit = -1
         storeSecret = ''

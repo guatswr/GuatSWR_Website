@@ -28,7 +28,7 @@ it('rotates recovery past retained live-process journals without starving later 
 
 it('keeps an existing staging reference readable when the final database mutation rolls back', async () => {
   const f = await fixture(), source = await staged(f)
-  await run(f.db, "INSERT INTO site_config(key,value) VALUES('home_bg',?)", [source.url])
+  await run(f.db, "INSERT INTO site_config(key,value) VALUES('home_bg',$1)", [source.url])
   await run(f.db, "CREATE TRIGGER fail_publish BEFORE INSERT ON site_config WHEN NEW.key='home_bg' BEGIN SELECT RAISE(ABORT,'synthetic'); END")
   expect((await config(f, source.url)).status).toBe(500)
   expect((await get(f.db, "SELECT value FROM site_config WHERE key='home_bg'")).value).toBe(source.url)
@@ -43,23 +43,23 @@ it.each(['history', 'members', 'activities', 'event', 'profile'])('preserves an 
   const f = await fixture(), source = await staged(f)
   let request, expected
   if (domain === 'history') {
-    await run(f.db, 'UPDATE history SET image=? WHERE id=1', [source.url])
+    await run(f.db, "UPDATE history SET image=$1 WHERE id=1", [source.url])
     expected = () => get(f.db, 'SELECT image AS value FROM history WHERE id=1')
     request = () => f.http.put('/api/history/1').send({ date: '2026-01-01', title: 'rollback', image: source.url })
   } else if (domain === 'members') {
-    await run(f.db, 'UPDATE members SET avatar=? WHERE id=1', [source.url])
+    await run(f.db, "UPDATE members SET avatar=$1 WHERE id=1", [source.url])
     expected = () => get(f.db, 'SELECT avatar AS value FROM members WHERE id=1')
     request = () => f.http.put('/api/members/1').send({ name: 'rollback', role: 'member', avatar: source.url })
   } else if (domain === 'activities') {
-    await run(f.db, 'UPDATE activities SET cover_image=? WHERE id=1', [source.url])
+    await run(f.db, "UPDATE activities SET cover_image=$1 WHERE id=1", [source.url])
     expected = () => get(f.db, 'SELECT cover_image AS value FROM activities WHERE id=1')
     request = () => f.http.put('/api/activities/1').send({ title: 'rollback', tag: 'STG', date: '2026-01-01', cover_image: source.url })
   } else if (domain === 'event') {
-    await run(f.db, 'UPDATE events SET content=? WHERE id=1', [JSON.stringify({ cover: source.url })])
+    await run(f.db, "UPDATE events SET content=$1 WHERE id=1", [JSON.stringify({ cover: source.url })])
     expected = async () => ({ value: JSON.parse((await get(f.db, 'SELECT content FROM events WHERE id=1')).content).cover })
     request = () => f.http.put('/api/event/1').send({ content: { cover: source.url } })
   } else {
-    await run(f.db, 'UPDATE users SET avatar=? WHERE id=2', [source.url])
+    await run(f.db, "UPDATE users SET avatar=$1 WHERE id=2", [source.url])
     expected = () => get(f.db, 'SELECT avatar AS value FROM users WHERE id=2')
     request = () => f.http.put('/api/auth/profile').send({ avatar: source.url })
   }
@@ -73,13 +73,13 @@ it.each(['history', 'members', 'activities', 'event', 'profile'])('preserves an 
 
 it('retains shared staging originals, including references in recoverable soft-deleted rows', async () => {
   const f = await fixture(), source = await staged(f)
-  await run(f.db, "UPDATE members SET avatar=?,deleted_at='2026-01-01' WHERE id=1", [source.url])
+  await run(f.db, "UPDATE members SET avatar=$1,deleted_at='2026-01-01' WHERE id=1", [source.url])
   expect((await config(f, source.url)).status).toBe(200)
   const value = (await get(f.db, "SELECT value FROM site_config WHERE key='home_bg'")).value
   expect(value).toBe('/uploads/img/bg/home/prepared.png')
   expect(await f.fs.readFile(f.context.storage.resolveUploadsPath(value), 'utf8')).toBe('synthetic immutable image bytes')
   expect(await f.fs.readFile(source.filename, 'utf8')).toBe('synthetic immutable image bytes')
-  expect((await get(f.db, 'SELECT state FROM asset_cleanup_jobs WHERE url=?', [source.url])).state).toBe('retained')
+  expect((await get(f.db, "SELECT state FROM asset_cleanup_jobs WHERE url=$1", [source.url])).state).toBe('retained')
 })
 
 it('publishes same-name copies exclusively and never overwrites the concurrent winner', async () => {
@@ -95,7 +95,7 @@ it('publishes same-name copies exclusively and never overwrites the concurrent w
   })
   const save = (folder, key) => f.context.storage.publication.publish(['/uploads/upload/' + folder + '/collision.png'],
     () => f.context.storage.moveStagedFile('/uploads/upload/' + folder + '/collision.png', f.context.storage.getConfigDir('home_bg')),
-    async (url, tx) => { await tx.run('INSERT OR REPLACE INTO site_config(key,value) VALUES(?,?)', [key, url]); return { url, folder } })
+    async (url, tx) => { await tx.run("INSERT INTO site_config(key,value) VALUES($1,$2) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [key, url]); return { url, folder } })
   const outcomes = Promise.allSettled([save('a', 'home_bg'), save('b', 'join_bg')])
   try { await arrived.promise; release.resolve(); const result = await outcomes
     expect(result.filter(value => value.status === 'fulfilled')).toHaveLength(1)
@@ -125,7 +125,7 @@ it('never removes a replacement file at a prepared destination after metadata va
     await f.fs.rename(destination, destination + '.owned-copy')
     await f.fs.writeFile(destination, 'replacement must remain')
     return url
-  }, (value, tx) => tx.run("INSERT OR REPLACE INTO site_config(key,value) VALUES('home_bg',?)", [value]))).rejects.toHaveProperty('status', 409)
+  }, (value, tx) => tx.run("INSERT INTO site_config(key,value) VALUES('home_bg',$1) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [value]))).rejects.toHaveProperty('status', 409)
   expect(await get(f.db, "SELECT value FROM site_config WHERE key='home_bg'")).toBeUndefined()
   expect(await f.fs.readFile(destination, 'utf8')).toBe('replacement must remain')
   expect(await f.fs.readFile(source.filename, 'utf8')).toBe('synthetic immutable image bytes')
@@ -137,7 +137,7 @@ it('does not commit a file URL after a concurrent cleanup quarantines its prepar
   const saving = f.context.storage.publication.publish([source.url], async () => {
     url = await f.context.storage.moveStagedFile(source.url, f.context.storage.getConfigDir('home_bg'))
     prepared.resolve(); await release.promise; return url
-  }, (value, tx) => tx.run("INSERT OR REPLACE INTO site_config(key,value) VALUES('home_bg',?)", [value]))
+  }, (value, tx) => tx.run("INSERT INTO site_config(key,value) VALUES('home_bg',$1) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [value]))
   const rejected = expect(saving).rejects.toHaveProperty('status', 409)
   await prepared.promise
   try {
@@ -155,7 +155,7 @@ it('observes nested existing file references before a concurrent cleanup can rem
   await f.fs.writeFile(filename, 'observed bytes')
   const entered = Promise.withResolvers(), release = Promise.withResolvers()
   const saving = f.context.storage.publication.publish([{ nested: [url] }], async () => { entered.resolve(); await release.promise; return url },
-    (value, tx) => tx.run("INSERT OR REPLACE INTO site_config(key,value) VALUES('home_bg',?)", [value]))
+    (value, tx) => tx.run("INSERT INTO site_config(key,value) VALUES('home_bg',$1) ON CONFLICT(key) DO UPDATE SET value=excluded.value", [value]))
   const rejected = expect(saving).rejects.toHaveProperty('status', 409)
   await entered.promise
   try {
@@ -170,7 +170,7 @@ it('observes nested existing file references before a concurrent cleanup can rem
 it('retains a spaced filename referenced by quoted HTML content in another row', async () => {
   const f = await fixture(), url = '/uploads/img/space image.png', filename = path.join(f.context.IMG_ROOT_DIR, 'space image.png')
   await f.fs.writeFile(filename, 'shared spaced image')
-  await run(f.db, 'UPDATE activities SET content=? WHERE id=1', ['<img src="' + url + '">'])
+  await run(f.db, "UPDATE activities SET content=$1 WHERE id=1", ['<img src="' + url + '">'])
   const targets = await captureCleanupTargets(f.context.PUBLIC_DIR, [url])
   await f.context.sql.main.transaction(tx => enqueueCleanup(tx, targets))
   expect(await processCleanupJob(f.context.sql.main, f.context.PUBLIC_DIR, path.join(f.context.DATA_DIR, 'asset-quarantine'), targets[0].id)).toBe('retained')
@@ -180,7 +180,7 @@ it('retains a spaced filename referenced by quoted HTML content in another row',
 it('expires only unreferenced public staging into quarantine and keeps ambiguous directories/private files', async () => {
   const f = await fixture(), saved = await staged(f, 'saved.png'), unused = await staged(f, 'unused.png')
   for (const source of [saved, unused]) await f.fs.utimes(source.filename, new Date(0), new Date(0))
-  await run(f.db, "INSERT INTO site_config(key,value) VALUES('home_bg',?)", [saved.url])
+  await run(f.db, "INSERT INTO site_config(key,value) VALUES('home_bg',$1)", [saved.url])
   const nested = path.join(f.context.UPLOADS_DIR, 'legacy-directory')
   await f.fs.mkdir(nested); await f.fs.writeFile(path.join(nested, 'keep'), 'retain directory')
   const unknown = path.join(f.context.PRIVATE_UPLOADS_DIR, 'operator-file.txt')
@@ -188,7 +188,7 @@ it('expires only unreferenced public staging into quarantine and keeps ambiguous
   await f.context.storage.cleanupStaging(48 * 3600000)
   expect(await f.fs.readFile(saved.filename, 'utf8')).toBe('synthetic immutable image bytes')
   await expect(f.fs.stat(unused.filename)).rejects.toHaveProperty('code', 'ENOENT')
-  expect((await get(f.db, 'SELECT state FROM asset_cleanup_jobs WHERE url=?', [unused.url])).state).toBe('quarantined')
+  expect((await get(f.db, "SELECT state FROM asset_cleanup_jobs WHERE url=$1", [unused.url])).state).toBe('quarantined')
   expect(await f.fs.readFile(path.join(nested, 'keep'), 'utf8')).toBe('retain directory')
   expect(await f.fs.readFile(unknown, 'utf8')).toBe('retain unrecognized private file')
 })
@@ -202,13 +202,13 @@ it('uses the miscellaneous directory for owner-only prototype-named config keys'
 it('does not enqueue referenced staging repeatedly or duplicate a pending expiry behind a fence', async () => {
   const f = await fixture(), saved = await staged(f, 'saved.png'), unused = await staged(f, 'unused.png')
   for (const source of [saved, unused]) await f.fs.utimes(source.filename, new Date(0), new Date(0))
-  await run(f.db, "INSERT INTO site_config(key,value) VALUES('home_bg',?)", [saved.url])
+  await run(f.db, "INSERT INTO site_config(key,value) VALUES('home_bg',$1)", [saved.url])
   const fence = path.join(f.context.DATA_DIR, '.asset-cleanup-fence')
   await f.fs.mkdir(fence)
   try {
     await f.context.storage.cleanupStaging(48 * 3600000); await f.context.storage.cleanupStaging(48 * 3600000)
-    expect((await get(f.db, 'SELECT COUNT(*) AS n FROM asset_cleanup_jobs WHERE url=?', [saved.url])).n).toBe(0)
-    expect((await get(f.db, 'SELECT COUNT(*) AS n FROM asset_cleanup_jobs WHERE url=?', [unused.url])).n).toBe(1)
+    expect((await get(f.db, "SELECT COUNT(*) AS n FROM asset_cleanup_jobs WHERE url=$1", [saved.url])).n).toBe(0)
+    expect((await get(f.db, "SELECT COUNT(*) AS n FROM asset_cleanup_jobs WHERE url=$1", [unused.url])).n).toBe(1)
   } finally { await f.fs.rmdir(fence) }
 })
 
@@ -232,7 +232,7 @@ it('bounds unique local input references before filesystem preparation or a busi
 
 it.each(['prepared', 'committed'])('reconciles a real process killed after publication is %s', async phase => {
   const f = await fixture(), source = await staged(f, 'crash.png')
-  const child = spawn(process.execPath, [path.resolve('tests/helpers/publication-crash.cjs'), f.context.DATA_DIR, f.context.PUBLIC_DIR, f.context.BACKUP_ROOT, phase], { stdio: ['ignore', 'pipe', 'pipe'] })
+  const child = spawn(process.execPath, [path.resolve('tests/helpers/publication-crash.cjs'), f.context.DATA_DIR, f.context.PUBLIC_DIR, f.context.BACKUP_ROOT, phase], { stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, DATABASE_DRIVER: f.context.databaseDriver, POSTGRES_URL: f.context.env.POSTGRES_URL } })
   const exited = once(child, 'exit')
   onTestFinished(() => { if (child.exitCode === null && child.signalCode === null) child.kill('SIGKILL') })
   await new Promise((resolve, reject) => {

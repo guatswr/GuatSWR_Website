@@ -1,6 +1,7 @@
+import { tableNames, findTable } from '../database/sql.js'
 import path from 'node:path'
 import fs from 'node:fs/promises'
-import type { SqlExecutor } from '../database/sqlite.js'
+import type { SqlExecutor } from '../database/contracts.js'
 
 const key = (filename: string) => process.platform === 'win32' ? filename.toLowerCase() : filename
 
@@ -121,7 +122,7 @@ export function extractReferencesFromValue(value: unknown, root: string): {
 // One SELECT sees a consistent database snapshot, including soft-deleted rows which
 // may still be restored. Keep this list in sync when adding an asset-bearing column.
 export async function assetReferences(db: SqlExecutor, root: string) {
-  const revisions = await db.get("SELECT name FROM sqlite_master WHERE type='table' AND name='activity_revisions'")
+  const revisions = await findTable(db, 'activity_revisions')
   const rows = await db.all<{ value: unknown }>(`
     SELECT avatar AS value FROM users UNION ALL SELECT avatar FROM members
     UNION ALL SELECT image FROM history UNION ALL SELECT cover_image FROM activities
@@ -204,16 +205,16 @@ export async function syncEntityAssetReferences(
   const sourceId = String(options.sourceId)
   const version = options.sourceVersion ?? 1
   await tx.run(
-    'DELETE FROM asset_references WHERE source_type = ? AND source_id = ? AND source_field = ?',
+    "DELETE FROM asset_references WHERE source_type = $1 AND source_id = $2 AND source_field = $3",
     [options.sourceType, sourceId, options.sourceField],
   )
 
   const { references } = extractReferencesFromValue(options.value, root)
   for (const ref of references) {
     await tx.run(
-      `INSERT OR IGNORE INTO asset_references
+      `INSERT INTO asset_references
        (source_type, source_id, source_field, source_version, asset_path, family_key, incomplete)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+       VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT(source_type,source_id,source_field,asset_path) DO NOTHING RETURNING id`,
       [options.sourceType, sourceId, options.sourceField, version, ref.assetPath, ref.familyKey, ref.incomplete ? 1 : 0],
     )
   }
@@ -230,12 +231,12 @@ export async function removeEntityAssetReferences(
 ): Promise<void> {
   if (sourceField) {
     await tx.run(
-      'DELETE FROM asset_references WHERE source_type = ? AND source_id = ? AND source_field = ?',
+      "DELETE FROM asset_references WHERE source_type = $1 AND source_id = $2 AND source_field = $3",
       [sourceType, String(sourceId), sourceField],
     )
   } else {
     await tx.run(
-      'DELETE FROM asset_references WHERE source_type = ? AND source_id = ?',
+      "DELETE FROM asset_references WHERE source_type = $1 AND source_id = $2",
       [sourceType, String(sourceId)],
     )
   }
@@ -262,7 +263,7 @@ export async function rebuildAssetReferences(
     return holder.transaction(tx => rebuildAssetReferences(tx, root, options))
   }
   const tables = new Set(
-    (await db.all<{ name: string }>("SELECT name FROM sqlite_master WHERE type='table'")).map(r => r.name),
+    (await tableNames(db)).map(r => r.name),
   )
 
   interface PendingRecord {
@@ -332,9 +333,9 @@ export async function rebuildAssetReferences(
       await tx.run('DELETE FROM asset_references')
       for (const g of gathered) {
         await tx.run(
-          `INSERT OR IGNORE INTO asset_references
+          `INSERT INTO asset_references
            (source_type, source_id, source_field, source_version, asset_path, family_key, incomplete)
-           VALUES (?, ?, ?, ?, ?, ?, ?)`,
+           VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT(source_type,source_id,source_field,asset_path) DO NOTHING RETURNING id`,
           [g.sourceType, g.sourceId, g.sourceField, g.sourceVersion, g.assetPath, g.familyKey, g.incomplete],
         )
       }
@@ -411,9 +412,7 @@ export async function isAnyAssetTargetReferenced(
   }
 
   // 2. Check shadow index table
-  const hasTable = await tx.get<{ name: string }>(
-    "SELECT name FROM sqlite_master WHERE type='table' AND name='asset_references'",
-  )
+  const hasTable = await findTable(tx, 'asset_references')
   if (hasTable) {
     for (const target of targetFilenames) {
       const fam = family(target)
@@ -421,13 +420,13 @@ export async function isAnyAssetTargetReferenced(
 
       // Scoped fail-safe: if THIS target has an incomplete/unparseable reference, retain it
       const incomplete = await tx.get<{ count: number }>(
-        'SELECT count(*) as count FROM asset_references WHERE incomplete = 1 AND (family_key = ? OR asset_path = ?)',
+        "SELECT count(*) as count FROM asset_references WHERE incomplete = 1 AND (family_key = $1 OR asset_path = $2)",
         [fam, norm],
       )
       if (incomplete && incomplete.count > 0) return true
 
       const found = await tx.get<{ id: number }>(
-        'SELECT id FROM asset_references WHERE family_key = ? OR asset_path = ? LIMIT 1',
+        "SELECT id FROM asset_references WHERE family_key = $1 OR asset_path = $2 LIMIT 1",
         [fam, norm],
       )
       if (found) return true

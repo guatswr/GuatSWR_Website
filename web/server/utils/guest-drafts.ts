@@ -1,4 +1,6 @@
-import { durableRecords } from './durable-records'
+import { stateDriver } from './postgres-state'
+import { BffError } from './bff-errors'
+import { durableRecords, createPostgresDurableStore } from './durable-records'
 import type { DurableRecords } from './durable-records'
 import { createHmac, randomBytes } from 'node:crypto'
 
@@ -45,6 +47,9 @@ export interface GuestDraftRecord {
   receipts: GuestDraftReceipt[]
   lastIssuedAt: number
   updatedAt: number
+  inFlightDraftId?: number
+  intentGeneration?: string
+  submissionLeases?: Record<string, { token: string; until: number }>
 }
 
 export interface GuestIntent {
@@ -68,6 +73,9 @@ export interface GuestDraftStoreOptions {
   maxInflight?: number
   namespace?: string
   reuseMs?: number
+  driver?: 'sqlite' | 'postgres' | 'memory'
+  connectionString?: string
+  submissionLeaseMs?: number
 }
 
 export interface IssuedDraft {
@@ -85,7 +93,7 @@ export type GuestSubmissionState =
   | { kind: 'new' }
 
 export interface GuestDraftStore {
-  read(intent: GuestIntent): GuestDraftRecord | undefined
+  read(intent: GuestIntent): Promise<GuestDraftRecord | undefined> | GuestDraftRecord | undefined
   /**
    * Issues (or reuses) one draft id per intent. Concurrent calls for the same
    * record are serialized. A cookie that expired, is malformed, belongs to
@@ -93,7 +101,7 @@ export interface GuestDraftStore {
    * fresh opaque id rather than being reassigned.
    */
   issue(intent: GuestIntent, create: () => Promise<number>): Promise<IssuedDraft>
-  owns(intent: GuestIntent, id: number): boolean
+  owns(intent: GuestIntent, id: number): Promise<boolean> | boolean
   /**
    * Confirmed-submission bookkeeping. `begin` reports a replay for an identical
    * payload that already succeeded, so the caller must not repeat the mutation.
@@ -101,16 +109,16 @@ export interface GuestDraftStore {
    * until `confirmSubmission` runs, so without the marker two concurrent
    * identical saves would both be told `new` and both reach the frozen backend.
    */
-  beginSubmission(intent: GuestIntent, id: number, digest: string): GuestSubmissionState
-  confirmSubmission(intent: GuestIntent, id: number, digest: string): void
+  beginSubmission(intent: GuestIntent, id: number, digest: string): Promise<GuestSubmissionState> | GuestSubmissionState
+  confirmSubmission(intent: GuestIntent, id: number, digest: string): Promise<void> | void
   /** Releases the in-flight marker after a failed or abandoned submission. */
-  abortSubmission(intent: GuestIntent, id: number): void
+  abortSubmission(intent: GuestIntent, id: number): Promise<void> | void
   /** Canonical payload digest, derived from the store's own key. */
   digest(intent: GuestIntent, payload: unknown): string
-  size(): number
+  size(): Promise<number> | number
   inflight(): number
-  close?: () => void
-  sweepBatch?: (batchSize?: number, nowTime?: number) => number
+  close?: () => Promise<void> | void
+  sweepBatch?: (batchSize?: number, nowTime?: number) => Promise<number> | number
 }
 
 /** Finite positive integers only; NaN/Infinity/huge options fall back to defaults. */
@@ -137,10 +145,140 @@ export function digestGuestPayload(key: Buffer, payload: unknown): string {
   return createHmac('sha256', key).update(JSON.stringify(payload ?? null)).digest('hex')
 }
 
+export function createPostgresGuestDraftStore(key: Buffer, options: GuestDraftStoreOptions = {}): GuestDraftStore {
+  const now = options.now ?? Date.now
+  const ttl = boundedOption(options.ttlMs, GUEST_RECORD_TTL_MS, 1000, 7 * 86400000)
+  const reuse = boundedOption(options.reuseMs, GUEST_DRAFT_REUSE_MS, 0, 3600000)
+  const leaseMs = boundedOption(options.submissionLeaseMs, 30000, 1000, 120000)
+  const maxDrafts = boundedOption(options.maxDrafts, GUEST_MAX_DRAFTS_PER_RECORD, 1, 64)
+  const maxReceipts = boundedOption(options.maxReceipts, GUEST_MAX_RECEIPTS_PER_RECORD, 1, 64)
+  const limit = boundedOption(options.maxInflight, GUEST_MAX_INFLIGHT, 1, 10000)
+  const durable = createPostgresDurableStore<GuestDraftRecord>({ namespace: options.namespace ?? 'guest-drafts', secret: key,
+    connectionString: options.connectionString, maxEntries: boundedOption(options.maxRecords, GUEST_MAX_RECORDS, 1, 100000) })
+  const pending = new Map<string, Promise<IssuedDraft>>()
+  const owners = new Map<string, { token: string; until: number }>()
+  const keyFor = (intent: GuestIntent) => GUEST_COOKIE_ID_PATTERN.test(intent.cookieId || '')
+    ? hashGuestCookieId(key, intent.cookieId!)
+    : intent.intentKey && intent.intentKey.length >= 16 ? hashGuestIntentKey(key, `${intent.clientIp}\0${intent.intentKey}`) : ''
+  const empty = (id: string, intent: GuestIntent): GuestDraftRecord => ({ key: id, clientIp: intent.clientIp, drafts: [], submitted: [], receipts: [], lastIssuedAt: 0, updatedAt: now() })
+  const valid = (record: GuestDraftRecord | undefined, intent: GuestIntent) => record && record.clientIp === intent.clientIp && record.updatedAt >= now() - ttl
+  const read = async (intent: GuestIntent) => {
+    const id = keyFor(intent)
+    if (!id) return undefined
+    return durable.withLock(id, async ctx => {
+      const record = await ctx.get(id)
+      if (record && record.updatedAt < now() - ttl) { await ctx.delete(id); return undefined }
+      return valid(record, intent) ? record : undefined
+    })
+  }
+  const mutate = async <R>(intent: GuestIntent, action: (record: GuestDraftRecord) => R) => {
+    const id = keyFor(intent)
+    if (!id) throw new BffError(409, 'conflict', '草稿凭据已失效')
+    return durable.withLock(id, async ctx => {
+      const record = await ctx.get(id)
+      if (!valid(record, intent)) throw new BffError(409, 'conflict', '草稿凭据已失效')
+      const result = action(record!)
+      await ctx.set(id, record!)
+      return result
+    })
+  }
+  return {
+    read,
+    async issue(intent, create) {
+      const knownCookie = GUEST_COOKIE_ID_PATTERN.test(intent.cookieId || '') ? intent.cookieId : undefined
+      const lockKey = keyFor(intent) || hashGuestCookieId(key, newGuestCookieId())
+      const old = pending.get(lockKey)
+      if (old) return old
+      if (pending.size >= limit) throw new BffError(429, 'quota_exceeded', '草稿请求繁忙，请稍后再试')
+      const work = durable.withLock(lockKey, async ctx => {
+        const previous = await ctx.get(lockKey)
+        let cookieId = knownCookie
+        let authority: GuestDraftRecord | undefined
+        let generation = valid(previous, intent) ? previous?.intentGeneration : undefined
+        if (!knownCookie && generation) {
+          cookieId = createHmac('sha256', key).update(`issued-cookie:${lockKey}:${generation}`).digest('base64url')
+          authority = await ctx.get(hashGuestCookieId(key, cookieId))
+        } else if (knownCookie) authority = previous
+        if (cookieId && valid(authority, intent) && authority!.lastIssuedAt > 0 && now() - authority!.lastIssuedAt < reuse) {
+          const id = authority!.drafts.at(-1)
+          if (id !== undefined && !authority!.submitted.includes(id)) return { cookieId, id, reused: true }
+        }
+        if (!knownCookie || !valid(authority, intent)) {
+          generation = randomBytes(16).toString('hex')
+          cookieId = knownCookie ? newGuestCookieId() : createHmac('sha256', key).update(`issued-cookie:${lockKey}:${generation}`).digest('base64url')
+          authority = undefined
+        }
+        const effective = cookieId!, id = hashGuestCookieId(key, effective)
+        const record = authority ?? empty(id, intent)
+        const created = await create()
+        record.drafts.push(created)
+        while (record.drafts.length > maxDrafts) { const removed = record.drafts.shift()!; if (record.submissionLeases) Reflect.deleteProperty(record.submissionLeases, String(removed)) }
+        record.lastIssuedAt = record.updatedAt = now()
+        await ctx.set(id, record)
+        if (!knownCookie && intent.intentKey) await ctx.set(lockKey, { ...empty(lockKey, intent), intentGeneration: generation })
+        return { cookieId: effective, id: created, reused: false }
+      })
+      pending.set(lockKey, work)
+      void work.then(() => pending.delete(lockKey), () => pending.delete(lockKey))
+      return work
+    },
+    async owns(intent, id) { const record = await read(intent); return Boolean(record?.drafts.includes(id) && !record.submitted.includes(id)) },
+    digest(_intent, payload) { return digestGuestPayload(key, payload) },
+    async beginSubmission(intent, id, digest) {
+      for (const [owner, lease] of owners) if (lease.until <= now()) owners.delete(owner)
+      if (owners.size >= limit && !owners.has(`${keyFor(intent)}:${id}`)) throw new BffError(503, 'upstream_unavailable', '提交请求繁忙，请稍后再试')
+      return mutate<GuestSubmissionState>(intent, record => {
+        if (!record.drafts.includes(id)) return { kind: 'conflict' }
+        const receipt = record.receipts.find(r => r.id === id && r.digest === digest)
+        if (receipt) return { kind: 'replay', id }
+        if (record.submitted.includes(id)) return { kind: 'conflict' }
+        const lease = record.submissionLeases?.[String(id)]
+        if (lease && lease.until > now()) return { kind: 'busy' }
+        const token = randomBytes(16).toString('hex')
+        record.submissionLeases ??= {}
+        record.submissionLeases[String(id)] = { token, until: now() + leaseMs }
+        delete record.inFlightDraftId
+        record.updatedAt = now()
+        owners.set(`${record.key}:${id}`, { token, until: now() + leaseMs })
+        return { kind: 'new' }
+      })
+    },
+    async confirmSubmission(intent, id, digest) {
+      try {
+        await mutate(intent, record => {
+          const token = owners.get(`${record.key}:${id}`)?.token
+          if (!token || record.submissionLeases?.[String(id)]?.token !== token) throw new BffError(409, 'lease_lost', '提交结果待确认，请重试查询')
+          Reflect.deleteProperty(record.submissionLeases, String(id))
+          if (!record.submitted.includes(id)) record.submitted.push(id)
+          record.submitted = record.submitted.slice(-maxDrafts)
+          record.receipts = [...record.receipts.filter(r => r.id !== id), { id, digest }].slice(-maxReceipts)
+          record.lastIssuedAt = 0; record.updatedAt = now()
+        })
+      } finally { owners.delete(`${keyFor(intent)}:${id}`) }
+    },
+    async abortSubmission(intent, id) {
+      try {
+        await mutate(intent, record => {
+          const token = owners.get(`${record.key}:${id}`)?.token
+          if (token && record.submissionLeases?.[String(id)]?.token === token) Reflect.deleteProperty(record.submissionLeases, String(id))
+        })
+      } finally { owners.delete(`${keyFor(intent)}:${id}`) }
+    },
+    size: () => durable.size(), inflight: () => pending.size,
+    sweepBatch: (size = 100, time = now()) => durable.sweepBatch(size, record => record.updatedAt < time - ttl),
+    close: () => durable.close(),
+  }
+}
+
 export function createGuestDraftStore(
   key: Buffer,
   options: GuestDraftStoreOptions = {}
 ): GuestDraftStore {
+  const driver = stateDriver(options.driver)
+  if (driver === 'postgres') {
+    return createPostgresGuestDraftStore(key, options)
+  }
+
   const now = options.now ?? Date.now
   const ttlMs = boundedOption(options.ttlMs, GUEST_RECORD_TTL_MS, 1_000, 7 * 24 * 60 * 60 * 1000)
   const maxRecords = boundedOption(options.maxRecords, GUEST_MAX_RECORDS, 1, 100_000)

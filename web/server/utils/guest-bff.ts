@@ -254,7 +254,7 @@ export function guestDraftStore(runtime: BffRuntime, origin: string): GuestDraft
       storeRegistries.set(holder, existingRegistry)
       const bffStore = holder as Partial<BffSessionStore>
       bffStore.onClose?.(() => {
-        closeGuestDraftStores(holder)
+        return closeGuestDraftStores(holder)
       })
       bffStore.onSweep?.((batchSize, now) => sweepGuestDraftStores(holder, batchSize, now))
     }
@@ -275,44 +275,53 @@ export function guestDraftStore(runtime: BffRuntime, origin: string): GuestDraft
     if (oldest === undefined || oldest === identity) break
     const evicted = registry.get(oldest)
     registry.delete(oldest)
-    evicted?.close?.()
+    void Promise.resolve(evicted?.close?.()).catch(() => {})
   }
   return created
 }
 
-export function closeGuestDraftStores(holder?: object): void {
-  if (holder && typeof holder === 'object') {
-    const registry = storeRegistries.get(holder)
-    if (registry) {
-      for (const store of registry.values()) {
-        store.close?.()
-      }
-      registry.clear()
-      storeRegistries.delete(holder)
+export function closeGuestDraftStores(holder?: object): Promise<void> {
+  const registry = holder ? storeRegistries.get(holder) : fallbackRegistries
+  const pending: Promise<unknown>[] = []
+  if (registry) {
+    for (const store of registry.values()) {
+      try { pending.push(Promise.resolve(store.close?.())) } catch { /* Close remaining stores. */ }
     }
+    registry.clear()
   }
-  else {
-    for (const store of fallbackRegistries.values()) {
-      store.close?.()
-    }
-    fallbackRegistries.clear()
-  }
+  if (holder) storeRegistries.delete(holder)
+  return Promise.allSettled(pending).then(() => {})
 }
 
-export function sweepGuestDraftStores(holder?: object, batchSize: number = 100, now?: number): number {
+export function sweepGuestDraftStores(holder?: object, batchSize: number = 100, now?: number): number | Promise<number> {
+  const tasks: Promise<number>[] = []
   let count = 0
+  const sweepOne = (store: GuestDraftStore) => {
+    const res = store.sweepBatch?.(batchSize, now)
+    if (res instanceof Promise) {
+      tasks.push(res)
+    }
+    else if (typeof res === 'number') {
+      count += res
+    }
+  }
+
   if (holder && typeof holder === 'object') {
     const registry = storeRegistries.get(holder)
     if (registry) {
       for (const store of registry.values()) {
-        count += store.sweepBatch?.(batchSize, now) ?? 0
+        sweepOne(store)
       }
     }
   }
   else {
     for (const store of fallbackRegistries.values()) {
-      count += store.sweepBatch?.(batchSize, now) ?? 0
+      sweepOne(store)
     }
+  }
+
+  if (tasks.length > 0) {
+    return Promise.all(tasks).then(results => count + results.reduce((a, b) => a + b, 0))
   }
   return count
 }

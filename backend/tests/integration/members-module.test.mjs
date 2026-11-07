@@ -11,7 +11,7 @@ const { DatabaseError } = require('../../dist/src/database/sqlite.js')
 it('preserves NULL/invalid tags, deduplication, bio exclusion and sort_order/id ordering', async () => {
   const f = await fixture()
   await run(f.db, 'ALTER TABLE members ADD COLUMN bio TEXT')
-  await run(f.db, 'INSERT INTO members(id,name,school,sort_order,tags,bio) VALUES (?,?,?,?,?,?),(?,?,?,?,?,?),(?,?,?,?,?,?)',
+  await run(f.db, "INSERT INTO members(id,name,school,sort_order,tags,bio) VALUES ($1,$2,$3,$4,$5,$6),($7,$8,$9,$10,$11,$12),($13,$14,$15,$16,$17,$18)",
     [10, 'null member', null, null, null, 'private-bio', 11, 'invalid tags', '', 0, 'not JSON', 'private-bio', 12, 'mixed tags', 'school', 0, JSON.stringify([' A ', 'A', null, 2, false]), 'private-bio'])
   const response = await f.http.get('/api/members')
   expect(response.status).toBe(200)
@@ -42,8 +42,8 @@ it('selects existing local thumbnails, preserves original mode and falls back wh
   await f.fs.writeFile(path.join(directory, 'shared-thumb.webp'), 'thumbnail-bytes')
   const avatar = '/uploads/img/user/shared.png'
   const remote = `https://images.example.test${avatar}?cache=1#fragment`
-  await run(f.db, 'UPDATE members SET avatar=? WHERE id=1', [avatar])
-  await run(f.db, 'INSERT INTO members(id,name,avatar) VALUES (10,?,?)', ['remote URL', remote])
+  await run(f.db, "UPDATE members SET avatar=$1 WHERE id=1", [avatar])
+  await run(f.db, "INSERT INTO members(id,name,avatar) VALUES (10,$1,$2)", ['remote URL', remote])
   const normal = (await f.http.get('/api/members')).body
   expect(normal.find(row => row.id === 1)).toMatchObject({ avatar: '/uploads/img/user/shared-thumb.webp', avatar_thumb: '/uploads/img/user/shared-thumb.webp', avatar_original: avatar })
   expect(normal.find(row => row.id === 10).avatar_thumb).toBe('https://images.example.test/uploads/img/user/shared-thumb.webp')
@@ -66,17 +66,17 @@ it('preserves staged-avatar moves, normalized tag JSON, school default and actua
   const created = await save(f, { name: ' new member ', role: 'member', avatar: '/uploads/upload/member.png', tags: [' A ', 'A', '', ' B '], school: null })
   expect(created.status, JSON.stringify({ body: created.body, failures })).toBe(200)
   expect(created.body.id).toEqual(expect.any(Number))
-  expect(await get(f.db, 'SELECT name,avatar,tags,school,sort_order FROM members WHERE id=?', [created.body.id])).toEqual({ name: 'new member', avatar: '/uploads/img/user/member.png', tags: '["A","B"]', school: '', sort_order: 0 })
+  expect(await get(f.db, "SELECT name,avatar,tags,school,sort_order FROM members WHERE id=$1", [created.body.id])).toEqual({ name: 'new member', avatar: '/uploads/img/user/member.png', tags: '["A","B"]', school: '', sort_order: 0 })
   expect(await f.fs.readFile(path.join(f.context.IMG_ROOT_DIR, 'user/member.png'), 'utf8')).toBe('synthetic-member-image')
   expect((await save(f, { name: 'updated', role: 'member', avatar: null }, created.body.id)).body).toEqual({ message: '成员更新成功' })
-  expect(await get(f.db, 'SELECT tags,avatar FROM members WHERE id=?', [created.body.id])).toEqual({ tags: '[]', avatar: null })
+  expect(await get(f.db, "SELECT tags,avatar FROM members WHERE id=$1", [created.body.id])).toEqual({ tags: '[]', avatar: null })
 })
 
 it('soft-deletes/restores without deleting shared avatars and keeps role-scoped deleted visibility', async () => {
   const f = await fixture(), avatar = '/uploads/shared-member.png', absolute = path.join(f.context.PUBLIC_DIR, 'shared-member.png')
   await f.fs.writeFile(absolute, 'shared-image')
-  await run(f.db, 'UPDATE members SET avatar=? WHERE id=1', [avatar])
-  await run(f.db, 'INSERT INTO members(id,name,avatar,school) VALUES (10,?,?,?)', ['shares avatar', avatar, 'school'])
+  await run(f.db, "UPDATE members SET avatar=$1 WHERE id=1", [avatar])
+  await run(f.db, "INSERT INTO members(id,name,avatar,school) VALUES (10,$1,$2,$3)", ['shares avatar', avatar, 'school'])
   expect((await f.http.delete('/api/members/1').set('Authorization', `Bearer ${token(2, 'admin')}`)).body).toEqual({ message: '已软删除' })
   expect((await f.http.get('/api/members?includeDeleted=1').set('Authorization', `Bearer ${token(2, 'admin')}`)).body.map(row => row.id)).toEqual([10])
   expect((await f.http.get('/api/members?includeDeleted=1').set('Authorization', `Bearer ${token()}`)).body.map(row => row.id)).toEqual([1, 10])

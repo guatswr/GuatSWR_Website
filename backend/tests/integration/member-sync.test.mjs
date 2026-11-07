@@ -122,7 +122,7 @@ it('schedules persistent single-flight requests, expires incomplete jobs and lea
   expect((await get(f.db,'SELECT COUNT(*) AS n FROM member_sync_requests')).n).toBe(2)
   const job=(await all(f.db,'SELECT id FROM member_sync_requests'))[0]
   clock+=11*60000;await sync.tick()
-  expect((await get(f.db,'SELECT status FROM member_sync_requests WHERE id=?',[job.id])).status).toBe('expired')
+  expect((await get(f.db,"SELECT status FROM member_sync_requests WHERE id=$1",[job.id])).status).toBe('expired')
   expect((await get(f.db,'SELECT COUNT(*) AS n FROM members')).n).toBe(1)
 })
 it('sends service commands separately from private profile reminders and records real DM receipts',async()=>{
@@ -136,10 +136,10 @@ it('sends service commands separately from private profile reminders and records
   const dm=received.find(item=>item.event==='members.profile_required')
   expect(dm.data.admin_path).toBe('/admin/bot?section=profiles')
   expect(dm.target).toMatchObject({type:'private',qq:'99999'});expect(dm.data.members).toEqual([expect.objectContaining({qq:'22222'})])
-  expect((await get(f.db,'SELECT message_status FROM bot_deliveries WHERE id=?',[dm.delivery_id])).message_status).toBe('pending')
+  expect((await get(f.db,"SELECT message_status FROM bot_deliveries WHERE id=$1",[dm.delivery_id])).message_status).toBe('pending')
   const receipt=()=>f.http.post(`${prefix}/v1/deliveries/${dm.delivery_id}/receipt`).set(f.bot).send({status:'sent'})
   expect((await receipt()).status).toBe(200);expect((await receipt()).status).toBe(200)
-  expect((await get(f.db,'SELECT message_status FROM bot_deliveries WHERE id=?',[dm.delivery_id])).message_status).toBe('sent')
+  expect((await get(f.db,"SELECT message_status FROM bot_deliveries WHERE id=$1",[dm.delivery_id])).message_status).toBe('sent')
   await f.context.securityAudit.flush()
   expect(JSON.stringify((await f.http.get('/api/logs')).body)).not.toContain('22222')
 })
@@ -149,7 +149,7 @@ it('enforces QQ uniqueness and completes the durable website task without destro
   const change={qq:'22222',follow_group_name:false,follow_group_avatar:false,sync_protected:true,complete:true}
   expect((await f.http.put(`${prefix}/admin/members/1/sync-profile`).set(admin).send(change)).status).toBe(409)
   expect((await f.http.put(`${prefix}/admin/members/${member.id}/sync-profile`).set(auth(token(2))).send(change)).status).toBe(200)
-  expect((await get(f.db,'SELECT completed_at FROM member_profile_tasks WHERE member_id=?',[member.id])).completed_at).toEqual(expect.any(Number))
+  expect((await get(f.db,"SELECT completed_at FROM member_profile_tasks WHERE member_id=$1",[member.id])).completed_at).toEqual(expect.any(Number))
 })
 it('rolls back members, version and tasks if the private notification intent cannot be committed',async()=>{
   const f=await setup(),job=await f.request()
@@ -160,7 +160,7 @@ it('rolls back members, version and tasks if the private notification intent can
   expect((await get(f.db,'SELECT COUNT(*) AS n FROM members')).n).toBe(1)
   expect((await get(f.db,'SELECT COUNT(*) AS n FROM member_profile_tasks')).n).toBe(0)
   expect((await f.http.get('/api/members/revision')).body.revision).toBe(version)
-  expect((await get(f.db,'SELECT status FROM member_sync_requests WHERE id=?',[job.id])).status).toBe('preview')
+  expect((await get(f.db,"SELECT status FROM member_sync_requests WHERE id=$1",[job.id])).status).toBe('preview')
 })
 it('cancels private messages when administrator privileges are withdrawn and rejects revoked callbacks',async()=>{
   const f=await setup();await baseline(f)

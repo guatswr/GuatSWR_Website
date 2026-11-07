@@ -62,9 +62,9 @@ export interface BffAuthService {
   verify: (sessionId: string, requirement?: BffRoleRequirement) => Promise<BffVerifiedSession>
   logout: (sessionId: string) => Promise<void>
   /** Revokes every local session for a user; used when credentials change. */
-  revokeForUser: (userId: number) => number
+  revokeForUser: (userId: number) => Promise<number> | number
   /** Revokes every local session (backend token_version refresh). */
-  revokeAll: () => number
+  revokeAll: () => Promise<number> | number
 }
 
 function sessionExpired(): BffError {
@@ -224,13 +224,21 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
         tokenKey: tokenKey(),
         maxLifetimeMs: maxSessionLifetimeMs,
       })
-      deps.store.set(record)
+      try {
+        await deps.store.set(record)
+      }
+      catch {
+        throw upstreamUnavailable()
+      }
       if (typeof context.currentSessionId === 'string' && context.currentSessionId.length > 0) {
-        try {
-          deps.store.delete(hashSessionId(context.currentSessionId))
-        }
-        catch {
-          // An implausible cookie id cannot name a live record.
+        let oldKey: string | undefined
+        try { oldKey = hashSessionId(context.currentSessionId) } catch { /* implausible cookie */ }
+        if (oldKey) {
+          try { await deps.store.delete(oldKey) }
+          catch {
+            await Promise.resolve(deps.store.delete(record.key)).catch(() => {})
+            throw upstreamUnavailable()
+          }
         }
       }
 
@@ -247,12 +255,21 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
       catch {
         throw sessionExpired()
       }
-      const initial = deps.store.get(key, currentTime)
+      let initial: BffSessionRecord | undefined
+      try {
+        initial = await deps.store.get(key, currentTime)
+      }
+      catch {
+        throw upstreamUnavailable()
+      }
       if (!initial) throw sessionExpired()
 
       const token = openUpstreamToken(initial.token, tokenKey(), key)
       if (!token) {
-        deps.store.delete(key)
+        try {
+          await deps.store.delete(key)
+        }
+        catch { /* Authorization remains denied when revocation cleanup fails. */ }
         throw sessionExpired()
       }
 
@@ -260,24 +277,39 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
 
       // Re-read after the upstream round trip: a concurrent logout, rotation or
       // expiry must not be resurrected by a stale in-flight verification.
-      const current = deps.store.get(key, now())
+      let current: BffSessionRecord | undefined
+      try {
+        current = await deps.store.get(key, now())
+      }
+      catch {
+        throw upstreamUnavailable()
+      }
       if (!current || current.recordId !== initial.recordId) throw sessionExpired()
       if (current.expiresAt <= now()) {
-        deps.store.delete(key)
+        try {
+          await deps.store.delete(key)
+        }
+        catch { /* Authorization remains denied when revocation cleanup fails. */ }
         throw sessionExpired()
       }
 
       if (response.status === 401 || response.status === 403 || response.status === 404) {
         // Upstream invalid/expired/revoked tokens and deleted users all revoke
         // the local session; permission denial is handled separately below.
-        deps.store.delete(key)
+        try {
+          await deps.store.delete(key)
+        }
+        catch { /* Authorization remains denied when revocation cleanup fails. */ }
         throw sessionExpired()
       }
       if (response.status !== 200) throw upstreamUnavailable()
 
       const me = parseMe(response.data)
       if (me.id !== current.identity.id) {
-        deps.store.delete(key)
+        try {
+          await deps.store.delete(key)
+        }
+        catch { /* Authorization remains denied when revocation cleanup fails. */ }
         throw sessionExpired()
       }
 
@@ -293,7 +325,21 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
           identity,
           lastSeenAt: now(),
         }
-        deps.store.set(updated)
+        try {
+          if (deps.store.replaceIfCurrent) {
+            if (!await deps.store.replaceIfCurrent(current, updated)) {
+              const latest = await deps.store.get(key, now())
+              if (!latest || latest.recordId !== current.recordId) throw sessionExpired()
+              throw upstreamUnavailable()
+            }
+          } else {
+            await deps.store.set(updated)
+          }
+        }
+        catch (error) {
+          if (error instanceof BffError) throw error
+          throw upstreamUnavailable()
+        }
         finalRecord = updated
       }
 
@@ -325,15 +371,25 @@ export function createBffAuthService(deps: BffAuthServiceDeps): BffAuthService {
         // Nothing to revoke for an implausible id.
         return
       }
-      deps.store.delete(key)
+      await deps.store.delete(key)
     },
 
-    revokeForUser(userId) {
-      return deps.store.deleteByUserId(userId)
+    async revokeForUser(userId) {
+      try {
+        return await deps.store.deleteByUserId(userId)
+      }
+      catch {
+        throw upstreamUnavailable()
+      }
     },
 
-    revokeAll() {
-      return deps.store.clear()
+    async revokeAll() {
+      try {
+        return await deps.store.clear()
+      }
+      catch {
+        throw upstreamUnavailable()
+      }
     },
   }
 }

@@ -1,4 +1,4 @@
-import type { Row, SqlExecutor } from '../database/sqlite.js'
+import type { Row, SqlExecutor } from '../database/contracts.js'
 interface Request { protocol: string; get(name: string): string | undefined }
 interface Response { status(code: number): Response; setHeader(name: string, value: string): void; send(body: string): unknown }
 interface Item { loc: string; lastmod?: unknown; changefreq?: string; priority?: number }
@@ -23,7 +23,7 @@ export function createSitemapController(store: SqlExecutor, siteUrl: () => strin
   return async (req: Request, res: Response) => {
     const base = (siteUrl() || `${req.protocol}://${req.get('host')}`).replace(/\/+$/, '')
     let rows: (Row & { id: number; date: string | null; created_at: string | null })[]
-    try { rows = await store.all("SELECT id,date,created_at FROM activities WHERE (status='published' OR status IS NULL) AND deleted_at IS NULL ORDER BY date DESC") }
+    try { rows = await store.all("SELECT id,date,created_at FROM activities WHERE (status='published' OR status IS NULL) AND deleted_at IS NULL ORDER BY date DESC NULLS LAST") }
     catch (error) { report(error); return res.status(500).send('Server Error') }
     const urls: Item[] = [...staticUrls, ...rows.map(row => ({ loc: `/activity/${row.id}`, lastmod: row.date || row.created_at, changefreq: 'weekly', priority: 0.7 }))]
     const body = urls.map(item => {

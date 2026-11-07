@@ -24,10 +24,10 @@ const setup = async () => {
     [5, '2023-10-25', 'draft', null], [6, '2022-10-25', 'published', '2026-01-01'],
     [7, '2020-10-25', null, null], [8, '2024-10-24', 'published', null],
   ]) await run(f.db, `INSERT INTO activities(id,title,tag,date,status,deleted_at,description,content,cover_image,created_at,created_by)
-    VALUES(?,?,?,?,?,?,'summary','private-body-not-for-digest','/uploads/cover.png','2026-01-01',2)`,
+    VALUES($1,$2,$3,$4,$5,$6,'summary','private-body-not-for-digest','/uploads/cover.png','2026-01-01',2)`,
   [id, `article-${id}`, 'STG', date, status, deleted])
   for (const [id, date, deleted] of [[1,'2025-10-25',null], [2,'2026-10-25',null], [3,'2023-10-25','2026-01-01'], [4,'2019-10-25',null]]) {
-    await run(f.db, 'INSERT INTO history(id,title,date,description,image,deleted_at) VALUES(?,?,?,?,?,?)', [id,`history-${id}`,date,'memory','/uploads/history.png',deleted])
+    await run(f.db, "INSERT INTO history(id,title,date,description,image,deleted_at) VALUES($1,$2,$3,$4,$5,$6)", [id,`history-${id}`,date,'memory','/uploads/history.png',deleted])
   }
   return { ...f, auth }
 }
@@ -83,7 +83,7 @@ it('handles real leap days and skips corrupt, incomplete or timestamp-shaped aut
   const f = await setup()
   await run(f.db,'DELETE FROM activities'); await run(f.db,'DELETE FROM history')
   for (const date of ['2000-02-29','1900-02-29','2023-02-29','2024-02-29','2028-02-29','2024-02-30','2024-02','2024','0000-02-29','2024-02-29T00:00:00Z',null]) {
-    await run(f.db,'INSERT INTO history(title,date) VALUES(?,?)',['leap',date])
+    await run(f.db,"INSERT INTO history(title,date) VALUES($1,$2)",['leap',date])
   }
   const leap=await f.http.get(`${endpoint}?date=2028-02-29`).set(f.auth)
   expect(leap.body.items.map(item=>item.date)).toEqual(['2024-02-29','2000-02-29'])
@@ -117,10 +117,10 @@ it('returns only article covers while preserving downloadable history pictures a
     '![duplicate](/uploads/cover.png?cache=1)',
     '```md', '![example](/uploads/ignore.png)', '```',
   ].join('\n')
-  await run(f.db,'UPDATE activities SET images=?,content=?,description=? WHERE id=2',[
+  await run(f.db,"UPDATE activities SET images=$1,content=$2,description=$3 WHERE id=2",[
     JSON.stringify(['/uploads/cover.png','/uploads/album.png']),`private-article-body-header\n${body}`,'article summary ![extra](/uploads/album.png)',
   ])
-  await run(f.db,'UPDATE history SET description=? WHERE id=1',[`memory\n${body}`])
+  await run(f.db,"UPDATE history SET description=$1 WHERE id=1",[`memory\n${body}`])
   const response=await f.http.get(`${endpoint}?date=2026-10-25`).set(f.auth).set('Host','untrusted.invalid')
   expect(response.status).toBe(200)
   const historyImages=['history.png','body.png','ref.png','amp%26pic.png','%E4%B8%AD%E6%96%87%20(1).png','cover.png'].map(name=>`${f.origin}/uploads/${name}`)
@@ -147,7 +147,7 @@ it('excludes missing files, external URLs, private traversal, hidden preparation
       '/uploads/%2e%2e/private.png','/uploads/../private.png','https://guatswr.top/uploads/../private.png',
       '/uploads/.asset-prepare-test/keep.png','/uploads/escape/private.png','/uploads/file.txt','data:image/png;base64,abc','/uploads/album.png',
     ]
-  await run(f.db,'UPDATE history SET image=?,description=? WHERE id=1',[
+  await run(f.db,"UPDATE history SET image=$1,description=$2 WHERE id=1",[
     '/uploads/missing.png',invalidImages.map(url=>`![photo](<${url}>)`).join('\n'),
   ])
   const response=await f.http.get(`${endpoint}?date=2026-10-25&source=history&limit=1`).set(f.auth)
@@ -158,13 +158,13 @@ it('falls back to text when no picture is available and reports clipping instead
   const f=await setup()
   const names=Array.from({length:51},(_,i)=>`limit-${i}.png`)
   for(const name of names) await f.fs.writeFile(path.join(f.context.PUBLIC_DIR,name),png)
-  await run(f.db,'UPDATE history SET image=NULL,description=? WHERE id=1',[
+  await run(f.db,"UPDATE history SET image=NULL,description=$1 WHERE id=1",[
     names.map(name=>`![photo](/uploads/${name})`).join('\n')+'x'.repeat(BOT_IMAGE_SOURCE_LIMIT+1),
   ])
   const response=await f.http.get(`${endpoint}?date=2026-10-25&source=history&limit=1`).set(f.auth)
   expect(response.body.items[0].images).toHaveLength(50)
   expect(response.body.items[0].images_truncated).toBe(true)
-  await run(f.db,'UPDATE history SET image=NULL,description=? WHERE id=1',['memory without pictures'])
+  await run(f.db,"UPDATE history SET image=NULL,description=$1 WHERE id=1",['memory without pictures'])
   const empty=await f.http.get(`${endpoint}?date=2026-10-25&source=history&limit=1`).set(f.auth)
   expect(empty.body.items[0]).toMatchObject({image_url:'',images:[],images_truncated:false})
   expect(empty.body.broadcast_text).toContain('history-1')
@@ -172,7 +172,7 @@ it('falls back to text when no picture is available and reports clipping instead
 it('never falls back to article gallery, body or summary pictures when the cover is absent or missing',async()=>{
   const f=await setup()
   for(const cover of [null,'/uploads/missing.png']) {
-    await run(f.db,'UPDATE activities SET cover_image=?,images=?,content=?,description=? WHERE id=2',[
+    await run(f.db,"UPDATE activities SET cover_image=$1,images=$2,content=$3,description=$4 WHERE id=2",[
       cover,JSON.stringify(['/uploads/album.png']),'![body](/uploads/body.png)'+'x'.repeat(BOT_IMAGE_SOURCE_LIMIT+1),'![summary](/uploads/ref.png)',
     ])
     const response=await f.http.get(`${endpoint}?date=2026-10-25&source=articles&limit=1`).set(f.auth)
