@@ -139,13 +139,16 @@ export async function exportSqliteDatabase(sourcePaths) {
 
       // Read column definitions
       const colInfo = db.prepare(`PRAGMA table_info("${spec.table}")`).all()
-      const columns = colInfo.map(c => c.name)
+      const columnSet = new Set(colInfo.map(c => c.name))
       const manifest = JSON.parse(await fs.readFile(path.join(directory,'manifest.json'),'utf8'))[spec.schema]
       const expected = [manifest,...(manifest.upgrades||[]),...(manifest.compatibleUpgrades||[])].at(-1).shape[spec.table].columns.map(c=>c[1])
-      if (JSON.stringify(columns)!==JSON.stringify(expected)) throw Error('SOURCE_COLUMNS_UNSUPPORTED: '+spec.table)
+      for (const col of expected) {
+        if (!columnSet.has(col)) throw Error('SOURCE_COLUMNS_UNSUPPORTED: ' + spec.table + ' missing ' + col)
+      }
+      const columns = expected
 
-      // Read all rows
-      const statement = db.prepare(`SELECT * FROM "${spec.table}"`)
+      // Read all rows with explicit column selection
+      const statement = db.prepare(`SELECT ${columns.map(c => `"${c}"`).join(', ')} FROM "${spec.table}"`)
       statement.setReadBigInts(true)
       const rows = statement.all()
 
