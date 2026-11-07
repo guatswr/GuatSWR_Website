@@ -209,6 +209,7 @@ services:
     pids_limit: ${POSTGRES_PIDS_LIMIT:-128}
     cpus: ${POSTGRES_CPU_LIMIT:-1.0}
     environment:
+      PGDATA: /var/lib/postgresql/data
       POSTGRES_DB: postgres
       POSTGRES_USER: ${POSTGRES_ADMIN_USER:-guatswr_admin}
       POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
