@@ -1,0 +1,647 @@
+{
+  "runId": "mig-1794086355333-2f3b555f",
+  "timestamp": "2026-11-07T21:19:16.989Z",
+  "sourcePaths": {
+    "mainDbPath": "/workspace/backend/backups/verified_migration_source/data/guatswr_web_main.db",
+    "auditDbPath": "/workspace/backend/backups/verified_migration_source/data/guatswr_web_logs.db"
+  },
+  "dryRun": false,
+  "exportSummary": {
+    "tables": {
+      "users": {
+        "rowCount": 9,
+        "digest": "3fe0b01e0f091dfd3a4c33a5ae9cd166d52919bcab0ac3047bf6df890c1af104"
+      },
+      "site_config": {
+        "rowCount": 12,
+        "digest": "9aa5a6285da130f1894ba8ccd3eccbc7f47d1cc914436b40417ea5933ca78d66"
+      },
+      "banned_ips": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "login_attempts": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "history": {
+        "rowCount": 45,
+        "digest": "7e91cf526c3e188b0be7fe66b91d6fd75afe488dffa902f688c1d2e703e53a77"
+      },
+      "members": {
+        "rowCount": 139,
+        "digest": "48b6d76710eb9ea2e5d815cf8315c85c3c0e102f9f71577e576146a7db5c97b6"
+      },
+      "activities": {
+        "rowCount": 5,
+        "digest": "78c3a3288f52b39e4f6b4fdf2698bac8d78d026e49f8b1651b764c83388535c8"
+      },
+      "events": {
+        "rowCount": 9,
+        "digest": "06e1cf8044c12e50fdc8a5d3af2e551aed3d86062e6c62ee1a113160161b8b74"
+      },
+      "bot_credentials": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bot_notifications": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_sync_groups": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_sync_meta": {
+        "rowCount": 1,
+        "digest": "6343a1a9e811e5bb8ea8777f0a60584a6b592bc399310d447afa09dbb1fc2932"
+      },
+      "member_sync_settings": {
+        "rowCount": 1,
+        "digest": "4d42c8b8a5e22948edc96015138da0905ccf20694998e2f87082471ef72c3a67"
+      },
+      "security_audit_outbox": {
+        "rowCount": 41,
+        "digest": "04e91ccb3254b4238cc3524ede7ae111ab9f67321d5d0729ddf19ed0e4ece3a3"
+      },
+      "asset_cleanup_jobs": {
+        "rowCount": 14,
+        "digest": "032303dce3db5fc3770a289e014ffcbda82341256141bca6e92d22fbf255b917"
+      },
+      "asset_references": {
+        "rowCount": 279,
+        "digest": "176b829f07e0edbc2d2f765d901a9ccb6a1617af797095712776522650d98918"
+      },
+      "audit_logs": {
+        "rowCount": 1191,
+        "digest": "b20c82d29d5eec87479f6c285c460060b0881a43585c834124a51c07fe730dca"
+      },
+      "activity_revisions": {
+        "rowCount": 5,
+        "digest": "393be1941bd69f87f9bb11a22a3eee8a16ca2c3bb8d2ee95404ab5b25fb40ae0"
+      },
+      "bot_credential_secrets": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bot_identities": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bot_subscriptions": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "event_participants": {
+        "rowCount": 2,
+        "digest": "346a21ac5a556ff4f4c449af63be3d8b86549c746fe361d5a191d0fb63c1af79"
+      },
+      "event_submissions": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_group_memberships": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_profile_tasks": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_sync_requests": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bot_deliveries": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "bot_link_codes": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_sync_avatars": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "member_sync_batches": {
+        "rowCount": 0,
+        "digest": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    }
+  },
+  "importSummary": {
+    "targetDatabase": "guatswr_migration_prod",
+    "tables": {
+      "users": {
+        "importedRows": 9,
+        "status": "imported"
+      },
+      "site_config": {
+        "importedRows": 12,
+        "status": "imported"
+      },
+      "banned_ips": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "login_attempts": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "history": {
+        "importedRows": 45,
+        "status": "imported"
+      },
+      "members": {
+        "importedRows": 139,
+        "status": "imported"
+      },
+      "activities": {
+        "importedRows": 5,
+        "status": "imported"
+      },
+      "events": {
+        "importedRows": 9,
+        "status": "imported"
+      },
+      "bot_credentials": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "bot_notifications": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_sync_groups": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_sync_meta": {
+        "importedRows": 1,
+        "status": "imported"
+      },
+      "member_sync_settings": {
+        "importedRows": 1,
+        "status": "imported"
+      },
+      "security_audit_outbox": {
+        "importedRows": 41,
+        "status": "imported"
+      },
+      "asset_cleanup_jobs": {
+        "importedRows": 14,
+        "status": "imported"
+      },
+      "asset_references": {
+        "importedRows": 279,
+        "status": "imported"
+      },
+      "audit_logs": {
+        "importedRows": 1191,
+        "status": "imported"
+      },
+      "activity_revisions": {
+        "importedRows": 5,
+        "status": "imported"
+      },
+      "bot_credential_secrets": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "bot_identities": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "bot_subscriptions": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "event_participants": {
+        "importedRows": 2,
+        "status": "imported"
+      },
+      "event_submissions": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_group_memberships": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_profile_tasks": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_sync_requests": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "bot_deliveries": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "bot_link_codes": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_sync_avatars": {
+        "importedRows": 0,
+        "status": "imported"
+      },
+      "member_sync_batches": {
+        "importedRows": 0,
+        "status": "imported"
+      }
+    },
+    "sequencesCalibrated": [
+      {
+        "schema": "audit",
+        "table": "audit_logs",
+        "column": "id",
+        "sequence": "audit.audit_logs_id_seq",
+        "maxId": "1192",
+        "nextId": "1193"
+      },
+      {
+        "schema": "main",
+        "table": "activities",
+        "column": "id",
+        "sequence": "main.activities_id_seq",
+        "maxId": "20",
+        "nextId": "21"
+      },
+      {
+        "schema": "main",
+        "table": "activity_revisions",
+        "column": "id",
+        "sequence": "main.activity_revisions_id_seq",
+        "maxId": "5",
+        "nextId": "6"
+      },
+      {
+        "schema": "main",
+        "table": "asset_references",
+        "column": "id",
+        "sequence": "main.asset_references_id_seq",
+        "maxId": "279",
+        "nextId": "280"
+      },
+      {
+        "schema": "main",
+        "table": "event_participants",
+        "column": "id",
+        "sequence": "main.event_participants_id_seq",
+        "maxId": "3",
+        "nextId": "4"
+      },
+      {
+        "schema": "main",
+        "table": "events",
+        "column": "id",
+        "sequence": "main.events_id_seq",
+        "maxId": "9",
+        "nextId": "10"
+      },
+      {
+        "schema": "main",
+        "table": "history",
+        "column": "id",
+        "sequence": "main.history_id_seq",
+        "maxId": "57",
+        "nextId": "58"
+      },
+      {
+        "schema": "main",
+        "table": "members",
+        "column": "id",
+        "sequence": "main.members_id_seq",
+        "maxId": "141",
+        "nextId": "142"
+      },
+      {
+        "schema": "main",
+        "table": "users",
+        "column": "id",
+        "sequence": "main.users_id_seq",
+        "maxId": "12",
+        "nextId": "13"
+      }
+    ],
+    "dryRun": false
+  },
+  "verification": {
+    "overallStatus": "PASS",
+    "verifiedAt": "2026-11-07T21:19:16.367Z",
+    "tableComparisons": {
+      "users": {
+        "schema": "main",
+        "table": "users",
+        "status": "MATCH",
+        "sourceRowCount": 9,
+        "targetRowCount": 9,
+        "digestMatch": true
+      },
+      "site_config": {
+        "schema": "main",
+        "table": "site_config",
+        "status": "MATCH",
+        "sourceRowCount": 12,
+        "targetRowCount": 12,
+        "digestMatch": true
+      },
+      "banned_ips": {
+        "schema": "main",
+        "table": "banned_ips",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "login_attempts": {
+        "schema": "main",
+        "table": "login_attempts",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "history": {
+        "schema": "main",
+        "table": "history",
+        "status": "MATCH",
+        "sourceRowCount": 45,
+        "targetRowCount": 45,
+        "digestMatch": true
+      },
+      "members": {
+        "schema": "main",
+        "table": "members",
+        "status": "MATCH",
+        "sourceRowCount": 139,
+        "targetRowCount": 139,
+        "digestMatch": true
+      },
+      "activities": {
+        "schema": "main",
+        "table": "activities",
+        "status": "MATCH",
+        "sourceRowCount": 5,
+        "targetRowCount": 5,
+        "digestMatch": true
+      },
+      "events": {
+        "schema": "main",
+        "table": "events",
+        "status": "MATCH",
+        "sourceRowCount": 9,
+        "targetRowCount": 9,
+        "digestMatch": true
+      },
+      "bot_credentials": {
+        "schema": "main",
+        "table": "bot_credentials",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "bot_notifications": {
+        "schema": "main",
+        "table": "bot_notifications",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_sync_groups": {
+        "schema": "main",
+        "table": "member_sync_groups",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_sync_meta": {
+        "schema": "main",
+        "table": "member_sync_meta",
+        "status": "MATCH",
+        "sourceRowCount": 1,
+        "targetRowCount": 1,
+        "digestMatch": true
+      },
+      "member_sync_settings": {
+        "schema": "main",
+        "table": "member_sync_settings",
+        "status": "MATCH",
+        "sourceRowCount": 1,
+        "targetRowCount": 1,
+        "digestMatch": true
+      },
+      "security_audit_outbox": {
+        "schema": "main",
+        "table": "security_audit_outbox",
+        "status": "MATCH",
+        "sourceRowCount": 41,
+        "targetRowCount": 41,
+        "digestMatch": true
+      },
+      "asset_cleanup_jobs": {
+        "schema": "main",
+        "table": "asset_cleanup_jobs",
+        "status": "MATCH",
+        "sourceRowCount": 14,
+        "targetRowCount": 14,
+        "digestMatch": true
+      },
+      "asset_references": {
+        "schema": "main",
+        "table": "asset_references",
+        "status": "MATCH",
+        "sourceRowCount": 279,
+        "targetRowCount": 279,
+        "digestMatch": true
+      },
+      "audit_logs": {
+        "schema": "audit",
+        "table": "audit_logs",
+        "status": "MATCH",
+        "sourceRowCount": 1191,
+        "targetRowCount": 1191,
+        "digestMatch": true
+      },
+      "activity_revisions": {
+        "schema": "main",
+        "table": "activity_revisions",
+        "status": "MATCH",
+        "sourceRowCount": 5,
+        "targetRowCount": 5,
+        "digestMatch": true
+      },
+      "bot_credential_secrets": {
+        "schema": "main",
+        "table": "bot_credential_secrets",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "bot_identities": {
+        "schema": "main",
+        "table": "bot_identities",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "bot_subscriptions": {
+        "schema": "main",
+        "table": "bot_subscriptions",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "event_participants": {
+        "schema": "main",
+        "table": "event_participants",
+        "status": "MATCH",
+        "sourceRowCount": 2,
+        "targetRowCount": 2,
+        "digestMatch": true
+      },
+      "event_submissions": {
+        "schema": "main",
+        "table": "event_submissions",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_group_memberships": {
+        "schema": "main",
+        "table": "member_group_memberships",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_profile_tasks": {
+        "schema": "main",
+        "table": "member_profile_tasks",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_sync_requests": {
+        "schema": "main",
+        "table": "member_sync_requests",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "bot_deliveries": {
+        "schema": "main",
+        "table": "bot_deliveries",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "bot_link_codes": {
+        "schema": "main",
+        "table": "bot_link_codes",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_sync_avatars": {
+        "schema": "main",
+        "table": "member_sync_avatars",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      },
+      "member_sync_batches": {
+        "schema": "main",
+        "table": "member_sync_batches",
+        "status": "MATCH",
+        "sourceRowCount": 0,
+        "targetRowCount": 0,
+        "digestMatch": true
+      }
+    },
+    "foreignKeyIntegrity": {
+      "violations": 0
+    },
+    "assetReferences": {
+      "status": "PASS",
+      "total": 244,
+      "missing": 0,
+      "invalidLocalUrls": 0
+    },
+    "sequenceIntegrity": {
+      "passed": true,
+      "details": [
+        {
+          "table": "audit.audit_logs",
+          "maxId": "1192",
+          "nextId": "1193",
+          "safe": true
+        },
+        {
+          "table": "main.activities",
+          "maxId": "20",
+          "nextId": "21",
+          "safe": true
+        },
+        {
+          "table": "main.activity_revisions",
+          "maxId": "5",
+          "nextId": "6",
+          "safe": true
+        },
+        {
+          "table": "main.asset_references",
+          "maxId": "279",
+          "nextId": "280",
+          "safe": true
+        },
+        {
+          "table": "main.event_participants",
+          "maxId": "3",
+          "nextId": "4",
+          "safe": true
+        },
+        {
+          "table": "main.events",
+          "maxId": "9",
+          "nextId": "10",
+          "safe": true
+        },
+        {
+          "table": "main.history",
+          "maxId": "57",
+          "nextId": "58",
+          "safe": true
+        },
+        {
+          "table": "main.members",
+          "maxId": "141",
+          "nextId": "142",
+          "safe": true
+        },
+        {
+          "table": "main.users",
+          "maxId": "12",
+          "nextId": "13",
+          "safe": true
+        }
+      ]
+    }
+  }
+}
