@@ -5,10 +5,18 @@ import net from 'node:net'
 import path from 'node:path'
 import fs from 'node:fs/promises'
 import { fileURLToPath } from 'node:url'
+import {createPostgresBackup,verifyPostgresBundle} from '../../scripts/postgres/backup.mjs'
 import { fixture, get, png } from '../helpers/fixture.mjs'
 
 it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and restart boundaries', async () => {
- const f=await fixture({env:{TRUST_PROXY_CIDRS:"127.0.0.1/32",GUEST_DRAFT_PROOF_MODE:process.env.BACKEND_BFF_PROOF_MODE === 'optional' ? 'optional' : 'required'}})
+ const backupDependencies={createBackup:async options=>{
+   const owner=new URL(process.env.PG_ADAPTER_ADMIN_URL),runtime=new URL(options.databaseUrl)
+   if(owner.hostname!=='127.0.0.1'||owner.pathname!=='/guatswr_pg_contract_test'||runtime.hostname!==owner.hostname||runtime.port!==owner.port||!/^\/guatswr_pg_case_[a-f0-9]{16}$/.test(runtime.pathname))throw Error('ISOLATED_BFF_BACKUP_REQUIRED')
+   owner.pathname=runtime.pathname
+   const commandFor=(tool,args,env)=>({command:'docker',args:['exec','-i',...Object.keys(env).filter(key=>key.startsWith('PG')).flatMap(key=>['-e',key]),process.env.PG_ADAPTER_CONTAINER,tool,...args],env:{...env,PGHOST:'127.0.0.1',PGPORT:'5432'}})
+   return createPostgresBackup({...options,databaseUrl:owner.href,commandFor})
+ }}
+ const f=await fixture({backupDependencies,env:{TRUST_PROXY_CIDRS:"127.0.0.1/32",GUEST_DRAFT_PROOF_MODE:process.env.BACKEND_BFF_PROOF_MODE === 'optional' ? 'optional' : 'required'}})
  const root=fileURLToPath(new URL('../../../',import.meta.url))
  const output=path.resolve(process.env.BACKEND_BFF_OUTPUT || path.join(root,'web/.output'))
  const entry=path.join(output,'server/index.mjs')
@@ -157,24 +165,20 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const downloaded = await fetch(origin + '/api/bff/admin/backups/download?file=fixture.tar.gz', { headers: { connection: 'close', cookie: [...ownerJar].map(([k,v])=>`${k}=${v}`).join('; ') } })
  expect(downloaded.status).toBe(200)
  expect(await downloaded.text()).toBe('synthetic backup bytes')
- if (process.platform !== 'win32') {
-   // Linux is the production script platform; no mock process or upstream here.
-   f.context.externalServices = true
-   try {
-     const backup = await call('/api/bff/admin/backups/run', { method: 'POST', headers: ownerHeaders, body: '{}' }, ownerJar)
-     expect(backup.response.status, JSON.stringify(backup.data)).toBe(200)
-     expect(backup.data).toEqual({ message: '备份完成' })
-     console.info('BFF native backup completed')
-     const files = await f.fs.readdir(path.join(f.root, 'backups', 'full'))
-     const archive = files.find(name => /^full_.*\.tar\.gz$/.test(name))
-     expect(archive).toBeDefined()
-     const { promisify } = await import('node:util'), { execFile } = await import('node:child_process')
-     await promisify(execFile)('python3', [path.join(f.context.BACKEND_ROOT, 'scripts', 'backup_bundle.py'), 'verify', path.join(f.root, 'backups', 'full', archive), '--work-dir', f.root])
-     const protectedPoint = await call('/api/bff/admin/backups?file=' + encodeURIComponent(archive), { method: 'DELETE', headers: ownerHeaders }, ownerJar)
-     expect(protectedPoint.response.status).toBe(409)
-     console.info('BFF verified restore-point protection completed')
-   } finally { f.context.externalServices = false }
- }
+ // Exercise the real API/scheduler/pg_dump on every host; PostgreSQL clients
+ // run in the owned test container, not an unversioned host binary.
+ await f.fs.writeFile(path.join(f.context.PUBLIC_DIR,'avatar.png'),png)
+ f.context.externalServices=true
+ try {
+   const backup=await call('/api/bff/admin/backups/run',{method:'POST',headers:ownerHeaders,body:'{}'},ownerJar)
+   expect(backup.response.status,JSON.stringify(backup.data)).toBe(200)
+   expect(backup.data).toEqual({message:'备份完成'})
+   const bundles=(await f.fs.readdir(path.join(f.context.BACKUP_ROOT,'postgres'))).filter(name=>name.startsWith('pg_'))
+   expect(bundles).toHaveLength(1)
+   const receipt=await verifyPostgresBundle(path.join(f.context.BACKUP_ROOT,'postgres',bundles[0]))
+   expect(Object.keys(receipt.tables)).toHaveLength(32)
+   expect(receipt.resources.some(item=>item.name==='public'&&item.files.length>0)).toBe(true)
+ }finally{f.context.externalServices=false}
  const purge = await call('/api/bff/admin/recycle-bin/purge', { method: 'POST', headers: { origin, 'x-csrf-token': ownerLogin.data.csrfToken } }, ownerJar)
  expect(purge.response.status, JSON.stringify(purge.data)).toBe(200)
  expect(await get(f.db, "SELECT id FROM members WHERE id=$1", [memberCreated.data.id])).toBeUndefined()

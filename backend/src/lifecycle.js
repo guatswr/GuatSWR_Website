@@ -126,7 +126,7 @@ const createApplication = async (options = {}) => {
       ['security', './models/security'], ['storage', './utils/storage'], ['images', './utils/imageUpload'], ['backup', './utils/backup'], ['bot', './utils/bot'],
       ['ban', './middlewares/ban'], ['auth', './middlewares/auth'], ['guestGateway', './middlewares/guestGateway'], ['limiter', './middlewares/limiter'],
       ['upload', './middlewares/upload'], ['scheduler', './utils/backupScheduler']
-    ]) context[key] = require(filename)(context);
+    ]) context[key] = require(filename)(context, key === 'scheduler' ? options.backupDependencies : undefined);
     if (env.BOT_PLATFORM_ENABLED === 'true') {
       if (context.mainSchemaVersion < 4) throw new Error('Bot platform requires explicit main database migration to version 4');
       const { createBotPlatform } = require(path.join(root, 'dist/src/integrations/bot/platform'));

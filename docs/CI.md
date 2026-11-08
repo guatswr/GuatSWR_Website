@@ -1,35 +1,33 @@
 # GitHub CI
 
-`CI` (`.github/workflows/backend.yml`) validates PRs targeting `main`, pushes to
-`main`, `codex/**` and `revamp/**`, merge queues, manual runs, and a weekly full
-run (Monday 02:00 Asia/Shanghai). The filename remains stable for the release
-workflow. The former `revamp.yml` is consolidated here.
+Updated 2026-11-09. `CI` in `.github/workflows/backend.yml` keeps the same workflow filename and **CI result** required check. Normal pushes and PRs run only the core release checks; heavy checks are manual in `extended-ci.yml`.
 
-Require **CI result** in branch protection. It runs even when earlier jobs fail,
-and checks that every job selected by the change scope succeeded. An unexpected
-skip, cancellation, missing scope or missing metric report fails validation.
-Documentation-only changes still produce this check with explicit scope skips;
-there are no workflow-level path filters that leave a required check pending.
-Existing branch rules referring to the retired workflow must be updated in the
-repository settings when this configuration is adopted.
+## Normal checks
 
-## Change scope
-
-| Change | Validation |
+| Job | Required work |
 | --- | --- |
-| `web/app/**`, frontend styles/assets/tests | Static checks, shared/web units, production build, all desktop/mobile Chromium E2E, route budgets, Lighthouse, packaged frontend runtime |
-| `web/server/**`, `web/shared/**`, fixtures, Nuxt config | Frontend checks plus real PG state/recovery and BFF-to-backend integration |
-| `backend/**` | Static checks, Windows/Linux backend units, Python historical-source tests, Linux Docker PostgreSQL business/contracts/lifecycle and cold recovery, real BFF, packaged recovery |
-| Lockfile, shared packages, scripts, CI or unknown paths | Full validation; unknown files never silently bypass checks |
-| Web/backend package manifests | Relevant checks plus online dependency audit |
-| Only README, LICENSE or Markdown/images under `docs/**` | Scope report and final required result (JSON/config/test fixtures still run all checks) |
-| Manual, weekly, new branch or unavailable diff base | Full validation |
+| scope | Select affected checks; documentation-only changes skip code jobs |
+| quality | Typecheck, lint, boundaries, local security patches, CI/tooling and shared/frontend unit tests |
+| postgres | Real PG store/business/API contracts/lifecycle, native backup/restore, offline migration and Python backup checks |
+| web | One shared/backend/Nuxt production build, sourcemap check and real BFF-to-PG integration |
+| audit | Online audit only for dependency manifests, lockfile, registry or patch-policy changes |
+| result | Reject missing, failed, cancelled or unexpectedly skipped required checks |
 
-Jobs run independently after scope selection. A dependency advisory cannot
-prevent test/build jobs from collecting results. Heavy frontend browser checks
-run once on Linux. Pure backend units retain Windows and Linux coverage; PG business, process and packaged recovery jobs run on Linux Docker. Each browser run still covers both desktop and phone projects.
-Frontend unit tests use two workers in CI and Docker builds to fit hosted-runner
-CPU budgets without starving security assertions under parallel compilation.
+Quality completes before PostgreSQL and production-build jobs start. There is no ordinary Windows matrix, Docker image build, full browser sweep or Lighthouse run. The normal workflow builds Nuxt once, with no independent duplicate BFF or frontend-image job. Unknown source paths retain all core checks; unknown diff bases conservatively select the full set, including audit.
+
+## Extended checks
+
+Run **Extended validation** manually before a delivery that needs platform/image/browser acceptance. It retains desktop/mobile E2E, route and Lighthouse budgets, Windows compatibility, non-root backend image cold recovery and packaged frontend SSR/nonce checks. Heavy image jobs follow browser validation rather than starting together. These checks are not silently reported as successful by the normal workflow; they simply belong to a separate explicit run.
+
+Dependency security also retains its existing daily/manual workflow and the exact-tag release audit. Real vulnerabilities remain failures. Network/API errors cannot be accepted as a clean report. Installation uses the configured mirror; the audit request explicitly uses the official npm security registry and retries a transport/invalid-response failure once. Actual vulnerability findings are not retried or ignored.
+
+## 2026-11-09 investigation
+
+[Run 42511366630](https://github.com/guatswr/GuatSWR_Website/actions/runs/42511366630) passed quality, both backend unit platforms, PostgreSQL and packaged recovery. The observed failures were an audit without a usable report and the Linux BFF backup assertion, not evidence of an out-of-memory runner.
+
+The BFF test still expected a historical SQLite tar and depended on host pg_dump/credentials. It now exercises the real API and scheduler with owned test-container PG clients, a fixture-only backup account, and a verified native 32-table directory bundle on every host. No success response is mocked.
+
+After correcting the registry, a local audit reported existing minimatch advisory GHSA-g3hv-75wg-m249 (moderate). It remains unresolved and visible to dependency-change, daily and release audit gates. This CI change does not waive the finding or upgrade dependencies.
 
 ## Metrics and thresholds
 
@@ -66,7 +64,7 @@ the dependency tree is free of vulnerabilities.
 `Dependency security` runs daily at 10:00 Asia/Shanghai and on manual request.
 CI also calls it for dependency/configuration changes and full runs. The caller's
 **CI result** fails if this required audit fails. Ordinary source-only changes
-get their quality results without rerunning the online audit. A daily finding
+get their core results without rerunning the online audit. A daily finding
 remains a visible failed security run with raw GHSA/package details; no severity
 is hidden, no finding baseline is accepted, and no `continue-on-error` is used.
 
@@ -91,7 +89,7 @@ pnpm check:security
 WEB_ENV_FILE=./web/.env.example BACKEND_ENV_FILE=./backend/.env.example docker compose config --no-env-resolution --quiet
 ```
 
-The Compose check deliberately uses tracked example files. Production keeps its
+The manual packaged workflow uses tracked example files for Compose validation. Production keeps its
 required private `env_file` configuration; CI never needs production secrets.
 Workflow actions are pinned to release commit SHAs and use Node 24 runtimes.
 

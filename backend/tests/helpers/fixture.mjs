@@ -35,7 +35,7 @@ export const fixture = async (overrides = {}) => {
   const factory = (await import('./postgres-application.mjs')).createPostgresTestApplication
   instance = await factory({ env: { NODE_ENV: 'test', JWT_SECRET: secret, BFF_BRIDGE_SECRET: bridgeKey, ...overrides.env },
     paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },
-    backgroundTasks: false, externalServices: false, logDestination: overrides.logDestination })
+    backgroundTasks: false, externalServices: false, logDestination: overrides.logDestination, backupDependencies:overrides.backupDependencies })
   // Explicit direct-loopback test topology. Production proxy policy is tested separately.
   // Default policy is supplied by the application, never overridden here.
   const db = instance.fixtureDb || instance.context.db

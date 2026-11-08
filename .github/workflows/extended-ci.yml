@@ -1,0 +1,182 @@
+name: Extended validation
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: extended-${{ github.ref }}
+  cancel-in-progress: true
+
+env:
+  CI: 'true'
+  NUXT_SESSION_PASSWORD: guatswr-ci-fixture-session-password-not-a-production-credential
+
+jobs:
+
+  web:
+    name: Browser behavior and delivery budgets
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - run: pnpm install --frozen-lockfile
+        id: install
+      - name: Build the production artifact under test
+        id: build
+        run: pnpm --filter @guatswr/shared build && pnpm --filter @guatswr/web build
+      - name: Check production sourcemaps
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: pnpm check:artifacts
+      - name: Install Chromium and CJK fonts
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install --yes fonts-noto-cjk
+          pnpm --filter @guatswr/web exec playwright install --with-deps chromium
+        id: browser
+      - name: All desktop and mobile E2E cases
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: pnpm test:e2e --work-dir .e2e-isolated/ci
+      - name: Publish E2E first-attempt reliability
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/ci/report.mjs e2e web/.e2e-isolated/ci/summary.json
+      - name: Measure cold-route JS
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: node scripts/revamp/check-route-budget.mjs --routes scripts/revamp/route-fixtures.json > .tools/ci/routes.json
+      - name: Publish route budgets
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/ci/report.mjs routes .tools/ci/routes.json
+      - name: Measure mobile performance (3 samples per route)
+        if: ${{ !cancelled() && steps.browser.outcome == 'success' }}
+        run: pnpm --filter @guatswr/web test:performance
+      - name: Publish performance medians
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+        run: node scripts/ci/report.mjs performance web/.lighthouseci/summary.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-browser
+          path: |
+            .tools/ci/
+            web/.e2e-isolated/ci/
+            web/.lighthouseci/
+            web/playwright-report/
+          include-hidden-files: true
+          retention-days: 14
+
+  backend:
+    name: Backend tests (${{ matrix.os }})
+    needs: web
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - run: pnpm install --frozen-lockfile
+        id: install
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.13'
+      - run: pnpm --filter @guatswr/shared build
+        id: build
+      - run: python backend/scripts/backup_bundle_test.py
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: python backend/scripts/inspect_data_test.py
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: python backend/scripts/migration_baseline_test.py
+        if: ${{ !cancelled() && steps.install.outcome == 'success' }}
+      - run: pnpm --filter guiair-backend run test:unit --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-unit.json"
+        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
+      - name: Publish backend metrics
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/backend-unit.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-backend-${{ runner.os }}
+          path: .tools/ci/
+          include-hidden-files: true
+          retention-days: 14
+
+  container:
+    needs: web
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - name: Validate frontend/backend Compose topology without production env files
+        env:
+          WEB_ENV_FILE: ./web/.env.example
+          BACKEND_ENV_FILE: ./backend/.env.example
+        run: docker compose config --no-env-resolution --quiet
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @guatswr/shared build && pnpm --filter guiair-backend build
+      - run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} -f backend/Dockerfile -t guatswr-backend-runtime .
+      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-runtime-ownership.cjs
+      # Replaces retired SQLite-only container probes with the real packaged PG
+      # application, persistent volumes, native backup and empty-target restore.
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - name: Packaged non-root PostgreSQL cold recovery
+        run: |
+          export PG_RELEASE_CLIENT_IMAGE="$(docker image inspect guatswr-backend-runtime --format '{{.Id}}')"
+          node scripts/postgres/test-adapters.mjs --business --suite packaged --reporter=default --reporter=json --outputFile=${{ github.workspace }}/.tools/ci/packaged.json
+      - name: Publish packaged recovery metrics
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/packaged.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-backend-container
+          path: .tools/ci/
+          include-hidden-files: true
+          retention-days: 14
+
+  web-container:
+    name: Packaged frontend runtime
+    needs: container
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          package-manager-cache: false
+      - run: docker build --file web/Dockerfile --tag guatswr-web:ci .
+      - run: node scripts/revamp/container-smoke.mjs --image guatswr-web:ci
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-web-container
+          path: .tools/container-runtime-validation.json
+          include-hidden-files: true
+          if-no-files-found: ignore
+          retention-days: 14

@@ -3,23 +3,21 @@ import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-const fullScope = () => Object.fromEntries(['quality', 'backend', 'web', 'integration', 'container', 'web_container', 'postgres', 'audit'].map(key => [key, true]))
+const fullScope = (audit = true) => ({quality:true,postgres:true,web:true,audit})
+const dependencyPath = file => /^(?:package\.json|pnpm-lock\.yaml|pnpm-workspace\.yaml|\.npmrc|(?:web|backend|packages\/[^/]+)\/package\.json)$/.test(file) || file.startsWith('patches/') || file.startsWith('scripts/revamp/security-')
 
-/** Unknown paths run the full suite. Only explicitly documentation-only changes skip it. */
+/** Unknown source paths retain all core checks; online audit follows dependency changes. */
 export function classifyChanges(files, full = false) {
-  if (full) return fullScope()
-  const scope = Object.fromEntries(Object.keys(fullScope()).map(key => [key, false]))
-  for (const file of files) {
-    if ((file.startsWith('docs/') && /\.(md|png|jpe?g|webp|gif|svg|pdf)$/i.test(file))
-      || /^\.github\/(ISSUE_TEMPLATE|PULL_REQUEST_TEMPLATE)\//.test(file)
-      || /^(README(?:\.[^/]+)?|LICENSE(?:\.[^/]+)?|CONTRIBUTING\.md)$/.test(file)) continue
-    if (/^(web|backend)\/package\.json$/.test(file)) scope.audit = true
-    if (file.startsWith('web/')) {
-      scope.quality = scope.web = scope.web_container = true
-      if (/^web\/(server\/|shared\/|tests\/fixtures\/|nuxt\.config\.ts$|package\.json$)/.test(file)) scope.integration = scope.postgres = true
-    } else if (file.startsWith('backend/')) {
-      scope.quality = scope.backend = scope.integration = scope.container = scope.postgres = true
-    } else return fullScope()
+  if(full)return fullScope()
+  const scope={quality:false,postgres:false,web:false,audit:files.some(dependencyPath)}
+  for(const file of files){
+    if((file.startsWith('docs/')&&/\.(md|png|jpe?g|webp|gif|svg|pdf)$/i.test(file))||/^\.github\/(ISSUE_TEMPLATE|PULL_REQUEST_TEMPLATE)\//.test(file)||/^(README(?:\.[^/]+)?|LICENSE(?:\.[^/]+)?|CONTRIBUTING\.md)$/.test(file))continue
+    if(file.startsWith('web/')){
+      scope.quality=scope.web=true
+      if(/^web\/(server\/|shared\/|tests\/fixtures\/|nuxt\.config\.ts$|package\.json$)/.test(file))scope.postgres=true
+    }else if(file.startsWith('backend/')){
+      scope.quality=scope.postgres=scope.web=true
+    }else return fullScope(scope.audit)
   }
   return scope
 }

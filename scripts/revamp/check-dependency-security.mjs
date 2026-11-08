@@ -117,23 +117,29 @@ export function evaluateAudit(audit, policy, verified) {
   return { ok: unresolved.length === 0, rawCounts: counts, mitigated: accepted, unresolved }
 }
 
-async function fetchAudit() {
-  const entry = process.env.npm_execpath
-  if (!entry) throw new Error('Run this gate using pnpm check:security so the pinned package manager is used')
-  const javascript = /\.(?:c?js|mjs)$/i.test(entry)
-  if (!javascript && !/^pnpm(?:\.exe)?$/i.test(basename(entry))) throw new Error('Unsupported package-manager entry point')
-  let stdout, code = 0
-  try {
-    ({ stdout } = await execute(javascript ? process.execPath : entry, [...(javascript ? [entry] : []), 'audit', '--json'], {
-      cwd: repository, timeout: 120_000, maxBuffer: 10 * 1024 * 1024,
-    }))
-  } catch (error) {
-    if (error.code !== 1 || !error.stdout) throw error
-    stdout = error.stdout; code = 1
+export async function fetchAudit({run=execute,entry=process.env.npm_execpath,wait=ms=>new Promise(resolve=>setTimeout(resolve,ms))}={}) {
+  if (!entry || !isAbsolute(entry)) throw new Error('Run this check through the pinned pnpm package-manager script')
+  const javascript=/\.(?:c?js|mjs)$/i.test(entry)
+  if(!javascript&&!/^pnpm(?:\.exe)?$/i.test(basename(entry)))throw new Error('Unsupported package-manager entry point')
+  // Package mirrors need not implement the npm security API. Explicitly use the
+  // official audit endpoint while leaving normal dependency installation alone.
+  const args=[...(javascript?[entry]:[]),'audit','--json','--registry=https://registry.npmjs.org/']
+  for(let attempt=0;attempt<2;attempt++){
+    let stdout,nonzero=false
+    try{({stdout}=await run(javascript?process.execPath:entry,args,{cwd:repository,timeout:45000,maxBuffer:10*1024*1024}))}
+    catch(error){
+      if(error.code===1&&error.stdout){stdout=error.stdout;nonzero=true}
+      else{if(attempt===0){await wait(1000);continue}throw new Error('Audit transport failed before producing a report')}
+    }
+    let report
+    try{report=JSON.parse(stdout)}catch{/* An invalid server response is retried once. */}
+    const counts=report?.metadata?.vulnerabilities
+    const completeCounts=counts&&['info','low','moderate','high','critical'].every(key=>Number.isSafeInteger(counts[key])&&counts[key]>=0)
+    const hasFindings=report?.advisories&&Object.keys(report.advisories).length>0
+    if(report&&!report.error&&report.advisories&&!Array.isArray(report.advisories)&&completeCounts&&((!nonzero&&!Object.values(counts).some(value=>value>0))||hasFindings))return report
+    if(attempt===0){await wait(1000);continue}
+    throw new Error('Audit failed without a complete security report')
   }
-  const report = JSON.parse(stdout)
-  if (code && !Object.keys(report.advisories ?? {}).length) throw new Error('Audit failed without usable findings')
-  return report
 }
 
 async function main() {

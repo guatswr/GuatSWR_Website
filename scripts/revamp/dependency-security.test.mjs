@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os'
 import { dirname, join, resolve, sep } from 'node:path'
 import { test } from 'node:test'
 import { fileURLToPath } from 'node:url'
-import { discoverInstalledPackages, evaluateAudit, verifyPatchState } from './check-dependency-security.mjs'
+import { discoverInstalledPackages, evaluateAudit, fetchAudit, verifyPatchState } from './check-dependency-security.mjs'
 import { bracesProbes, deepmergeProbes, forgeProbes, minimatchProbes } from './security-patch-probes.mjs'
 
 const require = createRequire(import.meta.url)
@@ -103,3 +103,39 @@ for (const failure of ['registration', 'patch checksum', 'installed source', 'un
     await assert.rejects(verifyPatchState(root, [item]), expected[failure])
   }))
 }
+
+
+test('audit uses the official security registry regardless of the installation mirror',async()=>{
+ const clean=report(),entry=resolve('fixture-pnpm.cjs')
+ const result=await fetchAudit({entry,wait:async()=>{},run:async(file,args,options)=>{
+  assert.equal(file,process.execPath);assert.ok(args.includes('--registry=https://registry.npmjs.org/'));assert.ok(options.timeout<=45000)
+  return {stdout:JSON.stringify(clean)}
+ }})
+ assert.deepEqual(result,clean)
+})
+test('audit retries a transport/server failure once but cannot report it as success',async()=>{
+ let calls=0
+ await assert.rejects(fetchAudit({entry:resolve('fixture-pnpm.cjs'),wait:async()=>{},run:async()=>{calls++;return {stdout:JSON.stringify({error:{code:'unavailable'}})}}}),/complete security report/)
+ assert.equal(calls,2)
+})
+test('audit can recover after one invalid response',async()=>{
+ let calls=0
+ const clean=report()
+ assert.deepEqual(await fetchAudit({entry:resolve('fixture-pnpm.cjs'),wait:async()=>{},run:async()=>({stdout:++calls===1?'temporary failure':JSON.stringify(clean)})}),clean)
+ assert.equal(calls,2)
+})
+test('real vulnerability findings are returned immediately even when pnpm exits one',async()=>{
+ let calls=0
+ const findings=report([advisory(policy[0],{github_advisory_id:'GHSA-unreviewed'})])
+ const result=await fetchAudit({entry:resolve('fixture-pnpm.cjs'),wait:async()=>{},run:async()=>{calls++;throw Object.assign(new Error('findings'),{code:1,stdout:JSON.stringify(findings)})}})
+ assert.equal(calls,1);assert.equal(evaluateAudit(result,policy,verified).ok,false)
+})
+
+for(const nonzero of [false,true])test(`incomplete audit findings cannot produce a clean report (nonzero=${nonzero})`,async()=>{
+ const incomplete=report()
+ incomplete.metadata.vulnerabilities.high=1
+ await assert.rejects(fetchAudit({entry:resolve('fixture-pnpm.cjs'),wait:async()=>{},run:async()=>{
+  if(nonzero)throw Object.assign(new Error('missing findings'),{code:1,stdout:JSON.stringify(incomplete)})
+  return {stdout:JSON.stringify(incomplete)}
+ }}),/complete security report/)
+})

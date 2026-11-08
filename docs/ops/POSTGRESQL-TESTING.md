@@ -48,13 +48,13 @@ node scripts/postgres/test-adapters.mjs --business --suite packaged
 
 打包测试要求固定镜像 ID，使用真实非 root backend、持久卷、内置 pg_dump/pg_restore 和私有 PG 测试网络：启动原应用并写文章，创建并校验 32 表备份，停止原容器，恢复到另一个空 PG 库和新卷，启动候选并验证登录、文章、图片、隔离区和日志字节，以及下一次自增写入。容器与资源均由测试创建并清理，不连接生产。
 
-## CI 门禁
+## CI 门禁（2026-11-09 精简）
 
-- `backend`：Linux/Windows 单测和离线历史源的 Python 校验。
-- `postgres`：Linux Docker 上的原生 store、全部业务/契约/生命周期，以及备份恢复；输出真实 Vitest JSON。
-- `real-bff`：新构建 Nuxt 对接 PG backend，验证鉴权撤销、草稿持久化、真实进程崩溃和重放。
-- `container`：从干净上下文构建生产镜像，验证非 root 权限并运行打包冷恢复。
-- `quality` / `web` / `web-container`：保留类型、lint、前端单测、浏览器预算和前端交付检查。使用合成 HTTP 上游的 UI 夹具明确选择 memory 状态，不冒充 PG 事务验证。
-- `result`：必须等待 postgres 等所有应执行的 job；缺报告、失败、取消或未声明跳过均阻止通过。只有 Windows 的 POSIX 进程组测试可按既有策略排除。
+- 常规 `quality`：类型、lint、边界、本地补丁和 shared/web 单元测试。
+- 常规 `postgres`：真实 PG 业务/契约/生命周期/原生备份恢复，并执行低开销的历史源和 Python 检查。backend 单测已包含在该套件中。
+- 常规 `web`：仅一次 Nuxt 生产构建和真实 BFF 对 PG 的集成；BFF 备份使用隔离容器内的 PG 客户端，所有平台都验证 native bundle。
+- `audit`：依赖/锁文件/registry/补丁变化时执行，保留每日扫描与发布审计。审计错误和真实告警不作通过处理。
+- `result`：只等待当前必要 job；缺报告、失败、取消或意外跳过仍阻止通过。
+- 手动 `Extended validation`：完整浏览器/性能预算、Windows、生产镜像与打包冷恢复。常规 push 不重复构建两个镜像，不执行这些重型检查。
 
-本地通过不等同于远端 GitHub Actions 已运行；本轮不提交、不推送、不部署。生产割接历史见 [PG-07](evidence/stability/PG-07.md)，本轮证据见 [修复验证](evidence/stability/PRODUCTION-REVIEW-FIXES.md)。异地加密包取回、生产调度和告警投递仍需目标环境验收。
+使用合成 HTTP 上游的 UI 夹具明确选择 memory，不代替真实 PG 集成。本地通过不等同于远端 Actions 已运行。CI 具体触发和审计边界见 [CI.md](../CI.md)。本轮不提交、不推送、不部署，既有生产记录见 [PG-07](evidence/stability/PG-07.md)。
