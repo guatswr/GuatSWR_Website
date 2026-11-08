@@ -20,7 +20,7 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const origin=`http://127.0.0.1:${port}`
  let logs=''
  const spawnBff=()=>spawn(process.execPath,[entry],{cwd:path.dirname(entry),env:{...process.env,
-   BFF_DATABASE_DRIVER:f.context.databaseDriver || 'sqlite',BFF_POSTGRES_URL:f.context.env.POSTGRES_URL || '',
+   BFF_DATABASE_DRIVER:'postgres',BFF_POSTGRES_URL:f.context.env.POSTGRES_URL || '',
    NODE_ENV:'test',NITRO_HOST:'127.0.0.1',HOST:'127.0.0.1',PORT:String(port),NITRO_PORT:String(port),
    NUXT_API_BASE:f.origin,NUXT_BFF_BRIDGE_SECRET:f.context.env.BFF_BRIDGE_SECRET,NUXT_SESSION_PASSWORD:'isolated-bff-session-key-at-least-32-characters',
    NUXT_BFF_AUTH_ALLOWED_ORIGINS:JSON.stringify([origin]),NUXT_BFF_AUTH_TRUSTED_PROXY_CIDRS:'[]',
@@ -192,7 +192,7 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  const relogin = await call('/api/bff/auth/login', { method: 'POST', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': refreshedCsrf.data.csrfToken }, body: JSON.stringify({ username: 'admin', password: 'bff-updated-password' }) })
  expect(relogin.response.status, JSON.stringify(relogin.data)).toBe(200)
  expect((await call('/api/bff/auth/session')).data.authenticated).toBe(true)
- // Ownership is deliberately in-memory: restart must fail closed and keep DB bytes.
+ // PostgreSQL keeps ownership and replay receipts across an actual process crash.
  const pending = await visitor()
  const draftBody = JSON.stringify({ ...JSON.parse(body), title: 'restart draft fixture' })
  const pendingUpload = new FormData()
@@ -204,8 +204,10 @@ it('I01-I03 real Nuxt BFF integrates content, guests, backup, revocation and res
  child=spawnBff(); capture(); exited=once(child,'exit'); await ready()
  console.info('BFF restarted process ready')
  const lostOwnership = await call(`/api/bff/guest/events/${pending.id}`, { method: 'PUT', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': pending.csrf }, body: draftBody }, pending.jar)
- expect(lostOwnership.response.status, JSON.stringify(lostOwnership.data)).toBe(404)
- expect(await get(f.db, "SELECT title,status FROM events WHERE id=$1", [pending.id])).toEqual({ title: null, status: 'draft' })
+ expect(lostOwnership.response.status, JSON.stringify(lostOwnership.data)).toBe(200)
+ expect(await get(f.db, "SELECT title,status FROM events WHERE id=$1", [pending.id])).toEqual({ title: 'restart draft fixture', status: 'pending' })
+ const replay = await call(`/api/bff/guest/events/${pending.id}`, { method: 'PUT', headers: { origin, 'content-type': 'application/json', 'x-csrf-token': pending.csrf }, body: draftBody }, pending.jar)
+ expect(replay.response.status, JSON.stringify(replay.data)).toBe(200)
  expect((await f.http.get(beforeRestart.data.url)).status).toBe(200)
  const newIntent = await visitor()
  expect(newIntent.id).not.toBe(pending.id)

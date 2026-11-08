@@ -83,7 +83,7 @@ def check_app_scheduler_conflict(container_id: str, runner=subprocess.check_outp
     """Check if the internal application scheduler is enabled."""
     code = r"""
 (async () => {
-  const driver = process.env.DATABASE_DRIVER || 'sqlite';
+  const driver = process.env.DATABASE_DRIVER || 'postgres';
   let enabled;
   if (driver === 'postgres') {
     if (!process.env.POSTGRES_URL) throw Error('configuration');
@@ -192,7 +192,7 @@ def execute_backup(config: dict, apply: bool = False, runner=run_command) -> dic
             # Inspect container to find backup mount path on host
             info = json.loads(subprocess.check_output(['docker', 'inspect', container_id]))[0]
             environment = dict(item.split('=', 1) for item in info.get('Config', {}).get('Env', []) if '=' in item)
-            driver = environment.get('DATABASE_DRIVER', 'sqlite')
+            driver = environment.get('DATABASE_DRIVER', 'postgres')
             if driver not in ('sqlite', 'postgres'):
                 raise RuntimeError('DATABASE_DRIVER_INVALID')
             source_mount = Path(next(m['Source'] for m in info['Mounts'] if m['Destination'] == '/app/backups'))

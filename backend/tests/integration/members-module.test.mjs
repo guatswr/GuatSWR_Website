@@ -6,7 +6,7 @@ import { expect, it, onTestFinished } from 'vitest'
 import { fixture, token, get, run } from '../helpers/fixture.mjs'
 const save = (f, body, id) => (id === undefined ? f.http.post('/api/members') : f.http.put(`/api/members/${id}`)).set('Authorization', `Bearer ${token(2, 'admin')}`).send(body)
 const require = createRequire(import.meta.url)
-const { DatabaseError } = require('../../dist/src/database/sqlite.js')
+const { DatabaseError } = require('../../dist/src/database/contracts.js')
 
 it('preserves NULL/invalid tags, deduplication, bio exclusion and sort_order/id ordering', async () => {
   const f = await fixture()

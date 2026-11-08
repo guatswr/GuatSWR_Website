@@ -5,7 +5,7 @@ from pathlib import Path
 import sqlite3
 import unittest
 
-ROOT = Path(__file__).parent.parent / 'src/migrations'
+ROOT = Path(__file__).resolve().parents[2] / 'scripts/postgres/legacy-sqlite'
 MANIFEST = json.loads((ROOT / 'manifest.json').read_text(encoding='utf-8'))
 
 

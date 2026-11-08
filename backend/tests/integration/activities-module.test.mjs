@@ -7,7 +7,7 @@ import { fixture, token, get, run } from '../helpers/fixture.mjs'
 const activity = { title: 'typed activity', tag: 'STG', date: '2026-10-23', images: [] }
 const update = (f, id, body) => f.http.put(`/api/activities/${id}`).set('Authorization', `Bearer ${token(2, 'admin')}`).send(body)
 const require = createRequire(import.meta.url)
-const { DatabaseError } = require('../../dist/src/database/sqlite.js')
+const { DatabaseError } = require('../../dist/src/database/contracts.js')
 
 it('EX-07 editing cannot select another file directory through an encoded activity ID', async () => {
   const f = await fixture(), source = path.join(f.context.PUBLIC_DIR, 'upload/keep-activity.png')

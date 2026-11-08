@@ -3,6 +3,9 @@
 import { createServer } from 'node:http'
 import { handlePublicFixture } from './public-data.mjs'
 
+// These servers use synthetic HTTP upstreams; database semantics run in the real PG suite.
+process.env.BFF_DATABASE_DRIVER = 'memory'
+
 const fixture = createServer((request, response) => {
   if (!handlePublicFixture(request, response)) { response.writeHead(404); response.end() }
 })

@@ -1,5 +1,7 @@
 # 网站稳定性与 PostgreSQL 迁移更新计划
 
+> 当前状态说明（2026-11-08）：运行时已收敛为纯 PostgreSQL；本文件保留历史治理计划。当前驱动、测试与 CI 命令以 [POSTGRESQL-TESTING.md](POSTGRESQL-TESTING.md)、执行手册和状态表为准，不能将旧 SQLite 默认配置或旧验收数据直接用于当前版本。
+
 日期：2026-11-05  
 状态：待 review；本文件是实施计划，不代表已执行更新或数据库切换。
 

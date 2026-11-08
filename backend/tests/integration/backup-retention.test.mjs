@@ -47,7 +47,7 @@ it('accepts a real Python verification marker as a protected recovery point',asy
  const restored=path.join(f.root,'verification-interop','restored'),jobId='01234567-1234-1234-1234-0123456789ab'
  const receipt=JSON.parse(await fs.readFile(path.join(restored,'RESTORE_READY.json'),'utf8'))
  expect(receipt.rebound_cleanup_jobs).toBe(1)
- const {createSqliteStore}=require('../../dist/src/database/sqlite.js')
- const store=createSqliteStore(path.join(restored,'data','guatswr_web_main.db'))
- try {expect((await store.get('SELECT identity FROM asset_cleanup_jobs WHERE id=?',[jobId])).identity).toBe(backupFileIdentity(await fs.stat(path.join(restored,'data','asset-quarantine',jobId),{bigint:true})))} finally {await store.close()}
+ const {DatabaseSync}=await import('node:sqlite')
+ const store=new DatabaseSync(path.join(restored,'data','guatswr_web_main.db'),{readOnly:true})
+ try {expect(store.prepare('SELECT identity FROM asset_cleanup_jobs WHERE id=?').get(jobId).identity).toBe(backupFileIdentity(await fs.stat(path.join(restored,'data','asset-quarantine',jobId),{bigint:true})))} finally {store.close()}
 })

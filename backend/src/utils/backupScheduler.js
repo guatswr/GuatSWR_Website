@@ -1,4 +1,4 @@
-module.exports = (context) => {
+module.exports = (context, dependencies = {}) => {
   const path = require('node:path');
   const compiled = path.join(context.BACKEND_ROOT, 'dist/src/backup');
   const { BackupError } = require(path.join(compiled, 'runner'));
@@ -6,7 +6,7 @@ module.exports = (context) => {
   const service = createBackupScheduler({
     store: context.sql.main,
     run: async () => {
-      const { createPostgresBackup } = await import(path.join(context.BACKEND_ROOT, 'scripts/postgres/backup.mjs'));
+      const createPostgresBackup = dependencies.createBackup || (await import(path.join(context.BACKEND_ROOT, 'scripts/postgres/backup.mjs'))).createPostgresBackup;
       const outputDir = path.join(context.BACKUP_ROOT, 'postgres');
       await createPostgresBackup({
         databaseUrl: context.env.POSTGRES_BACKUP_URL || context.env.POSTGRES_URL,

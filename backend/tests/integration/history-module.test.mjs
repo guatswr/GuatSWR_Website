@@ -5,7 +5,7 @@ import { once } from 'node:events'
 import { expect, it, onTestFinished } from 'vitest'
 import { fixture, token, get, run } from '../helpers/fixture.mjs'
 const require = createRequire(import.meta.url)
-const { DatabaseError } = require('../../dist/src/database/sqlite.js')
+const { DatabaseError } = require('../../dist/src/database/contracts.js')
 const save = (f, body, id) => (id === undefined ? f.http.post('/api/history') : f.http.put(`/api/history/${id}`)).set('Authorization', `Bearer ${token(2, 'admin')}`).send(body)
 
 it('EX-06 create returns each committed ID and sends that ID to the real local Bot receiver', async () => {

@@ -44,9 +44,7 @@ export const TOPOLOGICAL_TABLE_ORDER = [
 
 export { canonicalJson, computeRowDigest, computeTableDigest } from '../../backend/scripts/postgres/data.mjs'
 import { computeTableDigest, fileDigest } from '../../backend/scripts/postgres/data.mjs'
-import { createRequire } from 'node:module'
-const require = createRequire(import.meta.url)
-const { checkDatabase } = require('../../backend/dist/src/migrations/engine.js')
+import { checkDatabase } from './legacy-sqlite/engine.ts'
 export function validateDataRow(schema, table, row, columns) {
   const errors = []
   for (const col of columns) {
@@ -89,7 +87,7 @@ export async function exportSqliteDatabase(sourcePaths) {
   try {
     auditDb = new DatabaseSync(auditDbPath, { readOnly: true })
     if (!auditDb) throw new Error('SOURCE_AUDIT_REQUIRED')
-    const directory = fileURLToPath(new URL('../../backend/src/migrations',import.meta.url))
+    const directory = fileURLToPath(new URL('./legacy-sqlite/',import.meta.url))
     for (const [db, kind] of [[mainDb,'main'],[auditDb,'audit']]) {
       const connection = {
         all(sql, params, callback) { try { callback(null, db.prepare(sql).all(...params)) } catch (error) { callback(error) } },

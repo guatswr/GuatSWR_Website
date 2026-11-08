@@ -91,34 +91,10 @@ it('recovers without duplicate audit records after a real process dies between c
   expect((await get(f.logDb, "SELECT count(*) AS n FROM audit_logs WHERE source_id=$1", [id])).n).toBe(1)
 })
 
-it.skipIf(Boolean(process.env.PG_BUSINESS_ADMIN_URL))('keeps security writes unavailable until both independent database upgrades are present', async () => {
-  const f = await fixture(), path = await import('node:path'), fs = await import('node:fs/promises')
-  const sqlite = require('sqlite3'), { migrateDatabase } = require('../../dist/src/migrations/engine.js')
-  const { createSqliteStore } = require('../../dist/src/database/sqlite.js'), { bootstrapAdministrator } = require('../../dist/src/admin/bootstrap.js')
-  for (const mainVersion of [2, 3]) {
-    const root = path.join(f.root, `partial-${mainVersion}`), data = path.join(root, 'data'), definitions = path.join(root, 'definitions')
-    await fs.mkdir(data, { recursive: true })
-    await fs.cp(path.resolve('src/migrations'), definitions, { recursive: true })
-    const manifest = JSON.parse(await fs.readFile(path.join(definitions, 'manifest.json'), 'utf8'))
-    manifest.main.upgrades = manifest.main.upgrades.filter(step => step.version <= mainVersion)
-    delete manifest.audit.upgrades
-    await fs.writeFile(path.join(definitions, 'manifest.json'), JSON.stringify(manifest))
-    for (const kind of ['main', 'audit']) {
-      const filename = path.join(data, kind === 'main' ? 'guatswr_web_main.db' : 'guatswr_web_logs.db')
-      const db = await new Promise((resolve, reject) => { const db = new sqlite.Database(filename, error => error ? reject(error) : resolve(db)) })
-      try { await migrateDatabase(db, definitions, kind, { mode: 'initialize' }) }
-      finally { await new Promise((resolve, reject) => db.close(error => error ? reject(error) : resolve())) }
-    }
-    const store = createSqliteStore(path.join(data, 'guatswr_web_main.db'))
-    await bootstrapAdministrator(store, 'partial-admin', 'synthetic-password'); await store.close()
-    const app = await require('../../src/app').createApplication({ env: f.context.env, paths: { data, public: path.join(root, 'public'), backups: path.join(root, 'backups') }, backgroundTasks: false, externalServices: false })
-    try {
-      const http = require('supertest')(await app.listen(0, '127.0.0.1'))
-      expect((await http.get('/api/auth/me').set('Authorization', `Bearer ${token()}`)).status).toBe(200)
-      expect((await http.post('/api/auth/login').send({ username: 'partial-admin', password: 'synthetic-password' })).status).toBe(503)
-      expect((await http.put('/api/auth/profile').set('Authorization', `Bearer ${token()}`).send({ password: 'blocked-password' })).status).toBe(503)
-    } finally { await app.close() }
-  }
+it('rejects startup when the independent audit schema is incomplete',async()=>{
+ const f=await fixture(),{createApplication}=require('../../src/app.js')
+ await f.fixtureAdmin.query('ALTER TABLE audit.audit_logs DROP COLUMN source_id CASCADE')
+ await expect(createApplication({env:f.context.env,paths:{data:f.context.DATA_DIR,public:f.context.PUBLIC_DIR,backups:f.context.BACKUP_ROOT},backgroundTasks:false,externalServices:false})).rejects.toHaveProperty('code','PG_MIGRATION_SCHEMA_DRIFT')
 })
 
 it('rechecks super-admin permission after a queued request acquires the writer', async () => {

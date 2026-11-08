@@ -1,29 +1,17 @@
 # 脚本职责与备份入口
 
-备份/隔离恢复的当前操作说明见 [BACKUP-RUNBOOK](../docs/backend-modernization/BACKUP-RUNBOOK.md)。本文不会自动执行定时任务或部署。
+当前应用仅使用 PostgreSQL。准确的运行和恢复步骤见 [PostgreSQL 手册](../docs/ops/POSTGRESQL-EXECUTION-GUIDE.md)，测试与打包冷恢复见 [POSTGRESQL-TESTING](../docs/ops/POSTGRESQL-TESTING.md)。本文不会自动执行定时任务或部署。
 
-| 位置 | 用途 | 数据源 | 备份输出 |
-| --- | --- | --- | --- |
-| 根目录 `scripts/db_backup.sh` | 仓库布局下的数据库备份 | `<仓库>/backend/data` | `<仓库>/backups/db` |
-| 根目录 `scripts/uploads_backup.sh` | 仓库布局下的上传备份 | `<仓库>/backend/data/public` | `<仓库>/backups/uploads` |
-| 根目录 `scripts/backup_all.sh` | 调用上述两项并打包 | 同上 | `<仓库>/backups/full` |
-| `backend/scripts/*.sh` | 独立 backend 布局及其容器中的备份 | `<backend 根>/data`、`data/public` | `<backend 根>/backups/{db,uploads,full}` |
-| 根目录 `scripts/restore.sh` | 验包后恢复到新目录 | 完整包、可信hash，历史包显式选择 | 必填 `--target`，不覆盖原data |
-| `scripts/revamp/` | 新版代码边界、预算、SEO、产物与容器验证 | 构建产物/源码/内存测试 | 命令指定的验收输出 |
-| `web/scripts/` | 新版应用专属 E2E 与性能测试 | 隔离测试应用 | Playwright/性能报告 |
+| 位置 | 用途 | 当前边界 |
+| --- | --- | --- |
+| `backend/scripts/postgres/cli.mjs` | 原生 PG create / verify / restore | 私有目录包 `pg_<TAG>`，含 dump、receipt 和真实资源；目标空库恢复 |
+| `scripts/ops_backup.py` | 宿主调度、加密与异地接收 | 默认 PG；应用/宿主二选一 owner，账号由私有配置提供 |
+| `scripts/postgres/test-adapters.mjs` | 真实 PG store、业务和恢复回归 | 临时 loopback Docker 和每用例数据库，按标签清理 |
+| `scripts/postgres/legacy-sqlite/` | 历史 SQLite SQL/manifest/校验引擎 | 仅离线冻结源核验和测试，不是应用驱动，也不进入生产镜像 |
+| `scripts/postgres/migrate.mjs` | 历史冻结源导入全新 PG 目标 | 已知备份摘要、完整模式检查、30 表摘要与序列校验 |
+| `scripts/revamp/`、`web/scripts/` | 边界、预算、UI 及前端交付检查 | 合成上游夹具不代替真实 PG 集成 |
 
-根目录备份入口现在显式指定仓库路径后调用backend实现：它们根据脚本所在位置确定根目录，
-根目录脚本包含 `backend/data` 这一层，backend 内的脚本没有。
-`backend/Dockerfile` 的构建上下文与源码布局决定容器内可用哪一组。
-
-当前 `backend/src/utils/backup.js` 从自身目录向上查找同时包含三项备份脚本
-的目录，使用**首先找到的那一组**作为自动备份入口；由于 `backend/scripts/`
-存在，通常先命中 backend 层。根目录的 `cron.example` 指向仓库层脚本。
-因此手动 cron 和应用自动备份可能写往不同的 backups 根目录，排查时必须
-确认实际调用路径与挂载目录，不能仅凭文件名判断。
-
-BM-10已统一备份实现并移除cp降级/单库伪成功，恢复只写新目标；实际调度、
-下载/删除与保留策略仍由BM-30收口。没有安装新的cron或对真实业务数据运行恢复。
+根目录和 backend 下的旧 `db_backup.sh` / `uploads_backup.sh` / `backup_all.sh`、SQLite `read-only-server.cjs` 只对应历史布局，不能当作当前 PG 应用的恢复或应急入口。历史格式细节保留在 [旧归档约定](../docs/backend-modernization/BACKUP-RUNBOOK.md)，执行前必须确认版本和数据格式。
 
 ## 依赖安全验收
 

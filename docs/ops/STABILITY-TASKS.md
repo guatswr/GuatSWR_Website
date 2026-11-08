@@ -1,6 +1,6 @@
 # 执行状态表
 
-本表初始化于 2026-11-05；以下记录实施状态及 2026-11-06 工作区 review 修正。
+本表初始化于 2026-11-05；当前运行时为纯 PostgreSQL。当前结论以任务表及最新修复记录为准，下方旧交接段落仅代表对应历史版本。
 
 阅读顺序：[总计划](STABILITY-AND-POSTGRESQL-PLAN.md) → [执行手册](STABILITY-EXECUTION-GUIDE.md) → 本表。迁移获选后再读 [PostgreSQL 手册](POSTGRESQL-EXECUTION-GUIDE.md)。
 
@@ -34,7 +34,7 @@
 | OPS-03 | CODE_VERIFIED | OPS-01 | [OPS-03 证据](evidence/stability/OPS-03.md) 已完成首页正文断言、静态资源探针、绑定凭证时效判定、通知重试与不假记 |
 | OPS-04 | CODE_VERIFIED | BASE-01 | [OPS-04 证据](evidence/stability/OPS-04.md) 已完成长格式 bind 缺目录报错防御、分服务资源限额、构建隔离与探针契约断言 |
 | UPLOAD-01 | CODE_VERIFIED | BASE-01 | [UPLOAD-01 证据](evidence/stability/UPLOAD-01.md) 已完成访客头像双维配额治理、报名事务原子同步影子引用、取消报名清除与共享引用保护 |
-| DECISION-01 | IN_PROGRESS | AUTH-01～04、DB-01～03、WEB-01；主瓶颈涉及 ASSET 时加 ASSET-02 | [DECISION-01 证据](evidence/stability/DECISION-01.md) 2026-11-06 用户已选择继续本地 PostgreSQL 迁移；旧性能结论待复测，生产切换未授权 |
+| DECISION-01 | IN_PROGRESS | AUTH-01～04、DB-01～03、WEB-01；主瓶颈涉及 ASSET 时加 ASSET-02 | [DECISION-01 证据](evidence/stability/DECISION-01.md) 已选择并完成 PG 运行时迁移；旧性能结论仍待当前安全实现复测 |
 | PG-00 | CODE_VERIFIED | 用户已选择本地迁移；BASE-01 | [依赖与类型清单](evidence/stability/PG-00-inventory.md)：94 文件、30 表，包含直连、DDL、类型/时间与验证去向 |
 | PG-01 | CODE_VERIFIED | PG-00 | [适配器证据](evidence/stability/PG-01.md)：共享契约、原生 PG 连接池和隔离双驱动验证通过；应用仍明确禁止提前切换 |
 | PG-02 | CODE_VERIFIED | PG-01 | [模式与 SQL 证据](evidence/stability/PG-02.md)：原生模式、业务 SQL、最小权限、71 接口、真实 BFF 及崩溃回归通过；生产未切换 |
@@ -42,9 +42,20 @@
 | PG-04 | CODE_VERIFIED | PG-03 | [离线迁移工具链证据](evidence/stability/PG-04.md)：30 表拓扑导出导入、BIGINT 自增序列校准、逐表 SHA-256 摘要与外键完整性核验已通过 |
 | PG-05 | CODE_VERIFIED | PG-04 | [原生备份与恢复证据](evidence/stability/PG-05.md)：32 表原生 custom dump、上传/隔离/日志真实字节、恢复后应用启动与序列检查；目标环境异地链路待验收 |
 | PG-06 | CODE_VERIFIED | PG-05 | [双隔离演练与前向修复证据](evidence/stability/PG-06.md)：真实 HTTP 割接、commit 前故障回滚及包含新增 PG 写入的冷恢复；生产规模维护窗口待验收 |
-| PG-07 | DEFERRED | PG-06 和用户明确授权 | 生产部署/停写割接尚未授权，代码与状态完整保留工作区供用户审查 |
+| PG-07 | ACCEPTED（历史记录） | PG-06 和用户验收 | 按 [2026-11-08 割接报告](evidence/stability/PG-07.md) 已完成；本轮未连接生产，不重新证明线上状态 |
 
-## 每次交接必须填写
+## 当前交接：PostgreSQL 测试、CI 与干净恢复修复
+
+- 基线：535c6e0；用户要求不 commit，留工作区 review。
+- 运行时：仅 PostgreSQL；历史 SQLite 模式在 scripts/postgres/legacy-sqlite，离线源核验不依赖旧 dist。
+- 生命周期/业务夹具：真实 PG 模板库、每用例独立数据库、非特权应用账号；当前 CI 新增 PostgreSQL 和打包冷恢复门禁。
+- 构建：backend 编译前清理 dist，镜像排除宿主构建产物；禁止在同一 checkout 的测试期间重建 dist。
+- 最新本地验证和限制见 [PRODUCTION-REVIEW-FIXES.md](evidence/stability/PRODUCTION-REVIEW-FIXES.md)。本地测试不代替远端 CI 或生产环境验收。
+- 本轮未 commit、push、部署或执行生产写入。
+
+## 以下为历史交接（不代表当前默认配置）
+
+## 旧版交接快照
 
 - 当前 Git revision：`24e1ea17a93be05af76138d24d8c708b9a48943b`（本轮改动未提交）
 - 本轮任务 ID：`PG-06`（隔离环境双演练与前向修复验证完成；生产切写 PG-07 保持 DEFERRED 待用户明确授权）

@@ -51,7 +51,7 @@ it('preserves static resource bytes, HEAD, dotfile rejection, SVG sandbox and do
 
 it('keeps decoded route parameters and frozen parser error masks', async () => {
   const f = await fixture()
-  await run(f.db, "INSERT INTO banned_ips(ip,expires_at) VALUES ('203.0.113.78', '2999-01-01T00:00:00Z')")
+  await run(f.db, "INSERT INTO banned_ips(ip,expires_at) VALUES ('203.0.113.78', 32472144000000)")
   const deleted = await f.http.delete('/api/admin/bans/203%2E0%2E113%2E78').set('Authorization', `Bearer ${token()}`)
   expect(deleted.status).toBe(200)
   const malformed = await f.http.post('/api/auth/login').set('Content-Type', 'application/json').send('{')

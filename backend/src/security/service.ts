@@ -1,4 +1,4 @@
-import type { Row, SqlExecutor } from '../database/contracts.js'
+import type { Row, SqlExecutor, DatabaseStore } from '../database/contracts.js'
 
 export function readVersion(value: unknown): number {
   if (value === null || value === undefined) return 0
@@ -17,7 +17,7 @@ export async function recordLoginFailure(store: Pick<SqlExecutor, 'get' | 'diale
   if (!attempt) throw new Error('Login attempt unavailable')
   return attempt
 }
-export function createSecurityService(store: Pick<SqlExecutor, 'get' | 'dialect'>) {
+export function createSecurityService(store: Pick<SqlExecutor, 'get' | 'dialect'> & Partial<Pick<DatabaseStore,'transaction'>>) {
   const counter = "CASE WHEN site_config.value ~ '^[0-9]+$' AND length(ltrim(site_config.value,'0'))<=16 THEN CAST(site_config.value AS BIGINT) END"
   return {
     readVersion,
@@ -30,10 +30,18 @@ export function createSecurityService(store: Pick<SqlExecutor, 'get' | 'dialect'
       if (!row) throw new Error('Invalid token version')
       return readVersion(row.value)
     },
-    deleteAdmin: (id: string | number, actorId: number) => store.get<Row & { username: string }>(`DELETE FROM users
-      WHERE id=$1 AND id<>$2 AND EXISTS(SELECT 1 FROM users WHERE id=$3 AND role='super_admin')
-        AND (COALESCE(role,'')<>'super_admin' OR (SELECT count(*) FROM users WHERE role='super_admin')>1)
-      RETURNING username`, [id, actorId, actorId]),
+    deleteAdmin: async (id: string | number, actorId: number) => {
+      const remove = (tx: Pick<SqlExecutor,'get'>) => tx.get<Row & {username:string}>(`DELETE FROM users
+        WHERE id=$1 AND id<>$2 AND EXISTS(SELECT 1 FROM users WHERE id=$3 AND role='super_admin')
+          AND (COALESCE(role,'')<>'super_admin' OR (SELECT count(*) FROM users WHERE role='super_admin')>1)
+        RETURNING username`,[id,actorId,actorId])
+      // A supplied transaction already holds the security-domain lock through
+      // authorizeSecurityActor. Standalone callers must acquire the same lock.
+      return store.transaction ? store.transaction(async tx=>{
+        await tx.get('SELECT pg_advisory_xact_lock(57123,1)')
+        return remove(tx)
+      }) : remove(store)
+    },
     recordFailure: (ip: string, now: number) => recordLoginFailure(store, ip, now)
   }
 }

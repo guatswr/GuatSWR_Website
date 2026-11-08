@@ -1,5 +1,7 @@
 # 备份与隔离恢复约定
 
+> 历史 SQLite 归档格式说明，不是当前 PostgreSQL 操作入口。当前应用只使用 PG，请先读 [PostgreSQL 执行手册](../ops/POSTGRESQL-EXECUTION-GUIDE.md) 和 [测试与冷恢复](../ops/POSTGRESQL-TESTING.md)。下文命令只适用于对应的旧版本。
+
 适用 BM-10 的 v2 归档及明确选择的历史 full 包。不是生产发布授权，也不自动停止/切换现有服务。
 
 ## 备份

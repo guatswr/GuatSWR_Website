@@ -3,7 +3,7 @@ import { createRequire } from 'node:module'
 import { expect, it } from 'vitest'
 import { fixture, token, run, get } from '../helpers/fixture.mjs'
 const require = createRequire(import.meta.url)
-const { DatabaseError } = require('../../dist/src/database/sqlite.js')
+const { DatabaseError } = require('../../dist/src/database/contracts.js')
 const post = (f, body, auth = token(2, 'admin')) => f.http.post('/api/config').set('Authorization', `Bearer ${auth}`).send(body)
 
 it('preserves public/admin projections, NULL/empty values and super-admin internal reads', async () => {

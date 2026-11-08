@@ -47,3 +47,8 @@ it.each([
   expect(JSON.stringify(error)).not.toMatch(/private|password|secret/)
   expect(JSON.stringify(databaseHttpFailure(error))).not.toMatch(/private|password|secret/)
 })
+
+it('explicit provisioning does not fall back to a process database URL',async()=>{
+ const {initializeDatabases}=require('../../scripts/initialize-databases.cjs')
+ await expect(initializeDatabases({POSTGRES_URL:'postgres://ignored@127.0.0.1/site'},{})).rejects.toThrow('EXPLICIT_POSTGRES_PROVISION_URL_REQUIRED')
+})

@@ -30,6 +30,7 @@ jobs:
       quality: ${{ steps.select.outputs.quality }}
       audit: ${{ steps.select.outputs.audit }}
       backend: ${{ steps.select.outputs.backend }}
+      postgres: ${{ steps.select.outputs.postgres }}
       web: ${{ steps.select.outputs.web }}
       integration: ${{ steps.select.outputs.integration }}
       container: ${{ steps.select.outputs.container }}
@@ -132,18 +133,56 @@ jobs:
         if: ${{ !cancelled() && steps.install.outcome == 'success' }}
       - run: pnpm --filter guiair-backend run test:unit --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-unit.json"
         if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-      - run: pnpm --filter guiair-backend run test:integration --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-integration.json"
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
-      - run: pnpm --filter guiair-backend run test:contracts --reporter=default --reporter=json --outputFile="${{ github.workspace }}/.tools/ci/backend-contracts.json"
-        if: ${{ !cancelled() && steps.build.outcome == 'success' }}
       - name: Publish backend metrics
         if: ${{ !cancelled() }}
-        run: node scripts/ci/report.mjs vitest .tools/ci/backend-unit.json .tools/ci/backend-integration.json .tools/ci/backend-contracts.json
+        run: node scripts/ci/report.mjs vitest .tools/ci/backend-unit.json
       - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         if: ${{ !cancelled() }}
         with:
           name: ci-backend-${{ runner.os }}
           path: .tools/ci/
+          include-hidden-files: true
+          retention-days: 14
+
+  postgres:
+    name: PostgreSQL business and cold recovery
+    needs: scope
+    if: needs.scope.outputs.postgres == 'true'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        with:
+          python-version: '3.13'
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @guatswr/shared build && pnpm --filter guiair-backend build
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - name: Reject stale compiled SQLite runtime artifacts
+        run: node -e "const fs=require('node:fs');for(const p of ['database/sqlite.js','migrations/engine.js'])if(fs.existsSync('backend/dist/src/'+p))throw Error('Obsolete compiled runtime '+p)"
+      - run: pnpm test:database
+      - name: Real business, contracts and lifecycle with no hidden skips
+        run: node scripts/postgres/test-adapters.mjs --business --suite core --reporter=default --reporter=json --outputFile=${{ github.workspace }}/.tools/ci/postgres.json
+      - name: Native backup, empty-target restore and application recovery
+        run: node scripts/postgres/test-adapters.mjs --business --suite release --reporter=default --reporter=json --outputFile=${{ github.workspace }}/.tools/ci/recovery.json
+      - run: pnpm test:migration
+      - name: Publish PostgreSQL metrics
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/postgres.json .tools/ci/recovery.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-postgres
+          path: |
+            .tools/ci/
+            .tools/release-rehearsal-report.json
           include-hidden-files: true
           retention-days: 14
 
@@ -223,26 +262,28 @@ jobs:
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
         with:
           node-version-file: .node-version
-      - run: node backend/scripts/prepare-test-context.cjs "$RUNNER_TEMP/backend-context"
-      - run: docker build -t guatswr-backend-test "$RUNNER_TEMP/backend-context"
-      - run: docker run --rm --network none guatswr-backend-test
-      - run: docker run --rm --network none guatswr-backend-test node backend/scripts/test-development-watch.cjs
+      - uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm --filter @guatswr/shared build && pnpm --filter guiair-backend build
       - run: docker build --build-arg SOURCE_REVISION=${{ github.sha }} -f backend/Dockerfile -t guatswr-backend-runtime .
       - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-runtime-ownership.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-read-only-launcher.cjs
-      - name: Verify non-root persistent volumes and recreation
-        shell: pwsh
-        run: ./backend/scripts/test-runtime-volumes.ps1 -Image guatswr-backend-runtime
-      - run: docker run --rm --network none -e JWT_SECRET=isolated-runtime-smoke-key -e BFF_BRIDGE_SECRET=synthetic-runtime-bridge-key-at-least-32 -e PORT=3000 guatswr-backend-runtime node scripts/runtime-smoke.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-security-bridge.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-member-binding.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-upload-work-ownership.cjs
-      - run: docker run --rm --network none --user 0 --tmpfs /tmp/guatswr-cross-volume/public/img/bg/home:rw,size=8m,mode=1777 guatswr-backend-runtime node scripts/test-publication-cross-device.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-lifecycle-signals.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-snapshot.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime node scripts/test-backup-concurrency.cjs
-      - run: docker run --rm --network none guatswr-backend-runtime python3 scripts/backup_bundle_test.py
-      - run: docker run --rm --network none --tmpfs /limited:rw,size=1m,mode=1777 -e BACKUP_TEST_LIMIT_ROOT=/limited guatswr-backend-runtime node scripts/test-backup-restore.cjs
+      # Replaces retired SQLite-only container probes with the real packaged PG
+      # application, persistent volumes, native backup and empty-target restore.
+      - run: node -e "require('node:fs').mkdirSync('.tools/ci', {recursive:true})"
+      - name: Packaged non-root PostgreSQL cold recovery
+        run: |
+          export PG_RELEASE_CLIENT_IMAGE="$(docker image inspect guatswr-backend-runtime --format '{{.Id}}')"
+          node scripts/postgres/test-adapters.mjs --business --suite packaged --reporter=default --reporter=json --outputFile=${{ github.workspace }}/.tools/ci/packaged.json
+      - name: Publish packaged recovery metrics
+        if: ${{ !cancelled() }}
+        run: node scripts/ci/report.mjs vitest .tools/ci/packaged.json
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: ${{ !cancelled() }}
+        with:
+          name: ci-backend-container
+          path: .tools/ci/
+          include-hidden-files: true
+          retention-days: 14
 
   real-bff:
     needs: scope
@@ -320,7 +361,7 @@ jobs:
 
   result:
     name: CI result
-    needs: [scope, quality, backend, web, real-bff, container, web-container, audit]
+    needs: [scope, quality, backend, postgres, web, real-bff, container, web-container, audit]
     if: ${{ always() }}
     runs-on: ubuntu-24.04
     timeout-minutes: 5

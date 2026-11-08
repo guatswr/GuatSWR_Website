@@ -231,6 +231,12 @@ class HostBackupIdentityTest(unittest.TestCase):
             self.assertTrue(ops_backup.check_app_scheduler_conflict('synthetic', runner=real_probe))
             subprocess.run([node, '-e', "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync(process.argv[1]);db.exec(\"UPDATE site_config SET value='0'\");db.close()", str(database)], check=True, capture_output=True)
             self.assertFalse(ops_backup.check_app_scheduler_conflict('synthetic', runner=real_probe))
+            # A missing PG URL must not make the current runtime inspect an old SQLite file.
+            def default_probe(cmd):
+                return subprocess.check_output([node, '-e', cmd[-1]], env={**os.environ, 'DATABASE_DRIVER': '', 'POSTGRES_URL': '', 'DATA_DIR': folder, 'DB_PATH': str(database)}, stderr=subprocess.DEVNULL)
+            with self.assertRaisesRegex(RuntimeError, 'SCHEDULER_CHECK_FAILED'):
+                ops_backup.check_app_scheduler_conflict('synthetic', runner=default_probe)
+
 
     def test_transfer_uses_receiver_before_pruning_and_keeps_default_umami_dump(self):
         self._check_transfer('sqlite')

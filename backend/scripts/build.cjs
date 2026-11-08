@@ -1,0 +1,10 @@
+const fs = require('node:fs');
+const path = require('node:path');
+const { spawnSync } = require('node:child_process');
+const root = path.resolve(__dirname, '..');
+const output = path.resolve(root, 'dist');
+if (path.dirname(output) !== root || path.basename(output) !== 'dist') throw Error('UNSAFE_BUILD_OUTPUT');
+fs.rmSync(output, { recursive: true, force: true });
+const result = spawnSync(process.execPath, [require.resolve('typescript/bin/tsc'), '-p', path.join(root, 'tsconfig.build.json')], { cwd: root, stdio: 'inherit', windowsHide: true });
+if (result.error) throw result.error;
+process.exitCode = result.status ?? 1;

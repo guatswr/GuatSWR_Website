@@ -102,11 +102,11 @@ it('drains an automatic ban queued behind a writer before shutdown closes the da
   let closing
   try {
     expect((await f.http.get('/api/version')).status).toBe(429)
-    closing = f.close()
+    closing = f.fixtureCloseApplication()
     await new Promise(resolve => setImmediate(resolve))
   } finally { release.resolve(); await holding; await closing }
   const { createRequire } = await import('node:module'), require = createRequire(import.meta.url)
-  const store = require('../../dist/src/database/sqlite.js').createSqliteStore(f.context.dbPath)
+  const store = require('../../dist/src/database/postgres.js').createPostgresStore({connectionString:f.context.env.POSTGRES_URL,schema:'main'})
   try {
     expect(await store.get("SELECT ip FROM banned_ips WHERE ip='127.0.0.1'")).toEqual({ ip: '127.0.0.1' })
     expect((await store.get("SELECT count(*) AS n FROM security_audit_outbox WHERE action='BAN_IP'")).n).toBe(1)

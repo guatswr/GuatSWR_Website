@@ -4,11 +4,11 @@ const { resolvePaths } = require('../src/models/db');
 
 async function initializeDatabases(env = {}, paths = {}) {
   const resolved = resolvePaths(env, paths);
-  const url = env.POSTGRES_MIGRATION_URL || env.POSTGRES_URL || process.env.POSTGRES_MIGRATION_URL || process.env.POSTGRES_URL;
-  if (!url) return;
+  const url = env.POSTGRES_MIGRATION_URL;
+  if (!url) throw Error('EXPLICIT_POSTGRES_PROVISION_URL_REQUIRED');
   const { initializePostgres } = require(path.join(resolved.BACKEND_ROOT, 'dist/src/migrations/postgres/engine'));
   const database = new URL(url).pathname.slice(1);
-  const role = env.POSTGRES_RUNTIME_ROLE || process.env.POSTGRES_RUNTIME_ROLE || 'guatswr_app';
+  const role = env.POSTGRES_RUNTIME_ROLE || 'guatswr_app';
   await initializePostgres(url, database, role);
 }
 

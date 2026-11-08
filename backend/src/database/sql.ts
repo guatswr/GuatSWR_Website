@@ -1,7 +1,9 @@
 import type { SqlExecutor } from './contracts.js'
 
-export const utcTimestamp = (_db?: Pick<SqlExecutor, 'dialect'>) =>
-  "to_char(statement_timestamp() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS')"
+export const utcTimestamp = (_db?: Pick<SqlExecutor, 'dialect'>) => {
+  void _db
+  return "to_char(statement_timestamp() AT TIME ZONE 'UTC','YYYY-MM-DD HH24:MI:SS')"
+}
 export const lockRow = (_db: SqlExecutor, sql: string) => sql + ' FOR UPDATE'
 export const placeholders = (count: number, offset = 0) => Array.from({ length: count }, (_, i) => `$${i + offset + 1}`).join(',')
 export function idBinding(value: unknown): number | null {

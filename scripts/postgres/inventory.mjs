@@ -6,7 +6,7 @@ import { createHash } from 'node:crypto'
 import { execFileSync } from 'node:child_process'
 
 const root = fileURLToPath(new URL('../../', import.meta.url))
-const pattern = /contracts\.js|SqlExecutor|DatabaseStore|createSecurityService|sqlite|PRAGMA|sqlite_master|sqlite_schema|strftime|last_insert_rowid|lastID|INSERT OR|AUTOINCREMENT|BEGIN IMMEDIATE|CREATE TABLE|ALTER TABLE|CREATE (?:UNIQUE )?INDEX|CREATE TRIGGER|createSqliteStore|\b(?:context\.)?(?:db|logDb)\.(?:get|all|run|exec|prepare)|\.db\b/i
+const pattern = /postgres|bff|parseDatabaseConfiguration|createPostgresDatabase|contracts\.js|SqlExecutor|DatabaseStore|createSecurityService|sqlite|PRAGMA|sqlite_master|sqlite_schema|strftime|last_insert_rowid|lastID|INSERT OR|AUTOINCREMENT|BEGIN IMMEDIATE|CREATE TABLE|ALTER TABLE|CREATE (?:UNIQUE )?INDEX|CREATE TRIGGER|createSqliteStore|\b(?:context\.)?(?:db|logDb)\.(?:get|all|run|exec|prepare)|\.db\b/i
 const excluded = new Set(['node_modules', '.git', '.tools', 'dist', '.nuxt', '.output', '__pycache__', '.pytest_cache', 'performance'])
 const cell = value => String(value).replaceAll('|', '\\|').replaceAll('\n', ' ')
 async function sources() {
@@ -43,11 +43,11 @@ function classify(file, text) {
   if (file === 'backend/src/database/sqlite.ts') return { consumer: '默认后端及旧库回退', database, replacement: '保留 SQLite 适配器；共享契约由 contracts.ts 导出', tests: 'tests/database/store-contract + integration/transactions', status: 'PG-01 已验证' }
   if (file.startsWith('backend/src/database/')) return { consumer: '仓储与数据库工厂', database, replacement: '原生 $n、RETURNING、显式冲突策略；兼容导出保留旧消费者', tests: 'tests/database + unit/database-config', status: /application|sql\.ts|legacy-json/.test(file) ? 'PG-02 已适配' : 'PG-01 已验证' }
   if (file === 'backend/src/models/db.js' || file === 'backend/src/models/security.js') return { consumer: 'lifecycle / addLog / 安全兼容桥', database, replacement: 'PG 分支使用异步 main/audit store 并校验版本、结构和权限；SQLite 直连仅保留旧驱动分支', tests: 'lifecycle / auth-security / security-bridge / startup-version', status: 'PG-02 已适配；禁止自动 DDL/回退' }
-  if (file.startsWith('web/server/')) return { consumer: '登录会话、访客草稿与资源管理', database, replacement: 'PG-03 显式异步存储、AAD 密文、版本条件撤销；资源管理中的 .db 文件规则保留', tests: 'web/tests/durable-records / auth-session / guest-drafts / real-bff', status: 'PG-03 待迁移（本轮未切换 BFF）' }
+  if (file.startsWith('web/server/')) return { consumer: '登录会话、访客草稿与资源管理', database, replacement: 'PG-03 显式异步存储、AAD 密文、版本条件撤销；资源管理中的 .db 文件规则保留', tests: 'web/tests/durable-records / auth-session / guest-drafts / real-bff', status: 'PG-03 已实现；真实并发/重启验证见 release 测试' }
   if (file.startsWith('backend/src/migrations/postgres/')) return { consumer: 'PG 显式初始化 / 只读启动校验', database: 'main / audit', replacement: '原生 PG 基线、独立 schema_version、结构指纹与最小权限', tests: 'tests/postgres/migration.test.mjs + pnpm test:postgres', status: 'PG-02 已适配' }
-  if (file.includes('/migrations/') || file.includes('legacy-schema')) return { consumer: '显式迁移/旧库结构验证', database, replacement: 'SQLite 迁移不可改；独立 PG schema_version、DDL 与迁移角色', tests: 'integration/migrations / startup-version', status: 'SQLite 源模式保留；PG 独立 DDL 已建立' }
-  if (/backup|retention|ops_monitor|ops_backup|Dockerfile|compose/.test(file)) return { consumer: '备份、恢复、调度与容器', database, replacement: 'PG-05 网站独立 pg_dump/恢复；冻结数据库与文件；Umami 不变更', tests: 'backup_bundle_test / test_ops / test_deployment_boundaries', status: 'PG-05 待迁移；SQLite 基线保留' }
-  if (file.startsWith('backend/scripts/')) return { consumer: '管理员/离线迁移/数据核验 CLI', database, replacement: '只读 SQLite 源副本；PG 专用目标、全量校验及序列校准', tests: 'PG-04 导入验证 + 当前脚本用例', status: 'PG-04 待实现' }
+  if (file.includes('/migrations/') || file.includes('legacy-schema') || file.includes('/legacy-sqlite/')) return { consumer: '显式迁移/旧库结构验证', database, replacement: 'SQLite 迁移不可改；独立 PG schema_version、DDL 与迁移角色', tests: 'integration/migrations / startup-version', status: '归档源模式仅用于离线工具；生产只读校验 PG DDL' }
+  if (/backup|retention|ops_monitor|ops_backup|Dockerfile|compose/.test(file)) return { consumer: '备份、恢复、调度与容器', database, replacement: 'PG-05 网站独立 pg_dump/恢复；冻结数据库与文件；Umami 不变更', tests: 'backup_bundle_test / test_ops / test_deployment_boundaries', status: 'PG-05 原生备份/恢复；历史 SQLite 仅离线归档' }
+  if (file.startsWith('backend/scripts/')) return { consumer: '管理员/离线迁移/数据核验 CLI', database, replacement: '只读 SQLite 源副本；PG 专用目标、全量校验及序列校准', tests: 'PG-04 导入验证 + 当前脚本用例', status: 'PG-04 离线导入已实现' }
   const family = /modules\/([^/]+)/.exec(file)?.[1]?.replace(/\.ts$/, '') || (/security/.test(file) ? 'auth-security / security-revocation' : /integrations/.test(file) ? 'bot-platform / member-sync' : /storage/.test(file) ? 'asset-publication / asset-inventory' : 'health')
   return { consumer: /integrations/.test(file) ? 'Bot HTTP/通知任务/成员同步' : /storage/.test(file) ? '上传发布/引用/清理事务' : /security/.test(file) ? '鉴权/封禁/撤销/审计 outbox' : `HTTP ${family} / 仓储`, database,
     replacement: 'PG-02 原生参数/RETURNING/ON CONFLICT；日期显式格式化；竞态用条件更新/行锁；保留 DTO',
@@ -64,7 +64,7 @@ export async function buildInventory() {
     files.push({ file, ...classify(file, text), access: [ddl ? 'DDL/元数据' : '', writes ? '写' : '', '读'].filter(Boolean).join('/'), matches })
   }
   const schemas = []
-  const directory = path.join(root, 'backend/src/migrations')
+  const directory = path.join(root, 'scripts/postgres/legacy-sqlite')
   const manifest = JSON.parse(await fs.readFile(path.join(directory, 'manifest.json'), 'utf8'))
   for (const kind of ['main', 'audit']) {
     const db = new DatabaseSync(':memory:')

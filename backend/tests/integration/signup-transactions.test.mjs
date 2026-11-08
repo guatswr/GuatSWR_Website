@@ -58,13 +58,16 @@ it('commits eligibility and signup before a later state writer and emits only af
   expect(await get(f.db, 'SELECT status FROM events WHERE id=1')).toEqual({ status: 'ended' })
 })
 
-it.skipIf(Boolean(process.env.PG_BUSINESS_ADMIN_URL))('orders cancellation after a queued signup without leaving a row', async () => {
-  const f = await fixture(), store = f.context.sql.main, service = make(store)
-  const entered = Promise.withResolvers(), release = Promise.withResolvers()
-  const holding = store.transaction(async () => { entered.resolve(); await release.promise })
-  await entered.promise
-  const signup = service.signup(1, identity, input, null)
-  const cancel = service.remove(1, identity)
-  release.resolve(); await holding; await signup; await cancel
-  expect(await service.find(1, identity)).toBeNull()
+it('orders cancellation behind a PostgreSQL signup transaction without leaving a row', async () => {
+ const f=await fixture(),store=f.context.sql.main,inserted=Promise.withResolvers(),release=Promise.withResolvers()
+ const wrapped={...store,transaction:work=>store.transaction(tx=>work({...tx,run:async(sql,params)=>{
+  const result=await tx.run(sql,params)
+  if(/^\s*INSERT INTO event_participants/.test(sql)){inserted.resolve();await release.promise}
+  return result
+ }}))}
+ const signup=make(wrapped).signup(1,identity,input,null)
+ await inserted.promise
+ const service=make(store),cancel=service.remove(1,identity)
+ release.resolve();await signup;await cancel
+ expect(await service.find(1,identity)).toBeNull()
 })

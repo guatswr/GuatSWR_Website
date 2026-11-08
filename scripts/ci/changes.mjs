@@ -3,7 +3,7 @@ import { appendFileSync, mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { resolve } from 'node:path'
 import { pathToFileURL } from 'node:url'
 
-const fullScope = () => Object.fromEntries(['quality', 'backend', 'web', 'integration', 'container', 'web_container', 'audit'].map(key => [key, true]))
+const fullScope = () => Object.fromEntries(['quality', 'backend', 'web', 'integration', 'container', 'web_container', 'postgres', 'audit'].map(key => [key, true]))
 
 /** Unknown paths run the full suite. Only explicitly documentation-only changes skip it. */
 export function classifyChanges(files, full = false) {
@@ -16,9 +16,9 @@ export function classifyChanges(files, full = false) {
     if (/^(web|backend)\/package\.json$/.test(file)) scope.audit = true
     if (file.startsWith('web/')) {
       scope.quality = scope.web = scope.web_container = true
-      if (/^web\/(server\/|shared\/|tests\/fixtures\/|nuxt\.config\.ts$|package\.json$)/.test(file)) scope.integration = true
+      if (/^web\/(server\/|shared\/|tests\/fixtures\/|nuxt\.config\.ts$|package\.json$)/.test(file)) scope.integration = scope.postgres = true
     } else if (file.startsWith('backend/')) {
-      scope.quality = scope.backend = scope.integration = scope.container = true
+      scope.quality = scope.backend = scope.integration = scope.container = scope.postgres = true
     } else return fullScope()
   }
   return scope

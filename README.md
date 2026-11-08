@@ -15,7 +15,6 @@
   <a href="web/package.json"><img src="https://img.shields.io/badge/Nuxt-4.6.3-00DC82?style=flat-square" alt="Nuxt 4.6.3"></a>
   <a href="backend/package.json"><img src="https://img.shields.io/badge/Express-5.3.0-444444?style=flat-square" alt="Express 5.3.0"></a>
   <a href="docker-compose.yml"><img src="https://img.shields.io/badge/PostgreSQL-18.6-4169E1?style=flat-square" alt="PostgreSQL 18.6"></a>
-  <a href="backend/package.json"><img src="https://img.shields.io/badge/SQLite-WAL-003B57?style=flat-square" alt="SQLite WAL"></a>
 </p>
 
 <p align="center">
@@ -37,7 +36,7 @@
 - [快速开始](#快速开始)
   - [1. 环境要求与依赖安装](#1-环境要求与依赖安装)
   - [2. 配置前后端环境变量](#2-配置前后端环境变量)
-  - [3. 初始化双数据库与超级管理员](#3-初始化双数据库与超级管理员)
+  - [3. 初始化 PostgreSQL 与超级管理员](#3-初始化-postgresql-与超级管理员)
   - [4. 启动本地服务](#4-启动本地服务)
 - [本地调试指南](#本地调试指南)
   - [1. 终端链路连通性自检](#1-终端链路连通性自检)
@@ -95,9 +94,8 @@
 flowchart LR
     Browser["浏览器客户端"] -->|"HTTPS / 同源 Cookie + CSRF"| Web["Nuxt 4 SSR 与 Nitro BFF (:3100)"]
     Web -->|"内网 HTTP + Bridge Secret"| API["Express 5 业务后端 (:3000；独立入口可映射 :8088)"]
-    Web -.->|"AES-256-GCM 会话持久化"| BFFDB[("BFF 状态存储<br/>(PostgreSQL bff.records / SQLite)")]
+    Web -.->|"AES-256-GCM 会话持久化"| BFFDB[("BFF 状态存储<br/>(PostgreSQL bff.records)")]
     API --> PG[("PostgreSQL 18 生产数据库<br/>(main / audit / bff schemas)")]
-    API -.-> SQLite[("轻量/开发 SQLite-WAL<br/>(guatswr_web_main.db / logs.db)")]
     API --> Storage["资源存储 (public / private-upload / asset-quarantine)"]
 ```
 
@@ -108,7 +106,7 @@ GuatSWR_Website/
 │   ├── server/                 # BFF 鉴权、持久化状态存储、游客草稿网关与公开数据 SWR 适配
 │   └── tests/                  # 前端单测、BFF 集成测试与 Playwright E2E
 ├── backend/                    # guiair-backend：Express 5 + 严格 TypeScript 业务后端
-│   ├── src/                    # 业务模块、双驱动（PostgreSQL/SQLite）迁移引擎、文件事务发布
+│   ├── src/                    # 业务模块、双驱动（PostgreSQL）迁移引擎、文件事务发布
 │   ├── scripts/                # 备份/恢复/验包工具（PostgreSQL 原生 CLI、Bash + Python 3）
 │   └── docs/openapi.yaml       # 后端 71 个操作的 OpenAPI 契约定义
 ├── packages/shared/            # @guatswr/shared：前后端共用的 Zod 4 校验契约（ESM / CJS 双产物）
@@ -117,7 +115,7 @@ GuatSWR_Website/
 └── docs/                       # 架构说明、后端现代化运行手册、PostgreSQL 迁移与运维指南
 ```
 
-三个包共用根目录 `pnpm-lock.yaml`。后端业务层使用严格 TypeScript 编译至 `backend/dist/`，保留少量 CommonJS 平台装配层。系统支持双数据库驱动：生产环境默认采用专有 PostgreSQL 18.6 容器（通过 `DATABASE_DRIVER=postgres` 接入，划分 `main`、`audit`、`bff` 三大 Schema 并由严格最小权限角色驱动），开发与轻量测试支持 SQLite-WAL 双库模式（主库最新版本 `10`、审计日志库版本 `2`，各自维护独立的迁移账本）。旧版 v1 前端源码保存在 Git 标签 `v1-archive` 中。
+三个包共用根目录 `pnpm-lock.yaml`。后端业务层使用严格 TypeScript 编译至 `backend/dist/`，保留少量 CommonJS 平台装配层。开发与生产环境统一使用专有 PostgreSQL 18.6 实例（通过 `DATABASE_DRIVER=postgres` 接入，划分 `main`、`audit`、`bff` 三大 Schema 并由严格最小权限角色驱动）。SQLite main 10 / audit 2 仅保留在离线历史源核验工具中，不是当前应用的可选运行模式。旧版 v1 前端源码保存在 Git 标签 `v1-archive` 中。
 
 <p align="right">(<a href="#readme-top">返回顶部</a>)</p>
 
@@ -129,7 +127,7 @@ GuatSWR_Website/
 
 - **Node.js**：`24.16.0`（见 [`.node-version`](.node-version)，工作区限制 `>=24.16.0 <25`）
 - **包管理器**：`pnpm@11.25.0`
-- **原生编译与脚本工具**：`sqlite3` 与 `sharp` 含原生扩展，若预编译二进制未命中而回退源码编译，需安装 Python 3 与对应平台的 C/C++ 编译工具链（Windows Visual Studio C++ Build Tools / Linux `build-essential`）。执行完整备份与恢复脚本另需 `bash`、`python3`、`sqlite3` 命令行、`tar` 与 `sha256sum`。
+- **原生编译与脚本工具**：`sharp` 含原生扩展，若预编译二进制未命中而回退源码编译，需安装 Python 3 与对应平台的 C/C++ 编译工具链（Windows Visual Studio C++ Build Tools / Linux `build-essential`）。完整 PostgreSQL 备份恢复使用与服务端同主版本的 `pg_dump` / `pg_restore`，backend 镜像已打包。历史 SQLite 源核验另需 Node 24 与 Python 3。
 
 克隆仓库并构建共享契约与后端产物：
 
@@ -170,9 +168,9 @@ NODE_ENV=development
 BIND_HOST=127.0.0.1
 PORT=3000
 
-# 数据库驱动模式：sqlite（默认本地轻量开发）或 postgres（生产环境推荐）
-DATABASE_DRIVER=sqlite
-# POSTGRES_URL=postgresql://guatswr_app:password@127.0.0.1:5432/guatswr_dev
+# 当前运行时只支持 PostgreSQL，开发与生产均需配置私有连接串
+DATABASE_DRIVER=postgres
+POSTGRES_URL=postgresql://guatswr_app:PRIVATE_PASSWORD@127.0.0.1:5432/guatswr_migration_dev
 
 # 填入上面打印的绝对路径（PUBLIC_DIR 默认解析为 DATA_DIR/public）
 DATA_DIR=
@@ -203,9 +201,9 @@ NUXT_SESSION_PASSWORD=
 # 填入第 2 组随机密钥（与 backend/.env 的 BFF_BRIDGE_SECRET 完全一致）
 NUXT_BFF_BRIDGE_SECRET=
 
-# BFF 状态持久化驱动：sqlite（默认）、postgres（生产推荐）或 memory（仅单测）
-BFF_DATABASE_DRIVER=sqlite
-# BFF_POSTGRES_URL=postgresql://guatswr_app:password@127.0.0.1:5432/guatswr_dev
+# BFF 使用 PostgreSQL；memory 仅用于进程内单元测试
+BFF_DATABASE_DRIVER=postgres
+BFF_POSTGRES_URL=postgresql://guatswr_app:PRIVATE_PASSWORD@127.0.0.1:5432/guatswr_migration_dev
 
 # 允许本地回环地址发起写操作并在 HTTP 下写入会话 Cookie
 NUXT_BFF_AUTH_ALLOWED_ORIGINS=["http://127.0.0.1:3100"]
@@ -221,9 +219,9 @@ PORT=3100
 
 | 变量名 | 所属端 | 校验规则与作用 |
 | --- | --- | --- |
-| `DATABASE_DRIVER` | Backend | `sqlite`（默认轻量开发）或 `postgres`（生产推荐）。切换为 `postgres` 时后端将连接专有 PostgreSQL 实例 |
+| `DATABASE_DRIVER` | Backend | 只支持 `postgres`；缺少私有 URL 时启动失败，不回退本地文件 |
 | `POSTGRES_URL` | Backend | PostgreSQL 业务数据库连接串（如 `postgresql://guatswr_app:pwd@127.0.0.1:5432/guatswr`） |
-| `BFF_DATABASE_DRIVER` | Web (BFF) | `sqlite`（默认持久化至本地 SQLite）、`postgres`（持久化至 PG `bff.records`）或 `memory`（仅内存，单测使用） |
+| `BFF_DATABASE_DRIVER` | Web (BFF) | `postgres`（持久化至 `bff.records`）或 `memory`（仅内存，单测使用） |
 | `BFF_POSTGRES_URL` | Web (BFF) | BFF 状态存储专有 PostgreSQL 连接串（留空则回退至 `POSTGRES_URL`） |
 | `DATA_DIR` | Backend | 必填绝对路径。存放 `guatswr_web_main.db`、`guatswr_web_logs.db` 及私有上传/隔离目录 |
 | `PUBLIC_DIR` | Backend | 公开静态资源绝对路径，默认 `$DATA_DIR/public`。严禁与 `DATA_DIR` 根、`BACKUP_ROOT` 或私有子目录重叠 |
@@ -244,60 +242,21 @@ PORT=3100
 
 </details>
 
-### 3. 初始化双数据库与超级管理员
+### 3. 初始化 PostgreSQL 与超级管理员
 
-后端服务在正常启动时**只做只读迁移账本与结构指纹校验**，不会自动建表、改表或创建管理员。首次启动前必须显式执行初始化命令。
+正常启动只校验账本和结构指纹，不创建数据库、角色、表或管理员。开发环境也需要 PostgreSQL 18.6；可使用本地 PostgreSQL 或 Docker。先由管理员创建空数据库（例 `guatswr_migration_dev`）和非特权 LOGIN 角色 `guatswr_app`，该角色不得继承管理账号权限。
 
-#### 3.1 SQLite 本地模式初始化（默认）
-
-先创建配置中的 `DATA_DIR` 目录：
+迁移凭据放在单独的私有环境文件中。`POSTGRES_MIGRATION_URL` 必须直接指向待初始化的数据库，与命令中的数据库名完全一致；不能指向默认 `postgres` 库。
 
 ```sh
-node --env-file=backend/.env -e "require('node:fs').mkdirSync(process.env.DATA_DIR,{recursive:true})"
-```
-
-然后在仓库根目录按当前操作系统执行双库初始化（最新目标版本为 `main: 10`、`audit: 2`）与首位超级管理员创建：
-
-<details open>
-<summary>Windows PowerShell</summary>
-
-```powershell
-$devData = node --env-file=backend/.env -p "process.env.DATA_DIR"
-pnpm --filter guiair-backend db:migrate initialize --data-dir $devData
-pnpm --filter guiair-backend db:check --data-dir $devData
-node --env-file=backend/.env backend/dist/src/admin/bootstrap-cli.js --main-db (Join-Path $devData 'guatswr_web_main.db')
-```
-
-</details>
-
-<details>
-<summary>Linux / macOS (Bash / Zsh)</summary>
-
-```sh
-DEV_DATA_DIR="$(node --env-file=backend/.env -p 'process.env.DATA_DIR')"
-pnpm --filter guiair-backend db:migrate initialize --data-dir "$DEV_DATA_DIR"
-pnpm --filter guiair-backend db:check --data-dir "$DEV_DATA_DIR"
-node --env-file=backend/.env backend/dist/src/admin/bootstrap-cli.js --main-db "$DEV_DATA_DIR/guatswr_web_main.db"
-```
-
-</details>
-
-执行成功后：
-- `db:check` 会输出两行 JSON，`main` 的 `version` 为 `10`，`audit` 的 `version` 为 `2`。
-- `bootstrap-cli.js` 首次创建会输出 `{"bootstrap":{"status":"created","username":"site-admin"}}`；对已存在的同名超级管理员重复执行会返回 `unchanged`，不会重置密码，也不会提升普通用户权限。
-
-#### 3.2 PostgreSQL 本地/专有模式初始化（可选）
-
-若本地选择以 PostgreSQL 运行，需配置 `DATABASE_DRIVER=postgres` 与 `POSTGRES_URL`，通过专有迁移 CLI 完成建表并引导管理员：
-
-```sh
-# 初始化指定数据库（如 guatswr_dev）与应用角色（如 guatswr_app）
-POSTGRES_MIGRATION_URL="postgresql://postgres:pwd@127.0.0.1:5432/postgres" \
-  pnpm --filter guiair-backend db:postgres initialize guatswr_dev guatswr_app
-
-# 校验 PostgreSQL 架构状态并引导超级管理员
+node --env-file="$PG_MIGRATION_ENV_FILE" backend/dist/src/migrations/postgres/cli.js initialize guatswr_migration_dev guatswr_app
+node --env-file=backend/.env backend/dist/src/migrations/postgres/cli.js check
 node --env-file=backend/.env backend/dist/src/admin/bootstrap-cli.js --postgres-url-env POSTGRES_URL
 ```
+
+后两条命令的私有配置使用应用账号连接同一库；bootstrap 还需提供 `SUPER_ADMIN_USERNAME` 和 `SUPER_ADMIN_PASSWORD`。首次输出 `{"bootstrap":"created"}`，同名超级管理员重复执行返回 `unchanged`，不覆盖密码或提升普通用户权限。
+
+测试会自行创建隔离 PostgreSQL 容器，不读取开发或生产数据库。完整测试入口及前置条件见 [PostgreSQL 测试与恢复验收](docs/ops/POSTGRESQL-TESTING.md)。
 
 ### 4. 启动本地服务
 
@@ -392,7 +351,7 @@ curl.exe -fsS -i http://127.0.0.1:3100/api/bff/auth/csrf
 | 修改的文件范围 | 生效方式与注意事项 |
 | --- | --- |
 | `web/app/**`（页面、组件、样式） | Vite / Nuxt HMR 自动热更新，无需重启，登录态保留 |
-| `web/server/**`（Nitro BFF 路由、工具） | Nitro 会自动重载服务端模块；若配置为持久化驱动（`sqlite` 或 `postgres`），登录会话与草稿归属保留，若配置为内存驱动（`memory`，仅单测）则会清空 |
+| `web/server/**`（Nitro BFF 路由、工具） | Nitro 会自动重载服务端模块；若配置为持久化驱动（`postgres`），登录会话与草稿归属保留，若配置为内存驱动（`memory`，仅单测）则会清空 |
 | `backend/src/**` 或 `backend/server.js` | `nodemon` 监听到 `.ts`/`.js`/`.json` 变化后，自动发送 `SIGTERM` 优雅停机、重新执行 `npm run build` 并重启后端 |
 | `packages/shared/src/**`（共享 Zod 契约） | **不会自动跨包热编译**。修改后必须先运行 `pnpm --filter @guatswr/shared build`，再重启前后端开发终端，防止两端继续使用旧缓存产物 |
 | `backend/.env` 或 `web/.env` | 环境变量仅在进程启动时读取，修改后需在对应终端按 `Ctrl+C` 停止并重新启动 |
@@ -476,7 +435,7 @@ GitHub Actions 的触发范围、指标阈值、安全审计策略与分支保�
 | `pnpm test` | 运行 `shared`、`web` 与 `backend` 的单元测试、契约测试与集成测试 |
 | `pnpm --filter guiair-backend test:unit` | 单独运行后端引导测试与单元测试 |
 | `pnpm --filter guiair-backend test:contracts` | 单独运行后端 OpenAPI 与共享契约一致性测试 |
-| `pnpm --filter guiair-backend test:integration` | 单独运行后端 SQLite / 上传 / 鉴权集成测试 |
+| `pnpm --filter guiair-backend test:integration` | 单独运行后端真实 PostgreSQL / 上传 / 鉴权集成测试 |
 | `pnpm --filter guiair-backend test:bff` | 真实 Nuxt BFF 产物 + 真实 Express 后端端到端联测（**运行前须先执行 `pnpm --filter @guatswr/web build`**） |
 | `pnpm test:tooling` | 运行仓库边界检查器、路由体积检查器、安全补丁探针与隔离 E2E 执行器自测 |
 | `pnpm check:boundaries` | 校验浏览器端、Nitro 服务端与共享包之间的模块导入边界 |
@@ -531,9 +490,9 @@ flowchart TB
 | 默认宿主机发布 | `127.0.0.1:3100 → 3100` | 无 `ports` 映射 | 无 `ports` 映射（仅容器网内互通） |
 | 运行配置 | `web/.env.production` | `backend/.env` | 根目录 `.env`（`POSTGRES_ADMIN_*`） |
 | 健康探针 | `/api/health` | `/api/version`，并检查 `status=online` | `pg_isready -U ... -d postgres` |
-| 持久化目录 | 命名卷 `guatswr_bff-state`（SQLite模式） | `/app/data`、`/app/backups` | `deploy/postgres/data`（宿主机 bind mount） |
+| 持久化目录 | PostgreSQL `bff.records`（旧命名卷不参与当前状态持久化） | `/app/data`、`/app/backups` | `deploy/postgres/data`（宿主机 bind mount） |
 
-当前架构按**一个 Web 实例、一个后端实例、一个专有 PostgreSQL 18 数据库实例**运行。虽然 BFF 状态与游客草稿已实现基于 AES-256-GCM + AAD 的数据库持久化存储（PostgreSQL `bff.records` 表或 SQLite `bff-state.db`），且后端支持 PostgreSQL 行级并发控制，但由于本地上传静态资源（`public/`、`asset-quarantine/`）以及内置定时调度任务（备份、清理）仍依赖本地文件系统协调，在引入对象存储（如 S3/MinIO）和分布式调度器前，生产环境依然保持单 Web、单后端实例部署，不应直接水平扩展服务副本。
+当前架构按**一个 Web 实例、一个后端实例、一个专有 PostgreSQL 18 数据库实例**运行。虽然 BFF 状态与游客草稿已实现基于 AES-256-GCM + AAD 的数据库持久化存储（PostgreSQL `bff.records` 表），且后端支持 PostgreSQL 行级并发控制，但由于本地上传静态资源（`public/`、`asset-quarantine/`）以及内置定时调度任务（备份、清理）仍依赖本地文件系统协调，在引入对象存储（如 S3/MinIO）和分布式调度器前，生产环境依然保持单 Web、单后端实例部署，不应直接水平扩展服务副本。
 
 浏览器只访问前端同源入口。`/api/*` 由 Nuxt 数据接口或 BFF 处理，`/uploads/*` 由 Nuxt 的图片代理读取后端资源。反向代理应把这些路径一并交给 `web`，不要将 `/api/` 直接转发到 Express。
 
@@ -671,13 +630,13 @@ PORT=3000
 # ==========================================
 # 2. 数据库驱动与连接（生产环境固定连接 postgres 容器）
 # ==========================================
-# 数据库驱动：postgres（生产推荐专有实例）或 sqlite（轻量开发）
+# 当前仅支持 PostgreSQL
 DATABASE_DRIVER=postgres
 # PostgreSQL 业务连接串（以非特权应用角色 guatswr_app 访问专有库）
 POSTGRES_URL=postgresql://guatswr_app:your_app_password_here@postgres:5432/guatswr_migration_prod
 # 运维与备份/恢复专用连接（由运维 CLI 脚本读取，可选）：
 # POSTGRES_MIGRATION_URL=postgresql://guatswr_admin:password@postgres:5432/postgres
-# POSTGRES_BACKUP_URL=postgresql://guatswr_app:password@postgres:5432/guatswr_migration_prod
+# POSTGRES_BACKUP_URL=postgresql://guatswr_backup:PRIVATE_PASSWORD@postgres:5432/guatswr_migration_prod
 
 # ==========================================
 # 3. 身份鉴权与安全密钥（必填，请替换为随机密文）
@@ -744,7 +703,7 @@ ASTRBOT_TIMEOUT_MS=5000
 
 | 变量名 | 是否必填 | 格式规范与示例 | 详细作用与运维注意事项 |
 | :--- | :---: | :--- | :--- |
-| `DATABASE_DRIVER` | **必填** | `postgres` 或 `sqlite` | 后端数据库驱动类型。生产环境建议设置为 `postgres` 并配合专有 PostgreSQL 容器运行；开发或单体环境设为 `sqlite`。 |
+| `DATABASE_DRIVER` | **必填** | `postgres` | 后端只支持 PostgreSQL。开发与生产均使用显式配置的私有连接。 |
 | `POSTGRES_URL` | PG模式必填 | `postgresql://guatswr_app:pwd@postgres:5432/guatswr_migration_prod` | 后端连接业务 PostgreSQL 专有数据库的 URL，必须使用经受限授权的非特权应用角色（如 `guatswr_app`）。 |
 | `JWT_SECRET` | **必填** | 64 位十六进制随机字符串 | 用于签发并校验管理端会话与 API 访问令牌。**生产环境严禁随意更改**，轮换密钥将导致当前所有已登录管理员的 Token 立即失效。 |
 | `TWOFA_SECRET` | 选填 | 64 位十六进制随机字符串 | 用于加密数据库中管理员配置的二步验证二级密码。若留空则自动回退到 `JWT_SECRET`；**跨服务器数据迁移时必须保持原值不变**，否则管理员无法通过二步验证登录。 |
@@ -783,7 +742,7 @@ NUXT_API_BASE=http://backend:3000
 # ==========================================
 # 2. BFF 状态持久化与数据库驱动（必填）
 # ==========================================
-# 状态驱动模式：postgres（生产推荐专有实例）或 sqlite
+# BFF 持久化状态使用 PostgreSQL
 BFF_DATABASE_DRIVER=postgres
 # BFF PostgreSQL 连接串（以非特权应用角色连接专有库，留空则回退至 POSTGRES_URL）
 BFF_POSTGRES_URL=postgresql://guatswr_app:your_app_password_here@postgres:5432/guatswr_migration_prod
@@ -860,7 +819,7 @@ NUXT_OPENLIST_TIMEOUT_MS=8000
 
 | 变量名 | 是否必填 | 格式规范与示例 | 详细作用与运维注意事项 |
 | :--- | :---: | :--- | :--- |
-| `BFF_DATABASE_DRIVER` | **必填** | `postgres` 或 `sqlite` | BFF 服务端状态持久化存储驱动。生产环境建议设置为 `postgres`，会话与草稿将加密存入 PostgreSQL 的 `bff.records` 表。 |
+| `BFF_DATABASE_DRIVER` | **必填** | `postgres` | BFF 会话与草稿加密存入 PostgreSQL `bff.records`；不支持 SQLite 状态文件。 |
 | `BFF_POSTGRES_URL` | PG模式推荐 | `postgresql://guatswr_app:pwd@postgres:5432/guatswr_migration_prod` | BFF 连接 PostgreSQL 的专有连接串。留空时会自动回退使用 `POSTGRES_URL`。 |
 | `NUXT_SESSION_PASSWORD` | **必填** | 至少 32 个字符的随机字符串 | 用于派生会话封存（AES-256-GCM）与 CSRF 防伪校验密钥。**生产环境严禁泄露或随意变更**（变更会导致当前已登录管理会话全部注销）。 |
 | `NUXT_BFF_BRIDGE_SECRET` | **必填** | 32～256 位 ASCII 字符串 | **必须与后端的 `BFF_BRIDGE_SECRET` 完全一致**。 |
@@ -967,7 +926,7 @@ POSTGRES_CPU_LIMIT=1.0
 | `DOCKER_WEB_IP` | `172.30.88.10` | 同一子网内的固定 Web 地址；后端信任其 `/32`。 |
 | `DOCKER_POSTGRES_IP` | `172.30.88.15` | 同一子网内的固定 PostgreSQL 地址；供 backend 与 web 容器内部直连。 |
 | `BACKEND_MEMORY_LIMIT` | `1g` | 后端容器内存硬上限，防止内存泄露打爆宿主机。配套有 10MB × 3 的自动切分日志轮转策略。 |
-| `WEB_MEMORY_LIMIT` | `1g` | 前端容器内存硬上限。挂载有独立 `bff-state` 持久卷（SQLite 模式）。 |
+| `WEB_MEMORY_LIMIT` | `1g` | 前端容器内存硬上限。会话和草稿持久化到 PG，旧 `bff-state` 卷不用于当前运行时。 |
 | `POSTGRES_ADMIN_USER` | `guatswr_admin` | 专有 PostgreSQL 容器超级管理用户。仅供初始化数据库模式与运维备份/恢复使用，应用运行时使用受限应用角色。 |
 | `POSTGRES_ADMIN_PASSWORD` | 无默认值 | 专有 PostgreSQL 管理员密码。生产环境**必须设置高强度随机密文**。 |
 | `POSTGRES_DATA_DIR` | `./deploy/postgres/data` | 专有 PostgreSQL 数据文件宿主机挂载目录。 |
@@ -1008,7 +967,7 @@ POSTGRES_CPU_LIMIT=1.0
 ##### Q4: 重启或重新部署前端容器后，管理员是否会掉线需要重新登录？
 - **解答**：**不会**。
   - 在生产模式（`BFF_DATABASE_DRIVER=postgres`）下，BFF 会话凭据与游客草稿通过 AES-256-GCM + AAD 加密持久化存储在专有 PostgreSQL 的 `bff.records` 表中。
-  - 在本地轻量模式（`BFF_DATABASE_DRIVER=sqlite`）下，会话凭据加密持久化存储在 Docker 命名卷 `guatswr_bff-state`（挂载至容器内 `/app/state`）的 SQLite 数据库中。
+  - `memory` 只用于单元测试，重启即丢失。旧 `bff-state` SQLite 卷不会自动转换为 PostgreSQL 会话；既有生产切换记录见 PG-07。
   - 无论哪种模式，只要数据库/持久卷正常存在且 `NUXT_SESSION_PASSWORD` 保持不变，容器重启、销毁重建或升级均不会导致管理会话掉线。
   - 若遇紧急安全事件需**强制注销所有在线管理员**，只需在 `web/.env.production` 中轮换 `NUXT_SESSION_PASSWORD` 并重启 `web` 容器，或在后台执行全局令牌版本刷新即可。
 
@@ -1044,108 +1003,19 @@ docker compose build web
 
 ### 5. 数据库初始化与历史数据接管
 
-应用启动只校验迁移状态，不会自动创建可用数据库、接管历史库或执行结构变更。下列命令通过一次性的后端容器或宿主机 CLI 运行：`--no-deps` 不启动关联服务，`--rm` 在命令结束后移除临时容器；挂载目录中的数据会保留。
+当前运行时只支持 PostgreSQL 18.6。全新部署先创建独立空库和非特权应用角色，再显式初始化；已有生产库不要重复创建、覆盖或导入。具体参数见[本地初始化](#3-初始化-postgresql-与超级管理员)及 [PostgreSQL 执行手册](docs/ops/POSTGRESQL-EXECUTION-GUIDE.md)。
 
-#### 5.1 生产标准：PostgreSQL 18 专有数据库初始化与管理员引导
-
-全新生产部署推荐直接使用 PostgreSQL 18 专有容器：
+Docker 部署先 `docker compose up -d postgres`。将指向目标空库的管理 URL 注入 `POSTGRES_MIGRATION_URL` 后运行：
 
 ```sh
-# 1. 启动专有 postgres 容器并等待其就绪
-docker compose up -d postgres
-docker compose ps postgres
-
-# 2. 通过后端容器内的专有迁移 CLI 初始化 main/audit/bff 模式与应用角色权限
-docker compose run --rm --no-deps \
-  -e POSTGRES_MIGRATION_URL="postgresql://${POSTGRES_ADMIN_USER}:${POSTGRES_ADMIN_PASSWORD}@postgres:5432/postgres" \
-  backend node dist/src/migrations/postgres/cli.js initialize guatswr_migration_prod guatswr_app
+docker compose run --rm --no-deps -e POSTGRES_MIGRATION_URL backend node dist/src/migrations/postgres/cli.js initialize guatswr_migration_prod guatswr_app
+docker compose run --rm --no-deps backend node dist/src/migrations/postgres/cli.js check
+docker compose run --rm --no-deps -e SUPER_ADMIN_USERNAME -e SUPER_ADMIN_PASSWORD backend node dist/src/admin/bootstrap-cli.js --postgres-url-env POSTGRES_URL
 ```
 
-接着引导首位超级管理员：
+历史 SQLite 只作为离线迁移输入。工具保留在 `scripts/postgres/legacy-sqlite`，不会重新启用 SQLite 应用驱动。已冻结完整备份通过已知 SHA-256 验证后，使用 `prepare:postgres-source`、`migrate:postgres --dry-run` 和正式导入，目标必须是另一个空 PG 库；参数与停止条件见执行手册。不得用当前镜像的旧 SQLite 启动器尝试回退生产。
 
-```bash
-read -r -p '超级管理员用户名: ' SUPER_ADMIN_USERNAME
-read -r -s -p '超级管理员密码: ' SUPER_ADMIN_PASSWORD
-printf '\n'
-export SUPER_ADMIN_USERNAME SUPER_ADMIN_PASSWORD
-docker compose run --rm --no-deps \
-  -e SUPER_ADMIN_USERNAME -e SUPER_ADMIN_PASSWORD \
-  -e POSTGRES_URL="postgresql://guatswr_app:你的应用密码@postgres:5432/guatswr_migration_prod" \
-  backend node dist/src/admin/bootstrap-cli.js --postgres-url-env POSTGRES_URL
-unset SUPER_ADMIN_USERNAME SUPER_ADMIN_PASSWORD
-```
-
-#### 5.2 生产标准：从已有 SQLite 历史数据离线迁移至 PostgreSQL 18（PG-04 规范）
-
-若已有生产站点运行在 SQLite 上，请严格执行以下维护窗口停写迁移流程：
-
-1. **优雅停止服务并制作冻结备份**：
-   ```sh
-   docker compose stop
-   docker compose run --rm --no-deps \
-     -e BACKUP_WRITE_FENCE=acknowledged \
-     -e BACKUP_SOURCE_REVISION="$(git rev-parse HEAD)" \
-     backend bash scripts/backup_all.sh
-   ```
-2. **准备签名保护的只读源数据目录**：
-   ```sh
-   # 提取备份归档并生成防篡改 .migration-source.json 凭证
-   pnpm prepare:postgres-source \
-     --bundle backend/backups/full/full_YYYYMMDD_HHMMSS_XXXXX.tar.gz \
-     --sha256 <64位SHA256哈希> \
-     --target-dir /srv/guatswr/verified-source
-   ```
-3. **离线预演（dry-run，不写数据库）**：
-   ```sh
-   POSTGRES_MIGRATION_URL="postgresql://${POSTGRES_ADMIN_USER}:${POSTGRES_ADMIN_PASSWORD}@postgres:5432/postgres" \
-     pnpm migrate:postgres \
-     --source /srv/guatswr/verified-source/data \
-     --target-database guatswr_migration_prod \
-     --run-id mig-dryrun-01 \
-     --dry-run
-   ```
-4. **正式离线导入与完整性核对**：
-   ```sh
-   POSTGRES_MIGRATION_URL="postgresql://${POSTGRES_ADMIN_USER}:${POSTGRES_ADMIN_PASSWORD}@postgres:5432/postgres" \
-     pnpm migrate:postgres \
-     --source /srv/guatswr/verified-source/data \
-     --target-database guatswr_migration_prod \
-     --run-id mig-prod-01
-   ```
-   导入过程会自动按拓扑顺序迁移全部 30 张表、执行行数与摘要校验、校准自增序列、验证文件静态引用并在 `docs/ops/evidence/stability/` 下输出证据报告。
-5. **切换环境变量并拉起服务**：
-   将 `backend/.env` 的 `DATABASE_DRIVER` 设为 `postgres`，配置 `POSTGRES_URL`；将 `web/.env.production` 的 `BFF_DATABASE_DRIVER` 设为 `postgres`，配置 `BFF_POSTGRES_URL`。
-
-#### 5.3 本地开发与轻量模式：SQLite 双库初始化、历史接管与升级
-
-若运行在轻量/本地开发模式（`DATABASE_DRIVER=sqlite`），当前仓库声明的主库最新版本为 `10`、审计库为 `2`：
-
-- **全新 SQLite 空库**：
-  ```sh
-  docker compose run --rm --no-deps backend \
-    node dist/src/migrations/cli.js initialize --data-dir /app/data
-  docker compose run --rm --no-deps backend \
-    node dist/src/migrations/cli.js check --data-dir /app/data
-  docker compose run --rm --no-deps \
-    -e SUPER_ADMIN_USERNAME -e SUPER_ADMIN_PASSWORD backend \
-    node dist/src/admin/bootstrap-cli.js --main-db /app/data/guatswr_web_main.db
-  ```
-- **无账本历史库接管（`adopt`）**：
-  ```sh
-  docker compose run --rm --no-deps backend \
-    node dist/src/migrations/cli.js inspect --data-dir /app/data
-  docker compose run --rm --no-deps backend \
-    node dist/src/migrations/cli.js adopt --data-dir /app/data \
-    --main-fingerprint "$MAIN_FINGERPRINT" \
-    --audit-fingerprint "$AUDIT_FINGERPRINT"
-  ```
-- **已有迁移账本升级（`upgrade`）**：
-  ```sh
-  docker compose run --rm --no-deps backend \
-    node dist/src/migrations/cli.js upgrade --data-dir /app/data
-  docker compose run --rm --no-deps backend \
-    node dist/src/migrations/cli.js check --data-dir /app/data
-  ```
+仓库已有 [PG-07 生产割接记录](docs/ops/evidence/stability/PG-07.md)。当前修复与测试不表示再次部署或重新验收线上环境。
 
 ### 6. 启动与分层验收
 
@@ -1311,33 +1181,16 @@ docker compose @lanCompose up -d --no-build --wait --wait-timeout 120
 | 停止服务 | `docker compose stop`；保留容器和数据 |
 | 移除服务容器与项目网络 | `docker compose down`；本项目 bind mount 的宿主机数据、资源与备份目录保留 |
 
-在配置了持久化状态存储（PostgreSQL `bff.records` 或 SQLite `bff-state.db`）的情况下，重启或重新拉起前端容器不会丢失登录态与游客草稿归属记录。根目录 Compose 的后端停止宽限期为 30 秒，默认应用退出超时为 15 秒；如果调整 `SHUTDOWN_TIMEOUT_MS`，应同步保证 `stop_grace_period` 足够完成退出。
+在配置了持久化状态存储（PostgreSQL `bff.records`）的情况下，重启或重新拉起前端容器不会丢失登录态与游客草稿归属记录。根目录 Compose 的后端停止宽限期为 30 秒，默认应用退出超时为 15 秒；如果调整 `SHUTDOWN_TIMEOUT_MS`，应同步保证 `stop_grace_period` 足够完成退出。
 
-备份工具已包含在后端镜像中，可直接执行在线全量备份，无需在宿主机另装 SQLite/Python：
-
-```sh
-docker compose exec backend bash scripts/backup_all.sh
-```
-
-在线备份标记为 `online-per-resource`，用于日常恢复，不表示双库与资源处在同一原子业务时点。维护窗口已停止所有写入后，可通过一次性后端容器执行停写备份；先将 `BACKUP_SOURCE_REVISION` 设置为实际备份来源版本，再运行：
+备份工具已包含在后端镜像中。配置独立的私有 POSTGRES_BACKUP_URL 后执行：
 
 ```sh
-docker compose run --rm --no-deps \
-  -e BACKUP_WRITE_FENCE=acknowledged -e BACKUP_SOURCE_REVISION backend \
-  bash scripts/backup_all.sh
+docker compose exec backend node scripts/postgres/cli.mjs create --tag "$BACKUP_TAG" --output-dir /app/backups/postgres
+docker compose exec backend node scripts/postgres/cli.mjs verify --bundle "/app/backups/postgres/pg_$BACKUP_TAG"
 ```
 
-`BACKUP_WRITE_FENCE` 是操作者对停写状态的声明，不会自动阻止其他程序写入。备份输出保留在宿主机 `backend/backups` 中。Linux 下可复用第 2 节创建的私有工作目录，在一次性容器中验包；提示中填写容器内归档绝对路径，例如 `/app/backups/full/full_实际标签.tar.gz`：
-
-```bash
-read -r -p '容器内备份归档绝对路径: ' BACKUP_ARCHIVE
-docker compose run --rm --no-deps \
-  -v /srv/guatswr/verify-work:/verify-work backend \
-  python3 scripts/backup_bundle.py verify "$BACKUP_ARCHIVE" --work-dir /verify-work
-unset BACKUP_ARCHIVE
-```
-
-验包成功后，归档旁会生成 `.verified.json` 标记，临时容器移除后标记仍保留。验包需要额外磁盘空间，工作目录应位于私有目录；校验 sidecar、验包保护与恢复流程见后续运维章节。
+这是原生 dump 与资源目录包；验包不等同于冷恢复。账号、资源一致性、异地备份和空库恢复要求见[后续运维](#后续运维)。
 
 #### 9.2 更新版本
 
@@ -1350,12 +1203,8 @@ git pull --ff-only
 export BACKEND_SOURCE_REVISION="$(git rev-parse HEAD)"
 docker compose build
 
-# 若运行在 PostgreSQL 生产模式，校验架构指纹与模式完整性：
-# docker compose run --rm --no-deps backend pnpm db:postgres check
-
-# 若运行在 SQLite 模式，显式执行账本升级与校验：
-# docker compose run --rm --no-deps backend node dist/src/migrations/cli.js upgrade --data-dir /app/data
-# docker compose run --rm --no-deps backend node dist/src/migrations/cli.js check --data-dir /app/data
+# 校验现有 PostgreSQL 结构；正常启动和 check 都不会自动修复或升级 schema。
+docker compose run --rm --no-deps backend node dist/src/migrations/postgres/cli.js check
 
 docker compose up -d --no-build --wait --wait-timeout 120
 ```
@@ -1371,7 +1220,6 @@ docker compose up -d --no-build --wait --wait-timeout 120
 | bind mount 源目录不存在 | 提前创建数据和备份目录；本项目禁止自动创建宿主机路径 |
 | 数据目录 `EACCES` / `permission denied` | Linux 检查 UID/GID `1000:1000` 与目录权限；Windows 检查磁盘共享和 ACL |
 | 后端启动失败或迁移校验报错 | 查看 `logs backend`，确认挂载的是目标目录、双库存在且迁移状态正确；不要在历史数据上执行 `initialize` |
-| SQLite 只读挂载检查失败 | WAL 模式的读取也可能需要访问关联文件或共享内存；按运行手册在隔离副本上检查，不要删除 WAL/SHM 强行启动 |
 | `address already in use` | 检查宿主机端口占用，修改 `WEB_PORT` 并同步反向代理地址 |
 | 绑定地址不可用 | 确认 `WEB_BIND_ADDRESS` 属于当前宿主机；DHCP/VPN 变化可能改变地址 |
 | 网络子网重叠或固定 IP 无效 | 同时调整 `DOCKER_SUBNET`、`DOCKER_GATEWAY`、`DOCKER_WEB_IP`，停止服务后重新创建项目网络 |
@@ -1419,106 +1267,26 @@ node --env-file=/srv/guatswr/repo/web/.env.production /srv/guatswr/repo/web/.out
 
 ### 2. 数据备份、完整性验包与灾难恢复
 
-#### 2.1 运行时状态目录结构
+PostgreSQL 原生备份是私有目录 `BACKUP_ROOT/postgres/pg_<TAG>/`，包含 `database.dump`、`receipt.json` 和资源字节；不是 `pg_bundle_<TAG>.tar.gz`。覆盖 main/audit/bff 的 32 表、序列、public、asset-quarantine 和 asset-publications。
 
-| 容器内路径（宿主机默认对应 `backend/` 下同名目录） | 存储内容与保留策略 |
-| --- | --- |
-| `/var/lib/postgresql/data`（宿主机 `deploy/postgres/data`） | PostgreSQL 18 专有数据库集簇（main/audit/bff 模式及 WAL 事务日志） |
-| `/app/backups/postgres/`（宿主机 `backend/backups/postgres`） | PostgreSQL 专有原生流式备份包 `pg_bundle_<TAG>.tar.gz` 与 `receipt.json` |
-| `/app/data/guatswr_web_main.db` | SQLite 主数据库（仅轻量模式使用：账号、文章、活动、报名、配置、文件清理队列、审计发件箱） |
-| `/app/data/guatswr_web_logs.db` | SQLite 审计日志数据库（仅轻量模式使用：登录、管理操作与安全审计记录） |
-| `/app/data/public/` | 经审核发布、可通过 `/uploads/*` 公开访问的图片与缩略图 |
-| `/app/data/private-upload/` | 尚未公开或处理中的上传临时文件（不公开，超期自动清理） |
-| `/app/data/asset-quarantine/` | 被删除内容关联图片的可恢复隔离区（不公开，默认 `keep-all` 保留，纳入全量备份） |
-| `/app/data/asset-publications/` | 文件发布事务中断后的崩溃恢复日志（启动与清理时自动重放恢复） |
-| `/app/backups/{db,uploads,full}/` | SQLite 模式数据库子包、资源子包与全量归档 `full_<TAG>.tar.gz`（权限 `0600`，默认 `keep-all` 保留） |
-
-#### 2.2 自动备份调度配置
-
-备份调度提供两种方式，通过 `backend/.env` 的 `BACKUP_SCHEDULER_OWNER` **二选一**（切勿同时开启以免竞争同一备份目录）：
-- **方式一（默认推荐，`BACKUP_SCHEDULER_OWNER=app`）**：由后端进程内置调度器每 30 秒检查一次，按后台 `/admin` 中配置的 `backup_enabled` 与 `backup_time`（北京时间，默认每天 `02:30`）自动调用备份任务，并在后台记录 `backup_last_run` 与 `backup_last_error`。
-- **方式二（宿主机 Cron，`BACKUP_SCHEDULER_OWNER=external`）**：禁用内置定时器，由宿主机 `crontab` 显式传入绝对路径调用备份脚本。
-
-#### 2.3 手动创建全量备份
-
-##### 2.3.1 PostgreSQL 生产原生全量备份（生产推荐）
-
-在生产环境中，使用专有 PostgreSQL 原生备份工具打包数据库模式、全表数据、公开静态资源、隔离区与防篡改清单：
+配置独立 `POSTGRES_BACKUP_URL`：备份账号需要 CONNECT、三个 schema 的 USAGE、所有表和序列的 SELECT。应用账号的 sequence USAGE 不足以 pg_dump。账号与口令由私有环境配置注入，不写入命令参数。
 
 ```sh
-# 创建带防篡改校验清单的原生全量备份（产物为 pg_bundle_<TAG>.tar.gz 与 receipt.json）
-POSTGRES_BACKUP_URL="postgresql://guatswr_app:你的应用密码@postgres:5432/guatswr_migration_prod" \
-SOURCE_REVISION="$(git rev-parse HEAD)" \
-  node backend/scripts/postgres/cli.mjs create \
-    --tag "$(date +%Y%m%d_%H%M%S)" \
-    --output-dir /srv/guatswr/repo/backend/backups/postgres
+docker compose exec backend node scripts/postgres/cli.mjs create --tag "$BACKUP_TAG" --output-dir /app/backups/postgres
+docker compose exec backend node scripts/postgres/cli.mjs verify --bundle "/app/backups/postgres/pg_$BACKUP_TAG"
 ```
 
-##### 2.3.2 SQLite 模式备份（开发/轻量环境）
+`verify` 只检查包内容与收据，不等于冷恢复，不生成旧 SQLite tar 的 `.verified.json`。生产包需按宿主流水线加密、异地接收并取回验证；PG 本地目录目前没有自动删除策略，应配置磁盘预算并保留已实际恢复验证的点。不要将旧 tar 包保留脚本直接用于 PG 目录。
 
-- **日常在线热备（产物标记为 `online-per-resource`）**：
-  ```sh
-  DATA_DIR=/srv/guatswr/repo/backend/data \
-  PUBLIC_DIR=/srv/guatswr/repo/backend/data/public \
-  BACKUP_ROOT=/srv/guatswr/repo/backend/backups \
-  bash /srv/guatswr/repo/backend/scripts/backup_all.sh
-  ```
-- **维护窗口停写一致性备份（产物标记为 `quiesced-attested`）**：
-  ```sh
-  BACKUP_WRITE_FENCE=acknowledged \
-  BACKUP_SOURCE_REVISION="$(git -C /srv/guatswr/repo rev-parse HEAD)" \
-  DATA_DIR=/srv/guatswr/repo/backend/data \
-  PUBLIC_DIR=/srv/guatswr/repo/backend/data/public \
-  BACKUP_ROOT=/srv/guatswr/repo/backend/backups \
-  bash /srv/guatswr/repo/backend/scripts/backup_all.sh
-  ```
-
-#### 2.4 验证备份包并生成防误删保护标记（`verify`）
-
-- **PostgreSQL 原生备份包验证**：
-  ```sh
-  node backend/scripts/postgres/cli.mjs verify \
-    --bundle /srv/guatswr/repo/backend/backups/postgres/pg_bundle_<TAG>.tar.gz
-  ```
-- **SQLite 备份包验证**：
-  ```sh
-  python3 /srv/guatswr/repo/backend/scripts/backup_bundle.py verify \
-    /srv/guatswr/repo/backend/backups/full/full_<TAG>.tar.gz \
-    --work-dir /srv/guatswr/verify-work
-  ```
-
-验证通过后会在归档同目录生成绑定该文件身份的 `.verified.json`。
-> **防误删保护机制**：后台备份管理接口强制要求**至少保留一个带有有效 `.verified.json` 标记的完整备份包**；试图删除最后一个已验证恢复点会返回 `409 Conflict` 拒绝执行。
-
-#### 2.5 从备份恢复数据（灾难恢复与试恢复演练）
-
-##### 2.5.1 PostgreSQL 灾难恢复（恢复至全新隔离数据库与独立目录）
-
-恢复过程使用非破坏性流程：恢复至一个**全新独立命名的测试/候选数据库**及独立目录，通过验证后再正式切流：
+恢复前由管理账号创建另一个空 PG 库，并在私有环境中将 `POSTGRES_RESTORE_URL` 指向它。数据库名必须与参数完全一致；资源目标必须不存在：
 
 ```sh
-POSTGRES_RESTORE_URL="postgresql://${POSTGRES_ADMIN_USER}:${POSTGRES_ADMIN_PASSWORD}@postgres:5432/postgres" \
-  node backend/scripts/postgres/cli.mjs restore \
-    --bundle /srv/guatswr/repo/backend/backups/postgres/pg_bundle_<TAG>.tar.gz \
-    --target-database guatswr_restore_candidate \
-    --target-dir /srv/guatswr/recovery/candidate-01 \
-    --runtime-role guatswr_app
+docker compose run --rm --no-deps -e POSTGRES_RESTORE_URL backend node scripts/postgres/cli.mjs restore --bundle "/app/backups/postgres/pg_$BACKUP_TAG" --target-database guatswr_restore_candidate --target-dir /app/data/recovery-candidate --runtime-role guatswr_app
 ```
 
-> [!CAUTION]
-> **生产切换后的前向修复铁律（Forward-Fix Only）**：
-> 生产环境一旦正式切换至 PostgreSQL 并产生真实业务写入，**严禁将切换前的旧 SQLite 快照覆盖回生产系统**！任何此类回滚都会造成新写入的文章、活动、赛果与报名数据永久丢失。如遇故障，必须基于 PostgreSQL 原生备份执行恢复，或通过前向修复（Forward-Fix）解决。
+候选的 `DATA_DIR` 是恢复目录下的 `data`，`PUBLIC_DIR` 是 `data/public`；隔离区和发布日志也位于该 data 目录。校验后需实际启动候选，完成登录、核心读写、图片字节和序列检查，再决定是否切流量。失败候选不得放行，另建空目标重试。
 
-##### 2.5.2 SQLite 模式恢复（恢复到全新候选目录）
-
-```sh
-# 将指定备份包恢复到全新候选目录（candidate-01 必须尚不存在）
-bash /srv/guatswr/repo/scripts/restore.sh \
-  /srv/guatswr/repo/backend/backups/full/full_<TAG>.tar.gz \
-  --target /srv/guatswr-recovery/candidate-01
-```
-
-恢复成功后核对 `RESTORE_READY.json`，核验无误后停止服务，将原数据目录重命名归档，将恢复数据移入对应挂载路径并重启。
+通过 `BACKUP_SCHEDULER_OWNER=app` 或 `external` 选择单一调度 owner。定时逻辑备份的 RPO 受间隔限制，不提供 PITR。PG 已接收新写入后，不能直接退回历史 SQLite。自动化验收入口见 [测试与恢复文档](docs/ops/POSTGRESQL-TESTING.md)。
 
 ### 3. 文件隔离区与存储清理维护
 
@@ -1547,31 +1315,13 @@ pnpm --filter guiair-backend storage:cleanup \
 
 - **单用户令牌即时撤销**：当用户在后台修改密码、修改二步验证密码或被管理员调整角色/禁用时，主库 `users.auth_version` 会递增，且 BFF 会在持久化状态存储中吊销该用户的有效会话记录。
 - **全局令牌紧急刷新**：若怀疑 `JWT_SECRET` 范围外的历史令牌泄露，超级管理员可在后台触发全局令牌版本刷新，使所有旧全局版本的 JWT 立即失效，同时轮换 `NUXT_SESSION_PASSWORD` 并重启 Nuxt BFF 即可立即使所有现存持久化会话失效并强制全员重新登录。
-- **可靠安全审计发件箱（Outbox）**：关键安全事件会先在主库业务事务内写入 `security_audit_outbox`，再由后台调度器每 30 秒按 `source_id` 幂等去重投递至审计存储（PostgreSQL `audit.audit_logs` 表或 SQLite `guatswr_web_logs.db`）。若日志库短暂繁忙，发件箱会自动重试；**切勿手动清空 `security_audit_outbox` 表**。
+- **可靠安全审计发件箱（Outbox）**：关键安全事件会先在主库业务事务内写入 `security_audit_outbox`，再由后台调度器每 30 秒按 `source_id` 幂等去重投递至审计存储（PostgreSQL `audit.audit_logs` 表）。若日志库短暂繁忙，发件箱会自动重试；**切勿手动清空 `security_audit_outbox` 表**。
 
-### 5. 应急只读回退模式
+### 5. 应急停写与恢复
 
-若在数据库升级并产生新业务写入后发现异常，**严禁直接将升级前的旧数据库快照覆盖回当前目录**（否则会丢失新写入数据并破坏文件隔离区状态一致）。
+异常时先在入口暂停写入并停止后台写任务，保留当前 PostgreSQL 和资源状态，制作新的恢复点。当前的 `read-only-server.cjs` 是历史 SQLite 工具，不能保护 PostgreSQL，也不作为当前生产应急入口。
 
-此时应先进入应急只读模式保全现场并维持公开页面可访问：
-
-1. 停止当前常规后端进程，对现有状态目录生成一份新的备份。
-2. 使用内置的只读回退启动器 `backend/scripts/read-only-server.cjs` 启动后端。Docker 部署可将以下内容保存为根目录 `compose.readonly.yml`，保持原服务名、内网、环境变量和数据挂载：
-
-   ```yaml
-   services:
-     backend:
-       command: ["node", "scripts/read-only-server.cjs"]
-   ```
-
-   ```sh
-   docker compose -f docker-compose.yml -f compose.readonly.yml \
-     up -d --no-build --force-recreate backend
-   ```
-
-   自定义部署应保留原有 `--env-file` 和全部 `-f` 参数，将只读 override 追加在最后；恢复读写时移除只读 override 并重新创建后端，随后完成业务核验。
-
-   该启动器会在加载应用前为连接强制开启只读模式，关闭所有后台清理与定时任务，并在最外层拦截所有非 `GET` / `HEAD` 请求（统一返回 `503 {"message":"只读回退模式"}`），确保前台文章、活动、成员与群史正常展示的同时数据库零写入。
+恢复使用原生 PG 备份、全新候选数据库及独立目录，验证后再切换。已有 PG 新写入时禁止覆盖成割接前 SQLite 快照。只读账号、入口停写规则和外部任务暂停操作需在实际部署环境验证，不能用未验证的启动器替代。
 
 ### 6. 运维故障与残留锁文件处理
 
@@ -1583,7 +1333,7 @@ pnpm --filter guiair-backend storage:cleanup \
 | 验包或后台删除备份报锁冲突（`.backup-retention.lock` 已存在） | 上一次 `backup_bundle.py verify` 或备份删除操作异常中断。先确认无 `backup_bundle.py` 进程运行，再执行 `rmdir /srv/guatswr/repo/backend/backups/full/.backup-retention.lock`。 |
 | 后台删除备份返回 `409 Conflict` | 当前要删除的备份是最后一个带有有效 `.verified.json` 的完整恢复点，或验证标记与文件哈希不匹配。请先对另一份更新的全量备份执行验证，再删除旧包。 |
 | 容器启动立即退出，日志报 `EACCES: permission denied` | 宿主机挂载目录 `/srv/guatswr/repo/backend/data` 或 `deploy/postgres/data` 内部存在属主权限错误。应用目录确认 UID `1000`（`node`），PostgreSQL 目录确认 UID `999`（`postgres`）。 |
-| 升级后登录或安全写接口返回 `503 Service Unavailable` | 若使用 SQLite，主库（需 `v10`）或审计库（需 `v2`）仅有一方完成了迁移，需运行 `pnpm --filter guiair-backend db:check` 并执行 `db:migrate upgrade` 补齐；若使用 PostgreSQL，运行 `pnpm --filter guiair-backend db:postgres check` 确认模式健康。 |
+| 升级后登录或安全写接口返回 `503 Service Unavailable` | 运行 `pnpm --filter guiair-backend db:postgres check` 确认模式健康。 |
 
 <p align="right">(<a href="#readme-top">返回顶部</a>)</p>
 
@@ -1596,7 +1346,7 @@ pnpm --filter guiair-backend storage:cleanup \
 | [docs/PRODUCTION-SEO.md](docs/PRODUCTION-SEO.md) | www 生产域名、robots、Sitemap、预览环境隔离与上线验收 |
 | [docs/releases/v2.0.0.md](docs/releases/v2.0.0.md) | `v2.0.0` 版本发行说明、验证结论与上线边界 |
 | [docs/backend-modernization/STATUS.md](docs/backend-modernization/STATUS.md) | 后端现代化 BM00–BM36 里程碑状态与验收记录 |
-| [docs/backend-modernization/MIGRATIONS.md](docs/backend-modernization/MIGRATIONS.md) | 双库迁移引擎、历史库接管（`adopt`）、增量升级（`upgrade`）与管理员初始化手册 |
+| [docs/backend-modernization/MIGRATIONS.md](docs/backend-modernization/MIGRATIONS.md) | PostgreSQL 初始化与历史 SQLite 离线迁移边界 |
 | [docs/backend-modernization/RUNTIME-RUNBOOK.md](docs/backend-modernization/RUNTIME-RUNBOOK.md) | 生产容器镜像、挂载边界、权限核验与卷演练说明 |
 | [docs/backend-modernization/RELEASE-CHECKLIST.md](docs/backend-modernization/RELEASE-CHECKLIST.md) | 正式生产发布前现场核验项、停写窗口执行顺序与回退判据 |
 | [docs/backend-modernization/BACKUP-RUNBOOK.md](docs/backend-modernization/BACKUP-RUNBOOK.md) · [scripts/README.md](scripts/README.md) | 备份归档格式、一致性等级、验包与恢复约定 |

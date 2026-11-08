@@ -1,0 +1,99 @@
+{
+  "format": "guatswr-pg-ci-recovery-review",
+  "generatedAt": "2026-11-08T07:48:13.408983+00:00",
+  "baseRevision": "535c6e02ccc756e059dcc49da35958250f92730a",
+  "uncommitted": true,
+  "productionConnections": false,
+  "remoteActionsExecuted": false,
+  "environment": {
+    "host": "Windows",
+    "database": "Docker PostgreSQL 18.6",
+    "node": "24.16.0",
+    "pnpm": "11.25.0"
+  },
+  "checks": {
+    "postgresAll": {
+      "declared": 2107,
+      "passed": 2106,
+      "failed": 0,
+      "platformExclusions": [
+        {
+          "file": "tests/integration/backup-scheduler.test.mjs",
+          "test": "timeout kills POSIX descendants in the detached backup process group"
+        }
+      ]
+    },
+    "packagedBackend": {
+      "passed": 1,
+      "failed": 0,
+      "image": "sha256:80cad4b3c21cc950e5cdaaa47f9198d2df3a6822ea0cd5270bd1a9eb0d3eb63e"
+    },
+    "packagedFrontend": {
+      "passed": true,
+      "cases": 5,
+      "image": "sha256:cf7e71e4d6d861532384f3351549fbcc3459e5defb3871a9445fe038bdb186b7"
+    },
+    "frontendUnits": {
+      "passed": 914
+    },
+    "postgresStoreContracts": {
+      "passed": 23
+    },
+    "offlineMigrationUnits": {
+      "passed": 11
+    },
+    "ciSelfTests": {
+      "passed": 12
+    },
+    "tooling": {
+      "passed": 128
+    },
+    "python": {
+      "ops": 24,
+      "historicalBackup": 20,
+      "historicalInspection": 9,
+      "historicalManifest": 2
+    }
+  },
+  "rehearsal": {
+    "format": "guatswr-real-rehearsal",
+    "startedAt": "2026-11-08T07:34:03.617Z",
+    "conclusion": "ALL_REHEARSALS_VERIFIED",
+    "scenarios": {
+      "normal": {
+        "target": "guatswr_rehearsal_normal_377952c44c32",
+        "tables": 30,
+        "verified": "PASS",
+        "health": "ready",
+        "committedActivityId": 2,
+        "durationMs": 1058
+      },
+      "rollback": {
+        "target": "guatswr_rehearsal_rollback_356aa6a80d41",
+        "transactionAborted": true,
+        "postgresFallbackReady": true,
+        "sourceHashesUnchanged": true
+      },
+      "forwardRecovery": {
+        "target": "guatswr_rehearsal_restore_db4b329ef85e",
+        "restored": true,
+        "committedWritePreserved": true,
+        "recoveredActivityId": 2,
+        "nextActivityId": 3,
+        "tables": 32,
+        "filesVerified": true
+      }
+    },
+    "completedAt": "2026-11-08T07:34:09.106Z"
+  },
+  "evidenceHashes": {
+    ".tools/pg-all-final.json": "95630933f35b58d252f98cab98ac3c6216112a160c683d341582d7b84fdcfa1c",
+    ".tools/pg-packaged-final.json": "9bd1e1985e2cb821970270d5c84bc1e7c1dbd2e366368c82676269352c1f0ad9",
+    ".tools/container-runtime-validation.json": "b9513fcf88c95b04879aa5bae2ccbe38984230c978ccdfcd61a3e64b67a9a6eb"
+  },
+  "limits": [
+    "GitHub Actions configuration and local equivalents verified; remote run not triggered",
+    "Production health, offsite decrypt/restore, scheduler and alert delivery not checked in this turn",
+    "One backend and one BFF remain the supported production topology"
+  ]
+}

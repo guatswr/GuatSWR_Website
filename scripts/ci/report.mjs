@@ -75,7 +75,7 @@ export function securityMetrics(report) {
 export function resultMetrics(needs) {
   const flags = needs.scope?.outputs
   requireValue(needs.scope?.result === 'success' && flags, 'Scope selection did not complete')
-  const jobs = ['quality', 'backend', 'web', 'real-bff', 'container', 'web-container', 'audit']
+  const jobs = ['quality', 'backend', 'web', 'real-bff', 'container', 'web-container', 'postgres', 'audit']
   requireValue(jobs.every(key => needs[key]?.result), 'An expected CI job is missing from the aggregate')
   return jobs.map(key => {
     const job = needs[key]

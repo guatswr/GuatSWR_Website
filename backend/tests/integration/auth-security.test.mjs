@@ -78,11 +78,11 @@ it('A04 missing administrator targets return 404 and cannot alter existing users
  expect((await f.http.delete('/api/admin/users/999').set('Authorization',`Bearer ${token()}`)).status).toBe(404)
  expect((await get(f.db,'SELECT count(*) AS n FROM users')).n).toBe(4)
 })
-it.skipIf(Boolean(process.env.PG_BUSINESS_ADMIN_URL))('D04 early security statements remain atomic across two real SQLite connections',async()=>{
+it('D04 early security statements remain atomic across two real PostgreSQL pools',async()=>{
  const f=await fixture()
  const {createRequire}=await import('node:module')
  const require=createRequire(import.meta.url)
- const otherStore=require('../../dist/src/database/sqlite.js').createSqliteStore(f.context.dbPath)
+ const otherStore=require('../../dist/src/database/postgres.js').createPostgresStore({connectionString:f.context.env.POSTGRES_URL,schema:'main'})
  try{
   const other=require('../../dist/src/security/service.js').createSecurityService(otherStore)
   const versions=await Promise.all(Array.from({length:12},(_,n)=>(n%2?other:f.context.security).incrementVersion()))

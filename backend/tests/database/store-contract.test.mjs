@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { fixture } from './fixture.mjs'
 
-describe.each(['sqlite', 'postgres'])('%s shared database contract', driver => {
+describe.each(['postgres'])('%s shared database contract', driver => {
   it('binds numbered parameters by ordinal and preserves literal/comment dollar names', async () => {
     const { store } = await fixture(driver)
     expect(await store.get("SELECT CAST($2 AS BIGINT) AS second,CAST($1 AS BIGINT) AS first,CAST($2 AS BIGINT) AS repeated,'$3' AS literal /* $4 */", [11, 22]))
@@ -78,9 +78,9 @@ describe.each(['sqlite', 'postgres'])('%s shared database contract', driver => {
     await expect(store.transaction(async () => { calls++ }, { signal: controller.signal })).rejects.toMatchObject({ kind: 'interrupted' })
     expect(calls).toBe(0)
   })
-  it('shares the outer-access prohibition across database drivers', async () => {
+  it('shares the outer-access prohibition across independent PostgreSQL pools', async () => {
     const { store } = await fixture(driver)
-    const other = (await fixture(driver === 'sqlite' ? 'postgres' : 'sqlite')).store
+    const other = (await fixture('postgres')).store
     await store.transaction(async () => {
       await expect(other.get('SELECT 1')).rejects.toMatchObject({ kind: 'scope' })
       await expect(other.transaction(async () => {})).rejects.toMatchObject({ kind: 'scope' })

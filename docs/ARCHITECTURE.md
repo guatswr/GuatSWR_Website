@@ -1,12 +1,12 @@
 # 项目结构与代码边界
 
-更新：2026-10-21。适用于迁移中的 `revamp/*` 分支。
+更新：2026-11-08。适用于当前纯 PostgreSQL 运行时。
 
 ## 目录职责
 
 ```text
 GuatSWR_Website/
-├── backend/                  现有 Express 业务后端，独立 npm/Docker 生命周期
+├── backend/                  Express 业务后端，pnpm 工作区与独立 Docker 镜像
 ├── web/                      新版 Nuxt 应用（统一前端与 BFF）
 │   ├── app/                  页面、布局、组件、客户端状态与交互
 │   ├── server/               BFF、会话、公开接口适配与服务端渲染工具
@@ -23,10 +23,9 @@ GuatSWR_Website/
 └── .tools/                   本机运行时、临时构建和调试证据，不入库
 ```
 
-`pnpm-workspace.yaml` 只纳入 `web` 和 `packages/*`。旧后端的 npm
-锁文件仍是其安装的依据。旧版纯前端（原 `frontend/`）已全量迁移至 `web/`，
-旧前端代码历史完整保留在 `v1-archive` Git 标签中，主线目录现已移除。
-`backend/` 保留现有路径和部署方式，目录整理不修改 API 契约。
+`pnpm-workspace.yaml` 包含 backend、web 和 packages/shared，统一使用根目录 pnpm-lock.yaml。backend 由 TypeScript 编译到 dist，构建前清空旧产物。开发与生产只使用 PostgreSQL；main/audit/bff 分 schema，应用启动只校验、不执行 DDL。
+
+历史 SQLite 模式与校验引擎位于 scripts/postgres/legacy-sqlite，只供离线源验证，不进入生产镜像。旧前端历史保留在 v1-archive 标签。当前测试、CI 和冷恢复入口见 [PostgreSQL 测试](ops/POSTGRESQL-TESTING.md)。
 
 ## 两种 shared 的区别
 
@@ -37,8 +36,7 @@ GuatSWR_Website/
 | `web/app` | 界面、交互、浏览器数据访问 | 可依赖 shared，通过同源 API 访问服务端；不能导入 server、旧后端或 Node 内置模块 |
 | `web/server` | 会话密封、上游凭据、缓存、净化和服务端接口适配 | 可依赖 shared；不要反向导入 UI 组件或浏览器状态 |
 
-旧后端当前没有采用 `@guatswr/shared`。它仍是冻结接口的契约来源，不能把
-“共享包”误解为已经与旧后端统一了实现。
+backend 与 web 均使用 `@guatswr/shared` 的校验与 DTO 契约；冻结路由和公开响应仍由契约回归保护。
 
 运行 `pnpm check:boundaries` 检查上述前三层的源代码导入；CI 同样执行。
 检查器使用 TypeScript AST 与 Vue SFC 解析器，覆盖静态导入、重导出、类型

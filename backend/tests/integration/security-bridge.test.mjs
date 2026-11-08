@@ -4,10 +4,7 @@ import { createRequire } from 'node:module'
 import { expect, it, onTestFinished } from 'vitest'
 import { fixture, token } from '../helpers/fixture.mjs'
 const require = createRequire(import.meta.url)
-const sqlite = require('sqlite3'), request = require('supertest'), jwt = require('jsonwebtoken')
-const { migrateDatabase } = require('../../dist/src/migrations/engine.js')
-const production = path.resolve('src/migrations')
-
+const request=require('supertest'),jwt=require('jsonwebtoken')
 it('initializes security Expand with zero user versions and an empty durable audit queue', async () => {
   const f = await fixture()
   expect(f.context.mainSchemaVersion).toBe(10)
@@ -16,22 +13,9 @@ it('initializes security Expand with zero user versions and an empty durable aud
   expect((await f.context.sql.main.get('SELECT MAX(auth_version) AS version FROM users')).version).toBe(0)
 })
 
-it('boots the compatibility bridge against expanded databases and enforces and issues user versions', async () => {
-  const f = await fixture(), custom = path.join(f.root, 'activated-security')
+it('reopens PostgreSQL without rewriting credentials and enforces current user versions', async () => {
+  const f = await fixture()
   const before = await f.context.sql.main.get('SELECT password,twofa_secret FROM users WHERE id=2')
-  await f.close()
-  await fs.cp(production, custom, { recursive: true })
-  const manifest = JSON.parse(await fs.readFile(path.join(custom, 'manifest.json'), 'utf8'))
-  for (const kind of ['main', 'audit']) {
-    manifest[kind].upgrades = [...(manifest[kind].upgrades || []), ...(manifest[kind].compatibleUpgrades || [])]
-    delete manifest[kind].compatibleUpgrades
-  }
-  await fs.writeFile(path.join(custom, 'manifest.json'), JSON.stringify(manifest))
-  for (const [kind, filename] of [['main', f.context.dbPath], ['audit', f.context.logDbPath]]) {
-    const db = await new Promise((resolve, reject) => { const db = new sqlite.Database(filename, error => error ? reject(error) : resolve(db)) })
-    try { await migrateDatabase(db, custom, kind, { mode: 'upgrade' }) }
-    finally { await new Promise((resolve, reject) => db.close(error => error ? reject(error) : resolve())) }
-  }
   const app = await require('../../src/app').createApplication({ env: f.context.env,
     paths: { data: path.join(f.root, 'data'), public: path.join(f.root, 'public'), backups: path.join(f.root, 'backups') },
     backgroundTasks: false, externalServices: false })

@@ -48,6 +48,8 @@ it('rejects a public symlink/junction that exposes the private data root', async
 
 it('rejects two database paths that identify the same native file', async () => {
   const f = await fixture(), alias = path.join(f.root, 'audit-hardlink.db')
-  await f.fs.link(f.context.dbPath, alias)
-  expect(() => parseEnvironment({ ...f.context.env, DATA_DIR: f.context.DATA_DIR, PUBLIC_DIR: f.context.PUBLIC_DIR, BACKUP_ROOT: f.context.BACKUP_ROOT, LOG_DB_PATH: alias }, f.context.BACKEND_ROOT)).toThrow('STORAGE_LAYOUT')
+  const source=path.join(f.context.DATA_DIR,'legacy-private.db')
+  await f.fs.writeFile(source,'synthetic historical private bytes')
+  await f.fs.link(source, alias)
+  expect(() => parseEnvironment({ ...f.context.env, DATA_DIR: f.context.DATA_DIR, PUBLIC_DIR: f.context.PUBLIC_DIR, BACKUP_ROOT: f.context.BACKUP_ROOT, DB_PATH:source, LOG_DB_PATH: alias }, f.context.BACKEND_ROOT)).toThrow('STORAGE_LAYOUT')
 })

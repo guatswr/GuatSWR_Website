@@ -13,7 +13,7 @@ import {verifyMigration} from './verify-migration.mjs'
 import {createPostgresBackup,restorePostgresBackup} from './backup-postgres.mjs'
 import {fileDigest} from '../../backend/scripts/postgres/data.mjs'
 const require=createRequire(import.meta.url),root=fileURLToPath(new URL('../../',import.meta.url))
-const {initializeDatabases}=require('../../backend/scripts/initialize-databases.cjs'),{createApplication}=require('../../backend/src/app.js')
+const {initializeDatabases}=require('./legacy-sqlite/initialize.cjs'),{createApplication}=require('../../backend/src/app.js')
 const bcrypt=require('bcryptjs')
 export const REHEARSAL_SECRET='synthetic-rehearsal-jwt-secret-not-production'
 export async function createSyntheticSqliteDatabase(baseDir){
@@ -92,12 +92,13 @@ export async function runDualRehearsal(options={}){
   try{await importToPostgres(exported,rollbackTarget.adminUrl,{runtimeRole:rollbackTarget.runtimeRole,beforeCommit:()=>{throw Error('INJECTED_IMPORT_ABORT')}})}catch(error){if(error.message!=='INJECTED_IMPORT_ABORT')throw error;aborted=true}
   const rollbackPool=new Pool({connectionString:rollbackTarget.adminUrl,max:1})
   try{if((await rollbackPool.query('SELECT count(*)::integer AS n FROM main.users')).rows[0].n!==0)throw Error('REHEARSAL_ROLLBACK_DIRTY')}finally{await rollbackPool.end()}
-  const rollbackCopy=await prepareVerifiedSource({bundlePath:source.bundlePath,sha256:source.sha256,targetDir:path.join(work,'rollback-source')})
-  const old=await startCandidate(undefined,{data:rollbackCopy.dataDir,public:rollbackCopy.publicDir,backups:path.join(work,'rollback-backups')},'sqlite');active.push(old.app)
-  if((await call(old.origin,'/api/health/ready')).status!=='ready')throw Error('SQLITE_ROLLBACK_PROBE_FAILED')
+  const fallback=await options.provision('fallback')
+  await importToPostgres(exported,fallback.adminUrl,{runtimeRole:fallback.runtimeRole})
+  const old=await startCandidate(fallback.runtimeUrl,{data:path.join(work,'fallback-data'),public:snapshot.publicDir,backups:path.join(work,'rollback-backups')});active.push(old.app)
+  if((await call(old.origin,'/api/health/ready')).status!=='ready')throw Error('PG_FALLBACK_PROBE_FAILED')
   const again=await exportSqliteDatabase({mainDbPath:path.join(snapshot.dataDir,'guatswr_web_main.db'),auditDbPath:path.join(snapshot.dataDir,'guatswr_web_logs.db')})
   if(JSON.stringify(again.sourceHashes)!==JSON.stringify(exported.sourceHashes))throw Error('REHEARSAL_SOURCE_MODIFIED')
-  report.scenarios.rollback={target:rollbackTarget.name,transactionAborted:aborted,sqliteReady:true,sourceHashesUnchanged:true}
+  report.scenarios.rollback={target:rollbackTarget.name,transactionAborted:aborted,postgresFallbackReady:true,sourceHashesUnchanged:true}
   const backup=await createPostgresBackup({databaseUrl:target.adminUrl,uploadsDir:paths.public,dataDir:paths.data,quarantineDir:path.join(paths.data,'asset-quarantine'),journalDir:path.join(paths.data,'asset-publications'),outputDir:path.join(work,'pg-backups'),commandFor:options.commandFor,tag:'rehearsal'})
   const restoredTarget=await options.provision('restore')
   const recovered=path.join(work,'recovered')

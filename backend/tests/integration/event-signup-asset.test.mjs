@@ -44,8 +44,8 @@ describe('Event Signup Avatar Asset Governance (UPLOAD-01)', () => {
 
     // Verify asset_references table contains the reference
     const refRows = await store.all(
-      "SELECT * FROM asset_references WHERE source_type = 'event_participants' AND source_id = ?",
-      [participant.id]
+      "SELECT * FROM asset_references WHERE source_type = 'event_participants' AND source_id = $1",
+      [String(participant.id)]
     )
     expect(refRows.length).toBe(1)
     expect(refRows[0].asset_path).toBe(localAssetPath(app.context.PUBLIC_DIR, avatarUrl))
@@ -90,8 +90,8 @@ describe('Event Signup Avatar Asset Governance (UPLOAD-01)', () => {
 
     // Shadow index reference deleted
     const refRows = await store.all(
-      "SELECT * FROM asset_references WHERE source_type = 'event_participants' AND source_id = ?",
-      [participant.id]
+      "SELECT * FROM asset_references WHERE source_type = 'event_participants' AND source_id = $1",
+      [String(participant.id)]
     )
     expect(refRows.length).toBe(0)
 

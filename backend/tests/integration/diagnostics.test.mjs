@@ -45,10 +45,10 @@ it('tracked failures correlate with a generated task ID and omit error content',
 it('audit write failure is observed without throwing or changing a completed mutation', async () => {
   const lines = []
   const instance = await fixture({ logDestination: { write: text => lines.push(JSON.parse(text)) } })
-  await new Promise((resolve, reject) => instance.context.logDb.run('DROP TABLE audit_logs', error => error ? reject(error) : resolve()))
+  await new Promise((resolve, reject) => instance.logDb.run('DROP TABLE audit_logs', error => error ? reject(error) : resolve()))
   // Failure callback is asynchronous; the business audit API remains fire-and-observe.
   let requestId
   instance.context.logger.request(id => { requestId = id; instance.context.addLog('synthetic', 'TEST', 'private-audit-details') })
-  await expect.poll(() => lines.find(line => line.event === 'audit.failed'), { timeout: 1000 }).toMatchObject({ code: 'SQLITE_ERROR', requestId })
+  await expect.poll(() => lines.find(line => line.event === 'audit.failed'), { timeout: 1000 }).toMatchObject({ code: 'database_query', requestId })
   expect(JSON.stringify(lines)).not.toContain('private-audit-details')
 })

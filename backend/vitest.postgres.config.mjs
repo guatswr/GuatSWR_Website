@@ -1,6 +1,14 @@
 import { defineConfig } from 'vitest/config'
+const suite = process.env.PG_TEST_SUITE || 'all'
+const core = ['tests/unit/**/*.test.mjs','tests/integration/**/*.test.mjs','tests/contracts/**/*.test.mjs','tests/postgres/lifecycle.test.mjs','tests/postgres/migration.test.mjs']
+const includes = {
+  all: [...core,'tests/postgres/release.test.mjs','tests/bff/**/*.test.mjs'], core,
+  unit: ['tests/unit/**/*.test.mjs'], integration: ['tests/integration/**/*.test.mjs'],
+  contracts: ['tests/contracts/**/*.test.mjs'], bootstrap: ['tests/postgres/lifecycle.test.mjs'],
+  release: ['tests/postgres/release.test.mjs'], packaged:['tests/postgres/packaged.test.mjs'], bff: ['tests/bff/**/*.test.mjs'], ui: ['tests/ui/**/*.test.mjs'],
+}
+if (!includes[suite]) throw Error('UNKNOWN_TEST_SUITE')
 export default defineConfig({ test: {
-  environment: 'node', include: ['tests/contracts/*.test.mjs', 'tests/postgres/**/*.test.mjs', 'tests/bff/*.test.mjs',
-    'tests/integration/{activities-module,members-module,history-module,logs-module,config-module,admin-module,events-module,event-state,event-content-policy,event-submission-idempotency,signup,signup-transactions,article-revisions,published-revision-log,bot-platform,bot-openapi,bot-on-this-day,bot-secret-vault,member-sync,member-native-binding,auth-security,security-revocation,asset-publication,asset-cleanup,asset-inventory,asset-shadow-index,ban-cache,ban-expiry,health}.test.mjs'], maxWorkers: 1,
-  testTimeout: 60000, hookTimeout: 15000, sequence: { concurrent: false },
+  environment:'node', include:includes[suite], maxWorkers:1,
+  testTimeout:60000, hookTimeout:15000, sequence:{concurrent:false},
 } })

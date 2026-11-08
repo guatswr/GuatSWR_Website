@@ -94,7 +94,7 @@ it('a failed disposer still closes both databases and every other disposer', asy
   instance.context.disposers.push(() => { throw new Error('synthetic cleanup failure') })
   await expect(instance.close()).rejects.toThrow('Application cleanup failed')
   expect(disposed).toBe(true)
-  await expect(new Promise((resolve, reject) => instance.context.db.get('SELECT 1', error => error ? reject(error) : resolve()))).rejects.toHaveProperty('code', 'SQLITE_MISUSE')
+  await expect(instance.context.sql.main.get('SELECT 1')).rejects.toHaveProperty('code','database_scope')
 })
 
 it('shutdown deadline rejects deterministically while tracked work is pending', async () => {
@@ -106,9 +106,9 @@ it('shutdown deadline rejects deterministically while tracked work is pending', 
   await expect(closed).rejects.toHaveProperty('code', 'SHUTDOWN_TIMEOUT')
   expect(instance.context.timers.size).toBe(0)
   release()
-  // Wait until the asynchronous cleanup really releases SQLite before fixture removal.
-  await new Promise(resolve => {
-    const check = () => instance.context.db.get('SELECT 1', error => error?.code === 'SQLITE_MISUSE' ? resolve() : setTimeout(check, 5))
-    check()
-  })
+  // Wait for the real pool to close after tracked work drains.
+  await expect.poll(async()=>{
+    try {await instance.context.sql.main.get('SELECT 1');return false}
+    catch(error){return error.code==='database_scope'}
+  }).toBe(true)
 })

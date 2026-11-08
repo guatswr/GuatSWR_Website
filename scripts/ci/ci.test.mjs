@@ -20,9 +20,14 @@ test('workflow keeps one required result for main pushes, PRs, merge queues and 
   assert.equal(workflow.on.push.paths, undefined)
   assert.equal(workflow.on.pull_request.paths, undefined)
   assert.equal(workflow.jobs.result.if, '${{ always() }}')
-  for (const name of ['quality', 'backend', 'web', 'real-bff', 'container', 'web-container', 'audit']) assert.ok(workflow.jobs.result.needs.includes(name))
+  for (const name of ['quality', 'backend', 'web', 'real-bff', 'container', 'web-container', 'postgres', 'audit']) assert.ok(workflow.jobs.result.needs.includes(name))
   assert.equal(workflow.jobs.quality.needs, 'scope')
   assert.equal(workflow.jobs.web.needs, 'scope')
+  assert.equal(workflow.jobs.postgres.if, "needs.scope.outputs.postgres == 'true'")
+  const pgCommands=workflow.jobs.postgres.steps.map(step=>step.run||'').join('\n')
+  assert.match(pgCommands,/--suite core/)
+  assert.match(pgCommands,/--suite release/)
+  assert.match(workflow.jobs.container.steps.map(step=>step.run||'').join('\n'),/--suite packaged/)
   assert.equal(workflow.jobs.audit.uses, './.github/workflows/dependency-security.yml')
   const security = load(await readFile(new URL('../../.github/workflows/dependency-security.yml', import.meta.url), 'utf8'))
   assert.ok(Object.hasOwn(security.on, 'workflow_call') && security.on.schedule.length > 0)
@@ -36,11 +41,11 @@ test('documentation can skip code checks; unknown paths and missing base select 
 test('frontend CSS receives browser/build checks while BFF and dependency changes add the relevant gates', () => {
   const css = classifyChanges(['web/app/assets/css/main.css'])
   assert.ok(css.quality && css.web && css.web_container)
-  assert.equal(css.backend || css.container || css.integration || css.audit, false)
-  assert.ok(classifyChanges(['web/server/api/config.get.ts']).integration)
+  assert.equal(css.backend || css.container || css.integration || css.audit || css.postgres, false)
+  assert.ok(classifyChanges(['web/server/api/config.get.ts']).integration && classifyChanges(['web/server/api/config.get.ts']).postgres)
   assert.ok(classifyChanges(['web/package.json']).audit)
   const backend = classifyChanges(['backend/src/app.js'])
-  assert.ok(backend.backend && backend.integration && backend.container)
+  assert.ok(backend.backend && backend.integration && backend.container && backend.postgres)
   assert.equal(backend.web, false)
 })
 
@@ -94,8 +99,11 @@ test('audit errors and new advisories stay red even when other checks can run', 
 test('the final required check rejects missing, failed, cancelled or unexpectedly skipped jobs', () => {
   const flags = classifyChanges(['web/app/pages/index.vue'])
   const needs = { scope: { result: 'success', outputs: Object.fromEntries(Object.entries(flags).map(([key, value]) => [key, String(value)])) } }
-  for (const [job, flag] of Object.entries({ quality: 'quality', backend: 'backend', web: 'web', 'real-bff': 'integration', container: 'container', 'web-container': 'web_container', audit: 'audit' })) needs[job] = { result: flags[flag] ? 'success' : 'skipped' }
+  for (const [job, flag] of Object.entries({ quality: 'quality', backend: 'backend', web: 'web', 'real-bff': 'integration', container: 'container', 'web-container': 'web_container', audit: 'audit', postgres:'postgres' })) needs[job] = { result: flags[flag] ? 'success' : 'skipped' }
   assert.ok(passes(resultMetrics(needs)))
+  const pgRequired={...needs,scope:{...needs.scope,outputs:{...needs.scope.outputs,postgres:'true'}}}
+  assert.equal(passes(resultMetrics(pgRequired)),false)
+  assert.ok(passes(resultMetrics({...pgRequired,postgres:{result:'success'}})))
   for (const result of ['skipped', 'cancelled', 'failure']) assert.equal(passes(resultMetrics({ ...needs, web: { result } })), false)
   assert.throws(() => resultMetrics({ ...needs, audit: undefined }), /missing/)
   assert.throws(() => resultMetrics({ ...needs, scope: { result: 'failure' } }), /Scope/)

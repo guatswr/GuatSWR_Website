@@ -10,7 +10,19 @@ const exec = promisify(execFile)
 const root = fileURLToPath(new URL('../../', import.meta.url))
 const require = createRequire(new URL('../../backend/package.json', import.meta.url))
 const { Pool } = require('pg')
-const business = process.argv.includes('--business')
+const args = process.argv.slice(2)
+const business = args.includes('--business')
+const suiteIndex = args.indexOf('--suite')
+const suite = suiteIndex < 0 ? 'all' : args[suiteIndex + 1]
+if (!['all','core','unit','integration','contracts','bootstrap','release','packaged','bff','ui'].includes(suite)) throw Error('UNKNOWN_TEST_SUITE')
+const selected = []
+for (let i = 0; i < args.length; i++) {
+  const arg = args[i]
+  if (arg === '--business') continue
+  if (arg === '--suite') { i++; continue }
+  if (/^tests\/[a-zA-Z0-9_./-]+\.test\.mjs$/.test(arg) || /^--(?:reporter|outputFile)=.+$/.test(arg)) selected.push(arg)
+  else throw Error('UNKNOWN_TEST_ARGUMENT')
+}
 export const POSTGRES_TEST_IMAGE = 'postgres:18.6-bookworm@sha256:f1ea2a1a4fb7b68d4836be1fdcb8a6466a89b072158bf9d97663600538c294c5'
 let container
 let admin
@@ -21,9 +33,13 @@ try {
   await new Promise((resolve, reject) => { reservation.once('error', reject); reservation.listen(0, '127.0.0.1', resolve) })
   const port = reservation.address().port
   await new Promise((resolve, reject) => reservation.close(error => error ? reject(error) : resolve()))
+  const httpReservation=createServer()
+  await new Promise((resolve,reject)=>{httpReservation.once('error',reject);httpReservation.listen(0,'127.0.0.1',resolve)})
+  const httpPort=httpReservation.address().port
+  await new Promise((resolve,reject)=>httpReservation.close(error=>error?reject(error):resolve()))
   container = (await exec('docker', ['run', '--detach', '--name', name, '--label', 'io.guatswr.test=postgres-adapters',
     '--memory=256m', '--pids-limit=128', '--cpus=1', '--volume', '/var/lib/postgresql',
-    '--publish', `127.0.0.1:${port}:5432`, '-e', 'POSTGRES_USER=guatswr_migrator', '-e', 'POSTGRES_DB=guatswr_pg_contract_test',
+    '--publish', `127.0.0.1:${port}:5432`, ...(suite==='packaged'?['--publish',`127.0.0.1:${httpPort}:3000`]:[]), '-e', 'POSTGRES_USER=guatswr_migrator', '-e', 'POSTGRES_DB=guatswr_pg_contract_test',
     '-e', 'POSTGRES_PASSWORD=isolated-test-only', POSTGRES_TEST_IMAGE], { timeout: 120000 })).stdout.trim()
   const binding = (await exec('docker', ['port', container, '5432/tcp'])).stdout.trim()
   if (binding !== `127.0.0.1:${port}`) throw Error('Loopback-only PostgreSQL binding required')
@@ -58,9 +74,10 @@ try {
   }
   await admin.end(); admin = undefined
   const entry = join(dirname(require.resolve('vitest/package.json')), 'vitest.mjs')
-  const selected = process.argv.slice(2).filter(value => /^tests\/[a-zA-Z0-9_./-]+\.test\.mjs$/.test(value))
   const child = spawn(process.execPath, [entry, 'run', '--configLoader', 'native', '--config', business ? 'vitest.postgres.config.mjs' : 'vitest.database.config.mjs', ...selected], {
     cwd: join(root, 'backend'), stdio: 'inherit', env: { ...process.env,
+      PG_TEST_SUITE: suite,
+      PG_PACKAGED_HTTP_ORIGIN: `http://127.0.0.1:${httpPort}`,
       PG_ADAPTER_TEST_URL: `postgres://guatswr_app:isolated-test-only@${base}`,
       PG_ADAPTER_ADMIN_URL: `postgres://guatswr_migrator:isolated-test-only@${base}`,
       PG_ADAPTER_CONTAINER: container,

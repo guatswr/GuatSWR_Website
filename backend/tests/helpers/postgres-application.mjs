@@ -75,26 +75,32 @@ function callbacks(store, ddl) {
   return { get: (sql, params, cb) => execute('get', sql, params, cb), all: (sql, params, cb) => execute('all', sql, params, cb), run: (sql, params, cb) => execute('run', sql, params, cb), exec: (sql, cb) => execute('run', sql, [], cb) }
 }
 export async function createPostgresTestApplication(options) {
-  const source = new URL(process.env.PG_BUSINESS_ADMIN_URL || '')
-  if (source.hostname !== '127.0.0.1' || source.pathname !== '/guatswr_pg_contract_test') throw Error('Isolated test administrator required')
+  const { applicationFactory = createApplication, ...applicationOptions } = options
+  let source,runtime
+  try {
+    source=new URL(process.env.PG_BUSINESS_ADMIN_URL||'')
+    runtime=new URL(process.env.PG_ADAPTER_TEST_URL||'')
+  } catch {throw Error('Use the isolated PostgreSQL test harness')}
+  if(source.hostname!=='127.0.0.1'||source.pathname!=='/guatswr_pg_contract_test'||runtime.hostname!==source.hostname||runtime.port!==source.port||runtime.pathname!==source.pathname||runtime.username!=='guatswr_app')throw Error('Isolated test URLs required')
   const database = `guatswr_pg_case_${randomBytes(8).toString('hex')}`
   const admin = new Pool({ connectionString: source.href, max: 1 })
   admin.on('error', () => {})
-  await admin.query(`CREATE DATABASE "${database}" TEMPLATE guatswr_pg_business_template`)
-  await admin.query(`REVOKE TEMP ON DATABASE "${database}" FROM PUBLIC`)
-  await admin.query(`GRANT CONNECT ON DATABASE "${database}" TO guatswr_app`)
-  const runtime = new URL(process.env.PG_ADAPTER_TEST_URL); runtime.pathname = '/' + database
-  source.pathname = '/' + database
-  const ddl = new Pool({ connectionString: source.href, max: 1, options: '-c search_path=pg_catalog,main -c timezone=UTC' }); ddl.on('error', () => {})
-  let instance
-  let closing
-  const close = () => closing ??= (async () => {
-    await instance?.close()
-    await ddl.end()
-    try { await admin.query(`DROP DATABASE "${database}" WITH (FORCE)`) } finally { await admin.end() }
+  let ddl,instance,closing,created=false
+  const close=()=>closing??=(async()=>{
+    let failure
+    try {await instance?.close()} catch(error){failure=error}
+    try {await ddl?.end()} catch(error){failure??=error}
+    try {if(created)await admin.query(`DROP DATABASE "${database}" WITH (FORCE)`)} catch(error){failure??=error}
+    try {await admin.end()} catch(error){failure??=error}
+    if(failure)throw failure
   })()
   try {
-    instance = await createApplication({ ...options, env: { ...options.env, DATABASE_DRIVER: 'postgres', POSTGRES_URL: runtime.href } })
+    await admin.query(`CREATE DATABASE "${database}" TEMPLATE guatswr_pg_business_template`);created=true
+    await admin.query(`REVOKE TEMP ON DATABASE "${database}" FROM PUBLIC`)
+    await admin.query(`GRANT CONNECT ON DATABASE "${database}" TO guatswr_app`)
+    runtime.pathname='/'+database;source.pathname='/'+database
+    ddl=new Pool({connectionString:source.href,max:1,options:'-c search_path=pg_catalog,main -c timezone=UTC'});ddl.on('error',()=>{})
+    instance = await applicationFactory({ ...applicationOptions, env: { ...applicationOptions.env, DATABASE_DRIVER: 'postgres', POSTGRES_URL: runtime.href } })
     const fixtureDb = callbacks(instance.context.sql.main, ddl)
     const fixtureLogDb = callbacks(instance.context.sql.audit, {
       query: async sql => {
@@ -103,11 +109,11 @@ export async function createPostgresTestApplication(options) {
         finally { await client.query('RESET search_path'); client.release() }
       },
     })
-    return { ...instance, fixtureDb, fixtureLogDb, fixtureAdmin: ddl, close, fixtureSeeded: async () => {
+    return { ...instance, fixtureDb, fixtureLogDb, fixtureAdmin: ddl, fixtureCloseApplication: instance.close, close, fixtureSeeded: async () => {
       for (const table of ['users', 'activities', 'members', 'history', 'events', 'event_participants']) {
         await ddl.query(`SELECT setval(pg_get_serial_sequence('main.${table}','id'),COALESCE((SELECT MAX(id) FROM main.${table}),1),EXISTS(SELECT 1 FROM main.${table}))`)
       }
       await ddl.query("SELECT setval(pg_get_serial_sequence('audit.audit_logs','id'),COALESCE((SELECT MAX(id) FROM audit.audit_logs),1),EXISTS(SELECT 1 FROM audit.audit_logs))")
     } }
-  } catch (error) { await close(); throw error }
+  } catch (error) { await close().catch(()=>{}); throw error }
 }

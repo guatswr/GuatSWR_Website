@@ -4,3 +4,5 @@
 patches/*.patch text eol=lf -whitespace
 backend/src/migrations/*.sql text eol=lf
 backend/src/migrations/postgres/*.sql text eol=lf
+
+scripts/postgres/legacy-sqlite/*.sql text eol=lf

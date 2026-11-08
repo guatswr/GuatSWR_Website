@@ -18,8 +18,8 @@ repository settings when this configuration is adopted.
 | Change | Validation |
 | --- | --- |
 | `web/app/**`, frontend styles/assets/tests | Static checks, shared/web units, production build, all desktop/mobile Chromium E2E, route budgets, Lighthouse, packaged frontend runtime |
-| `web/server/**`, `web/shared/**`, fixtures, Nuxt config | Frontend checks plus real BFF-to-backend integration |
-| `backend/**` | Static checks, shared/web units, Windows/Linux backend units/integration/contracts, Python backup/migration tests, real BFF, container lifecycle/storage/security checks |
+| `web/server/**`, `web/shared/**`, fixtures, Nuxt config | Frontend checks plus real PG state/recovery and BFF-to-backend integration |
+| `backend/**` | Static checks, Windows/Linux backend units, Python historical-source tests, Linux Docker PostgreSQL business/contracts/lifecycle and cold recovery, real BFF, packaged recovery |
 | Lockfile, shared packages, scripts, CI or unknown paths | Full validation; unknown files never silently bypass checks |
 | Web/backend package manifests | Relevant checks plus online dependency audit |
 | Only README, LICENSE or Markdown/images under `docs/**` | Scope report and final required result (JSON/config/test fixtures still run all checks) |
@@ -27,8 +27,7 @@ repository settings when this configuration is adopted.
 
 Jobs run independently after scope selection. A dependency advisory cannot
 prevent test/build jobs from collecting results. Heavy frontend browser checks
-run once on Linux; SQLite/filesystem/process behavior retains Windows and Linux
-coverage. Each browser run still covers both desktop and phone projects.
+run once on Linux. Pure backend units retain Windows and Linux coverage; PG business, process and packaged recovery jobs run on Linux Docker. Each browser run still covers both desktop and phone projects.
 Frontend unit tests use two workers in CI and Docker builds to fit hosted-runner
 CPU budgets without starving security assertions under parallel compilation.
 
@@ -48,7 +47,8 @@ plus `.tools/ci/*.metrics.json` for 14 days. Reports record the checked revision
 | Production sourcemaps | 0, including compressed maps | Debug source is absent from shipped artifacts |
 | Mobile LCP | Median of exactly 3 valid samples per route ≤1,800 ms | Lab rendering speed on `/`, `/activities`, `/events/stg` |
 | Lighthouse performance | Independent median of the same 3 samples ≥95 | Existing mobile lab budget; missing/invalid samples fail |
-| Container runtime | All lifecycle/storage/backup/nonce/SSR/image checks succeed | The actual production image works with its runtime permissions and boundaries |
+| Packaged backend | Non-root PG application, native 32-table dump, empty-target restore, login/files and next-ID writes succeed | Recovery works from the actual clean production image |
+| Packaged frontend | Nonce/SSR/public-content/image checks succeed | The frontend image preserves public delivery contracts |
 | Local dependency patches | Registered hashes, installed source hashes and exploit probes pass | The pinned mitigation is really installed |
 | Online dependency audit | 0 unresolved advisories at every severity | Dependency updates and releases do not accept unreviewed findings |
 
@@ -83,6 +83,9 @@ Use Node from `.node-version` and pnpm from `packageManager` in `package.json`.
 ```sh
 pnpm install --frozen-lockfile
 pnpm test:ci
+pnpm test:database
+pnpm test:release
+pnpm test:postgres
 pnpm check:patches
 pnpm check:security
 WEB_ENV_FILE=./web/.env.example BACKEND_ENV_FILE=./backend/.env.example docker compose config --no-env-resolution --quiet
@@ -95,3 +98,5 @@ Workflow actions are pinned to release commit SHAs and use Node 24 runtimes.
 New metrics must have a user or operational consequence, a stated measurement
 method, a threshold with a reason, and retained failure evidence. Change the
 underlying budget and its report validation together; missing data is a failure.
+
+The PostgreSQL harness owns its temporary Docker instance and per-case databases; it never accepts production endpoints. See [PostgreSQL testing](ops/POSTGRESQL-TESTING.md) for isolation, clean builds and the pinned-image packaged suite. Local validation does not mean the remote Actions run has executed.

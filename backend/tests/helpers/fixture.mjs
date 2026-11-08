@@ -5,7 +5,6 @@ import { createRequire } from 'node:module'
 import { createHmac } from 'node:crypto'
 import { onTestFinished } from 'vitest'
 const require = createRequire(import.meta.url)
-const { createApplication } = require('./application.cjs')
 const request = require('supertest')
 const jwt = require('jsonwebtoken')
 const bcrypt = require('bcryptjs')
@@ -33,7 +32,7 @@ export const fixture = async (overrides = {}) => {
     if (path.dirname(absolute) !== path.resolve(os.tmpdir()) || !path.basename(absolute).startsWith('guatswr-contract-')) throw new Error('Unsafe fixture cleanup')
     await fs.rm(absolute, { recursive: true, force: true })
   })
-  const factory = process.env.PG_BUSINESS_ADMIN_URL ? (await import('./postgres-application.mjs')).createPostgresTestApplication : createApplication
+  const factory = (await import('./postgres-application.mjs')).createPostgresTestApplication
   instance = await factory({ env: { NODE_ENV: 'test', JWT_SECRET: secret, BFF_BRIDGE_SECRET: bridgeKey, ...overrides.env },
     paths: { data: path.join(root, 'data'), public: path.join(root, 'public'), backups: path.join(root, 'backups') },
     backgroundTasks: false, externalServices: false, logDestination: overrides.logDestination })
