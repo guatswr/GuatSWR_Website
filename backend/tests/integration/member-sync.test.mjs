@@ -192,3 +192,11 @@ it('does not stage avatar bytes through a public directory junction into private
     else await f.fs.unlink(link)
   }
 })
+it('accepts multi-batch snapshots exceeding 1000 cumulative members on PostgreSQL',async()=>{
+  const f=await setup(),job=await f.request()
+  const makeBatch=(offset,size)=>Array.from({length:size},(_,i)=>({qq:String(10000+offset+i)}))
+  expect((await f.batch(job.id,makeBatch(0,500),1)).status).toBe(200)
+  expect((await f.batch(job.id,makeBatch(500,500),2)).status).toBe(200)
+  expect((await f.batch(job.id,makeBatch(1000,1),3)).status).toBe(200)
+  expect((await f.complete(job.id,1001,3)).body).toMatchObject({status:'preview',count:1001})
+})

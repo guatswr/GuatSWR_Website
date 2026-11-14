@@ -211,7 +211,7 @@ export function createMemberSync(options:{
         await owned(tx,id,client,true)
         const existing=await tx.get("SELECT checksum FROM member_sync_batches WHERE request_id=$1 AND batch_no=$2",[id,no])
         if (existing) { if(existing.checksum!==checksum) return fail('同一批次内容不可变');return {accepted:true} }
-        const total=await tx.get<{n:number}>("SELECT COALESCE(SUM(member_count),0) AS n FROM member_sync_batches WHERE request_id=$1",[id])
+        const total=await tx.get<{n:number}>("SELECT COALESCE(SUM(member_count),0)::bigint AS n FROM member_sync_batches WHERE request_id=$1",[id])
         if ((total?.n || 0)+body.members.length>10000) return fail('同步成员超过上限',413)
         await tx.run("INSERT INTO member_sync_batches(request_id,batch_no,checksum,members_json,member_count) VALUES($1,$2,$3,$4,$5)",[id,no,checksum,json,body.members.length])
         await tx.run("UPDATE member_sync_requests SET status='collecting' WHERE id=$1",[id])
