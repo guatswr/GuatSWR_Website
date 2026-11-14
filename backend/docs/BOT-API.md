@@ -190,6 +190,6 @@ Webhook 仍是 JSON POST，携带出站 `Authorization: Bearer <ASTRBOT_TOKEN>`�
 
 ## 接入边界
 
-这次提供后端能力和契约。AstrBot 指令、群消息格式、接收端幂等存储，以及网站 BFF 的绑定 UI/owner 会话接线仍需调用这些接口完成。没有部署生产、创建真实 Bot 凭据、调用外部 AstrBot、迁移原数据库或发送群消息。
+后端能力和契约对应的 AstrBot 插件已迁移至独立仓库 [`astrbot_plugin_guatswr`](https://github.com/guatswr/astrbot_plugin_guatswr)，包含指令、群通知、持久去重、成员采集与私信回执；配置和安装方式见插件说明。网站 BFF 的绑定 UI/owner 会话接线仍需独立完成。插件目前通过本地模拟接口验证，没有部署生产、创建真实 Bot 凭据、调用外部 AstrBot、迁移原数据库或发送群消息。
 
 Bot 管理统一在 `/admin/bot`：凭据使用 `?section=credentials`，群同步使用 `?section=sync`，资料任务使用 `?section=profiles`，通知投递使用 `?section=deliveries`。成员页和 Bot 审计日志的相关入口跳到对应区域，REST API 路径不随页面归类改变。

@@ -139,7 +139,7 @@ Content-Type: image/png
 
 ## 验证与部署边界
 
-本功能仍默认关闭，插件未在此仓库实现。测试使用隔离双库、本地模拟接收器和真实 Nuxt/浏览器，未迁移生产数据库或给真实 QQ 发消息。调用现有验包/恢复工具建立恢复点后再显式升级 main5；保持当前运行代码以关闭功能回退，不能把旧快照覆盖新写入。
+本功能仍默认关闭，对接插件已迁移至独立仓库 [`astrbot_plugin_guatswr`](https://github.com/guatswr/astrbot_plugin_guatswr)，当前完成本地模拟接口验证，真实 OneBot/QQ 联调尚未进行。后端测试使用隔离双库、本地模拟接收器和真实 Nuxt/浏览器，未迁移生产数据库或给真实 QQ 发消息。调用现有验包/恢复工具建立恢复点后再显式升级 main5；保持当前运行代码以关闭功能回退，不能把旧快照覆盖新写入。
 
 开发验证：先构建 shared 和后端，构建 web，运行 `test:bff`；浏览器专项使用 `pnpm --filter guiair-backend test:ui`，需要安装 Playwright Chromium，并通过 `BACKEND_BFF_OUTPUT` 指向 web 生产产物。完整记录见 [迁移证据](../../docs/backend-modernization/evidence/MEMBER-SYNC-2026-10-25.md)。
 
